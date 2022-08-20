@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "strict": true,
+    "allowJs": true,
+    "typeRoots" : ["./node_modules/@types", "./resources/types"],
+    "jsx": "preserve",
+    "watchDirectory": "useFsEvents",
+    "watchFile": "useFsEvents",
+    "useFsEvents": true,
+    "usePolling": false
+  }
+}

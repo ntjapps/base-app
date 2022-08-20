@@ -1,0 +1,13 @@
+# Browser list we support
+defaults
+
+# Explicit browser we don't support, usually browser that doesn't support WebP format
+not ie <= 11
+not Edge < 18
+not Firefox < 65
+not Chrome < 23
+not Safari < 14
+not Opera < 12.1
+not iOS < 14
+not Android < 4
+not kaios <= 2.5

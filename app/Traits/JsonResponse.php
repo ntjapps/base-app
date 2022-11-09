@@ -4,7 +4,10 @@ namespace App\Traits;
 
 trait JsonResponse
 {
-  public function jsonSuccess($title,$message,$route=null)
+  /**
+   * JSON return wrapper for success
+   */
+  public function jsonSuccess(string $title, string $message, string $route=null)
   {
     if ($route !== null) {
       return response()->json([
@@ -20,7 +23,10 @@ trait JsonResponse
     }
   }
 
-  public function jsonFailed($title,$message,$route=null)
+  /**
+   * JSON return wrapper for failed
+   */
+  public function jsonFailed(string $title='', string $message, string $route=null)
   {
     if ($route !== null) {
       return response()->json([

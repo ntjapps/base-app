@@ -1,10 +1,22 @@
-<script>
-  import CmpAppSet from './CmpAppSet.vue'
-  import PgServerLog from './PgServerLog.vue'
+<script lang="ts">
+  import { defineComponent } from 'vue'
+  import axios from 'axios'
+  import CmpAppSet from './Components/CmpAppSet.vue'
 
-  export default {
+  import PgLogin from './AuthPages/PgLogin.vue'
+  import PgDashboard from './DashboardPages/PgDashboard.vue'
+  import PgProfile from './DashboardPages/PgProfile.vue'
+  import PgUserMan from './SuperPages/PgUserMan.vue'
+  import PgServerLog from './SuperPages/PgServerLog.vue'
+
+  export default defineComponent({
+    name: 'App',
     components: {
       CmpAppSet,
+      PgLogin,
+      PgDashboard,
+      PgProfile,
+      PgUserMan,
       PgServerLog,
     },
 
@@ -16,5 +28,5 @@
         console.log('csrf cookie init')
       })
     },
-  }
+  })
 </script>

@@ -1,25 +1,39 @@
 import { defineStore } from 'pinia'
+
+import {
+  landingPage,
+  dashboard,
+  profile,
+  serverHorizon,
+  serverLogs,
+  userMan,
+} from './AppPath'
+
 export const useMainStore = defineStore('main', {
   state: () => {
     return {
+      /** Define route here because if not defined and get from XHR it will be race condition */
       /** WEB requests */
-      landingPage: String,
-      otpForm: String,
-      profile: String,
-      dashboard: String,
-      serverLogs: String,
+      landingPage: landingPage,
+      dashboard: dashboard,
+      profile: profile,
+      serverHorizon: serverHorizon,
+      serverLogs: serverLogs,
+      userMan: userMan,
       
       /** API request */
-      logout: String,
-      requestOtp: String,
-      submitOtp: String,
-      getAllUserPermission: String,
-      updateProfile: String,
-      getServerLogs: String,
+      postLogin: '/api/post-login',
+      postLogout: '/api/post-logout',
+      postProfile: '/api/update-profile',
+      appConst: '/api/app-const',
+      getAllUserPermission: '/api/get-all-user-permission',
+      logAgent: '/api/log-agent',
+      getServerLogs: '/api/get-server-logs',
+      getUserList: '/api/get-user-list',
 
       /** Additional data */
-      browserSuppport: null,
-      permissionsData: [],
+      browserSuppport: false,
+      permissionsData: new Array(),
     }
   }
 })

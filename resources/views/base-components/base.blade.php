@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
   <head>
-    <!-- v1.1.2 -->
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/webp" href="{{ asset('mix-images/profile-default.webp') }}"/>
+    {{-- <link rel="icon" type="image/webp" href="{{ asset('mix-images/icon.webp') }}"/> --}}
 
     <title>@yield('title')</title>
   </head>

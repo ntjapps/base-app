@@ -18,11 +18,13 @@ class Kernel extends ConsoleKernel
         /** Packages Cron */
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
         $schedule->command('storage:link')->everyFiveMinutes();
-        $schedule->command('log:delete')->hourly();
+        $schedule->command('model:prune')->hourly();
+        $schedule->command('sanctum:prune-expired --hours=0')->hourly();
         $schedule->command('queue:prune-failed')->daily();
         $schedule->command('queue:flush')->daily();
-        $schedule->command('model:prune')->daily();
-        $schedule->command('sanctum:prune-expired --hours=24')->daily();
+
+        /** Custom Jobs Cron */
+        //
     }
 
     /**

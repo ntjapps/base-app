@@ -9,21 +9,33 @@ use Illuminate\Http\Client\ConnectionException;
 
 trait WaApi
 {
-  private function sendMessage($phone, $message)
+  /**
+   * Send message wrapper
+   */
+  private function sendMessage($phone, $message, $file = null)
   {
     try {
-      $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
-        'device_id' => config('waapi.device_id'),
-        'number' => $phone,
-        'message' => $message,
-      ]);
+      if ($file != null) {
+        $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
+          'device_id' => config('waapi.device_id'),
+          'number' => $phone,
+          'message' => $message,
+          'file' => $file,
+        ]);
+      } else {
+        $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
+          'device_id' => config('waapi.device_id'),
+          'number' => $phone,
+          'message' => $message,
+        ]);
+      }
 
       Log::debug('Sending WA', ['deviceId' => config('waapi.device_id')]);
 
       /** Fallback to second number on failure */
       if ($response['status'] != true) {
         Log::warning('Fallback Message', ['phoneNum' => $phone]);
-        $this->sendMessageFallback($phone,$message);
+        $this->sendMessageFallback($phone,$message, $file);
       }
 
       $this->updateWAStatus($response->json(), $phone);
@@ -32,14 +44,26 @@ trait WaApi
     }
   }
 
-  private function sendMessageFallback($phone, $message)
+  /**
+   * Send message wrapper
+   */
+  private function sendMessageFallback($phone, $message, $file)
   {
     try {
-      $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
-        'device_id' => config('waapi.device_id_2'),
-        'number' => $phone,
-        'message' => $message,
-      ]);
+      if ($file != null) {
+        $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
+          'device_id' => config('waapi.device_id_2'),
+          'number' => $phone,
+          'message' => $message,
+          'file' => $file,
+        ]);
+      } else {
+        $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
+          'device_id' => config('waapi.device_id_2'),
+          'number' => $phone,
+          'message' => $message,
+        ]);
+      }
 
       Log::debug('Sending WA', ['deviceId' => config('waapi.device_id_2')]);
   
@@ -49,6 +73,9 @@ trait WaApi
     }
   }
 
+  /**
+   * Send message wrapper
+   */
   private function sendScheduledMessage($phone, $message)
   {
     try {
@@ -67,16 +94,23 @@ trait WaApi
     }
   }
 
+  /**
+   * Status update wrapper
+   */
   private function updateWAStatus($response, $phone)
   {
-    $user = User::find(User::where('phone', $phone)->first()->id);
+    $user = User::where('phone', $phone)->first();
 
-    $resp_status = ($response['status'] == true) ? true : false ;
-
-    $user->wa_status = $resp_status;
-    $user->save();
-
-    Log::debug('Update WA Status Phone: '.$phone, ['waStatus' => $resp_status]);
-
+    /** If status is null just log, if not null, then update status, user null because WA sent to non user */
+    if ($user == null) {
+      Log::debug('Null user id', ['phone' => $phone]);
+    } else {
+      $resp_status = ($response['status'] == true) ? true : false ;
+  
+      $user->wa_status = $resp_status;
+      $user->save();
+  
+      Log::debug('Update WA Status Phone: '.$phone, ['waStatus' => $resp_status]);
+    }
   }
 }

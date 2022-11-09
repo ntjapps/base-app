@@ -59,22 +59,7 @@ return [
 
         'database' => [
             'driver' => 'custom',
-            'via' => danielme85\LaravelLogToDB\LogToDbHandler::class,
-            //'model' => App\Model\Log::class, //Your own optional custom model
-            'level' => env('APP_LOG_LEVEL', 'debug'),
-            'name' => 'My DB Log',
-            'connection' => 'default',
-            'collection' => 'log',
-            'detailed' => true,
-            'queue' => true,
-            'queue_name' => '',
-            'queue_connection' => '',
-            'max_records' => 10000,
-            'max_hours' => 168,
-            'processors' => [
-                  Monolog\Processor\HostnameProcessor::class
-                  // ..
-            ]
+            'via' => App\Logger\DatabaseLogger::class,
         ],
 
         'single' => [

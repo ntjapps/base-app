@@ -4,28 +4,27 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class XssProtection
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next, string ...$guards): Response
     {
         $input = $request->all();
 
-        array_walk_recursive($input, function(&$input) {
-
-            $input = strip_tags($input);
-
+        array_walk_recursive($input, function (&$input) {
+            if ($input !== null) {
+                $input = strip_tags($input);
+            }
         });
 
         $request->merge($input);
-        
+
         return $next($request);
     }
 }

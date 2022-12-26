@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use App\Traits\Uuid;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Spatie\Permission\Models\Role as SpatieRole;
 
 class Role extends SpatieRole
 {
-    use HasFactory, Uuid;
+    use HasUuids;
 
     /**
      * The attributes that are NOT mass assignable.
@@ -37,4 +36,11 @@ class Role extends SpatieRole
      * @var array<string, string>
      */
     protected $casts = [];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [];
 }

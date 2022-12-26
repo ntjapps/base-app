@@ -3,44 +3,36 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Interfaces\PermissionConst;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Prunable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Prunable;
 use Spatie\Permission\Traits\HasRoles;
-use App\Traits\Uuid;
 
-class User extends Authenticatable
+class User extends Authenticatable implements PermissionConst
 {
-    use HasApiTokens, HasFactory, Notifiable, Uuid, HasRoles, SoftDeletes, Prunable;
-
-    /** Mapping for role and permission:
-     * - SUPEROLE = can do all
-     */
-
-    public const SUPERROLE = 'SU';
-    public const SUPER = 'root';
+    use HasApiTokens, HasFactory, Notifiable, HasUuids, HasRoles, SoftDeletes, Prunable;
 
     /**
      * Exclude constant permission
      */
-    public function exceptConstPermission()
+    public function exceptConstPermission(): array
     {
-      return [
-        self::SUPER,
-      ];
+        return [
+            static::SUPER,
+        ];
     }
-
-    public const CACHEKEY = '-usr';
 
     /**
      * Get the prunable model query.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function prunable()
+    public function prunable(): Builder
     {
         return static::where('deleted_at', '<=', now()->subMonth());
     }
@@ -52,8 +44,10 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
+        'totp_key',
     ];
 
     /**
@@ -62,7 +56,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
+        'email',
+        'email_verified_at',
         'password',
+        'totp_key',
         'remember_token',
     ];
 
@@ -73,5 +70,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'totp_key' => 'encrypted',
     ];
 }

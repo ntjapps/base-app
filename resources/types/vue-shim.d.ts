@@ -1,6 +1,7 @@
 declare module "*.vue" {
-  import * as Vue from 'vue'
-  export default Vue
+    import type { DefineComponent } from "vue";
+    const component: DefineComponent<unknown, unknown, unknown>;
+    export default component;
 }
 
-declare module 'vue/dist/vue.esm-bundler.js'
+declare module "vue/dist/vue.esm-bundler.js";

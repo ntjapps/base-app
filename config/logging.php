@@ -45,36 +45,28 @@ return [
     | you a variety of powerful log handlers / formatters to utilize.
     |
     | Available Drivers: "single", "daily", "slack", "syslog",
-    |                    "errorlog", "monolog",
-    |                    "custom", "stack"
+    |          "errorlog", "monolog",
+    |          "custom", "stack"
     |
     */
 
     'channels' => [
-        'stack' => [
+        'stack_slack' => [
             'driver' => 'stack',
-            'channels' => ['database', 'slack'],
+            'channels' => ['database', 'stderr', 'slack'],
             'ignore_exceptions' => false,
         ],
 
-        'database' => [
-            'driver' => 'custom',
-            'via' => danielme85\LaravelLogToDB\LogToDbHandler::class,
-            //'model' => App\Model\Log::class, //Your own optional custom model
-            'level' => env('APP_LOG_LEVEL', 'debug'),
-            'name' => 'My DB Log',
-            'connection' => 'default',
-            'collection' => 'log',
-            'detailed' => true,
-            'queue' => true,
-            'queue_name' => '',
-            'queue_connection' => '',
-            'max_records' => 10000,
-            'max_hours' => 168,
-            'processors' => [
-                  Monolog\Processor\HostnameProcessor::class
-                  // ..
-            ]
+        'stack' => [
+            'driver' => 'stack',
+            'channels' => ['database', 'stderr'],
+            'ignore_exceptions' => false,
+        ],
+
+        'stack_migration' => [
+            'driver' => 'stack',
+            'channels' => ['daily'],
+            'ignore_exceptions' => false,
         ],
 
         'single' => [
@@ -136,6 +128,23 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'stack_telegram' => [
+            'driver' => 'stack',
+            'channels' => ['database', 'telegram'],
+            'ignore_exceptions' => false,
+        ],
+
+        'database' => [
+            'driver' => 'monolog',
+            'handler' => App\Logger\DatabaseHandler::class,
+        ],
+
+        'telegram' => [
+            'driver' => 'monolog',
+            'handler' => App\Logger\TelegramHandler::class,
+            'level' => env('LOG_LEVEL', 'error'),
         ],
     ],
 

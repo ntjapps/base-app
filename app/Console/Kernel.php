@@ -8,29 +8,39 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     /**
-     * Define the application's command schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
+     * Get the timezone that should be used by default for scheduled events.
+     * Don't use timezone for DST time, use UTC instead
      */
-    protected function schedule(Schedule $schedule)
+    protected function scheduleTimezone(): \DateTimeZone|string|null
+    {
+        return 'Asia/Jakarta';
+    }
+
+    /**
+     * Define the application's command schedule.
+     */
+    protected function schedule(Schedule $schedule): void
     {
         /** Packages Cron */
-        $schedule->command('horizon:snapshot')->everyFiveMinutes();
-        $schedule->command('storage:link')->everyFiveMinutes();
-        $schedule->command('log:delete')->hourly();
-        $schedule->command('queue:prune-failed')->daily();
-        $schedule->command('queue:flush')->daily();
-        $schedule->command('model:prune')->daily();
-        $schedule->command('sanctum:prune-expired --hours=24')->daily();
+        $schedule->command('horizon:snapshot')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
+        $schedule->command('storage:link')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
+        $schedule->command('model:prune')->hourly()->runInBackground()->withoutOverlapping();
+        $schedule->command('sanctum:prune-expired --hours=0')->hourly()->runInBackground()->withoutOverlapping();
+        $schedule->command('queue:prune-failed')->hourly()->runInBackground()->withoutOverlapping();
+        $schedule->command('queue:flush')->hourly()->runInBackground()->withoutOverlapping();
+
+        if ($this->app->environment('local')) {
+            $schedule->command('telescope:prune')->hourly()->runInBackground()->withoutOverlapping();
+        }
+
+        /** Custom Jobs Cron */
+        $schedule->job(new \App\Jobs\PruneLogDebugLevelJob)->dailyAt('00:00');
     }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
-    protected function commands()
+    protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');
 

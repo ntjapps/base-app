@@ -1,0 +1,29 @@
+@import "./font";
+
+.base-body {
+    @apply relative;
+    @apply m-0;
+    @apply overflow-auto;
+    @apply min-h-full;
+    @apply min-w-full;
+}
+
+.base-font {
+    font-family: Lato, sans-serif;
+}
+
+.title-font {
+    font-family: Lato, sans-serif;
+}
+
+html {
+    @apply min-h-full;
+}
+
+body {
+    @apply base-body;
+}
+
+* {
+    @apply base-font;
+}

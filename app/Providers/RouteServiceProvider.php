@@ -17,48 +17,40 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
+    public const HOME = '/';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->configureRateLimiting();
 
         $this->routes(function () {
             Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
+              ->prefix('api')
+              ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+              ->group(base_path('routes/web.php'));
         });
     }
 
     /**
      * Configure the rate limiters for the application.
-     *
-     * @return void
      */
-    protected function configureRateLimiting()
+    protected function configureRateLimiting(): void
     {
-      RateLimiter::for('api-min', function (Request $request) {
-        return Limit::perMinute(30)->by($request->user()?->id ?: $request->ip());
-      });
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(25000)->by($request->user()?->id ?: $request->ip());
+        });
 
-      RateLimiter::for('api', function (Request $request) {
-        return Limit::perMinute(600)->by($request->user()?->id ?: $request->ip());
-      });
+        RateLimiter::for('api-min', function (Request $request) {
+            return Limit::perMinute(30)->by($request->user()?->id ?: $request->ip());
+        });
 
-      RateLimiter::for('api-ext', function (Request $request) {
-        return Limit::perMinute(3000)->by($request->user()?->id ?: $request->ip());
-      });
-
-      RateLimiter::for('api-admin', function (Request $request) {
-        return Limit::perMinute(6000)->by($request->user()?->id ?: $request->ip());
-      });
+        RateLimiter::for('api-secure', function (Request $request) {
+            return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

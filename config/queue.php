@@ -71,6 +71,33 @@ return [
             'after_commit' => false,
         ],
 
+        'redis_long_run' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'long-run',
+            'retry_after' => 2700,
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
+        'redis_commit' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => env('REDIS_QUEUE', 'default'),
+            'retry_after' => 90,
+            'block_for' => null,
+            'after_commit' => true,
+        ],
+
+        'redis_long_run_commit' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'long-run',
+            'retry_after' => 2700,
+            'block_for' => null,
+            'after_commit' => true,
+        ],
+
     ],
 
     /*

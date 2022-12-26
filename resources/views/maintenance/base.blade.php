@@ -5,5 +5,5 @@
 @endsection
 
 @section('base')
-  Hello
+    Hello
 @endsection

@@ -1,3 +1,5 @@
+import { AxiosResponse } from "axios";
+
 function timeGreetings(): string | null {
     const cT = new Date().getHours();
     let gT = null;
@@ -32,4 +34,19 @@ function syncPromise(): Promise<boolean> {
     });
 }
 
-export { timeGreetings, timeView, syncPromise };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function fileDownload(response: AxiosResponse<any, any>) {
+    const filename =
+        response.headers["content-disposition"].split("filename=")[1];
+    const href = URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = href;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);
+}
+
+export { timeGreetings, timeView, syncPromise, fileDownload };

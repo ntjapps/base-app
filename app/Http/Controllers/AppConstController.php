@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\MenuItemConst;
+use App\Interfaces\MenuItemClass;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,24 +14,24 @@ class AppConstController extends Controller
     /**
      * POST app constants
      */
-    public function mainConst(): HttpJsonResponse
+    public function mainConst(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::user()?->name.' is requesting app constants', ['user_id' => Auth::id()]);
+        Log::debug('User '.Auth::user()?->name.' is requesting app constants', ['user_id' => Auth::id(), 'apiUserIp' => $request->ip()]);
 
         /** Menu Items */
         if (Auth::check() ? true : Auth::guard('sanctum')->check()) {
             if (Gate::allows('hasSuperPermission', User::class)) {
                 $menuItems = json_encode([
-                    MenuItemConst::dashboardMenu(),
-                    MenuItemConst::editProfileMenu(),
-                    MenuItemConst::logoutMenu(),
-                    MenuItemConst::administrationMenu(),
+                    MenuItemClass::dashboardMenu(),
+                    MenuItemClass::editProfileMenu(),
+                    MenuItemClass::logoutMenu(),
+                    MenuItemClass::administrationMenu(),
                 ]);
             } else {
                 $menuItems = json_encode([
-                    MenuItemConst::dashboardMenu(),
-                    MenuItemConst::editProfileMenu(),
-                    MenuItemConst::logoutMenu(),
+                    MenuItemClass::dashboardMenu(),
+                    MenuItemClass::editProfileMenu(),
+                    MenuItemClass::logoutMenu(),
                 ]);
             }
         }
@@ -46,6 +46,9 @@ class AppConstController extends Controller
 
             /** Menu Items */
             'menuItems' => $menuItems ?? json_encode([]),
+
+            /** Permission Data */
+            'permissionData' => Auth::user()?->getAllPermissions()->pluck('name')->toArray() ?? [],
         ], 200);
     }
 
@@ -55,7 +58,7 @@ class AppConstController extends Controller
     public function logAgent(Request $request): HttpJsonResponse
     {
         /** Log unsupported browser trigger from client */
-        Log::debug('Unsupported browser trigger', ['user_id' => Auth::id(), 'userAgent' => $request->userAgent()]);
+        Log::debug('Unsupported browser trigger', ['user_id' => Auth::id(), 'userAgent' => $request->userAgent(), 'apiUserIp' => $request->ip()]);
 
         return response()->json('OK', 200);
     }

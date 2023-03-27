@@ -109,6 +109,8 @@ class AuthController extends Controller
      */
     public function postToken(Request $request): HttpJsonResponse
     {
+        Log::debug('Computer access post token', ['apiUserIp' => $request->ip()]);
+
         /** Validate request */
         $validate = Validator::make($request->all(), [
             'username' => ['required', 'string'],
@@ -153,7 +155,7 @@ class AuthController extends Controller
      */
     public function postTokenRevoke(Request $request): HttpJsonResponse
     {
-        Log::info('Username '.Auth::user()->username.' revoking token', ['username' => Auth::user()->username, 'remoteIp' => $request->ip()]);
+        Log::info('Username '.Auth::user()->username.' revoking token', ['username' => Auth::user()->username, 'apiUserIp' => $request->ip()]);
 
         /** Get bearer token from request */
         (string) $bearerToken = $request->bearerToken();
@@ -173,7 +175,7 @@ class AuthController extends Controller
             $token->delete();
         }
 
-        Log::notice('Username '.Auth::user()->username.' revoked token', ['username' => Auth::user()->username, 'remoteIp' => $request->ip(), 'tokenId' => $token->id]);
+        Log::notice('Username '.Auth::user()->username.' revoked token', ['username' => Auth::user()->username, 'apiUserIp' => $request->ip(), 'tokenId' => $token->id]);
 
         return response()->json([
             'status' => 'success',

@@ -32,19 +32,16 @@ class PruneLogDebugLevelJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::debug('Job Executed', ['jobName' => 'PruneLogDebugLevelJob']);
-        ServerLog::where('level', Logger::toMonologLevel('debug'))->where('created_at', '<=', now()->subWeek())->delete();
-        ServerLog::where('level', Logger::toMonologLevel('info'))->where('created_at', '<=', now()->subWeeks(2))->delete();
-        ServerLog::where('level', Logger::toMonologLevel('notice'))->where('created_at', '<=', now()->subWeeks(3))->delete();
-        ServerLog::where('level', Logger::toMonologLevel('warning'))->where('created_at', '<=', now()->subWeeks(4))->delete();
-        Log::debug('Job Finished', ['jobName' => 'PruneLogDebugLevelJob']);
-    }
-
-    /**
-     * Handle a job failure.
-     */
-    public function failed(\Throwable $e): void
-    {
-        Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'error' => $e->getMessage()]);
+        try {
+            Log::debug('Job Executed', ['jobName' => 'PruneLogDebugLevelJob']);
+            ServerLog::where('level', Logger::toMonologLevel('debug'))->where('created_at', '<=', now()->subWeek())->delete();
+            ServerLog::where('level', Logger::toMonologLevel('info'))->where('created_at', '<=', now()->subWeeks(2))->delete();
+            ServerLog::where('level', Logger::toMonologLevel('notice'))->where('created_at', '<=', now()->subWeeks(3))->delete();
+            ServerLog::where('level', Logger::toMonologLevel('warning'))->where('created_at', '<=', now()->subWeeks(4))->delete();
+            Log::debug('Job Finished', ['jobName' => 'PruneLogDebugLevelJob']);
+        } catch (\Throwable $e) {
+            Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'error' => $e->getMessage(), 'previous' => $e->getPrevious()]);
+            throw $e;
+        }
     }
 }

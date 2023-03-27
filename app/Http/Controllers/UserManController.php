@@ -26,7 +26,7 @@ class UserManController extends Controller
      */
     public function getUserList(Request $request): JsonResponse
     {
-        Log::debug('User '.Auth::user()->name.' get user list', ['user_id' => Auth::id()]);
+        Log::debug('User '.Auth::user()->name.' get user list', ['user_id' => Auth::id(), 'apiUserIp' => $request->ip()]);
 
         $data = User::all();
 

@@ -30,7 +30,7 @@ class ServerManController extends Controller
      */
     public function getServerLogs(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::user()->name.' get server log', ['user_id' => Auth::id()]);
+        Log::debug('User '.Auth::user()->name.' get server log', ['user_id' => Auth::id(), 'apiUserIp' => $request->ip()]);
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [

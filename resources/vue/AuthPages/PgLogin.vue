@@ -25,6 +25,7 @@ const props = defineProps({
 const username = ref("");
 const password = ref("");
 const loading = ref(false);
+const turnchild = ref<typeof CmpTurnstile>();
 
 const postLogindata = () => {
     loading.value = true;
@@ -41,6 +42,7 @@ const postLogindata = () => {
         .catch((error) => {
             loading.value = false;
             useError(error);
+            turnchild.value?.resetTurnstile();
         });
 };
 
@@ -111,7 +113,7 @@ const clearData = () => {
                         </div>
                     </div>
                     <div class="flex justify-center py-2.5">
-                        <CmpTurnstile />
+                        <CmpTurnstile ref="turnchild" />
                     </div>
                     <div class="flex justify-center py-2.5">
                         <ButtonVue

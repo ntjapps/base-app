@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { defineExpose } from "vue";
 import { useMainStore } from "../AppState";
 
 const main = useMainStore();
@@ -24,6 +25,14 @@ if (typeof window.turnstile === "undefined") {
     srcJs.defer = true;
     document.body.appendChild(srcJs);
 }
+
+const resetTurnstile = () => {
+    window.turnstile.reset();
+};
+
+defineExpose({
+    resetTurnstile,
+});
 </script>
 
 <template>

@@ -41,6 +41,7 @@ class DashController extends Controller
      */
     public function updateProfile(Request $request): HttpJsonResponse
     {
+        Log::debug('User '.Auth::user()->username.' updating profile', ['user_id' => Auth::id(), 'apiUserIp' => $request->ip()]);
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],

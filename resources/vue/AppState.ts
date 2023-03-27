@@ -36,7 +36,6 @@ export const useMainStore = defineStore("main", {
     state: () => ({
         /** Additional data */
         browserSuppport: true,
-        permissionsData: Array<string>(),
         menuItems: Array<MenuItemExtended>(),
 
         appName: "Base App",
@@ -56,22 +55,6 @@ export const useMainStore = defineStore("main", {
                     this.$patch({
                         menuItems: JSON.parse(response.data.menuItems),
                     });
-                    /** Send response data to after init function & if user authenticated */
-                    if (response.data.isAuth) {
-                        this.authInit();
-                    }
-                })
-                .catch((error) => {
-                    console.error(error.response.data);
-                });
-        },
-
-        authInit() {
-            const api = useApiStore();
-            axios
-                .post(api.getAllUserPermission)
-                .then((response) => {
-                    this.$patch({ permissionsData: response.data });
                 })
                 .catch((error) => {
                     console.error(error.response.data);

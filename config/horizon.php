@@ -169,6 +169,7 @@ return [
             'connection' => 'redis',
             'queue' => ['default'],
             'balance' => 'auto',
+            'autoScalingStrategy' => 'size',
             'maxProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
@@ -176,26 +177,48 @@ return [
             'tries' => 1,
             'timeout' => 60,
             'nice' => 0,
+            'force' => true,
         ],
 
         'supervisor-long-run-1' => [
             'connection' => 'redis_long_run',
             'queue' => ['long-run'],
             'balance' => 'auto',
+            'autoScalingStrategy' => 'size',
             'maxProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 512,
             'tries' => 1,
             'timeout' => 3600,
-            'nice' => 0,
+            'nice' => 1,
+            'force' => true,
+        ],
+
+        'supervisor-excel-import-1' => [
+            'connection' => 'redis_excel_long_run',
+            'queue' => ['excel-import'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'size',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 512,
+            'tries' => 1,
+            'timeout' => 3800,
+            'nice' => 2,
         ],
     ],
 
     'environments' => [
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
+                'maxProcesses' => 20,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+            'supervisor-long-run-1' => [
+                'maxProcesses' => 4,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
@@ -203,7 +226,10 @@ return [
 
         'local' => [
             'supervisor-1' => [
-                'maxProcesses' => 3,
+                'maxProcesses' => 5,
+            ],
+            'supervisor-long-run-1' => [
+                'maxProcesses' => 2,
             ],
         ],
     ],

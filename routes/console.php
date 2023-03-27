@@ -3,11 +3,14 @@
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Laravel\Pennant\Feature;
+use Laravel\Telescope\Telescope;
 use OTPHP\TOTP;
 
 /*
@@ -21,12 +24,19 @@ use OTPHP\TOTP;
 |
 */
 
+Artisan::command('penant:clear', function () {
+    Feature::flushCache();
+    Feature::purge();
+    $this->info('Penant cache cleared');
+    Log::alert('Console penant:clear executed', ['appName' => config('app.name')]);
+})->purpose('Clear penant cache');
+
 Artisan::command('queue:clear:all', function () {
     Artisan::call('queue:clear', ['--queue' => 'default']);
     Artisan::call('queue:clear', ['--queue' => 'long-run']);
     Artisan::call('queue:flush');
-    Artisan::call('cache:clear');
     Cache::flush();
+    $this->info('All queue cleared');
     Log::alert('Console queue:clear:all executed', ['appName' => config('app.name')]);
 })->purpose('Delete all of the jobs from all queues');
 
@@ -35,6 +45,7 @@ Artisan::command('horizon:clear:all', function () {
     Redis::connection('cache')->flushdb();
     Redis::connection('default')->flushdb();
     Cache::flush();
+    $this->info('All horizon cleared');
     Log::alert('Console horizon:clear:all executed', ['appName' => config('app.name')]);
 })->purpose('Delete all of the jobs from all queues');
 
@@ -50,11 +61,15 @@ Artisan::command('perm:list', function () {
 
 Artisan::command('role:grant {role} {permission}', function ($role, $permission) {
     Role::find(Role::where('name', $role)->first()->id)->givePermissionTo($permission);
+    Feature::flushCache();
+    Feature::purge();
     Log::alert('Console role:grant executed', ['role' => $role, 'permission' => $permission]);
 })->purpose('Grant permission for given role');
 
 Artisan::command('role:revoke {role} {permission}', function ($role, $permission) {
     Role::find(Role::where('name', $role)->first()->id)->revokePermissionTo($permission);
+    Feature::flushCache();
+    Feature::purge();
     Log::alert('Console role:revoke executed', ['role' => $role, 'permission' => $permission]);
 })->purpose('Revoke permission for given role');
 
@@ -107,6 +122,8 @@ Artisan::command('user:role:grant {username} {role}', function ($username, $role
     }
 
     $user->assignRole($role);
+    Feature::flushCache();
+    Feature::purge();
     $this->info('Granted role '.$role.' to user '.$username);
     Log::alert('Console user:grant executed', ['username' => $username, 'role' => $role]);
 })->purpose('Grant role for given user');
@@ -119,6 +136,8 @@ Artisan::command('user:role:revoke {username} {role}', function ($username, $rol
     }
 
     $user->removeRole($role);
+    Feature::flushCache();
+    Feature::purge();
     $this->info('Revoked role '.$role.' from user '.$username);
     Log::alert('Console user:revoke executed', ['username' => $username, 'role' => $role]);
 })->purpose('Revoke role for given user');
@@ -131,6 +150,8 @@ Artisan::command('user:perm:grant {username} {permission}', function ($username,
     }
 
     $user->givePermissionTo($permission);
+    Feature::flushCache();
+    Feature::purge();
     $this->info('Granted permission '.$permission.' to user '.$username);
     Log::alert('Console user:grant executed', ['username' => $username, 'permission' => $permission]);
 })->purpose('Grant direct permission for given user');
@@ -143,6 +164,8 @@ Artisan::command('user:perm:revoke {username} {permission}', function ($username
     }
 
     $user->revokePermissionTo($permission);
+    Feature::flushCache();
+    Feature::purge();
     $this->info('Revoked permission '.$permission.' from user '.$username);
     Log::alert('Console user:revoke executed', ['username' => $username, 'permission' => $permission]);
 })->purpose('Revoke direct permission for given user');
@@ -182,11 +205,24 @@ Artisan::command('unit:test', function () {
 })->purpose('Test Query / Any Test');
 
 Artisan::command('patch:deploy', function () {
-    /** PATCH DO HERE */
-    $patch = 'NULL';
+    /** Memory Leak mitigation */
+    if (App::environment('local')) {
+        Telescope::stopRecording();
+    }
 
-    /** Alert Log for patch deployment and clear application cache */
-    Artisan::call('cache:clear');
-    Artisan::call('up');
-    Log::alert('Console patch:deploy executed', ['patchId' => $patch, 'appName' => config('app.name')]);
+    Cache::flush();
+
+    /** PATCH DO HERE */
+    $patchId = 'NULL';
+
+    if ($this->confirm('Are you sure you want to deploy patch '.$patchId.'?')) {
+        $this->info('Deploying patch '.$patchId.'...');
+
+        /** Alert Log for patch deployment and clear application cache */
+        Cache::flush();
+        Artisan::call('up');
+        Log::alert('Console patch:deploy executed', ['patchId' => $patchId, 'appName' => config('app.name')]);
+    } else {
+        $this->info('Deploying patch '.$patchId.' aborted');
+    }
 })->purpose('Deploy patch');

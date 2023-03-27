@@ -17,4 +17,9 @@ return [
     'bypass' => env('APP_CHALLENGE_BYPASS', false),
 
     'mobile' => env('APP_CHALLENGE_MOBILE', null),
+
+    'platforms' => [
+        'android',
+        'ios',
+    ],
 ];

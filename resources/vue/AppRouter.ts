@@ -15,6 +15,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("./AuthPages/PgLogin.vue"),
     },
     {
+        path: "/get-logout",
+        name: "Logout",
+        component: () => import("./AuthPages/PgLogout.vue"),
+        meta: { requiresAuth: true },
+    },
+    {
         path: dashboard,
         name: "dashboard",
         component: () => import("./DashboardPages/PgDashboard.vue"),

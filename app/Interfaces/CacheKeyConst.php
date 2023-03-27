@@ -12,5 +12,7 @@ interface CacheKeyConst
     /**
      * List of cache tags
      */
+    public const MSTPERM = 'mst-perm';
+
     public const USERTAG = 'user';
 }

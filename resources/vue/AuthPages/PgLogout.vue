@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import axios from "axios";
-import { onBeforeMount } from "vue";
-import { useError } from "../AppAxiosResp";
+import { ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 import { useWebStore } from "../AppRouter";
 
+import CmpToast from "../Components/CmpToast.vue";
+
 const web = useWebStore();
 const router = useRouter();
+const toastchild = ref<typeof CmpToast>();
 
 onBeforeMount(() => {
     axios
@@ -15,7 +17,11 @@ onBeforeMount(() => {
             router.push(web.landingPage);
         })
         .catch((error) => {
-            useError(error);
+            toastchild.value?.toastError(error);
         });
 });
 </script>
+
+<template>
+    <CmpToast ref="toastchild" />
+</template>

@@ -3,7 +3,5 @@
 
 @section('body')
     @parent
-    <router-view
-    app-name="{{ config('app.name') }}"
-    ></router-view>
+    <router-view />
 @endsection

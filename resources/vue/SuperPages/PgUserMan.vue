@@ -1,30 +1,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { timeGreetings } from "../AppCommon";
-import { useApiStore } from "../AppState";
+import { useApiStore, useMainStore } from "../AppState";
 
 import axios from "axios";
-import { useError } from "../AppAxiosResp";
 
 import CmpLayout from "../Components/CmpLayout.vue";
-import ButtonVue from "primevue/button";
+import CmpToast from "../Components/CmpToast.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
 
-defineProps({
-    appName: {
-        type: String,
-        required: true,
-    },
-    greetings: {
-        type: String,
-        required: true,
-    },
-});
-
 const timeGreet = timeGreetings();
 const api = useApiStore();
+const main = useMainStore();
+const toastchild = ref<typeof CmpToast>();
 
 type BreadCrumbType = Array<{ label: string }>;
 type UserListDataType = Array<{
@@ -55,7 +45,7 @@ const getUserListData = () => {
             loading.value = false;
         })
         .catch((error) => {
-            useError(error);
+            toastchild.value?.toastError(error);
             loading.value = false;
         });
 };
@@ -71,8 +61,11 @@ const showViewButton = (data: string): boolean => {
 
 <template>
     <CmpLayout :bread-crumb="breadCrumb">
+        <CmpToast ref="toastchild" />
         <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
-            <h2 class="title-font font-bold">{{ timeGreet + greetings }}</h2>
+            <h2 class="title-font font-bold">
+                {{ timeGreet + main.userName }}
+            </h2>
             <h3 class="title-font">User Role Management</h3>
             <div class="grid grid-flow-row text-sm">
                 <div class="flex w-full my-0.5">
@@ -96,11 +89,9 @@ const showViewButton = (data: string): boolean => {
                     </div>
                 </div>
             </div>
-            <ButtonVue
-                class="p-button-success p-button-sm w-20 mt-2.5"
-                label="Find"
-                @click="getUserListData"
-            />
+            <button class="btn btn-success" @click="getUserListData">
+                <span class="m-1">Find</span>
+            </button>
         </div>
         <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
             <DataTable
@@ -128,11 +119,10 @@ const showViewButton = (data: string): boolean => {
                                 v-if="showViewButton(slotProps.data.id)"
                                 class="mx-1"
                             >
-                                <ButtonVue
-                                    class="p-button-success p-button-sm"
-                                    icon="pi pi-search"
-                                    label="View"
-                                />
+                                <button class="btn btn-success">
+                                    <i class="pi pi-search m-2" />
+                                    <span class="m-1">View</span>
+                                </button>
                             </div>
                         </div>
                     </template>
@@ -147,17 +137,6 @@ const showViewButton = (data: string): boolean => {
                 <Column field="name" header="Name" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">{{ slotProps.data.name }}</div>
-                    </template>
-                </Column>
-                <Column
-                    field="user_permission"
-                    header="Permission"
-                    class="text-sm"
-                >
-                    <template #body="slotProps">
-                        <div class="text-center">
-                            {{ slotProps.data.user_permission.join(", ") }}
-                        </div>
                     </template>
                 </Column>
             </DataTable>

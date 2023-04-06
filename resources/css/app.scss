@@ -5,8 +5,12 @@
 
 /** Load custom CSS */
 @import "./base";
-@import "./primevue";
+@import "./components";
 @import "./util";
+
+@import "./font";
+@import "./fontawesome";
+@import "./primevue";
 
 /** X-Cloak must be at the end of all CSS */
 @import "./xcloak";

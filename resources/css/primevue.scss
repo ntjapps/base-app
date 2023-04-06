@@ -1,7 +1,12 @@
 /** Themes */
 @import "primevue/resources/themes/tailwind-light/theme.css";
-@import "./theme-overrides";
 
 /** Core PrimeVue CSS */
 @import "primevue/resources/primevue.min.css";
 @import "primeicons/primeicons.css";
+
+/** Start Theme Overrides **/
+.p-button-primary {
+    background-image: initial;
+    background-color: rgb(79 70 229);
+}

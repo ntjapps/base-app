@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 trait MenuItemConst
@@ -37,13 +38,17 @@ trait MenuItemConst
     public static function administrationMenu(): array
     {
         $childMenu = [];
+        $user = Auth::user() ?? Auth::guard('sanctum')->user();
 
-        if (Gate::allows('hasSuperPermission', User::class)) {
-            $childMenu[] = [
-                'label' => 'Server Queue - Horizon',
-                'icon' => 'pi pi-bolt',
-                'url' => parse_url(route('horizon.index'), PHP_URL_PATH),
-            ];
+        if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
+
+            if (! Auth::guard('sanctum')->check()) {
+                $childMenu[] = [
+                    'label' => 'Server Queue - Horizon',
+                    'icon' => 'pi pi-bolt',
+                    'url' => parse_url(route('horizon.index'), PHP_URL_PATH),
+                ];
+            }
 
             $childMenu[] = [
                 'label' => 'Server Logs',

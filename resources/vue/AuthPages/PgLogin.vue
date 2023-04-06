@@ -3,11 +3,10 @@ import axios from "axios";
 
 import { ref } from "vue";
 import { useMainStore, useWebApiStore } from "../AppState";
-import { useError } from "../AppAxiosResp";
 
 import CmpTurnstile from "../Components/CmpTurnstile.vue";
+import CmpToast from "../Components/CmpToast.vue";
 
-import ButtonVue from "primevue/button";
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 import ProgressSpinner from "primevue/progressspinner";
@@ -15,17 +14,11 @@ import ProgressSpinner from "primevue/progressspinner";
 const webapi = useWebApiStore();
 const main = useMainStore();
 
-const props = defineProps({
-    appName: {
-        type: String,
-        required: true,
-    },
-});
-
 const username = ref("");
 const password = ref("");
 const loading = ref(false);
 const turnchild = ref<typeof CmpTurnstile>();
+const toastchild = ref<typeof CmpToast>();
 
 const postLogindata = () => {
     loading.value = true;
@@ -37,13 +30,14 @@ const postLogindata = () => {
         })
         .then((response) => {
             clearData();
+            toastchild.value?.toastSuccess("Welcome to " + main.appName);
             window.location.href = response.data.redirect;
         })
         .catch((error) => {
             loading.value = false;
-            useError(error);
-            turnchild.value?.resetTurnstile();
+            toastchild.value?.toastError(error);
         });
+    turnchild.value?.resetTurnstile();
 };
 
 const clearData = () => {
@@ -53,6 +47,7 @@ const clearData = () => {
 </script>
 
 <template>
+    <CmpToast ref="toastchild" />
     <div
         class="grid content-center w-screen h-screen bg-slate-200 object-fill bg-no-repeat bg-cover bg-center"
     >
@@ -60,16 +55,16 @@ const clearData = () => {
             <div v-show="!loading" class="bg-white rounded-lg drop-shadow-lg">
                 <div class="m-auto p-5">
                     <div class="text-center font-bold my-2.5">
-                        {{ props.appName }}
+                        {{ main.appName }}
                     </div>
                     <div
                         v-if="!main.browserSuppport"
                         class="text-center font-bold my-2.5"
                     >
-                        <ButtonVue
-                            class="p-button-sm p-button-danger"
-                            label="Browser Unsupported"
-                        />
+                        <button class="btn btn-sm btn-error">
+                            <i class="pi pi-times m-1" />
+                            <span class="m-1">Browser Unsupported</span>
+                        </button>
                     </div>
                     <div class="text-center font-bold my-2.5">
                         Login to your account
@@ -116,11 +111,9 @@ const clearData = () => {
                         <CmpTurnstile ref="turnchild" />
                     </div>
                     <div class="flex justify-center py-2.5">
-                        <ButtonVue
-                            class="p-button-primary p-button-sm"
-                            label="Login"
-                            @click="postLogindata"
-                        />
+                        <button class="btn btn-primary" @click="postLogindata">
+                            <span class="m-1">Login</span>
+                        </button>
                     </div>
                 </div>
             </div>

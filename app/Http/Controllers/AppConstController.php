@@ -18,9 +18,12 @@ class AppConstController extends Controller
     {
         Log::debug('User '.Auth::user()?->name.' is requesting app constants', ['user_id' => Auth::id(), 'apiUserIp' => $request->ip()]);
 
+        $authCheck = Auth::check() ? true : Auth::guard('sanctum')->check();
+        $user = Auth::user() ?? Auth::guard('sanctum')->user();
+
         /** Menu Items */
-        if (Auth::check() ? true : Auth::guard('sanctum')->check()) {
-            if (Gate::allows('hasSuperPermission', User::class)) {
+        if ($authCheck) {
+            if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
                 $menuItems = json_encode([
                     MenuItemClass::dashboardMenu(),
                     MenuItemClass::editProfileMenu(),
@@ -40,15 +43,16 @@ class AppConstController extends Controller
         return response()->json([
             /** App Name */
             'appName' => config('app.name'),
+            'userName' => $user?->name ?? $user?->name ?? '',
 
             /** Check if Auth */
-            'isAuth' => Auth::check() ? true : Auth::guard('sanctum')->check(),
+            'isAuth' => $authCheck,
 
             /** Menu Items */
             'menuItems' => $menuItems ?? json_encode([]),
 
             /** Permission Data */
-            'permissionData' => Auth::user()?->getAllPermissions()->pluck('name')->toArray() ?? [],
+            'permissionData' => $user?->getAllPermissions()->pluck('name')->toArray() ?? [],
         ], 200);
     }
 

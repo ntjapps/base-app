@@ -4,9 +4,9 @@ import CmpFooter from "../Components/CmpFooter.vue";
 </script>
 
 <template>
-    <div class="min-h-screen h-auto bg-slate-200">
+    <div class="content-container bg-slate-200">
         <CmpHeader />
-        <div class="flex flex-col min-h-fit content-start">
+        <div class="content-child-container">
             <slot />
         </div>
         <CmpFooter />

@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
-
-import ButtonVue from "primevue/button";
+import { useEchoStore } from "../AppState";
 
 const pusherState = ref<string>("connecting");
 const connected = ref<boolean>(false);
 const connecting = ref<boolean>(true);
 const unavailable = ref<boolean>(false);
+const echo = useEchoStore().laravelEcho;
 
 const showConnected = () => {
     connected.value = true;
     connecting.value = false;
     unavailable.value = false;
-    window.Echo.private("all");
+    echo.private("all");
 };
 
 const showConnecting = () => {
@@ -28,11 +28,11 @@ const showUnavailable = () => {
 };
 
 onBeforeMount(() => {
-    //window.Echo.connector.options.auth.headers["Authorization"] =
+    //echo.connector.options.auth.headers["Authorization"] =
     //"Bearer " + secure.apiToken;
     /** Ticking status for pusher */
     setInterval(() => {
-        pusherState.value = window.Echo.connector.pusher.connection.state;
+        pusherState.value = echo.connector.pusher.connection.state;
         switch (pusherState.value) {
             case "connecting":
                 showConnecting();
@@ -49,22 +49,15 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <ButtonVue
-        v-if="connected"
-        class="p-button-sm p-button-success text-xs"
-        label="Connected"
-        icon="pi pi-bell"
-    />
-    <ButtonVue
-        v-if="connecting"
-        class="p-button-sm p-button-warning text-xs"
-        label="Connecting"
-        icon="pi pi-spin pi-spinner"
-    />
-    <ButtonVue
-        v-if="unavailable"
-        class="p-button-sm p-button-danger text-xs"
-        label="Unavailable"
-        icon="pi pi-times"
-    />
+    <button v-if="connected" class="btn btn-success text-xs">
+        <i class="pi pi-bell mr-1" />
+        <span class="m-1">Connected</span>
+    </button>
+    <button v-if="connecting" class="btn btn-warning loading text-xs">
+        <span class="m-1">Connecting</span>
+    </button>
+    <button v-if="unavailable" class="btn btn-error text-xs">
+        <i class="pi pi-times mr-1" />
+        <span class="m-1">Unavailable</span>
+    </button>
 </template>

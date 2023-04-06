@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
 import { timeGreetings } from "../AppCommon";
-import { useApiStore } from "../AppState";
+import { useApiStore, useMainStore } from "../AppState";
 
 import axios from "axios";
 
@@ -11,21 +11,10 @@ import Column from "primevue/column";
 import Calendar from "primevue/calendar";
 import Dropdown from "primevue/dropdown";
 import InputText from "primevue/inputtext";
-import ButtonVue from "primevue/button";
 
 const timeGreet = timeGreetings();
 const api = useApiStore();
-
-defineProps({
-    appName: {
-        type: String,
-        required: true,
-    },
-    greetings: {
-        type: String,
-        required: true,
-    },
-});
+const main = useMainStore();
 
 type BreadCrumbType = Array<{ label: string }>;
 type ServerLogDataType = Array<{
@@ -91,9 +80,9 @@ onBeforeMount(() => {
             <div class="flex justify-between">
                 <div>
                     <h2 class="title-font font-bold">
-                        {{ timeGreet + greetings }}
+                        {{ timeGreet + main.userName }}
                     </h2>
-                    <h3 class="title-font">Server Log in {{ appName }}</h3>
+                    <h3 class="title-font">Server Log in {{ main.appName }}</h3>
                 </div>
             </div>
         </div>
@@ -161,12 +150,13 @@ onBeforeMount(() => {
                 <div class="flex w-full">
                     <div class="w-28 my-auto text-sm m-auto"></div>
                     <div class="flex w-full text-sm m-auto">
-                        <ButtonVue
-                            label="Search"
-                            icon="pi pi-search"
-                            class="p-button-sm p-button-success"
+                        <button
+                            class="btn btn-success"
                             @click="getServerLogData"
-                        />
+                        >
+                            <i class="pi pi-search m-1" />
+                            <span class="m-1">Search</span>
+                        </button>
                     </div>
                 </div>
             </div>

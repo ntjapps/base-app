@@ -1,0 +1,19 @@
+.footer-container {
+    @apply sticky top-screen right-0 left-0 p-1 w-full;
+}
+
+.header-container {
+    @apply sticky top-0 w-full z-50 drop-shadow-xl;
+}
+
+.content-container {
+    @apply min-h-screen h-auto;
+}
+
+.content-child-container {
+    @apply flex flex-col min-h-fit content-start;
+}
+
+.btn-ext {
+    @apply btn p-2.5;
+}

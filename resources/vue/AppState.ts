@@ -1,4 +1,5 @@
 import axios from "axios";
+import Echo from "laravel-echo";
 import { defineStore } from "pinia";
 import { supportedBrowsers } from "../ts/browser";
 import { MenuItem } from "primevue/menuitem";
@@ -35,10 +36,10 @@ interface MenuItemExtended extends MenuItem {
 export const useMainStore = defineStore("main", {
     state: () => ({
         /** Additional data */
+        appName: import.meta.env.APP_NAME,
+        userName: "",
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
-
-        appName: "Base App",
         turnstileToken: "",
     }),
 
@@ -51,6 +52,9 @@ export const useMainStore = defineStore("main", {
                 .then((response) => {
                     this.$patch({
                         appName: response.data.appName,
+                    });
+                    this.$patch({
+                        userName: response.data.userName,
                     });
                     this.$patch({
                         menuItems: JSON.parse(response.data.menuItems),
@@ -74,12 +78,40 @@ export const useMainStore = defineStore("main", {
             }
         },
 
-        spaCsrfToken() {
+        async spaCsrfToken() {
             /**
              * Get new CSRF Token set everytime app is created
              */
             axios.get("/sanctum/csrf-cookie").then(() => {
                 console.log("csrf cookie init");
+            });
+        },
+    },
+});
+
+export const useEchoStore = defineStore("echo", {
+    getters: {
+        laravelEcho: () => {
+            return new Echo({
+                broadcaster: "pusher",
+                key: import.meta.env.VITE_PUSHER_APP_KEY,
+                cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? "mt1",
+                wsHost: import.meta.env.VITE_PUSHER_HOST
+                    ? import.meta.env.VITE_PUSHER_HOST
+                    : `ws-${
+                          import.meta.env.VITE_PUSHER_APP_CLUSTER
+                      }.pusher.com`,
+                wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
+                wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
+                forceTLS:
+                    (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",
+                enabledTransports: ["ws", "wss"],
+                //authEndpoint: import.meta.env.VITE_API_ENDPOINT + "/api/broadcasting/auth",
+                //auth: {
+                //headers: {
+                //Accept: "application/json",
+                //},
+                //},
             });
         },
     },

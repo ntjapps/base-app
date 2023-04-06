@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import { useMainStore } from "../AppState";
 
-import ButtonVue from "primevue/button";
 import TieredMenu from "primevue/tieredmenu";
 
 import CmpPusherState from "./CmpPusherState.vue";
@@ -19,34 +18,31 @@ const toggleMenu = (event: Event) => {
 </script>
 
 <template>
-    <div class="sticky top-0 w-full z-50 drop-shadow-xl">
+    <div class="header-container">
         <div class="bg-indigo-800 py-3 px-5 flex flex-row">
             <div class="flex flex-row w-full">
-                <ButtonVue
-                    type="button"
-                    icon="pi pi-bars"
-                    label="Menu"
-                    class="p-button-sm"
-                    @click.prevent="toggleMenu"
-                />
+                <button class="btn" @click.prevent="toggleMenu">
+                    <i class="pi pi-bars m-1" />
+                    <span class="m-1">Menu</span>
+                </button>
                 <TieredMenu ref="menu" :model="main.menuItems" :popup="true" />
             </div>
 
             <div class="flex flex-row-reverse w-full">
                 <div
                     v-if="main.browserSuppport"
-                    class="flex flex-row-reverse w-full mt-1 mb-1"
+                    class="flex flex-row-reverse w-full my-auto"
                 >
                     <CmpPusherState />
                 </div>
                 <div
                     v-if="!main.browserSuppport"
-                    class="flex flex-row-reverse w-full mt-1 mb-1"
+                    class="flex flex-row-reverse w-full my-auto"
                 >
-                    <ButtonVue
-                        class="p-button-sm p-button-danger"
-                        label="Browser Unsupported"
-                    />
+                    <button class="btn btn-sm btn-error">
+                        <i class="pi pi-times m-1" />
+                        <span class="m-1">Browser Unsupported</span>
+                    </button>
                 </div>
             </div>
         </div>

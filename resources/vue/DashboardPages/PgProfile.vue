@@ -1,65 +1,47 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
-import { useResponse, useError } from "../AppAxiosResp";
-import { useApiStore } from "../AppState";
-
-import { timeGreetings } from "../AppCommon";
+import { useApiStore, useMainStore } from "../AppState";
 
 import CmpLayout from "../Components/CmpLayout.vue";
+import CmpToast from "../Components/CmpToast.vue";
 import InputText from "primevue/inputtext";
-import ButtonVue from "primevue/button";
 import Password from "primevue/password";
 
 const api = useApiStore();
+const main = useMainStore();
+const toastchild = ref<typeof CmpToast>();
 
-const props = defineProps({
-    appName: {
-        type: String,
-        required: true,
-    },
-    greetings: {
-        type: String,
-        required: true,
-    },
-    userName: {
-        type: String,
-        required: true,
-    },
-});
-
-const name = ref<string | null>(props.userName);
 const newPassword = ref<string | null>("");
 const confirmPassword = ref<string | null>("");
-
-const timeGreet = timeGreetings();
 
 const postProfileData = () => {
     axios
         .post(api.postProfile, {
-            name: name.value,
+            name: main.userName,
             password: newPassword.value,
             password_confirmation: confirmPassword.value,
         })
         .then((response) => {
-            useResponse(response);
+            toastchild.value?.toastSuccess(response.data.message);
+            window.location.href = response.data.redirect;
         })
         .catch((error) => {
-            useError(error);
+            toastchild.value?.toastError(error);
         });
 };
 </script>
 
 <template>
     <CmpLayout>
+        <CmpToast ref="toastchild" />
         <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
-            <h2 class="title-font font-bold">{{ timeGreet + greetings }}</h2>
-            <h3 class="title-font">Update profile in {{ appName }}</h3>
+            <h3 class="title-font">Update profile in {{ main.appName }}</h3>
             <div class="mt-10 mb-5">
                 <span class="p-float-label w-full">
                     <InputText
                         id="name"
-                        v-model="name"
+                        v-model="main.userName"
                         type="text"
                         class="w-full"
                         @keyup.enter="postProfileData"
@@ -101,11 +83,9 @@ const postProfileData = () => {
                 </span>
             </div>
             <div class="flex justify-center">
-                <ButtonVue
-                    class="p-button-primary p-button-sm"
-                    label="Update Profile"
-                    @click="postProfileData"
-                />
+                <button class="btn btn-primary" @click="postProfileData">
+                    <span class="m-1">Update Profile</span>
+                </button>
             </div>
         </div>
     </CmpLayout>

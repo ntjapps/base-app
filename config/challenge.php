@@ -14,9 +14,9 @@ return [
 
     'site_secret' => env('APP_CHALLENGE_SITE_SECRET'),
 
-    'bypass' => env('APP_CHALLENGE_BYPASS', false),
+    'site_secret_mobile' => env('APP_CHALLENGE_SITE_SECRET_MOBILE'),
 
-    'mobile' => env('APP_CHALLENGE_MOBILE', null),
+    'bypass' => env('APP_CHALLENGE_BYPASS', false),
 
     'platforms' => [
         'android',

@@ -34,7 +34,7 @@ class AuthController extends Controller
      */
     public function postLogout(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::guard('api')->user()->name.' logging out', ['user_id' => Auth::guard('api')->id(), 'remoteIp' => $request->ip()]);
+        Log::debug('User '.Auth::user()->name.' logging out', ['user_id' => Auth::id(), 'remoteIp' => $request->ip()]);
 
         /** Call common logout function */
         $this->checkAuthLogout($request);

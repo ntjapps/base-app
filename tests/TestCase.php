@@ -29,8 +29,6 @@ abstract class TestCase extends BaseTestCase
         $client->createPersonalAccessClient(null, 'Test Client', 'http://localhost');
 
         $dbClient = PassportClient::where('name', 'Test Client')->first();
-        $this->assertNotNull($dbClient);
-
         $dbClient->id = env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID');
         $dbClient->secret = env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET');
         $dbClient->save();

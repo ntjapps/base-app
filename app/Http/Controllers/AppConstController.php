@@ -16,10 +16,10 @@ class AppConstController extends Controller
      */
     public function mainConst(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::user()?->name.' is requesting app constants', ['user_id' => Auth::id(), 'apiUserIp' => $request->ip()]);
+        Log::debug('User '.Auth::guard('api')->user()?->name.' is requesting app constants', ['user_id' => Auth::guard('api')->id(), 'apiUserIp' => $request->ip()]);
 
-        $authCheck = Auth::check() ? true : Auth::guard('sanctum')->check();
-        $user = Auth::user() ?? Auth::guard('sanctum')->user();
+        $authCheck = Auth::check() ? true : Auth::guard('api')->check();
+        $user = Auth::user() ?? Auth::guard('api')->user();
 
         /** Menu Items */
         if ($authCheck) {
@@ -62,7 +62,7 @@ class AppConstController extends Controller
     public function logAgent(Request $request): HttpJsonResponse
     {
         /** Log unsupported browser trigger from client */
-        Log::debug('Unsupported browser trigger', ['user_id' => Auth::id(), 'userAgent' => $request->userAgent(), 'apiUserIp' => $request->ip()]);
+        Log::debug('Unsupported browser trigger', ['user_id' => Auth::guard('api')->id(), 'userAgent' => $request->userAgent(), 'apiUserIp' => $request->ip()]);
 
         return response()->json('OK', 200);
     }

@@ -25,9 +25,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('horizon:snapshot')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
         $schedule->command('storage:link')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
         $schedule->command('model:prune')->hourly()->runInBackground()->withoutOverlapping();
-        $schedule->command('sanctum:prune-expired --hours=0')->hourly()->runInBackground()->withoutOverlapping();
         $schedule->command('queue:prune-failed')->hourly()->runInBackground()->withoutOverlapping();
         $schedule->command('queue:flush')->hourly()->runInBackground()->withoutOverlapping();
+        $schedule->command('passport:purge')->hourly()->runInBackground()->withoutOverlapping();
 
         if ($this->app->environment('local')) {
             $schedule->command('telescope:prune')->hourly()->runInBackground()->withoutOverlapping();

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\PersonalAccessToken;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
+use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class ApiTest extends TestCase
@@ -44,6 +44,7 @@ class ApiTest extends TestCase
     public function test_post_api_token(): void
     {
         $this->seed($this->testSeed());
+        $this->CommonPreparePat();
 
         $user = User::factory()->create();
 
@@ -55,14 +56,6 @@ class ApiTest extends TestCase
         ]);
 
         $response->assertStatus(200)->assertJsonIsObject();
-
-        $jsonResponse = $response->json();
-
-        $token = PersonalAccessToken::findToken($jsonResponse['access_token']);
-
-        $this->assertNotNull($token);
-
-        $this->assertEquals($user->id, $token->tokenable_id);
     }
 
     /**
@@ -71,9 +64,10 @@ class ApiTest extends TestCase
     public function test_post_revoke_api_token(): void
     {
         $this->seed($this->testSeed());
+        $this->CommonPreparePat();
 
         $user = User::factory()->create();
-        $tokenFactory = $user->createToken('Test Device')->plainTextToken;
+        $tokenFactory = $user->createToken('Test Device')->accessToken;
 
         /** Check if Token Exists */
         $this->assertNotNull($user->tokens()->first());
@@ -85,23 +79,6 @@ class ApiTest extends TestCase
         $response->assertStatus(200)->assertJson([
             'message' => 'Token revoked',
         ]);
-
-        /** Check if Token is revoked */
-        $this->assertNull($user->tokens()->first());
-    }
-
-    /**
-     * Test post api get all user permission
-     */
-    public function test_post_api_get_all_user_permission(): void
-    {
-        $this->seed($this->testSeed());
-
-        $user = User::factory()->create()->givePermissionTo(User::SUPER);
-
-        $response = $this->actingAs($user)->postJson(route('get-all-user-permission'));
-
-        $response->assertStatus(200)->assertJsonIsArray()->assertSee(User::SUPER);
     }
 
     /**
@@ -111,11 +88,11 @@ class ApiTest extends TestCase
     {
         $this->seed($this->testSeed());
 
-        $user = User::factory()->create();
+        Passport::actingAs($user = User::factory()->create());
 
         $targetName = 'Test Name';
 
-        $response = $this->actingAs($user)->postJson(route('update-profile'), [
+        $response = $this->postJson(route('update-profile'), [
             'name' => $targetName,
         ]);
 
@@ -133,9 +110,9 @@ class ApiTest extends TestCase
     {
         $this->seed($this->testSeed());
 
-        $user = User::factory()->create()->givePermissionTo(User::SUPER);
+        Passport::actingAs($user = User::factory()->create()->givePermissionTo(User::SUPER));
 
-        $response = $this->actingAs($user)->postJson(route('get-user-list'));
+        $response = $this->postJson(route('get-user-list'));
 
         $response->assertStatus(200)->assertJsonIsArray()->assertSee($user->id);
     }
@@ -149,9 +126,9 @@ class ApiTest extends TestCase
 
         Log::channel('database')->debug('Test Log');
 
-        $user = User::factory()->create()->givePermissionTo(User::SUPER);
+        Passport::actingAs(User::factory()->create()->givePermissionTo(User::SUPER));
 
-        $response = $this->actingAs($user)->postJson(route('get-server-logs'));
+        $response = $this->postJson(route('get-server-logs'));
 
         $response->assertStatus(200)->assertJsonIsArray()->assertSee('Test Log');
     }

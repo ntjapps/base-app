@@ -41,7 +41,7 @@ class DashController extends Controller
      */
     public function updateProfile(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::user()->username.' updating profile', ['user_id' => Auth::id(), 'apiUserIp' => $request->ip()]);
+        Log::debug('User '.Auth::guard('api')->user()->username.' updating profile', ['user_id' => Auth::guard('api')->id(), 'apiUserIp' => $request->ip()]);
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
@@ -52,16 +52,16 @@ class DashController extends Controller
         }
         (array) $validated = $validate->validated();
 
-        Log::info('User '.Auth::user()->username.' updating profile', ['user_id' => Auth::id()]);
+        Log::info('User '.Auth::guard('api')->user()->username.' updating profile', ['user_id' => Auth::guard('api')->id()]);
 
-        $user = Auth::user();
+        $user = Auth::guard('api')->user();
         $user->name = $validated['name'];
         if (isset($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
         $user->save();
 
-        Log::notice('User '.Auth::user()->username.' updated profile', ['user_id' => Auth::id()]);
+        Log::notice('User '.Auth::guard('api')->user()->username.' updated profile', ['user_id' => Auth::guard('api')->id()]);
 
         /** Successful Update Profile */
         (string) $title = 'Update Profile Success';

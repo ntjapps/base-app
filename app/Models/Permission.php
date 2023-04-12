@@ -9,6 +9,8 @@ class Permission extends SpatiePermission
 {
     use HasUuids;
 
+    protected string $guard_name = 'web';
+
     /**
      * The attributes that are NOT mass assignable.
      *

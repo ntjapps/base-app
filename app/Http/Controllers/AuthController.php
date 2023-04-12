@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PersonalAccessToken;
 use App\Rules\TurnstileValidation;
 use App\Traits\AuthFunction;
 use App\Traits\JsonResponse;
@@ -35,7 +34,7 @@ class AuthController extends Controller
      */
     public function postLogout(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::user()->name.' logging out', ['user_id' => Auth::id(), 'remoteIp' => $request->ip()]);
+        Log::debug('User '.Auth::guard('api')->user()->name.' logging out', ['user_id' => Auth::guard('api')->id(), 'remoteIp' => $request->ip()]);
 
         /** Call common logout function */
         $this->checkAuthLogout($request);
@@ -134,9 +133,8 @@ class AuthController extends Controller
         Log::info('Username '.$validated['username'].' getting token', ['username' => $validated['username']]);
 
         /** Generate user API Token */
-        $tokenGen = $user->createToken($validated['device_name']);
-        (string) $token = $tokenGen->plainTextToken;
-        (string) $expire = Carbon::now()->addMinutes(config('sanctum.expiration'))->toDateTimeString();
+        (string) $token = $user->createToken($validated['device_name'])->accessToken;
+        (string) $expire = Carbon::now()->addDays(7)->toDateTimeString();
 
         Log::notice('Username '.$validated['username'].' got token', ['username' => $validated['username']]);
 
@@ -155,27 +153,12 @@ class AuthController extends Controller
      */
     public function postTokenRevoke(Request $request): HttpJsonResponse
     {
-        Log::info('Username '.Auth::user()->username.' revoking token', ['username' => Auth::user()->username, 'apiUserIp' => $request->ip()]);
+        Log::info('Username '.Auth::guard('api')->user()->username.' revoking token', ['username' => Auth::guard('api')->user()->username, 'apiUserIp' => $request->ip()]);
 
-        /** Get bearer token from request */
-        (string) $bearerToken = $request->bearerToken();
+        /** Match bearer token with access token */
+        $request->user()->token()->revoke();
 
-        /** Match bearer token with Sanctum Token */
-        $token = PersonalAccessToken::findToken($bearerToken);
-
-        /** Get Current Requets user */
-        $user = Auth::user();
-
-        /** If token not found or token not belong to user */
-        if (is_null($token) || $token->tokenable_id != $user->id) {
-            ValidationException::withMessages([
-                'token' => 'Token not valid',
-            ], 401);
-        } else {
-            $token->delete();
-        }
-
-        Log::notice('Username '.Auth::user()->username.' revoked token', ['username' => Auth::user()->username, 'apiUserIp' => $request->ip(), 'tokenId' => $token->id]);
+        Log::notice('Username '.Auth::guard('api')->user()->username.' revoked token', ['username' => Auth::guard('api')->user()->username, 'apiUserIp' => $request->ip()]);
 
         return response()->json([
             'status' => 'success',

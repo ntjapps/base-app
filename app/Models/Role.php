@@ -9,6 +9,8 @@ class Role extends SpatieRole
 {
     use HasUuids;
 
+    protected string $guard_name = 'web';
+
     /**
      * The attributes that are NOT mass assignable.
      *

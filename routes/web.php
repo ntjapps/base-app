@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 /** Route start here, WEB used for GET only */
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->json(['status' => 'success']);
+});
+
 Route::middleware(['guest'])->group(function () {
     /** Route for login redirect */
     Route::get('/login-redirect', function () {

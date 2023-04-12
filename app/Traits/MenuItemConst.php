@@ -38,17 +38,15 @@ trait MenuItemConst
     public static function administrationMenu(): array
     {
         $childMenu = [];
-        $user = Auth::user() ?? Auth::guard('sanctum')->user();
+        $user = Auth::guard('api')->user() ?? Auth::guard('api')->user();
 
         if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
 
-            if (! Auth::guard('sanctum')->check()) {
-                $childMenu[] = [
-                    'label' => 'Server Queue - Horizon',
-                    'icon' => 'pi pi-bolt',
-                    'url' => parse_url(route('horizon.index'), PHP_URL_PATH),
-                ];
-            }
+            $childMenu[] = [
+                'label' => 'Server Queue - Horizon',
+                'icon' => 'pi pi-bolt',
+                'url' => parse_url(route('horizon.index'), PHP_URL_PATH),
+            ];
 
             $childMenu[] = [
                 'label' => 'Server Logs',

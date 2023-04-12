@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,18 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+
+        /**
+         * Passport Configuration
+         */
+        Passport::cookie('api_token_cookie');
+        Passport::hashClientSecrets();
+        Passport::tokensExpireIn(Carbon::now()->addDays(1));
+        Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
+        Passport::personalAccessTokensExpireIn(Carbon::now()->addDays(7));
+
+        Passport::useClientModel(\App\Models\PassportClient::class);
+        Passport::usePersonalAccessClientModel(\App\Models\PassportPersonalAccessClient::class);
 
         /**
          * Implicitly grant "Super User" role with some limitation to policy

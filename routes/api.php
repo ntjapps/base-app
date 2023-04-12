@@ -28,7 +28,7 @@ Route::middleware(['xss'])->group(function () {
     Route::post('/post-token', [AuthController::class, 'postToken'])->name('post-token')->middleware(['throttle:api-secure']);
 
     /** Routes that need authentication first */
-    Route::middleware(['auth:sanctum'])->group(function () {
+    Route::middleware(['auth:api'])->group(function () {
         Route::post('/post-token-revoke', [AuthController::class, 'postTokenRevoke'])->name('post-token-revoke')->middleware(['throttle:api-secure']);
         Route::post('/post-update-profile', [DashController::class, 'updateProfile'])->name('update-profile');
 

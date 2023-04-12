@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\PassportClient;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -9,6 +10,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
+use Laravel\Passport\ClientRepository;
 use Laravel\Pennant\Feature;
 use Laravel\Telescope\Telescope;
 use OTPHP\TOTP;
@@ -48,6 +51,38 @@ Artisan::command('horizon:clear:all', function () {
     $this->info('All horizon cleared');
     Log::alert('Console horizon:clear:all executed', ['appName' => config('app.name')]);
 })->purpose('Delete all of the jobs from all queues');
+
+Artisan::command('uuid:generate', function () {
+    $this->info('Generated UUID: '.Str::uuid());
+    $this->info('If you want to use this UUID in .env, please use the following format: PASSPORT_PERSONAL_ACCESS_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+    $this->info('Secret can be generated with password generator with 40 non special characters');
+    Log::alert('Console uuid:generate executed', ['appName' => config('app.name')]);
+})->purpose('Generate uuid');
+
+Artisan::command('passport:client:env', function () {
+    $client = new ClientRepository();
+    $client->createPersonalAccessClient(null, 'Personal Access Client Env', 'http://localhost');
+
+    $dbClient = PassportClient::where('name', 'Personal Access Client Env')->first();
+    $dbClient->id = env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID');
+    $dbClient->secret = env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET');
+    $dbClient->save();
+
+    $this->info('Client id: '.$dbClient->id);
+    $this->info('Client id and secret generated from .env');
+    Log::alert('Console passport:client:env executed', ['appName' => config('app.name')]);
+})->purpose('Generate personal access client from .env');
+
+Artisan::command('passport:client:delete {id}', function ($id) {
+    $client = PassportClient::where('id', $id)->first();
+    if ($client !== null) {
+        $client->delete();
+        $this->info('Client deleted');
+        Log::alert('Console passport:client:delete executed', ['appName' => config('app.name')]);
+    } else {
+        $this->info('Client not found');
+    }
+})->purpose('Delete passport client');
 
 Artisan::command('role:list', function () {
     $this->info(Role::all()->pluck('name'));

@@ -3,15 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class ApiTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * Test post api app constant.
      */

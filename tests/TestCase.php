@@ -3,6 +3,8 @@
 namespace Tests;
 
 use App\Models\PassportClient;
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Laravel\Passport\ClientRepository;
 
@@ -15,6 +17,9 @@ abstract class TestCase extends BaseTestCase
      */
     protected function testSeed(): array
     {
+        Permission::truncate();
+        Role::truncate();
+        
         return [
             \Database\Seeders\RolesPermissionSeeder::class,
         ];
@@ -25,6 +30,8 @@ abstract class TestCase extends BaseTestCase
      */
     protected function CommonPreparePat(): void
     {
+        PassportClient::truncate();
+
         $client = new ClientRepository();
         $client->createPersonalAccessClient(null, 'Test Client', 'http://localhost');
 

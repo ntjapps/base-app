@@ -5,6 +5,7 @@ namespace Tests;
 use App\Models\PassportClient;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Laravel\Passport\ClientRepository;
 
@@ -19,6 +20,7 @@ abstract class TestCase extends BaseTestCase
     {
         Permission::truncate();
         Role::truncate();
+        User::truncate();
         
         return [
             \Database\Seeders\RolesPermissionSeeder::class,

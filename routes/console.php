@@ -60,12 +60,14 @@ Artisan::command('uuid:generate', function () {
 })->purpose('Generate uuid');
 
 Artisan::command('passport:client:env', function () {
+    PassportClient::where('name', 'Personal Access Client Env')->delete();
+
     $client = new ClientRepository();
     $client->createPersonalAccessClient(null, 'Personal Access Client Env', 'http://localhost');
 
     $dbClient = PassportClient::where('name', 'Personal Access Client Env')->first();
-    $dbClient->id = env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID');
-    $dbClient->secret = env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET');
+    $dbClient->id = config('passport.personal_access_client.id');
+    $dbClient->secret = config('passport.personal_access_client.secret');
     $dbClient->save();
 
     $this->info('Client id: '.$dbClient->id);

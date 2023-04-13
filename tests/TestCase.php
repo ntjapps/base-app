@@ -21,7 +21,7 @@ abstract class TestCase extends BaseTestCase
         Permission::truncate();
         Role::truncate();
         User::truncate();
-        
+
         return [
             \Database\Seeders\RolesPermissionSeeder::class,
         ];

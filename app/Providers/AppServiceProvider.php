@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
-use Laravel\Pennant\Feature;
 use Laravel\Telescope\Telescope;
 
 class AppServiceProvider extends ServiceProvider

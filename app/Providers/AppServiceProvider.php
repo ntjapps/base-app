@@ -29,11 +29,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        /** Feature Penant */
-        Feature::define('dev-system', fn (User $user) => match (true) {
-            $user->hasPermissionTo(User::SUPER) => true,
-            config('app.debug') => true,
-            default => false,
-        });
+        //
     }
 }

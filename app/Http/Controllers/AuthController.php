@@ -149,7 +149,7 @@ class AuthController extends Controller
     }
 
     /**
-     * POST request for get API Token
+     * POST request for revoke API Token
      */
     public function postTokenRevoke(Request $request): HttpJsonResponse
     {

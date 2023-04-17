@@ -14,7 +14,7 @@ class TokenPlatformValidation implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!in_array($value, ['ios', 'android', 'web'])) {
+        if (! in_array($value, ['ios', 'android', 'web'])) {
             $fail('The :attribute is invalid.');
         }
     }

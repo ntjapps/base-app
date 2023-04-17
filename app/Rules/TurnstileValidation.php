@@ -5,7 +5,6 @@ namespace App\Rules;
 use App\Traits\Turnstile;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Support\Facades\App;
 
 class TurnstileValidation implements ValidationRule
 {
@@ -14,26 +13,6 @@ class TurnstileValidation implements ValidationRule
     private function verifyWebChallenge(mixed $value): bool
     {
         return $this->verifyChallenge($value);
-    }
-
-    private function checkCapacitorPlatform(mixed $value): bool
-    {
-        /** Check Key */
-        if (! $this->verifyMobileChallenge($value->mobileKey)) {
-            return false;
-        }
-
-        /** Check Platform */
-        if (! in_array($value->platform, config('challenge.platforms'))) {
-            return false;
-        }
-
-        /** Check Virtual Device */
-        if ($value->isVirtual && ! App::environment('local')) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -47,20 +26,8 @@ class TurnstileValidation implements ValidationRule
             return;
         }
 
-        $baseData = base64_decode($value, true);
-
-        /** Check if this is not encoded Capacitor Data */
-        if ($baseData === false) {
-            /** Not capacitor data, must pass turnstile check */
-            if (! $this->verifyWebChallenge($value)) {
-                $fail('The :attribute is invalid.');
-            }
-        } else {
-            $baseData = json_decode($baseData, false);
-            /** Capacitor data, must pass capacitor check */
-            if (! $this->checkCapacitorPlatform($baseData)) {
-                $fail('The :attribute is invalid.');
-            }
+        if (! $this->verifyWebChallenge($value)) {
+            $fail('The :attribute is invalid.');
         }
     }
 }

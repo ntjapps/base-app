@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
@@ -48,7 +49,10 @@ class ApiTest extends TestCase
         $response = $this->postJson(route('post-token'), [
             'username' => $user->username,
             'password' => 'password',
+            'device_id' => Str::uuid(),
             'device_name' => 'Test Device',
+            'device_model' => 'Test Model',
+            'device_platform' => 'web',
             'token' => 'token',
         ]);
 

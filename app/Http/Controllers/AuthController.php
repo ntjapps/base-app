@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\TokenPlatformValidation;
 use App\Rules\TurnstileValidation;
 use App\Traits\AuthFunction;
 use App\Traits\JsonResponse;
@@ -114,7 +115,10 @@ class AuthController extends Controller
         $validate = Validator::make($request->all(), [
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'device_id' => ['required', 'uuid'],
             'device_name' => ['required', 'string'],
+            'device_model' => ['required', 'string'],
+            'device_platform' => ['required', new TokenPlatformValidation],
             'token' => ['required', 'string', new TurnstileValidation],
         ]);
         if ($validate->fails()) {

@@ -257,6 +257,7 @@ Artisan::command('patch:deploy', function () {
 
         /** Alert Log for patch deployment and clear application cache */
         Cache::flush();
+        Feature::flushCache();
         Artisan::call('up');
         Log::alert('Console patch:deploy executed', ['patchId' => $patchId, 'appName' => config('app.name')]);
     } else {

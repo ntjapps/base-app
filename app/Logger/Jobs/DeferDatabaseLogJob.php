@@ -15,7 +15,7 @@ use Monolog\LogRecord;
 
 class DeferDatabaseLogJob implements ShouldQueue, Silenced
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * Create a new job instance.

@@ -15,7 +15,7 @@ use Monolog\LogRecord;
 
 class DeferTelegramLogJob implements ShouldQueue, Silenced
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TelegramApi;
+    use Dispatchable, InteractsWithQueue, Queueable, TelegramApi;
 
     /**
      * Create a new job instance.

@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
+use App\Interfaces\InterfaceClass;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
@@ -31,9 +31,9 @@ class AuthServiceProvider extends ServiceProvider
          */
         Passport::cookie('api_token_cookie');
         Passport::hashClientSecrets();
-        Passport::tokensExpireIn(Carbon::now()->addDays(1));
-        Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
-        Passport::personalAccessTokensExpireIn(Carbon::now()->addDays(7));
+        Passport::tokensExpireIn(InterfaceClass::getPassportTokenLifetime());
+        Passport::refreshTokensExpireIn(InterfaceClass::getPassportRefreshTokenLifetime());
+        Passport::personalAccessTokensExpireIn(InterfaceClass::getPassportTokenLifetime());
 
         Passport::useClientModel(\App\Models\PassportClient::class);
         Passport::usePersonalAccessClientModel(\App\Models\PassportPersonalAccessClient::class);

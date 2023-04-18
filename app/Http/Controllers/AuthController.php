@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\InterfaceClass;
 use App\Rules\TokenPlatformValidation;
 use App\Rules\TurnstileValidation;
 use App\Traits\AuthFunction;
 use App\Traits\JsonResponse;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -138,7 +138,7 @@ class AuthController extends Controller
 
         /** Generate user API Token */
         (string) $token = $user->createToken($validated['device_name'])->accessToken;
-        (string) $expire = Carbon::now()->addDays(7)->toDateTimeString();
+        (string) $expire = InterfaceClass::getPassportTokenLifetime()->toDateTimeString();
 
         Log::notice('Username '.$validated['username'].' got token', ['username' => $validated['username']]);
 

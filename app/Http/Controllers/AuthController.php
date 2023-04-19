@@ -115,7 +115,7 @@ class AuthController extends Controller
         $validate = Validator::make($request->all(), [
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
-            'device_id' => ['required', 'uuid'],
+            'device_id' => ['required', 'string'],
             'device_name' => ['required', 'string'],
             'device_model' => ['required', 'string'],
             'device_platform' => ['required', new TokenPlatformValidation],

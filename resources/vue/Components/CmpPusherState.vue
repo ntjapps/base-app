@@ -49,15 +49,17 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <button v-if="connected" class="btn btn-success text-xs">
-        <i class="pi pi-bell mr-1" />
-        <span class="m-1">Connected</span>
-    </button>
-    <button v-if="connecting" class="btn btn-warning loading text-xs">
-        <span class="m-1">Connecting</span>
-    </button>
-    <button v-if="unavailable" class="btn btn-error text-xs">
-        <i class="pi pi-times mr-1" />
-        <span class="m-1">Unavailable</span>
-    </button>
+    <div class="flex m-auto">
+        <button v-if="connected" class="btn btn-success text-xs">
+            <i class="fa fa-satellite-dish mr-1" />
+            <span class="m-1">Connected</span>
+        </button>
+        <button v-if="connecting" class="btn btn-warning loading text-xs">
+            <span class="m-1">Connecting</span>
+        </button>
+        <button v-if="unavailable" class="btn btn-error text-xs">
+            <i class="pi pi-times mr-1" />
+            <span class="m-1">Unavailable</span>
+        </button>
+    </div>
 </template>

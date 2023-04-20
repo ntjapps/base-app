@@ -8,7 +8,7 @@ export default defineConfig({
     server: {
         host: true /* Expose to all IP */,
         hmr: {
-            host: "docker.local" /* Set base URL for Hot Module Reload */,
+            host: "docker.localhost" /* Set base URL for Hot Module Reload */,
         },
     },
     plugins: [

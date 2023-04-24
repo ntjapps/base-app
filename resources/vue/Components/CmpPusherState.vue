@@ -44,12 +44,12 @@ onBeforeMount(() => {
                 showUnavailable();
                 break;
         }
-    }, 1000);
+    }, 500);
 });
 </script>
 
 <template>
-    <div class="flex m-auto">
+    <div class="flex ml-auto">
         <button v-if="connected" class="btn btn-success text-xs">
             <i class="fa fa-satellite-dish mr-1" />
             <span class="m-1">Connected</span>

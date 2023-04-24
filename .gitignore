@@ -19,10 +19,7 @@ public_html/storage
 public_html/hot
 
 storage/*.key
-.env
-.env.backup
-.env.production
-.env.testing
+.env*
 Homestead.yaml
 Homestead.json
 /.vagrant
@@ -35,10 +32,8 @@ public/mix-css
 public/mix-manifest.json
 public/debug.php
 public/build
-env-production
-env-dev
-base64_env
-base64_env_dev
+env*
+base64*
 auth.json
 
 # Ignore Debugs Files

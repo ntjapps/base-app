@@ -10,6 +10,6 @@ class TelegramHandler extends AbstractProcessingHandler
 {
     protected function write(LogRecord $record): void
     {
-        DeferTelegramLogJob::dispatch($record);
+        DeferTelegramLogJob::dispatch($record, config('telegram.group_id'));
     }
 }

@@ -19,7 +19,7 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
     /**
      * Create a new job instance.
      */
-    public function __construct(public LogRecord $record)
+    public function __construct(public LogRecord $record, public string $chatId)
     {
         //
     }
@@ -35,8 +35,8 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
         }
 
         (string) $message = $this->record['level_name'].': '.$this->record['message'];
-        $this->sendTelegramMessage($message);
+        $this->sendTelegramMessage($message, $this->chatId);
         (string) $context = 'Context: '.json_encode($this->record['context']);
-        $this->sendTelegramMessage($context);
+        $this->sendTelegramMessage($context, $this->chatId);
     }
 }

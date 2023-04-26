@@ -26,11 +26,11 @@ trait TelegramApi
     /**
      * Private function for sending message to Telegram.
      */
-    private function sendTelegramMessage(string $message, string $chatId = null): bool
+    private function sendTelegramMessage(string $message, string $chatId): bool
     {
         try {
             $response = Http::asForm()->post(config('telegram.endpoint').config('telegram.token').'/sendMessage', [
-                'chat_id' => $chatId ?? config('telegram.group_id'),
+                'chat_id' => $chatId,
                 'text' => substr($message, 0, 4096),
             ]);
 

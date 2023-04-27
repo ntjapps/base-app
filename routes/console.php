@@ -75,6 +75,22 @@ Artisan::command('passport:client:env', function () {
     Log::alert('Console passport:client:env executed', ['appName' => config('app.name')]);
 })->purpose('Generate personal access client from .env');
 
+Artisan::command('passport:clientgrant:env', function () {
+    PassportClient::where('name', 'Client Credentials Client Env')->delete();
+
+    $client = new ClientRepository();
+    $client->create(null, 'Client Credentials Client Env', '');
+
+    $dbClient = PassportClient::where('name', 'Client Credentials Client Env')->first();
+    $dbClient->id = config('passport.client_credentials_grant_client.id');
+    $dbClient->secret = config('passport.client_credentials_grant_client.secret');
+    $dbClient->save();
+
+    $this->info('Client id: '.$dbClient->id);
+    $this->info('Client id and secret generated from .env');
+    Log::alert('Console passport:clientgrant:env executed', ['appName' => config('app.name')]);
+})->purpose('Generate client credentials client from .env');
+
 Artisan::command('passport:client:delete {id}', function ($id) {
     $client = PassportClient::where('id', $id)->first();
     if ($client !== null) {

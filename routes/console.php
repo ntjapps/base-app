@@ -27,6 +27,14 @@ use OTPHP\TOTP;
 |
 */
 
+Artisan::command('system:refresh', function () {
+    Artisan::call('passport:client:env');
+    Artisan::call('passport:clientgrant:env');
+    Artisan::call('horizon:clear:all');
+    Artisan::call('pennant:clear');
+    Artisan::call('cache:clear');
+})->purpose('Refresh system');
+
 Artisan::command('penant:clear', function () {
     Feature::flushCache();
     Feature::purge();

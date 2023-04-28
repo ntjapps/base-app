@@ -20,7 +20,7 @@ class MigrationEventListener
      */
     public function handle(object $event): void
     {
-        Log::channel('stack_migration')->alert('Migration run on application', ['appName' => config('app.name')]);
+        Log::alert('Migration run on application', ['appName' => config('app.name')]);
         Artisan::call('up');
     }
 }

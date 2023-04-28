@@ -33,6 +33,8 @@ Artisan::command('system:refresh', function () {
     Artisan::call('horizon:clear:all');
     Artisan::call('pennant:clear');
     Artisan::call('cache:clear');
+    $this->info('System refreshed');
+    Log::alert('Console system:refresh executed', ['appName' => config('app.name')]);
 })->purpose('Refresh system');
 
 Artisan::command('penant:clear', function () {

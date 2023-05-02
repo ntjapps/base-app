@@ -21,7 +21,7 @@ const confirmPassword = ref<string | null>("");
 const postProfileData = () => {
     axios
         .post(api.postProfile, {
-            name: userName,
+            name: userName.value,
             password: newPassword.value,
             password_confirmation: confirmPassword.value,
         })

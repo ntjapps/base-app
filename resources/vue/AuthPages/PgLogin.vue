@@ -27,11 +27,11 @@ const postLogindata = () => {
         .post(webapi.postLogin, {
             username: username.value,
             password: password.value,
-            token: turnstileToken,
+            token: turnstileToken.value,
         })
         .then((response) => {
             clearData();
-            toastchild.value?.toastSuccess("Welcome to " + appName);
+            toastchild.value?.toastSuccess("Welcome to " + appName.value);
             window.location.href = response.data.redirect;
         })
         .catch((error) => {

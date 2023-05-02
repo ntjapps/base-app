@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from "axios";
-
 import { ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useMainStore, useWebApiStore } from "../AppState";
 
 import CmpTurnstile from "../Components/CmpTurnstile.vue";
@@ -13,6 +13,7 @@ import ProgressSpinner from "primevue/progressspinner";
 
 const webapi = useWebApiStore();
 const main = useMainStore();
+const { appName, turnstileToken, browserSuppport } = storeToRefs(main);
 
 const username = ref("");
 const password = ref("");
@@ -26,11 +27,11 @@ const postLogindata = () => {
         .post(webapi.postLogin, {
             username: username.value,
             password: password.value,
-            token: main.turnstileToken,
+            token: turnstileToken,
         })
         .then((response) => {
             clearData();
-            toastchild.value?.toastSuccess("Welcome to " + main.appName);
+            toastchild.value?.toastSuccess("Welcome to " + appName);
             window.location.href = response.data.redirect;
         })
         .catch((error) => {
@@ -55,10 +56,10 @@ const clearData = () => {
             <div v-show="!loading" class="bg-white rounded-lg drop-shadow-lg">
                 <div class="m-auto p-5">
                     <div class="text-center font-bold my-2.5">
-                        {{ main.appName }}
+                        {{ appName }}
                     </div>
                     <div
-                        v-if="!main.browserSuppport"
+                        v-if="!browserSuppport"
                         class="text-center font-bold my-2.5"
                     >
                         <button class="btn btn-sm btn-error">

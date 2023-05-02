@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import axios from "axios";
+import { ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useApiStore, useMainStore } from "../AppState";
 
 import CmpLayout from "../Components/CmpLayout.vue";
@@ -10,6 +11,8 @@ import Password from "primevue/password";
 
 const api = useApiStore();
 const main = useMainStore();
+const { appName, userName } = storeToRefs(main);
+
 const toastchild = ref<typeof CmpToast>();
 
 const newPassword = ref<string | null>("");
@@ -18,7 +21,7 @@ const confirmPassword = ref<string | null>("");
 const postProfileData = () => {
     axios
         .post(api.postProfile, {
-            name: main.userName,
+            name: userName,
             password: newPassword.value,
             password_confirmation: confirmPassword.value,
         })
@@ -36,12 +39,12 @@ const postProfileData = () => {
     <CmpLayout>
         <CmpToast ref="toastchild" />
         <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
-            <h3 class="title-font">Update profile in {{ main.appName }}</h3>
+            <h3 class="title-font">Update profile in {{ appName }}</h3>
             <div class="mt-10 mb-5">
                 <span class="p-float-label w-full">
                     <InputText
                         id="name"
-                        v-model="main.userName"
+                        v-model="userName"
                         type="text"
                         class="w-full"
                         @keyup.enter="postProfileData"

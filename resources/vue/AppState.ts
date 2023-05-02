@@ -15,6 +15,7 @@ export const useWebApiStore = defineStore("webapi", {
 export const useApiStore = defineStore("api", {
     state: () => ({
         /** API request */
+        postTokenLogout: "/api/post-token-revoke",
         postProfile: "/api/post-update-profile",
         appConst: "/api/post-app-const",
         getAllUserPermission: "/api/get-all-user-permission",

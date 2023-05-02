@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { storeToRefs } from "pinia";
 import { timeGreetings } from "../AppCommon";
 import { useApiStore, useMainStore } from "../AppState";
 
@@ -14,6 +15,8 @@ import InputText from "primevue/inputtext";
 const timeGreet = timeGreetings();
 const api = useApiStore();
 const main = useMainStore();
+const { userName } = storeToRefs(main);
+
 const toastchild = ref<typeof CmpToast>();
 
 type BreadCrumbType = Array<{ label: string }>;
@@ -64,7 +67,7 @@ const showViewButton = (data: string): boolean => {
         <CmpToast ref="toastchild" />
         <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
             <h2 class="title-font font-bold">
-                {{ timeGreet + main.userName }}
+                {{ timeGreet + userName }}
             </h2>
             <h3 class="title-font">User Role Management</h3>
             <div class="grid grid-flow-row text-sm">

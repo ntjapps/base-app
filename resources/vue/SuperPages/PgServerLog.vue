@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
+import { storeToRefs } from "pinia";
 import { timeGreetings } from "../AppCommon";
 import { useApiStore, useMainStore } from "../AppState";
 
@@ -15,6 +16,7 @@ import InputText from "primevue/inputtext";
 const timeGreet = timeGreetings();
 const api = useApiStore();
 const main = useMainStore();
+const { appName, userName } = storeToRefs(main);
 
 type BreadCrumbType = Array<{ label: string }>;
 type ServerLogDataType = Array<{
@@ -80,9 +82,9 @@ onBeforeMount(() => {
             <div class="flex justify-between">
                 <div>
                     <h2 class="title-font font-bold">
-                        {{ timeGreet + main.userName }}
+                        {{ timeGreet + userName }}
                     </h2>
-                    <h3 class="title-font">Server Log in {{ main.appName }}</h3>
+                    <h3 class="title-font">Server Log in {{ appName }}</h3>
                 </div>
             </div>
         </div>

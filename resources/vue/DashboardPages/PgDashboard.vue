@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
+import { storeToRefs } from "pinia";
 import { timeGreetings } from "../AppCommon";
 import { useMainStore } from "../AppState";
 
@@ -7,6 +8,7 @@ import CmpLayout from "../Components/CmpLayout.vue";
 
 const timeGreet = timeGreetings();
 const main = useMainStore();
+const { appName, userName } = storeToRefs(main);
 
 const clock = ref<string | null>(new Date().toLocaleString("en-UK"));
 
@@ -22,9 +24,9 @@ onBeforeMount(() => {
     <CmpLayout>
         <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
             <h2 class="title-font font-bold">
-                {{ timeGreet + main.userName }}
+                {{ timeGreet + userName }}
             </h2>
-            <h3 class="title-font">Welcome to {{ main.appName }}</h3>
+            <h3 class="title-font">Welcome to {{ appName }}</h3>
         </div>
     </CmpLayout>
 </template>

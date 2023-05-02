@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
+import { storeToRefs } from "pinia";
 import { useEchoStore } from "../AppState";
 
 const pusherState = ref<string>("connecting");
 const connected = ref<boolean>(false);
 const connecting = ref<boolean>(true);
 const unavailable = ref<boolean>(false);
-const echo = useEchoStore().laravelEcho;
+const echoStore = useEchoStore();
+const { laravelEcho } = storeToRefs(echoStore);
+const echo = laravelEcho.value;
 
 const showConnected = () => {
     connected.value = true;

@@ -9,6 +9,7 @@ import { router } from "./AppRouter";
 /** Primevue Globals */
 import DialogService from "primevue/dialogservice";
 import ToastService from "primevue/toastservice";
+import Tooltip from "primevue/tooltip";
 
 // Mount Application Instances
 const MainApp: App<Element> = createApp({})
@@ -16,7 +17,8 @@ const MainApp: App<Element> = createApp({})
     .use(pinia)
     .use(PrimeVue)
     .use(DialogService)
-    .use(ToastService);
+    .use(ToastService)
+    .directive("tooltip", Tooltip);
 
 /** Global Composenent / Page Registration */
 import CmpAppSet from "./Components/CmpAppSet.vue";

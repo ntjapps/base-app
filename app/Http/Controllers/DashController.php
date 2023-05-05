@@ -52,7 +52,7 @@ class DashController extends Controller
         }
         (array) $validated = $validate->validated();
 
-        Log::info('User '.Auth::guard('api')->user()->username.' updating profile', ['user_id' => Auth::guard('api')->id()]);
+        Log::info('User '.Auth::guard('api')->user()->username.' updating profile', ['user_id' => Auth::guard('api')->id(), 'apiUserIp' => $request->ip()]);
 
         $user = Auth::guard('api')->user();
         $user->name = $validated['name'];
@@ -61,7 +61,7 @@ class DashController extends Controller
         }
         $user->save();
 
-        Log::notice('User '.Auth::guard('api')->user()->username.' updated profile', ['user_id' => Auth::guard('api')->id()]);
+        Log::notice('User '.Auth::guard('api')->user()->username.' updated profile', ['user_id' => Auth::guard('api')->id(), 'apiUserIp' => $request->ip()]);
 
         /** Successful Update Profile */
         (string) $title = 'Update Profile Success';

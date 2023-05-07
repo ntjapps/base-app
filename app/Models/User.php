@@ -11,11 +11,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Laravel\Pennant\Concerns\HasFeatures;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements PermissionConst
 {
-    use HasApiTokens, HasFactory, Notifiable, HasUuids, HasRoles, SoftDeletes, MassPrunable;
+    use HasApiTokens, HasFactory, Notifiable, HasUuids, HasRoles, HasFeatures, SoftDeletes, MassPrunable;
 
     protected function getDefaultGuardName(): string
     {

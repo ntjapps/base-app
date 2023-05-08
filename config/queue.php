@@ -80,15 +80,6 @@ return [
             'after_commit' => false,
         ],
 
-        'redis_excel_long_run' => [
-            'driver' => 'redis',
-            'connection' => 'default',
-            'queue' => 'excel-import',
-            'retry_after' => 5700,
-            'block_for' => null,
-            'after_commit' => false,
-        ],
-
         'redis_commit' => [
             'driver' => 'redis',
             'connection' => 'default',

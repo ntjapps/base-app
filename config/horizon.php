@@ -192,21 +192,6 @@ return [
             'tries' => 1,
             'timeout' => 3600,
             'nice' => 1,
-            'force' => true,
-        ],
-
-        'supervisor-excel-import-1' => [
-            'connection' => 'redis_excel_long_run',
-            'queue' => ['excel-import'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'size',
-            'maxProcesses' => 1,
-            'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => 512,
-            'tries' => 1,
-            'timeout' => 3800,
-            'nice' => 2,
         ],
     ],
 

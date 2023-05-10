@@ -41,5 +41,5 @@ defineExpose({
 </script>
 
 <template>
-    <div />
+    <slot />
 </template>

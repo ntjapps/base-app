@@ -12,5 +12,3 @@ RUN rm -rf /var/www/vhosts/localhost/Dockerfile && \
     chown nobody:nobody -R /var/www/vhosts/localhost
 
 VOLUME ["/var/www/vhosts/localhost/storage"]
-
-ENTRYPOINT ["/entrypoint.sh"]

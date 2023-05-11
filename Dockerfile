@@ -13,5 +13,4 @@ RUN rm -rf /var/www/vhosts/localhost/Dockerfile && \
 
 VOLUME ["/var/www/vhosts/localhost/storage"]
 
-ENTRYPOINT ["/sbin/tini", "-g", "--"]
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

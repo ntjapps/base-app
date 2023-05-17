@@ -142,18 +142,24 @@ Artisan::command('role:revoke {role} {permission}', function ($role, $permission
 })->purpose('Revoke permission for given role');
 
 Artisan::command('user:create {username} {password}', function ($username, $password) {
-    $user_count = User::where('username', $username)->count();
+    $user_count = User::withTrashed()->where('username', $username)->count();
     if ($user_count != 0) {
         return $this->info('Username: '.$username.' already exists');
     }
 
     User::create([
         'username' => $username,
-        'password' => \Illuminate\Support\Facades\Hash::make($password),
+        'password' => Hash::make($password),
     ]);
     $this->info('Created user with username: '.$username);
     Log::alert('Console user:create executed', ['username' => $username]);
 })->purpose('Create new user with password');
+
+Artisan::command('user:restore {username}', function ($username) {
+    User::withTrashed()->where('username', $username)->first()?->restore();
+    $this->info('Restored user with username: '.$username);
+    Log::alert('Console user:restore executed', ['username' => $username]);
+})->purpose('Restore user');
 
 Artisan::command('user:reset {username}', function ($username) {
     $user_count = User::where('username', $username)->count();

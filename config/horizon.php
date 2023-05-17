@@ -203,7 +203,7 @@ return [
                 'balanceCooldown' => 3,
             ],
             'supervisor-long-run-1' => [
-                'maxProcesses' => 4,
+                'maxProcesses' => 40,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],

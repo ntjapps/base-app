@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\KeyRotationJob;
 use App\Models\PassportClient;
 use App\Models\Permission;
 use App\Models\Role;
@@ -41,6 +42,12 @@ Artisan::command('system:refresh', function () {
     $this->info('System refreshed');
     Log::alert('Console system:refresh executed', ['appName' => config('app.name')]);
 })->purpose('Refresh system');
+
+Artisan::command('key:rotation', function () {
+    KeyRotationJob::dispatch();
+    $this->info('Key rotation dispatched');
+    Log::alert('Console key:rotation executed', ['appName' => config('app.name')]);
+})->purpose('Rotate key');
 
 Artisan::command('penant:clear', function () {
     Feature::flushCache();

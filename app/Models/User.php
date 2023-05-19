@@ -74,6 +74,7 @@ class User extends Authenticatable implements PermissionConst
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
         'totp_key' => 'encrypted',
     ];
 }

@@ -34,7 +34,7 @@
         "firebase": "^9.21.0",
         "happy-dom": "^9.10.9",
         "laravel-echo": "^1.15.1",
-        "laravel-vite-plugin": "^0.7.4",
+        "laravel-vite-plugin": "^0.7.5",
         "pinia": "^2.0.35",
         "postcss": "^8.4.23",
         "postcss-convert-values": "^6.0.0",

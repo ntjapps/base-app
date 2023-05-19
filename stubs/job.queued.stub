@@ -1,0 +1,41 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+
+class {{ class }} implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Create a new job instance.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
+    {
+        try {
+            Log::debug('Job Executed', ['jobName' => '{{ class }}']);
+
+            // Do something here
+
+            Log::debug('Job Finished', ['jobName' => '{{ class }}']);
+        } catch (\Throwable $e) {
+            Log::error('Job Failed', ['jobName' => '{{ class }}', 'error' => $e->getMessage(), 'previous' => $e->getPrevious()]);
+            throw $e;
+        }
+    }
+}

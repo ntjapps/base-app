@@ -10,6 +10,6 @@ return [
     |
     */
 
-    'old_key' => env('OLD_KEY'),
+    'old_key' => env('APP_OLD_KEY'),
 
 ];

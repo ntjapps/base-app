@@ -62,6 +62,6 @@ return [
     'client_credentials_grant_client' => [
         'id' => env('PASSPORT_CLIENT_CREDENTIALS_CLIENT_ID'),
         'secret' => env('PASSPORT_CLIENT_CREDENTIALS_CLIENT_SECRET'),
-    ]
+    ],
 
 ];

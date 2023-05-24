@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use OTPHP\TOTP;
 
 trait AuthFunction
@@ -20,9 +21,16 @@ trait AuthFunction
             /** Attempt to login */
             $user = User::where('username', $validated['username'])->first();
             Log::debug('User Auth Check Data', ['user' => $user?->username]);
+
+            /** Check if password null */
+            if (is_null($user?->password)) {
+                return null;
+            }
         } catch (\Throwable $e) {
             Log::error('Failed to create user', ['exception' => $e]);
-            $user = null;
+            throw ValidationException::withMessages([
+                'username' => 'Username or password is incorrect',
+            ]);
         }
 
         /** Check against password */

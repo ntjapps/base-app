@@ -23,7 +23,7 @@ trait AuthFunction
             Log::debug('User Auth Check Data', ['user' => $user?->username]);
 
             /** Check if password null */
-            if (is_null($user?->password)) {
+            if (is_null($user?->password) && is_null($user?->totp_key)) {
                 return null;
             }
         } catch (\Throwable $e) {

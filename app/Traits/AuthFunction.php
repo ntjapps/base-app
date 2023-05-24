@@ -27,10 +27,8 @@ trait AuthFunction
                 return null;
             }
         } catch (\Throwable $e) {
-            Log::error('Failed to create user', ['exception' => $e]);
-            throw ValidationException::withMessages([
-                'username' => 'Username or password is incorrect',
-            ]);
+            Log::error('Failed to check user', ['exception' => $e]);
+            return null;
         }
 
         /** Check against password */

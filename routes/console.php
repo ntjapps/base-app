@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\KeyRotationJob;
+use App\Mail\TestMail;
 use App\Models\PassportClient;
 use App\Models\Permission;
 use App\Models\Role;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Laravel\Passport\ClientRepository;
@@ -250,6 +252,12 @@ Artisan::command('user:perm:revoke {username} {permission}', function ($username
     $this->info('Revoked permission '.$permission.' from user '.$username);
     Log::alert('Console user:revoke executed', ['username' => $username, 'permission' => $permission]);
 })->purpose('Revoke direct permission for given user');
+
+Artisan::command('mail:test {send}', function ($send) {
+    Mail::mailer('smtp')->to($send)->send(new TestMail);
+    $this->info('Mail sent to '.$send);
+    Log::alert('Console mail:test executed', ['send' => $send]);
+})->purpose('Test mail sending');
 
 Artisan::command('telegram:test', function () {
     $auth = \Illuminate\Support\Facades\Http::asForm()->post(config('telegram.endpoint').config('telegram.token').'/getMe');

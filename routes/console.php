@@ -138,6 +138,9 @@ Artisan::command('perm:list', function () {
 
 Artisan::command('role:grant {role} {permission}', function ($role, $permission) {
     Role::find(Role::where('name', $role)->first()->id)->givePermissionTo($permission);
+
+    /** Reset cached roles and permissions */
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
     Feature::purge();
     Log::alert('Console role:grant executed', ['role' => $role, 'permission' => $permission]);
@@ -145,6 +148,9 @@ Artisan::command('role:grant {role} {permission}', function ($role, $permission)
 
 Artisan::command('role:revoke {role} {permission}', function ($role, $permission) {
     Role::find(Role::where('name', $role)->first()->id)->revokePermissionTo($permission);
+
+    /** Reset cached roles and permissions */
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
     Feature::purge();
     Log::alert('Console role:revoke executed', ['role' => $role, 'permission' => $permission]);
@@ -205,6 +211,9 @@ Artisan::command('user:role:grant {username} {role}', function ($username, $role
     }
 
     $user->assignRole($role);
+
+    /** Reset cached roles and permissions */
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
     Feature::purge();
     $this->info('Granted role '.$role.' to user '.$username);
@@ -219,6 +228,9 @@ Artisan::command('user:role:revoke {username} {role}', function ($username, $rol
     }
 
     $user->removeRole($role);
+
+    /** Reset cached roles and permissions */
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
     Feature::purge();
     $this->info('Revoked role '.$role.' from user '.$username);
@@ -233,6 +245,9 @@ Artisan::command('user:perm:grant {username} {permission}', function ($username,
     }
 
     $user->givePermissionTo($permission);
+
+    /** Reset cached roles and permissions */
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
     Feature::purge();
     $this->info('Granted permission '.$permission.' to user '.$username);
@@ -247,6 +262,9 @@ Artisan::command('user:perm:revoke {username} {permission}', function ($username
     }
 
     $user->revokePermissionTo($permission);
+
+    /** Reset cached roles and permissions */
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
     Feature::purge();
     $this->info('Revoked permission '.$permission.' from user '.$username);
@@ -299,8 +317,6 @@ Artisan::command('patch:deploy', function () {
         Telescope::stopRecording();
     }
 
-    Cache::flush();
-
     /** PATCH DO HERE */
     $patchId = 'NULL';
 
@@ -308,7 +324,6 @@ Artisan::command('patch:deploy', function () {
         $this->info('Deploying patch '.$patchId.'...');
 
         /** Alert Log for patch deployment and clear application cache */
-        Cache::flush();
         Feature::flushCache();
         Artisan::call('up');
         Log::alert('Console patch:deploy executed', ['patchId' => $patchId, 'appName' => config('app.name')]);

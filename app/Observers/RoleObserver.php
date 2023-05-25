@@ -14,6 +14,8 @@ class RoleObserver
      */
     public function created(Role $role): void
     {
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
         Feature::purge();
@@ -24,6 +26,8 @@ class RoleObserver
      */
     public function updated(Role $role): void
     {
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
         Feature::purge();
@@ -34,6 +38,8 @@ class RoleObserver
      */
     public function deleted(Role $role): void
     {
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
         Feature::purge();
@@ -44,6 +50,8 @@ class RoleObserver
      */
     public function restored(Role $role): void
     {
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
         Feature::purge();
@@ -54,6 +62,8 @@ class RoleObserver
      */
     public function forceDeleted(Role $role): void
     {
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
         Feature::purge();

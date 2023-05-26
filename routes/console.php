@@ -271,13 +271,13 @@ Artisan::command('user:perm:revoke {username} {permission}', function ($username
     Log::alert('Console user:revoke executed', ['username' => $username, 'permission' => $permission]);
 })->purpose('Revoke direct permission for given user');
 
-Artisan::command('mail:test {send}', function ($send) {
+Artisan::command('test:mail {send}', function ($send) {
     Mail::mailer('smtp')->to($send)->send(new TestMail);
     $this->info('Mail sent to '.$send);
-    Log::alert('Console mail:test executed', ['send' => $send]);
+    Log::alert('Console test:mail executed', ['send' => $send]);
 })->purpose('Test mail sending');
 
-Artisan::command('telegram:test', function () {
+Artisan::command('test:telegram', function () {
     $auth = \Illuminate\Support\Facades\Http::asForm()->post(config('telegram.endpoint').config('telegram.token').'/getMe');
 
     if ($auth->successful()) {
@@ -298,7 +298,7 @@ Artisan::command('telegram:test', function () {
     } else {
         $this->info('Telegram Bot is not connected');
     }
-    Log::alert('Console telegram:test executed', ['appName' => config('app.name')]);
+    Log::alert('Console test:telegram executed', ['appName' => config('app.name')]);
 })->purpose('Test Telegram Bot');
 
 Artisan::command('test:error', function () {

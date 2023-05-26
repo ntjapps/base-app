@@ -301,14 +301,14 @@ Artisan::command('telegram:test', function () {
     Log::alert('Console telegram:test executed', ['appName' => config('app.name')]);
 })->purpose('Test Telegram Bot');
 
-Artisan::command('error:test', function () {
+Artisan::command('test:error', function () {
     throw new \App\Exceptions\CommonCustomException('Test Error');
-    Log::alert('Console unit:test executed', ['appName' => config('app.name')]);
+    Log::alert('Console test:error executed', ['appName' => config('app.name')]);
 })->purpose('Test Common Custom Exception');
 
-Artisan::command('unit:test', function () {
+Artisan::command('test:unit', function () {
     /** NULL */
-    Log::alert('Console unit:test executed', ['appName' => config('app.name')]);
+    Log::alert('Console test:unit executed', ['appName' => config('app.name')]);
 })->purpose('Test Query / Any Test');
 
 Artisan::command('patch:deploy', function () {

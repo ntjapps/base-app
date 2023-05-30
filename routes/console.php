@@ -156,41 +156,60 @@ Artisan::command('role:revoke {role} {permission}', function ($role, $permission
     Log::alert('Console role:revoke executed', ['role' => $role, 'permission' => $permission]);
 })->purpose('Revoke permission for given role');
 
-Artisan::command('user:create {username} {password}', function ($username, $password) {
+Artisan::command('user:create {username} {password?}', function ($username, $password) {
     $user_count = User::withTrashed()->where('username', $username)->count();
-    if ($user_count != 0) {
+    if ($user_count !== 0) {
         return $this->info('Username: '.$username.' already exists');
     }
 
+    $password = is_null($password) ? config('auth.reset_password_data') : $password;
+
     User::create([
         'username' => $username,
-        'password' => Hash::make($password),
+        'password' => Hash::make(),
     ]);
     $this->info('Created user with username: '.$username);
     Log::alert('Console user:create executed', ['username' => $username]);
 })->purpose('Create new user with password');
 
+Artisan::command('user:delete {username}', function ($username) {
+    $user_count = User::where('username', $username)->count();
+    if ($user_count === 0) {
+        return $this->info('Username: '.$username.' not found / already deleted');
+    }
+
+    User::where('username', $username)->first()->delete();
+    $this->info('Deleted user with username: '.$username);
+    Log::alert('Console user:delete executed', ['username' => $username]);
+})->purpose('Delete user');
+
 Artisan::command('user:restore {username}', function ($username) {
-    User::withTrashed()->where('username', $username)->first()?->restore();
+    $user_count = User::onlyTrashed()->where('username', $username)->count();
+    if ($user_count === 0) {
+        return $this->info('Username: '.$username.' not trashed');
+    }
+
+    User::withTrashed()->where('username', $username)->first()->restore();
     $this->info('Restored user with username: '.$username);
     Log::alert('Console user:restore executed', ['username' => $username]);
 })->purpose('Restore user');
 
 Artisan::command('user:reset {username}', function ($username) {
     $user_count = User::where('username', $username)->count();
-    if ($user_count != 0) {
-        $user = User::where('username', $username)->first();
-        $user->password = Hash::make('login');
-        $user->save();
-        $this->info('Reset user with username: '.$username);
+    if ($user_count === 0) {
+        return $this->info('Username: '.$username.' not found');
     }
-    $this->info('Command reset executed');
+
+    $user = User::where('username', $username)->first();
+    $user->password = Hash::make(config('auth.reset_password_data'));
+    $user->save();
+    $this->info('Reset password for user with username: '.$username);
     Log::alert('Console user:reset executed', ['username' => $username]);
 })->purpose('Reset user with password');
 
 Artisan::command('user:totp {username} {secret?}', function ($username, $secret = null) {
     $user_count = User::where('username', $username)->count();
-    if ($user_count != 0) {
+    if ($user_count !== 0) {
         return $this->info('Username: '.$username.' already exists');
     }
 

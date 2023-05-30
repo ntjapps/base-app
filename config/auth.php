@@ -16,6 +16,7 @@ return [
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
+        'reset_password_data' => env('RESET_PASSWORD_DATA', 'login'),
     ],
 
     /*

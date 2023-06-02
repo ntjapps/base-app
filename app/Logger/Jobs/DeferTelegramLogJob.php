@@ -7,19 +7,19 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Laravel\Horizon\Contracts\Silenced;
 use Laravel\Telescope\Telescope;
-use Monolog\LogRecord;
 
 class DeferTelegramLogJob implements ShouldQueue, Silenced
 {
-    use Dispatchable, InteractsWithQueue, Queueable, TelegramApi;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TelegramApi;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(public LogRecord $record, public string $chatId)
+    public function __construct(public string $data, public string $chatId)
     {
         //
     }
@@ -34,9 +34,6 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
             Telescope::stopRecording();
         }
 
-        (string) $message = $this->record['level_name'].': '.$this->record['message'];
-        $this->sendTelegramMessage($message, $this->chatId);
-        (string) $context = 'Context: '.json_encode($this->record['context']);
-        $this->sendTelegramMessage($context, $this->chatId);
+        $this->sendTelegramMessage($this->data, $this->chatId);
     }
 }

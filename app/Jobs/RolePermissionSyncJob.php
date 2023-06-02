@@ -45,7 +45,7 @@ class RolePermissionSyncJob implements ShouldQueue
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {
-            Log::error('Job Failed', ['jobName' => 'RolePermissionSyncJob', 'error' => $e->getMessage(), 'previous' => $e->getPrevious()]);
+            Log::error('Job Failed', ['jobName' => 'RolePermissionSyncJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()]);
             throw $e;
         }
     }

@@ -24,7 +24,7 @@ trait CryptFunction
         try {
             return Crypt::decryptString($data);
         } catch (DecryptException $e) {
-            Log::error('Failed to decrypt data', ['data' => $data, 'error' => $e->getMessage()]);
+            Log::error('Failed to decrypt data', ['data' => $data, 'errors' => $e->getMessage()]);
         }
     }
 }

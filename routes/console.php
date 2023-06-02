@@ -38,7 +38,7 @@ Artisan::command('system:refresh', function () {
     Artisan::call('cache:clear');
 
     if (App::environment('local')) {
-        Artisan::call('telescope:prune');
+        Artisan::call('telescope:prune', ['--hours' => 0]);
     }
 
     $this->info('System refreshed');

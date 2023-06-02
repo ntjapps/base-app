@@ -28,7 +28,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('queue:prune-failed')->hourly()->runInBackground()->withoutOverlapping();
         $schedule->command('queue:flush')->hourly()->runInBackground()->withoutOverlapping();
         $schedule->command('passport:purge')->hourly()->runInBackground()->withoutOverlapping();
-        $schedule->command('penant:clear')->daily()->runInBackground()->withoutOverlapping();
 
         if ($this->app->environment('local')) {
             $schedule->command('telescope:prune')->hourly()->runInBackground()->withoutOverlapping();
@@ -36,6 +35,7 @@ class Kernel extends ConsoleKernel
 
         /** Custom Jobs Cron */
         $schedule->job(new \App\Jobs\PruneLogDebugLevelJob)->dailyAt('00:00');
+        $schedule->job(new \App\Jobs\PennantClearJob)->dailyAt('00:00');
     }
 
     /**

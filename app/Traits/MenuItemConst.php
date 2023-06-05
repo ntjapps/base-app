@@ -43,6 +43,12 @@ trait MenuItemConst
         if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
 
             $childMenu[] = [
+                'label' => 'User Management',
+                'icon' => 'pi pi-users',
+                'url' => parse_url(route('user-man'), PHP_URL_PATH),
+            ];
+
+            $childMenu[] = [
                 'label' => 'Server Queue - Horizon',
                 'icon' => 'pi pi-bolt',
                 'url' => parse_url(route('horizon.index'), PHP_URL_PATH),
@@ -52,12 +58,6 @@ trait MenuItemConst
                 'label' => 'Server Logs',
                 'icon' => 'pi pi-server',
                 'url' => parse_url(route('server-logs'), PHP_URL_PATH),
-            ];
-
-            $childMenu[] = [
-                'label' => 'User Management',
-                'icon' => 'pi pi-users',
-                'url' => parse_url(route('user-man'), PHP_URL_PATH),
             ];
         }
 

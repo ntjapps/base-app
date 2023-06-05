@@ -40,7 +40,7 @@ class AuthServiceProvider extends ServiceProvider
          * Implicitly grant "Super User" role with some limitation to policy
          * This works in the app by using gate-related functions like auth()->user->can() and @can()
          **/
-        Gate::after(function ($user) {
+        Gate::after(function (User $user) {
             return $user->hasPermissionTo(User::SUPER);
         });
     }

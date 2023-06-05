@@ -3,9 +3,6 @@
 namespace Database\Seeders;
 
 use App\Jobs\RolePermissionSyncJob;
-use App\Models\Permission;
-use App\Models\Role;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class RolesPermissionSeeder extends Seeder

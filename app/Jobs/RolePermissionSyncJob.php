@@ -6,7 +6,6 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -32,13 +31,13 @@ class RolePermissionSyncJob implements ShouldQueue
     {
         try {
             Log::debug('Job Executed', ['jobName' => 'RolePermissionSyncJob']);
-            
+
             /** Reset cached roles and permissions */
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-    
+
             /** Create permissions */
             Permission::firstOrCreate(['name' => User::SUPER]);
-    
+
             /** Create roles and assign created permissions */
             $super = Role::firstOrCreate(['name' => User::SUPERROLE]);
             $super->givePermissionTo(User::SUPER);

@@ -13,7 +13,7 @@ class TelegramHandler extends AbstractProcessingHandler
     {
         (string) $message = $record['level_name'].': '.$record['message'];
         (string) $context = 'Context: '.json_encode($record['context']);
-        
+
         Bus::chain([
             new DeferTelegramLogJob($message, config('telegram.group_id')),
             new DeferTelegramLogJob($context, config('telegram.group_id')),

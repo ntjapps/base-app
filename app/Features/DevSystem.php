@@ -10,10 +10,8 @@ class DevSystem
     /**
      * Resolve the feature's initial value.
      */
-    public function resolve(): bool
+    public function resolve(User $user): bool
     {
-        $user = Auth::guard('web')->user() ?? Auth::guard('api')->user() ?? null;
-
         return match (true) {
             $user?->hasPermissionTo(User::SUPER) => true,
             config('app.debug') => true,

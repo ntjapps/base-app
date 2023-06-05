@@ -18,7 +18,6 @@ class RoleObserver
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 
     /**
@@ -30,7 +29,6 @@ class RoleObserver
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 
     /**
@@ -42,7 +40,6 @@ class RoleObserver
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 
     /**
@@ -54,7 +51,6 @@ class RoleObserver
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 
     /**
@@ -66,6 +62,5 @@ class RoleObserver
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Cache::tags([InterfaceClass::MSTPERM])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 }

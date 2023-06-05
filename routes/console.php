@@ -146,7 +146,6 @@ Artisan::command('role:grant {role} {permission}', function ($role, $permission)
     /** Reset cached roles and permissions */
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
-    Feature::purge();
     Log::alert('Console role:grant executed', ['role' => $role, 'permission' => $permission]);
 })->purpose('Grant permission for given role');
 
@@ -156,7 +155,6 @@ Artisan::command('role:revoke {role} {permission}', function ($role, $permission
     /** Reset cached roles and permissions */
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
-    Feature::purge();
     Log::alert('Console role:revoke executed', ['role' => $role, 'permission' => $permission]);
 })->purpose('Revoke permission for given role');
 
@@ -238,7 +236,6 @@ Artisan::command('user:role:grant {username} {role}', function ($username, $role
     /** Reset cached roles and permissions */
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
-    Feature::purge();
     $this->info('Granted role '.$role.' to user '.$username);
     Log::alert('Console user:grant executed', ['username' => $username, 'role' => $role]);
 })->purpose('Grant role for given user');
@@ -255,7 +252,6 @@ Artisan::command('user:role:revoke {username} {role}', function ($username, $rol
     /** Reset cached roles and permissions */
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
-    Feature::purge();
     $this->info('Revoked role '.$role.' from user '.$username);
     Log::alert('Console user:revoke executed', ['username' => $username, 'role' => $role]);
 })->purpose('Revoke role for given user');
@@ -272,7 +268,6 @@ Artisan::command('user:perm:grant {username} {permission}', function ($username,
     /** Reset cached roles and permissions */
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
-    Feature::purge();
     $this->info('Granted permission '.$permission.' to user '.$username);
     Log::alert('Console user:grant executed', ['username' => $username, 'permission' => $permission]);
 })->purpose('Grant direct permission for given user');
@@ -289,7 +284,6 @@ Artisan::command('user:perm:revoke {username} {permission}', function ($username
     /** Reset cached roles and permissions */
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     Feature::flushCache();
-    Feature::purge();
     $this->info('Revoked permission '.$permission.' from user '.$username);
     Log::alert('Console user:revoke executed', ['username' => $username, 'permission' => $permission]);
 })->purpose('Revoke direct permission for given user');

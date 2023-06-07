@@ -30,6 +30,24 @@ use OTPHP\TOTP;
 |
 */
 
+Artisan::command('system:start', function () {
+    if (! App::environment('local')) {
+        Artisan::call('migrate', ['--force' => true]);
+    }
+
+    if (App::environment('local')) {
+        Artisan::call('telescope:prune', ['--hours' => 0]);
+    }
+
+    Artisan::call('passport:client:env');
+    Artisan::call('passport:clientgrant:env');
+    Artisan::call('pennant:clear');
+    Artisan::call('cache:clear');
+
+    $this->info('System startup scripts executed');
+    Log::alert('Console system:start executed', ['appName' => config('app.name')]);
+})->purpose('Start system');
+
 Artisan::command('system:refresh', function () {
     Artisan::call('passport:client:env');
     Artisan::call('passport:clientgrant:env');

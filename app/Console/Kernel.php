@@ -29,6 +29,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('queue:flush')->hourly()->runInBackground()->withoutOverlapping();
         $schedule->command('passport:purge')->hourly()->runInBackground()->withoutOverlapping();
 
+        if (config('cache.default') === 'redis') {
+            $schedule->command('cache:prune-stale-tags')->hourly()->runInBackground()->withoutOverlapping();
+        }
+
         if ($this->app->environment('local')) {
             $schedule->command('telescope:prune')->hourly()->runInBackground()->withoutOverlapping();
         }

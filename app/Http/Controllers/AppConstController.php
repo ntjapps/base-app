@@ -24,19 +24,21 @@ class AppConstController extends Controller
         /** Menu Items */
         if ($authCheck) {
             if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
-                $menuItems = json_encode([
+                $menuArray = [
                     MenuItemClass::dashboardMenu(),
                     MenuItemClass::editProfileMenu(),
                     MenuItemClass::logoutMenu(),
                     MenuItemClass::administrationMenu(),
-                ]);
+                ];
             } else {
-                $menuItems = json_encode([
+                $menuArray = [
                     MenuItemClass::dashboardMenu(),
                     MenuItemClass::editProfileMenu(),
                     MenuItemClass::logoutMenu(),
-                ]);
+                ];
             }
+
+            $menuItems = json_encode($menuArray);
         }
 
         /** Constant now set in Vue State, this now used to check if authenticated or not */

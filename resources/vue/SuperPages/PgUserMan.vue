@@ -143,6 +143,7 @@ const showViewButton = (data: string): boolean => {
                     <template #body="slotProps">
                         <div
                             v-for="role in slotProps.data.roles"
+                            :key="role.id"
                             class="text-center"
                         >
                             {{ role.name }}

@@ -33,16 +33,21 @@ use OTPHP\TOTP;
 Artisan::command('system:start', function () {
     if (! App::environment('local')) {
         Artisan::call('migrate', ['--force' => true]);
+        $this->info('Migrated');
     }
 
     if (App::environment('local')) {
         Artisan::call('telescope:prune', ['--hours' => 0]);
+        $this->info('Telescope pruned');
     }
 
     Artisan::call('passport:client:env');
     Artisan::call('passport:clientgrant:env');
+    $this->info('Passport client generated');
+
     Artisan::call('pennant:clear');
     Artisan::call('cache:clear');
+    $this->info('Penant cache cleared');
 
     $this->info('System startup scripts executed');
     Log::alert('Console system:start executed', ['appName' => config('app.name')]);
@@ -51,12 +56,21 @@ Artisan::command('system:start', function () {
 Artisan::command('system:refresh', function () {
     Artisan::call('passport:client:env');
     Artisan::call('passport:clientgrant:env');
-    Artisan::call('horizon:clear:all');
+    $this->info('Passport client generated');
+    
+    Redis::connection('horizon')->flushdb();
+    Redis::connection('cache')->flushdb();
+    Redis::connection('default')->flushdb();
+    Cache::flush();
+    $this->info('All horizon cleared');
+    
     Artisan::call('pennant:clear');
     Artisan::call('cache:clear');
+    $this->info('Penant cache cleared');
 
     if (App::environment('local')) {
         Artisan::call('telescope:prune', ['--hours' => 0]);
+        $this->info('Telescope pruned');
     }
 
     $this->info('System refreshed');

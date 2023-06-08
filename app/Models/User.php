@@ -28,9 +28,7 @@ class User extends Authenticatable implements PermissionConst
      */
     public function exceptConstPermission(): array
     {
-        return [
-            static::SUPER,
-        ];
+        return static::ALLPERM;
     }
 
     /**

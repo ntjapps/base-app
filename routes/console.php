@@ -86,13 +86,13 @@ Artisan::command('queue:clear:all', function () {
 })->purpose('Delete all of the jobs from all queues');
 
 Artisan::command('horizon:clear:all', function () {
-    Artisan::call('horizon:clear');
-    Artisan::call('horizon:clear', ['--queue' => 'long-run']);
-
     Redis::connection('horizon')->flushdb();
     Redis::connection('cache')->flushdb();
     Redis::connection('default')->flushdb();
     Cache::flush();
+
+    Artisan::call('horizon:clear');
+    Artisan::call('horizon:clear', ['--queue' => 'long-run']);
 
     $this->info('All horizon cleared');
     Log::alert('Console horizon:clear:all executed', ['appName' => config('app.name')]);

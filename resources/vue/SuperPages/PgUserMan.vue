@@ -117,16 +117,13 @@ const showViewButton = (data: string): boolean => {
                 </template>
                 <Column field="action" header="Actions" class="text-sm">
                     <template #body="slotProps">
-                        <div class="flex justify-center">
-                            <div
-                                v-if="showViewButton(slotProps.data.id)"
-                                class="mx-1"
-                            >
-                                <button class="btn btn-success">
-                                    <i class="pi pi-search m-2" />
-                                    <span class="m-1">View</span>
-                                </button>
-                            </div>
+                        <div
+                            v-if="showViewButton(slotProps.data.id)"
+                            class="mx-1"
+                        >
+                            <button class="btn btn-accent">
+                                <i class="pi pi-angle-double-right"></i>
+                            </button>
                         </div>
                     </template>
                 </Column>
@@ -140,6 +137,27 @@ const showViewButton = (data: string): boolean => {
                 <Column field="name" header="Name" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">{{ slotProps.data.name }}</div>
+                    </template>
+                </Column>
+                <Column field="user_roles" header="Roles" class="text-sm">
+                    <template #body="slotProps">
+                        <div
+                            v-for="role in slotProps.data.roles"
+                            class="text-center"
+                        >
+                            {{ role.name }}
+                        </div>
+                    </template>
+                </Column>
+                <Column
+                    field="user_permission"
+                    header="Permission"
+                    class="text-sm"
+                >
+                    <template #body="slotProps">
+                        <div class="text-center">
+                            {{ slotProps.data.user_permission.join(", ") }}
+                        </div>
                     </template>
                 </Column>
             </DataTable>

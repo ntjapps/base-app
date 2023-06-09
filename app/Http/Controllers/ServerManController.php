@@ -46,9 +46,9 @@ class ServerManController extends Controller
         (array) $validated = $validate->validated();
 
         $data = ServerLog::when($validated['date_start'] ?? null, function ($query, $date_start) {
-            return $query->where('created_at', '>=', Carbon::parse($date_start)->setTimezone('Asia/Jakarta')->startOfDay()->setTimezone('UTC'));
+            return $query->where('created_at', '>=', Carbon::parse($date_start, 'Asia/Jakarta')->startOfDay());
         })->when($validated['date_end'] ?? null, function ($query, $date_end) {
-            return $query->where('created_at', '<=', Carbon::parse($date_end)->setTimezone('Asia/Jakarta')->endOfDay()->setTimezone('UTC'));
+            return $query->where('created_at', '<=', Carbon::parse($date_end, 'Asia/Jakarta')->startOfDay()->addDay());
         })->when($validated['log_level'] ?? null, function ($query, $log_level) {
             $log_level === 'all' ? $log_level = 'debug' : $log_level = $log_level;
 

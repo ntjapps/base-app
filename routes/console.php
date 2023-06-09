@@ -57,13 +57,13 @@ Artisan::command('system:refresh', function () {
     Artisan::call('passport:client:env');
     Artisan::call('passport:clientgrant:env');
     $this->info('Passport client generated');
-    
+
     Redis::connection('horizon')->flushdb();
     Redis::connection('cache')->flushdb();
     Redis::connection('default')->flushdb();
     Cache::flush();
     $this->info('All horizon cleared');
-    
+
     Artisan::call('pennant:clear');
     Artisan::call('cache:clear');
     $this->info('Penant cache cleared');

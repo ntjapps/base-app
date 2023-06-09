@@ -46,7 +46,7 @@ trait AuthFunction
     {
         /** Logout if user is authenticated */
         if (Auth::check()) {
-            Log::info('User '.Auth::user()?->name.' logging out', ['user_id' => Auth::id()]);
+            Log::info('User '.Auth::user()?->name.' logging out', ['userId' => Auth::id()]);
 
             Auth::logout();
             $request->session()->invalidate();

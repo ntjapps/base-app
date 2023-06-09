@@ -35,7 +35,7 @@ class AuthController extends Controller
      */
     public function postLogout(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::user()->name.' logging out', ['user_id' => Auth::id(), 'remoteIp' => $request->ip()]);
+        Log::debug('User '.Auth::user()->name.' logging out', ['userId' => Auth::id(), 'remoteIp' => $request->ip()]);
 
         /** Call common logout function */
         $this->checkAuthLogout($request);
@@ -94,7 +94,7 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        Log::notice('User '.Auth::user()->name.' logged in', ['user_id' => Auth::id()]);
+        Log::notice('User '.Auth::user()->name.' logged in', ['userId' => Auth::id()]);
 
         /** Send user to dashboard */
         (string) $title = 'Login success';

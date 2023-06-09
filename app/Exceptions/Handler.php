@@ -31,8 +31,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (OAuthServerException $e, Request $request) {
-            Log::error('OAuthServerException intercepted', ['exception' => 'OAuthServerException', 'message' => $e->getMessage(), 'code' => $e->getCode(), 'trace' => $e->getTraceAsString(), 'requestIp' => $request->ip()]);
-
+            Log::warning('OAuthServerException intercepted', ['exception' => 'OAuthServerException', 'message' => $e->getMessage(), 'code' => $e->getCode(), 'trace' => $e->getTraceAsString(), 'requestIp' => $request->ip()]);
             return response()->json([
                 'error' => $e->getErrorType(),
                 'message' => $e->getMessage(),

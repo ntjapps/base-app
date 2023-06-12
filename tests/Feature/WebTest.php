@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -12,6 +13,8 @@ class WebTest extends TestCase
      */
     public function test_open_login_redirect(): void
     {
+        $this->withoutMiddleware([RedirectIfAuthenticated::class]);
+
         $response = $this->get(route('login'));
 
         $response->assertStatus(302)->assertRedirectToRoute('landing-page');

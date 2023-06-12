@@ -22,12 +22,12 @@ Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['status' => 'success']);
 });
 
-Route::middleware(['guest'])->group(function () {
-    /** Route for login redirect */
-    Route::get('/login-redirect', function () {
-        return redirect(route('landing-page'));
-    })->name('login');
+/** Route for login redirect */
+Route::get('/login-redirect', function () {
+    return redirect(route('landing-page'));
+})->name('login');
 
+Route::middleware(['guest'])->group(function () {
     Route::get('/', [AuthController::class, 'loginPage'])->name('landing-page');
     Route::post('/post-login', [AuthController::class, 'postLogin'])->name('post-login');
 });

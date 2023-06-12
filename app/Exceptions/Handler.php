@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use League\OAuth2\Server\Exception\OAuthServerException;
+use Laravel\Passport\Exceptions\OAuthServerException;
 use Throwable;
 
 class Handler extends ExceptionHandler

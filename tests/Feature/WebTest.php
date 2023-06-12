@@ -15,13 +15,7 @@ class WebTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertStatus(302)->assertRedirectToRoute('landing-page');
-    }
 
-    /**
-     * Test open the home
-     */
-    public function test_open_home(): void
-    {
         $response = $this->get(route('landing-page'));
 
         $response->assertStatus(200)->assertViewIs('auth-pg.login');

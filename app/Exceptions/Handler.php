@@ -3,9 +3,6 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Laravel\Passport\Exceptions\OAuthServerException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -28,14 +25,6 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
-        });
-
-        $this->renderable(function (OAuthServerException $e, Request $request) {
-            Log::warning('OAuthServerException intercepted', ['exception' => 'OAuthServerException', 'message' => $e->getMessage(), 'code' => $e->getCode(), 'trace' => $e->getTraceAsString(), 'requestIp' => $request->ip()]);
-            return response()->json([
-                'error' => $e->getErrorType(),
-                'message' => $e->getMessage(),
-            ], $e->getHttpStatusCode());
         });
     }
 }

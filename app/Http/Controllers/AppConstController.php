@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use League\OAuth2\Server\Exception\OAuthServerException;
 
 class AppConstController extends Controller
 {
@@ -18,8 +19,17 @@ class AppConstController extends Controller
     {
         Log::debug('User '.Auth::guard('api')->user()?->name.' is requesting app constants', ['apiUserIp' => $request->ip()]);
 
-        $authCheck = Auth::check() ? true : Auth::guard('api')->check();
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        try {
+            $authCheck = Auth::check() ? true : Auth::guard('api')->check();
+            $user = Auth::user() ?? Auth::guard('api')->user();
+        } catch (OAuthServerException $e) {
+            Log::warning('Client is requesting app constants but not authenticated', ['apiUserIp' => $request->ip()]);
+
+            return response()->json([
+                'isAuth' => false,
+            ], 200);
+        }
+
 
         /** Menu Items */
         if ($authCheck) {

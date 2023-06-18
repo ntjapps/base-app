@@ -30,7 +30,6 @@ class AppConstController extends Controller
             ], 200);
         }
 
-
         /** Menu Items */
         if ($authCheck) {
             if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {

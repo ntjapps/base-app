@@ -15,7 +15,13 @@ const showConnected = () => {
     connected.value = true;
     connecting.value = false;
     unavailable.value = false;
-    echo.private("all");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    echo.private("all").error((error: any) => {
+        if (error.status >= 400 && error.status < 500) {
+            console.error("Pusher error", error);
+        }
+        window.location.reload();
+    });
 };
 
 const showConnecting = () => {

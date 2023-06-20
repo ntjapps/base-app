@@ -36,6 +36,7 @@
         "happy-dom": "^9.20.3",
         "laravel-echo": "^1.15.1",
         "laravel-vite-plugin": "^0.7.8",
+        "lodash": "^4.17.21",
         "pinia": "^2.1.3",
         "postcss": "^8.4.24",
         "postcss-convert-values": "^6.0.0",

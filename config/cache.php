@@ -52,6 +52,7 @@ return [
         'file' => [
             'driver' => 'file',
             'path' => storage_path('framework/cache/data'),
+            'cluster' => env('PUSHER_APP_CLUSTER'),
         ],
 
         'memcached' => [

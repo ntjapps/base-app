@@ -25,7 +25,8 @@ class AuthController extends Controller
      */
     public function loginPage(Request $request): View
     {
-        Log::debug('Computer access login page', ['remoteIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('Computer access login page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('auth-pg.login');
     }
@@ -35,7 +36,8 @@ class AuthController extends Controller
      */
     public function postLogout(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::user()->name.' logging out', ['userId' => Auth::id(), 'remoteIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Call common logout function */
         $this->checkAuthLogout($request);
@@ -53,7 +55,8 @@ class AuthController extends Controller
      */
     public function getLogout(Request $request): RedirectResponse
     {
-        Log::debug('Computer Access Logout Request', ['remoteIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('Computer Access Logout Request', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         /** Call common logout function */
         $this->checkAuthLogout($request);
@@ -67,7 +70,8 @@ class AuthController extends Controller
      */
     public function postLogin(Request $request): HttpJsonResponse
     {
-        Log::debug('Computer access post login', ['remoteIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('Computer access post login', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate request */
         $validate = Validator::make($request->all(), [
@@ -82,19 +86,19 @@ class AuthController extends Controller
 
         /** If user not found or password false return failed */
         if (is_null($user = $this->checkAuthUser($validated))) {
-            Log::warning('Username '.$validated['username'].' failed to login', ['username' => $validated['username']]);
+            Log::warning('Username failed to login', ['username' => $validated['username'], 'apiUserIp' => $request->ip()]);
             throw ValidationException::withMessages([
                 'username' => 'Username or password is incorrect',
             ]);
         }
 
-        Log::info('Username '.$validated['username'].' logging in', ['username' => $validated['username']]);
+        Log::info('Username logging in', ['username' => $validated['username'], 'apiUserIp' => $request->ip()]);
 
         /** Now login with custom auth */
         Auth::login($user);
         $request->session()->regenerate();
 
-        Log::notice('User '.Auth::user()->name.' logged in', ['userId' => Auth::id()]);
+        Log::notice('User logged in', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Send user to dashboard */
         (string) $title = 'Login success';
@@ -109,7 +113,8 @@ class AuthController extends Controller
      */
     public function postToken(Request $request): HttpJsonResponse
     {
-        Log::debug('Computer access post token', ['apiUserIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('Computer access post token', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate request */
         $validate = Validator::make($request->all(), [
@@ -128,19 +133,19 @@ class AuthController extends Controller
 
         /** If user not found or password false return failed */
         if (is_null($user = $this->checkAuthUser($validated))) {
-            Log::warning('Username '.$validated['username'].' failed to login', ['username' => $validated['username']]);
+            Log::warning('Username failed to login', ['username' => $validated['username'], 'apiUserIp' => $request->ip()]);
             throw ValidationException::withMessages([
                 'username' => 'Username or password is incorrect',
             ]);
         }
 
-        Log::info('Username '.$validated['username'].' getting token', ['username' => $validated['username']]);
+        Log::info('Username getting token', ['username' => $validated['username'], 'apiUserIp' => $request->ip()]);
 
         /** Generate user API Token */
         (string) $token = $user->createToken($validated['device_name'])->accessToken;
         (string) $expire = InterfaceClass::getPassportTokenLifetime()->toDateTimeString();
 
-        Log::notice('Username '.$validated['username'].' got token', ['username' => $validated['username']]);
+        Log::notice('Username got token', ['username' => $validated['username'], 'apiUserIp' => $request->ip()]);
 
         return response()->json([
             'status' => 'success',
@@ -157,12 +162,13 @@ class AuthController extends Controller
      */
     public function postTokenRevoke(Request $request): HttpJsonResponse
     {
-        Log::info('Username '.Auth::guard('api')->user()->username.' revoking token', ['username' => Auth::guard('api')->user()->username, 'apiUserIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::info('Username revoking token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'apiUserIp' => $request->ip()]);
 
         /** Match bearer token with access token */
         $request->user()->token()->revoke();
 
-        Log::notice('Username '.Auth::guard('api')->user()->username.' revoked token', ['username' => Auth::guard('api')->user()->username, 'apiUserIp' => $request->ip()]);
+        Log::notice('Username revoked token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'apiUserIp' => $request->ip()]);
 
         return response()->json([
             'status' => 'success',

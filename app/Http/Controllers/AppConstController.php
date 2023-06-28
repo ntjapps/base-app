@@ -17,13 +17,13 @@ class AppConstController extends Controller
      */
     public function mainConst(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::guard('api')->user()?->name.' is requesting app constants', ['apiUserIp' => $request->ip()]);
-
+        
         try {
             $authCheck = Auth::check() ? true : Auth::guard('api')->check();
             $user = Auth::user() ?? Auth::guard('api')->user();
+            Log::debug('User is requesting app constants', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
         } catch (OAuthServerException $e) {
-            Log::warning('Client is requesting app constants but not authenticated', ['apiUserIp' => $request->ip()]);
+            Log::warning('Client is requesting app constants but not authenticated', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
             return response()->json([
                 'isAuth' => false,
@@ -72,8 +72,9 @@ class AppConstController extends Controller
      */
     public function logAgent(Request $request): HttpJsonResponse
     {
+        $user = Auth::user() ?? Auth::guard('api')->user();
         /** Log unsupported browser trigger from client */
-        Log::debug('Unsupported browser trigger', ['userAgent' => $request->userAgent(), 'apiUserIp' => $request->ip()]);
+        Log::debug('Unsupported browser trigger', ['userId' => $user?->id, 'userName' => $user?->name, 'userAgent' => $request->userAgent(), 'apiUserIp' => $request->ip()]);
 
         return response()->json('OK', 200);
     }

@@ -33,11 +33,14 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (OAuthServerException $e, Request $request) {
+            $user = $request->user();
             Log::debug('OAuthServerException', [
                 'message' => $e->getMessage(),
                 'code' => $e->getCode(),
                 'trace' => $e->getTraceAsString(),
                 'ip' => $request->ip(),
+                'userId' => $user?->id,
+                'userName' => $user?->name,
             ]);
 
             return response()->json([
@@ -46,11 +49,14 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (ExceptionsOAuthServerException $e, Request $request) {
+            $user = $request->user();
             Log::debug('OAuthServerException', [
                 'message' => $e->getMessage(),
                 'code' => $e->getCode(),
                 'trace' => $e->getTraceAsString(),
                 'ip' => $request->ip(),
+                'userId' => $user?->id,
+                'userName' => $user?->name,
             ]);
 
             return response()->json([

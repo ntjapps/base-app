@@ -69,7 +69,7 @@ class KeyRotationJob implements ShouldQueue
 
             Log::debug('Job Finished', ['jobName' => 'KeyRotationJob']);
         } catch (\Throwable $e) {
-            Log::error('Job Failed', ['jobName' => 'KeyRotationJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()]);
+            Log::error('Job Failed', ['jobName' => 'KeyRotationJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()->getMessage()]);
             throw $e;
         }
     }

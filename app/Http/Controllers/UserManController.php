@@ -18,7 +18,8 @@ class UserManController extends Controller
      */
     public function userManPage(Request $request): View
     {
-        Log::debug('User '.Auth::user()->name.' open user management page', ['userId' => Auth::id(), 'remoteIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User open user management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('super-pg.userman');
     }
@@ -28,7 +29,8 @@ class UserManController extends Controller
      */
     public function getUserList(Request $request): JsonResponse
     {
-        Log::debug('User '.Auth::guard('api')->user()->name.' get user list', ['userId' => Auth::guard('api')->id(), 'apiUserIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User get user list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [

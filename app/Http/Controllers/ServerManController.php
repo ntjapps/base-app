@@ -20,7 +20,8 @@ class ServerManController extends Controller
      */
     public function serverLogs(Request $request): View
     {
-        Log::debug('User '.Auth::user()->name.' open server log', ['userId' => Auth::id(), 'remoteIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('super-pg.serverlog');
     }
@@ -30,7 +31,8 @@ class ServerManController extends Controller
      */
     public function getServerLogs(Request $request): HttpJsonResponse
     {
-        Log::debug('User '.Auth::guard('api')->user()->name.' get server log', ['userId' => Auth::guard('api')->id(), 'apiUserIp' => $request->ip()]);
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User get server log', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [

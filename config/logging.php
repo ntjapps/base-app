@@ -64,12 +64,6 @@ return [
             'ignore_exceptions' => false,
         ],
 
-        'stack_migration' => [
-            'driver' => 'stack',
-            'channels' => ['daily'],
-            'ignore_exceptions' => false,
-        ],
-
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),

@@ -17,7 +17,7 @@ class AppConstController extends Controller
      */
     public function mainConst(Request $request): HttpJsonResponse
     {
-        
+
         try {
             $authCheck = Auth::check() ? true : Auth::guard('api')->check();
             $user = Auth::user() ?? Auth::guard('api')->user();

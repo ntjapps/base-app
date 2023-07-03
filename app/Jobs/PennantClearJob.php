@@ -35,7 +35,7 @@ class PennantClearJob implements ShouldQueue
 
             Log::debug('Job Finished', ['jobName' => 'PennantClearJob']);
         } catch (\Throwable $e) {
-            Log::error('Job Failed', ['jobName' => 'PennantClearJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()->getMessage()]);
+            Log::error('Job Failed', ['jobName' => 'PennantClearJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;
         }
     }

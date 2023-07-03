@@ -41,7 +41,7 @@ class {{ class }} implements ShouldQueue
 
             Log::debug('Job Finished', ['jobName' => '{{ class }}']);
         } catch (\Throwable $e) {
-            Log::error('Job Failed', ['jobName' => '{{ class }}', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()->getMessage()]);
+            Log::error('Job Failed', ['jobName' => '{{ class }}', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;
         }
     }

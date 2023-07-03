@@ -34,8 +34,8 @@ class CommonCustomException extends Exception
             'code' => $this->getCode(),
             'message' => $this->getMessage(),
             'trace' => $this->getTraceAsString(),
-            'previous' => $this->getPrevious() ? $this->getPrevious()->getMessage() : null,
-            'previous_trace' => $this->getPrevious() ? $this->getPrevious()->getTraceAsString() : null,
+            'previous' => $this->getPrevious()?->getMessage(),
+            'previous_trace' => $this->getPrevious()?->getTraceAsString(),
         ];
     }
 

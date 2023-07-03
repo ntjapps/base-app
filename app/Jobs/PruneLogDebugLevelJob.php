@@ -40,7 +40,7 @@ class PruneLogDebugLevelJob implements ShouldQueue
             ServerLog::where('level', Logger::toMonologLevel('warning'))->where('created_at', '<=', now()->subWeeks(4))->delete();
             Log::debug('Job Finished', ['jobName' => 'PruneLogDebugLevelJob']);
         } catch (\Throwable $e) {
-            Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()->getMessage()]);
+            Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;
         }
     }

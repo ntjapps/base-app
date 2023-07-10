@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Passport\Passport;
@@ -44,11 +45,16 @@ class ApiTest extends TestCase
         $this->seed($this->testSeed());
         $this->CommonPreparePat();
 
-        $user = User::factory()->create();
+        $unhashedPassword = 'password';
+        $user = User::factory()->create([
+            'password' => Hash::make($unhashedPassword),
+        ]);
+        $hashPasswordCheck = Hash::check($unhashedPassword, $user->password);
+        $this->assertTrue($hashPasswordCheck);
 
         $response = $this->postJson(route('post-token'), [
             'username' => $user->username,
-            'password' => 'password',
+            'password' => $unhashedPassword,
             'device_id' => Str::uuid(),
             'device_name' => 'Test Device',
             'device_model' => 'Test Model',

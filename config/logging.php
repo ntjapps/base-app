@@ -150,7 +150,7 @@ return [
             'level' => env('LOG_LEVEL', 'error'),
         ],
 
-        'stack_slack_telegram' => [
+        'stack_all' => [
             'driver' => 'stack',
             'channels' => ['stack', 'slack', 'telegram'],
             'ignore_exceptions' => false,

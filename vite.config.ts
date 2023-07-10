@@ -39,6 +39,7 @@ export default defineConfig({
                     "vue-sfc-runtime": ["vue"],
                     "vue-vendor": ["vue-router", "pinia"],
                     "axios-vendor": ["axios"],
+                    "echo-vendor": ["laravel-echo", "pusher-js"],
                 },
             },
         },

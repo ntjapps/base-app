@@ -54,13 +54,13 @@ return [
     'channels' => [
         'stack_slack' => [
             'driver' => 'stack',
-            'channels' => ['database', 'stderr', 'slack'],
+            'channels' => ['stack', 'slack'],
             'ignore_exceptions' => false,
         ],
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['database', 'stderr'],
+            'channels' => ['database', 'stderr', 'daily'],
             'ignore_exceptions' => false,
         ],
 
@@ -135,7 +135,7 @@ return [
 
         'stack_telegram' => [
             'driver' => 'stack',
-            'channels' => ['database', 'telegram'],
+            'channels' => ['stack', 'telegram'],
             'ignore_exceptions' => false,
         ],
 
@@ -148,6 +148,12 @@ return [
             'driver' => 'monolog',
             'handler' => App\Logger\TelegramHandler::class,
             'level' => env('LOG_LEVEL', 'error'),
+        ],
+
+        'stack_slack_telegram' => [
+            'driver' => 'stack',
+            'channels' => ['stack', 'slack', 'telegram'],
+            'ignore_exceptions' => false,
         ],
     ],
 

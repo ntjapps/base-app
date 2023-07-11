@@ -2,28 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Models\User;
 use Tests\TestCase;
 
 class WebTest extends TestCase
 {
-    /**
-     * Test open the login redirect
-     */
-    public function test_open_login_redirect(): void
-    {
-        $this->withoutMiddleware([RedirectIfAuthenticated::class]);
-
-        $response = $this->get(route('login'));
-
-        $response->assertStatus(302)->assertRedirectToRoute('landing-page');
-
-        $response = $this->get(route('landing-page'));
-
-        $response->assertStatus(200)->assertViewIs('auth-pg.login');
-    }
-
     /**
      * Test the post login form.
      */

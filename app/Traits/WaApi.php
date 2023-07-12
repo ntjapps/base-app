@@ -37,8 +37,6 @@ trait WaApi
                 Log::warning('Fallback Message', ['phoneNum' => $phone]);
                 $this->sendMessageFallback($phone, $message, $file);
             }
-
-            $this->updateWAStatus($response->json(), $phone);
         } catch (ConnectionException $error) {
             Log::channel('wamonitor')->error($error, ['app' => config('app.name')]);
         }
@@ -47,18 +45,18 @@ trait WaApi
     /**
      * Send message wrapper
      */
-    private function sendMessageFallback($phone, $message, $file): void
+    private function sendMessageFallback($phone, $message, $file = null): void
     {
         try {
             if ($file != null) {
-                $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
+                Http::asForm()->post('https://app.whacenter.com/api/send', [
                     'device_id' => config('waapi.device_id_2'),
                     'number' => $phone,
                     'message' => $message,
                     'file' => $file,
                 ]);
             } else {
-                $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
+                Http::asForm()->post('https://app.whacenter.com/api/send', [
                     'device_id' => config('waapi.device_id_2'),
                     'number' => $phone,
                     'message' => $message,
@@ -66,8 +64,6 @@ trait WaApi
             }
 
             Log::debug('Sending WA', ['deviceId' => config('waapi.device_id_2')]);
-
-            $this->updateWAStatus($response->json(), $phone);
         } catch (ConnectionException $error) {
             Log::channel('wamonitor')->error($error, ['app' => config('app.name')]);
         }
@@ -79,7 +75,7 @@ trait WaApi
     private function sendScheduledMessage($phone, $message): void
     {
         try {
-            $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
+            Http::asForm()->post('https://app.whacenter.com/api/send', [
                 'device_id' => config('waapi.device_id'),
                 'number' => $phone,
                 'message' => $message,
@@ -87,30 +83,8 @@ trait WaApi
             ]);
 
             Log::debug('Sending WA', ['deviceId' => config('waapi.device_id')]);
-
-            $this->updateWAStatus($response->json(), $phone);
         } catch (ConnectionException $error) {
             Log::channel('wamonitor')->error($error, ['app' => config('app.name')]);
-        }
-    }
-
-    /**
-     * Status update wrapper
-     */
-    private function updateWAStatus($response, $phone): void
-    {
-        $user = User::where('phone', $phone)->first();
-
-        /** If status is null just log, if not null, then update status, user null because WA sent to non user */
-        if ($user == null) {
-            Log::debug('Null user id', ['phone' => $phone]);
-        } else {
-            $resp_status = ($response['status'] == true) ? true : false;
-
-            $user->wa_status = $resp_status;
-            $user->save();
-
-            Log::debug('Update WA Status Phone: '.$phone, ['waStatus' => $resp_status]);
         }
     }
 }

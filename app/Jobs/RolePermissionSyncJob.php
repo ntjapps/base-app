@@ -36,15 +36,11 @@ class RolePermissionSyncJob implements ShouldQueue
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
             /** Create permissions */
-            if (!Permission::where('name', User::SUPER)->exists()) {
-                Permission::create(['name' => User::SUPER]);
-            }
+            Permission::firstOrCreate(['name' => User::SUPER]);
 
             /** Create roles and assign created permissions */
-            if (!Role::where('name', User::SUPERROLE)->exists()) {
-                $super = Role::create(['name' => User::SUPERROLE]);
-                $super->givePermissionTo(User::SUPER);
-            }
+            $super = Role::firstOrCreate(['name' => User::SUPERROLE]);
+            $super->givePermissionTo(User::SUPER);
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {

@@ -42,7 +42,6 @@ Artisan::command('system:start', function () {
     }
 
     Artisan::call('passport:client:env');
-    Artisan::call('passport:clientgrant:env');
     $this->info('Passport client generated');
 
     Artisan::call('pennant:clear');
@@ -55,7 +54,6 @@ Artisan::command('system:start', function () {
 
 Artisan::command('system:refresh', function () {
     Artisan::call('passport:client:env');
-    Artisan::call('passport:clientgrant:env');
     $this->info('Passport client generated');
 
     Redis::connection('horizon')->flushdb();
@@ -83,7 +81,7 @@ Artisan::command('key:rotation', function () {
     Log::alert('Console key:rotation executed', ['appName' => config('app.name')]);
 })->purpose('Rotate key');
 
-Artisan::command('penant:clear', function () {
+Artisan::command('pennant:clear', function () {
     Feature::flushCache();
     Feature::purge();
     $this->info('Penant cache cleared');
@@ -134,22 +132,6 @@ Artisan::command('passport:client:env', function () {
     $this->info('Client id and secret generated from .env');
     Log::alert('Console passport:client:env executed', ['appName' => config('app.name')]);
 })->purpose('Generate personal access client from .env');
-
-Artisan::command('passport:clientgrant:env', function () {
-    PassportClient::where('name', 'Client Credentials Client Env')->delete();
-
-    $client = new ClientRepository();
-    $client->create(null, 'Client Credentials Client Env', '');
-
-    $dbClient = PassportClient::where('name', 'Client Credentials Client Env')->first();
-    $dbClient->id = config('passport.client_credentials_grant_client.id');
-    $dbClient->secret = config('passport.client_credentials_grant_client.secret');
-    $dbClient->save();
-
-    $this->info('Client id: '.$dbClient->id);
-    $this->info('Client id and secret generated from .env');
-    Log::alert('Console passport:clientgrant:env executed', ['appName' => config('app.name')]);
-})->purpose('Generate client credentials client from .env');
 
 Artisan::command('passport:client:delete {id}', function ($id) {
     $client = PassportClient::where('id', $id)->first();
@@ -320,10 +302,10 @@ Artisan::command('user:perm:revoke {username} {permission}', function ($username
     Log::alert('Console user:revoke executed', ['username' => $username, 'permission' => $permission]);
 })->purpose('Revoke direct permission for given user');
 
-Artisan::command('test:mail {send}', function ($send) {
+Artisan::command('mail:test {send}', function ($send) {
     Mail::mailer('smtp')->to($send)->send(new TestMail);
     $this->info('Mail sent to '.$send);
-    Log::alert('Console test:mail executed', ['send' => $send]);
+    Log::alert('Console mail:test executed', ['send' => $send]);
 })->purpose('Test mail sending');
 
 Artisan::command('test:telegram', function () {
@@ -373,7 +355,6 @@ Artisan::command('patch:deploy', function () {
         $this->info('Deploying patch '.$patchId.'...');
 
         /** Alert Log for patch deployment and clear application cache */
-        Feature::flushCache();
         Artisan::call('up');
         Log::alert('Console patch:deploy executed', ['patchId' => $patchId, 'appName' => config('app.name')]);
     } else {

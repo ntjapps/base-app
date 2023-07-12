@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use App\Models\User;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;

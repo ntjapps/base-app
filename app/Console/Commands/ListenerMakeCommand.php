@@ -7,7 +7,6 @@ use Illuminate\Foundation\Console\ListenerMakeCommand as BaseListenerMakeCommand
 /**
  * Custom make:listener command.
  */
-
 class ListenerMakeCommand extends BaseListenerMakeCommand
 {
     /**

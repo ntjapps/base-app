@@ -1,3 +1,5 @@
 *
 !.gitignore
 !job.queued.stub
+!observer.stub
+!observer.plain.stub

@@ -10,6 +10,13 @@ use Laravel\Pennant\Feature;
 class PermissionObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the Permission "created" event.
      */
     public function created(Permission $permission): void

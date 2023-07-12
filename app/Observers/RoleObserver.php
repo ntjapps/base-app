@@ -10,6 +10,13 @@ use Laravel\Pennant\Feature;
 class RoleObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the Role "created" event.
      */
     public function created(Role $role): void

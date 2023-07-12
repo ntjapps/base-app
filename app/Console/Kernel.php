@@ -39,7 +39,6 @@ class Kernel extends ConsoleKernel
 
         /** Custom Jobs Cron */
         $schedule->job(new \App\Jobs\PruneLogDebugLevelJob)->dailyAt('00:00');
-        $schedule->job(new \App\Jobs\PennantClearJob)->dailyAt('00:00');
     }
 
     /**

@@ -14,6 +14,7 @@ trait JsonResponse
     {
         if ($route !== null) {
             return response()->json([
+                'status' => 'success',
                 'title' => $title,
                 'message' => $message,
                 'redirect' => $route,
@@ -21,6 +22,7 @@ trait JsonResponse
             ]);
         } else {
             return response()->json([
+                'status' => 'success',
                 'title' => $title,
                 'message' => $message,
                 'data' => $data,
@@ -35,6 +37,7 @@ trait JsonResponse
     {
         if ($route !== null) {
             return response()->json([
+                'status' => 'failed',
                 'redirect' => $route,
                 'errors' => [
                     'message' => $message,
@@ -43,6 +46,7 @@ trait JsonResponse
             ], 422);
         } else {
             return response()->json([
+                'status' => 'failed',
                 'errors' => [
                     'message' => $message,
                 ],

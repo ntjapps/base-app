@@ -12,7 +12,7 @@ class BasicWebTest extends TestCase
     public function test_constant_sanctum_csrf_cookie(): void
     {
         $this->get('/sanctum/csrf-cookie')
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJson([
                 'status' => 'success',
             ]);
@@ -24,7 +24,7 @@ class BasicWebTest extends TestCase
     public function test_constant_app_healthcheck(): void
     {
         $this->get('/app/healthcheck')
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJson([
                 'status' => 'success',
             ]);
@@ -36,6 +36,6 @@ class BasicWebTest extends TestCase
     public function test_constant_login_redirect(): void
     {
         $this->get('/login-redirect')
-            ->assertStatus(302)->assertRedirect(route('landing-page'));
+            ->assertTemporaryRedirect()->assertRedirect(route('landing-page'));
     }
 }

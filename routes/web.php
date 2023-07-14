@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use Illuminate\Support\Facades\Route;
@@ -39,7 +40,7 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::post('/post-logout', [AuthController::class, 'postLogout'])->name('post-logout');
     Route::get('/get-logout', [AuthController::class, 'getLogout'])->name('get-logout');
-    Route::get('/profile', [DashController::class, 'profilePage'])->name('profile');
+    Route::get('/profile', [ProfileController::class, 'profilePage'])->name('profile');
     /** Check if profile fillled if not, force go to profile page */
     Route::middleware(['profil'])->group(function () {
         Route::get('/dashboard', [DashController::class, 'dashboardPage'])->name('dashboard');

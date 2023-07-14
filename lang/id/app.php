@@ -23,14 +23,15 @@ return [
         'message' => 'Anda telah logout.',
     ],
 
-    'token_generated' => [
-        'token_title' => 'Token dihasilkan',
-        'token_message' => 'Token dihasilkan, silakan salin token ini dan simpan di tempat yang aman. Token ini hanya ditampilkan sekali dan tidak dapat dipulihkan.',
-    ],
-
-    'token_revoked' => [
-        'token_title' => 'Token dicabut',
-        'token_message' => 'Token dicabut, silakan buat token baru.',
+    'token' => [
+        'generated' => [
+            'title' => 'Token dihasilkan',
+            'message' => 'Token dihasilkan, silakan salin token ini dan simpan di tempat yang aman. Token ini hanya ditampilkan sekali dan tidak dapat dipulihkan.',
+        ],
+        'revoked' => [
+            'title' => 'Token dicabut',
+            'message' => 'Token dicabut, silakan buat token baru.',
+        ],
     ],
 
     'profile' => [

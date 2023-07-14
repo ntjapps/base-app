@@ -23,14 +23,15 @@ return [
         'message' => 'You have been logged out.',
     ],
 
-    'token_generated' => [
-        'token_title' => 'Token generated',
-        'token_message' => 'Token generated, please copy this token and save it in a safe place. This token is only displayed once and cannot be recovered.',
-    ],
-
-    'token_revoked' => [
-        'token_title' => 'Token revoked',
-        'token_message' => 'Token revoked, please create a new token.',
+    'token' => [
+        'generated' => [
+            'title' => 'Token generated',
+            'message' => 'Token generated, please copy this token and save it in a safe place. This token is only displayed once and cannot be recovered.',
+        ],
+        'revoked' => [
+            'title' => 'Token revoked',
+            'message' => 'Token revoked, please create a new token.',
+        ],
     ],
 
     'profile' => [

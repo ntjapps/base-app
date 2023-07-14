@@ -149,8 +149,8 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'title' => __('app.token_generated.title'),
-            'message' => __('app.token_generated.message'),
+            'title' => __('app.token.generated.title'),
+            'message' => __('app.token.generated.message'),
             'token_type' => 'Bearer',
             'access_token' => $token,
             'expires_at' => $expire,
@@ -172,8 +172,8 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'title' => __('app.token_revoked.title'),
-            'message' => __('app.token_revoked.message'),
+            'title' => __('app.token.revoked.title'),
+            'message' => __('app.token.revoked.message'),
         ], 200);
     }
 }

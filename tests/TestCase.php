@@ -5,6 +5,7 @@ namespace Tests;
 use App\Models\PassportClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Routing\Middleware\ThrottleRequestsWithRedis;
 use Laravel\Passport\ClientRepository;
 
 abstract class TestCase extends BaseTestCase
@@ -16,6 +17,10 @@ abstract class TestCase extends BaseTestCase
      */
     protected function testSeed(): array
     {
+        $this->withoutMiddleware([
+            ThrottleRequestsWithRedis::class,
+        ]);
+
         return [
             \Database\Seeders\RolesPermissionSeeder::class,
         ];

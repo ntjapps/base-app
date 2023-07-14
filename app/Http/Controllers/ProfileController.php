@@ -56,8 +56,8 @@ class ProfileController extends Controller
         Log::notice('User updated profile', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Successful Update Profile */
-        (string) $title = 'Update Profile Success';
-        (string) $message = 'Profile updated successfully';
+        (string) $title = __('app.profile.update.title');
+        (string) $message = __('app.profile.update.message');
         (string) $route = route('dashboard');
 
         return $this->jsonSuccess($title, $message, $route);

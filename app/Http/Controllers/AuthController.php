@@ -43,8 +43,8 @@ class AuthController extends Controller
         $this->checkAuthLogout($request);
 
         /** Send user to route */
-        (string) $title = 'Logout success';
-        (string) $message = 'Thank you';
+        (string) $title = __('app.logout.title');
+        (string) $message = __('app.logout.message');
         (string) $route = route('landing-page');
 
         return $this->jsonSuccess($title, $message, $route);
@@ -101,8 +101,8 @@ class AuthController extends Controller
         Log::notice('User logged in', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Send user to dashboard */
-        (string) $title = 'Login success';
-        (string) $message = 'Welcome back';
+        (string) $title = __('app.login.title');
+        (string) $message = __('app.login.message');
         (string) $route = route('dashboard');
 
         return $this->jsonSuccess($title, $message, $route);
@@ -149,8 +149,8 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'title' => 'Token generated',
-            'message' => 'Token generated',
+            'title' => __('app.token_generated.title'),
+            'message' => __('app.token_generated.message'),
             'token_type' => 'Bearer',
             'access_token' => $token,
             'expires_at' => $expire,
@@ -172,8 +172,8 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'title' => 'Token revoked',
-            'message' => 'Token revoked',
+            'title' => __('app.token_revoked.title'),
+            'message' => __('app.token_revoked.message'),
         ], 200);
     }
 }

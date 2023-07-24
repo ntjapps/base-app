@@ -39,5 +39,5 @@ return [
             'title' => 'Profil diperbarui',
             'message' => 'Profil berhasil diperbarui.',
         ],
-    ]
+    ],
 ];

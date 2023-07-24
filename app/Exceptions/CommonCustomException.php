@@ -11,7 +11,7 @@ class CommonCustomException extends Exception
     /**
      * Modify parent construct
      */
-    public function __construct($message = '', $code = 422, ?Throwable $previous = null)
+    public function __construct($message = '', $code = 422, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
@@ -20,7 +20,7 @@ class CommonCustomException extends Exception
      * Report the exception.
      * FALSE | NULL = report to log
      */
-    public function report(): bool|null
+    public function report(): ?bool
     {
         return false;
     }

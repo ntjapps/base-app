@@ -14,7 +14,7 @@ trait AuthFunction
     /**
      * Private common function to check auth
      */
-    private function checkAuthUser(array $validated): User|null
+    private function checkAuthUser(array $validated): ?User
     {
         try {
             /** Attempt to login */

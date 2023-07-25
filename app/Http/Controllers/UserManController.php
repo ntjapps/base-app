@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +29,7 @@ class UserManController extends Controller
     /**
      * POST request to get user list from table
      */
-    public function getUserList(Request $request): JsonResponse
+    public function getUserList(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User get user list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
@@ -57,7 +57,7 @@ class UserManController extends Controller
     /**
      * POST request to get roles and permissions form table
      */
-    public function getUserRolePerm(Request $request): JsonResponse
+    public function getUserRolePerm(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);

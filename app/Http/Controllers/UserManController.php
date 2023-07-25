@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,6 +50,20 @@ class UserManController extends Controller
             })->when($validated['name'] ?? false, function ($query, $name) {
                 $query->where('name', 'ILIKE', '%'.$name.'%');
             })->get();
+
+        return response()->json($data);
+    }
+
+    /**
+     * POST request to get roles and permissions form table
+     */
+    public function getUserRolePerm(Request $request): JsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
+        $data['roles'] = Role::all()->pluck('name')->toArray();
+        $data['permissions'] = Permission::all()->pluck('name')->toArray();
 
         return response()->json($data);
     }

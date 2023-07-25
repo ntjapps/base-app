@@ -64,6 +64,8 @@ class AppConstController extends Controller
 
             /** Permission Data */
             'permissionData' => $user?->getAllPermissions()->pluck('name')->toArray() ?? [],
+            'directPermissionData' => $user?->getDirectPermissions()->pluck('name')->toArray() ?? [],
+            'directRoleData' => $user?->getRoleNames()->toArray() ?? [],
         ], 200);
     }
 

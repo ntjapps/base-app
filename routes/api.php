@@ -35,6 +35,10 @@ Route::middleware(['xss'])->group(function () {
         Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {
             Route::post('/get-user-list', [UserManController::class, 'getUserList'])->name('get-user-list');
             Route::post('/get-user-role-perm', [UserManController::class, 'getUserRolePerm'])->name('get-user-role-perm');
+            Route::post('/post-user-man-submit', [UserManController::class, 'postUserManSubmit'])->name('post-user-man-submit');
+            Route::post('/post-delete-user-man-submit', [UserManController::class, 'postDeleteUserManSubmit'])->name('post-delete-user-man-submit');
+            Route::post('/post-reset-password-user-man-submit', [UserManController::class, 'postResetPasswordUserManSubmit'])->name('post-reset-password-user-man-submit');
+
             Route::post('/get-server-logs', [ServerManController::class, 'getServerLogs'])->name('get-server-logs');
         });
     });

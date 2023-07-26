@@ -22,6 +22,11 @@ export const useApiStore = defineStore("api", {
         logAgent: "/api/post-log-agent",
         getServerLogs: "/api/get-server-logs",
         getUserList: "/api/get-user-list",
+        getUserRolePerm: "/api/get-user-role-perm",
+        postUserManSubmit: "/api/post-user-man-submit",
+        postDeleteUserManSubmit: "/api/post-delete-user-man-submit",
+        postResetPasswordUserManSubmit:
+            "/api/post-reset-password-user-man-submit",
     }),
 });
 

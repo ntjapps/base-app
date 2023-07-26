@@ -1,37 +1,51 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { storeToRefs } from "pinia";
-import { timeGreetings } from "../AppCommon";
-import { useApiStore, useMainStore } from "../AppState";
-
 import axios from "axios";
+import { ref, onBeforeMount } from "vue";
+import { timeGreetings } from "../AppCommon";
+import { useApiStore } from "../AppState";
+import { useDialog } from "primevue/usedialog";
 
-import CmpLayout from "../Components/CmpLayout.vue";
 import CmpToast from "../Components/CmpToast.vue";
+import CmpLayout from "../Components/CmpLayout.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
 
-const timeGreet = timeGreetings();
-const api = useApiStore();
-const main = useMainStore();
-const { userName } = storeToRefs(main);
+import DialogUserMan from "../DialogComponents/DialogUserMan.vue";
 
+const api = useApiStore();
+const timeGreet = timeGreetings();
+const dialog = useDialog();
 const toastchild = ref<typeof CmpToast>();
 
-type BreadCrumbType = Array<{ label: string }>;
-type UserListDataType = Array<{
-    id: number;
+defineProps({
+    appName: {
+        type: String,
+        required: true,
+    },
+    greetings: {
+        type: String,
+        required: true,
+    },
+});
+
+type UserListDataInterface = {
+    id: string;
     username: string;
     name: string;
-    email: string;
-    role: string;
-    created_at: string;
-    updated_at: string;
-}>;
+    roles: Array<{
+        id: string;
+        name: string;
+    }>;
+    permissions: Array<{
+        id: string;
+        name: string;
+    }>;
+    user_permission: Array<string>;
+};
 
-const breadCrumb = ref<BreadCrumbType>([{ label: "User Role Management" }]);
-const userListData = ref<Array<UserListDataType>>(Array<UserListDataType>());
+const breadCrumb = ref([{ label: "User Role Management - YOVoucher" }]);
+const userListData = ref(Array<UserListDataInterface>());
 const loading = ref<boolean>(false);
 const usernameData = ref<string>("");
 const nameData = ref<string>("");
@@ -53,22 +67,42 @@ const getUserListData = () => {
         });
 };
 
-const showViewButton = (data: string): boolean => {
+const showViewButton = (data: string | null | undefined): boolean => {
     if (data !== "" && data !== null && data !== undefined) {
         return true;
     } else {
         return false;
     }
 };
+
+const openEditUserDialog = (data: UserListDataInterface | null) => {
+    dialog.open(DialogUserMan, {
+        props: {
+            header: data === null ? "Create User" : "Edit User",
+            modal: true,
+        },
+
+        data: {
+            typeCreate: data === null ? true : false,
+            usermanData: data,
+        },
+
+        onClose: () => {
+            getUserListData();
+        },
+    });
+};
+
+onBeforeMount(() => {
+    getUserListData();
+});
 </script>
 
 <template>
+    <CmpToast ref="toastchild" />
     <CmpLayout :bread-crumb="breadCrumb">
-        <CmpToast ref="toastchild" />
         <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
-            <h2 class="title-font font-bold">
-                {{ timeGreet + userName }}
-            </h2>
+            <h2 class="title-font font-bold">{{ timeGreet + greetings }}</h2>
             <h3 class="title-font">User Role Management</h3>
             <div class="grid grid-flow-row text-sm">
                 <div class="flex w-full my-0.5">
@@ -78,6 +112,7 @@ const showViewButton = (data: string): boolean => {
                             <InputText
                                 v-model="usernameData"
                                 class="w-72 text-sm"
+                                placeholder="Enter username"
                             />
                         </div>
                     </div>
@@ -87,13 +122,20 @@ const showViewButton = (data: string): boolean => {
                             <InputText
                                 v-model="nameData"
                                 class="w-72 text-sm"
+                                placeholder="Enter name"
                             />
                         </div>
                     </div>
                 </div>
             </div>
-            <button class="btn btn-success" @click="getUserListData">
+            <button class="btn btn-accent w-20 mt-2.5" @click="getUserListData">
                 <span class="m-1">Find</span>
+            </button>
+            <button
+                class="btn w-20 mt-2.5 mx-2"
+                @click="openEditUserDialog(null)"
+            >
+                <span class="m-1">Create</span>
             </button>
         </div>
         <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
@@ -102,6 +144,10 @@ const showViewButton = (data: string): boolean => {
                 :value="userListData"
                 show-gridlines
                 :loading="loading"
+                :paginator="true"
+                :rows="10"
+                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+                :rows-per-page-options="[10, 20, 50, 100]"
             >
                 <template #footer>
                     <div class="flex text-sm">
@@ -119,9 +165,12 @@ const showViewButton = (data: string): boolean => {
                     <template #body="slotProps">
                         <div
                             v-if="showViewButton(slotProps.data.id)"
-                            class="mx-1"
+                            class="flex justify-center"
                         >
-                            <button class="btn btn-accent">
+                            <button
+                                class="btn btn-accent"
+                                @click="openEditUserDialog(slotProps.data)"
+                            >
                                 <i class="pi pi-angle-double-right"></i>
                             </button>
                         </div>

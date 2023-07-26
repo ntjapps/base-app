@@ -72,7 +72,7 @@ jobs:
                   sudo cp -a {.,}[!.]* /var/www/vhosts/localhost
                   sudo chmod -R 777 /var/www/vhosts/localhost
                   cd /var/www/vhosts/localhost
-                  rm -rf $GITHUB_WORKSPACE/bootstrap/cache/config.php
+                  rm -rf $GITHUB_WORKSPACE/bootstrap/cache
                   php artisan config:cache
                   php artisan event:cache
                   php artisan route:cache

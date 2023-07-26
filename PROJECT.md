@@ -1,7 +1,8 @@
-# Convert Indentation Regex
+# NOTES ON CACHE
+Every change to file:
+1. ENV File / Config folders
+2. Routes folder
+3. Event / Listener folder
+4. Updated / Installed Packages
 
-((( {2})(?: {2}))(\b|(?!=[,'";\.:\*\\\/\{\}\[\]\(\)]))) --> $3 --> 4 to 2 indentation
-
-((( {2}))(\b|(?!=[,'";\.:\\*\\\/{\}\[\]\(\)]))) --> $3$3 --> 2 to 4 indentation
-
-./app, ./config, ./database, ./lang, ./resources, ./routes, ./tests
+Needs to reupload cache files

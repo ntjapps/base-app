@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\MenuItemClass;
+use App\Rules\TokenPlatformValidation;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use League\OAuth2\Server\Exception\OAuthServerException;
 
 class AppConstController extends Controller
@@ -79,5 +82,70 @@ class AppConstController extends Controller
         Log::debug('Unsupported browser trigger', ['userId' => $user?->id, 'userName' => $user?->name, 'userAgent' => $request->userAgent(), 'apiUserIp' => $request->ip()]);
 
         return response()->json('OK', 200);
+    }
+
+    /**
+     * POST app version updater
+     */
+    public function getCurrentAppVersion(Request $request): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('API hit trigger get current app version', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
+        /** Validate Input */
+        $validate = Validator::make($request->all(), [
+            'app_version' => ['required', 'string'],
+            'device_id' => ['required', 'string'],
+            'device_platform' => ['required', new TokenPlatformValidation],
+        ]);
+        if ($validate->fails()) {
+            Log::warning('API hit trigger validation failed', ['apiUserIp' => $request->ip(), 'errors' => $validate->errors()]);
+
+            throw new ValidationException($validate);
+        }
+        (array) $validated = $validate->validated();
+
+        Log::info('API hit trigger validation success', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'deviceId' => $validated['device_id'], 'devicePlatform' => $validated['device_platform']]);
+
+        /** Get Current App Version */
+        (string) $currentAppVersion = config('mobile.app_version');
+        (bool) $forceUpdate = config('mobile.app_force_update');
+
+        /** If force update then submit force update */
+        if ($forceUpdate) {
+            Log::info('API hit trigger force update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'deviceId' => $validated['device_id'], 'devicePlatform' => $validated['device_platform']]);
+
+            return response()->json([
+                'appUpdate' => true,
+                'appVersion' => $currentAppVersion,
+                'deviceVersion' => $validated['app_version'],
+            ]);
+        }
+
+        /** Check Current Semversion from Application */
+        if (substr($validated['app_version'], 0, 1) === 'v') {
+            (bool) $checkSemVersion = version_compare($validated['app_version'], $currentAppVersion, '>=');
+        } else {
+            (bool) $checkSemVersion = $validated['app_version'] === $currentAppVersion;
+        }
+
+        /** If current version is same with device version then submit no update */
+        if ($checkSemVersion) {
+            Log::info('API hit trigger no update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'deviceId' => $validated['device_id'], 'devicePlatform' => $validated['device_platform']]);
+
+            return response()->json([
+                'appUpdate' => false,
+                'appVersion' => $currentAppVersion,
+                'deviceVersion' => $validated['app_version'],
+            ]);
+        } else {
+            Log::info('API hit trigger update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'deviceId' => $validated['device_id'], 'devicePlatform' => $validated['device_platform']]);
+
+            return response()->json([
+                'appUpdate' => true,
+                'appVersion' => $currentAppVersion,
+                'deviceVersion' => $validated['app_version'],
+            ]);
+        }
     }
 }

@@ -68,14 +68,13 @@ jobs:
 
             - name: Build Cache # Build Cache
               run: |
+                  php artisan event:cache
+                  php artisan route:cache
                   sudo mkdir -p /var/www/vhosts/localhost
                   sudo cp -a {.,}[!.]* /var/www/vhosts/localhost
                   sudo chmod -R 777 /var/www/vhosts/localhost
                   cd /var/www/vhosts/localhost
-                  rm -rf $GITHUB_WORKSPACE/bootstrap/cache
                   php artisan config:cache
-                  php artisan event:cache
-                  php artisan route:cache
             - name: Output Cache as Artifact for volumes
               uses: actions/upload-artifact@v3
               with:

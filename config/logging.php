@@ -60,7 +60,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['database', 'stderr', 'daily'],
+            'channels' => ['database', 'stderr'],
             'ignore_exceptions' => false,
         ],
 

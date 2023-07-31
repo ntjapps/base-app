@@ -19,7 +19,7 @@ class InterfaceClass implements CacheKeyConst, PermissionConst, ResetPassConst
         
         foreach (explode("\n", $file) as $line) {
             if (strpos($line, 'APP_VERSION_HASH') !== false) {
-                return str_replace('APP_VERSION_HASH=', '', $line);
+                return substr(str_replace('APP_VERSION_HASH=', '', $line), 0, 8);
             }
         }
     }

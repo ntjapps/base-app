@@ -20,11 +20,6 @@ trait AuthFunction
             /** Attempt to login */
             $user = User::where('username', $validated['username'])->first();
             Log::debug('User Auth Check Data', ['user' => $user?->username]);
-
-            /** Check if password null */
-            if (is_null($user?->password) && is_null($user?->totp_key)) {
-                return null;
-            }
         } catch (\Throwable $e) {
             Log::error('Failed to check user', ['exception' => $e]);
 

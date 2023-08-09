@@ -43,4 +43,8 @@ public/*-debug.php
 # Ignore PrimeVue Files
 public/images
 
+# Ignore IDE Helper Files
+_ide_helper.php
+.phpstorm.meta.php
+
 # Added blankspace for Git

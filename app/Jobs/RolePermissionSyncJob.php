@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Interfaces\InterfaceClass;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -41,6 +42,12 @@ class RolePermissionSyncJob implements ShouldQueue
             /** Create roles and assign created permissions */
             $super = Role::firstOrCreate(['name' => User::SUPERROLE]);
             $super->givePermissionTo(User::SUPER);
+            
+            /** Update all const permission */
+            Permission::whereIn('name', InterfaceClass::ALLPERM)->update(['is_const' => true]);
+
+            /** Update all const role */
+            Role::whereIn('name', InterfaceClass::ALLROLE)->update(['is_const' => true]);
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {

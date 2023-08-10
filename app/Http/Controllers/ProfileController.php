@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Traits\JsonResponse;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,8 @@ class ProfileController extends Controller
      */
     public function profilePage(Request $request): View
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('dash-pg.profile');
@@ -32,8 +34,10 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User updating profile', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
@@ -46,7 +50,6 @@ class ProfileController extends Controller
 
         Log::info('User updating profile', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
-        $user = Auth::guard('api')->user();
         $user->name = $validated['name'];
         if (isset($validated['password'])) {
             $user->password = Hash::make($validated['password']);

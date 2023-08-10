@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\MenuItemClass;
+use App\Models\User;
 use App\Rules\TokenPlatformValidation;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class AppConstController extends Controller
 
         try {
             $authCheck = Auth::check() ? true : Auth::guard('api')->check();
-            $user = Auth::user() ?? Auth::guard('api')->user();
+            $userId = Auth::id() ?? Auth::guard('api')->id();
+            $user = User::where('id', $userId)->first();
             Log::debug('User is requesting app constants', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
         } catch (OAuthServerException $e) {
             Log::warning('Client is requesting app constants but not authenticated', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
@@ -77,7 +79,8 @@ class AppConstController extends Controller
      */
     public function logAgent(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         /** Log unsupported browser trigger from client */
         Log::debug('Unsupported browser trigger', ['userId' => $user?->id, 'userName' => $user?->name, 'userAgent' => $request->userAgent(), 'apiUserIp' => $request->ip()]);
 
@@ -89,7 +92,8 @@ class AppConstController extends Controller
      */
     public function getCurrentAppVersion(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('API hit trigger get current app version', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Input */

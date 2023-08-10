@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Logger\Models\ServerLog;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,8 @@ class ServerManController extends Controller
      */
     public function serverLogs(Request $request): View
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('super-pg.serverlog');
@@ -31,7 +33,8 @@ class ServerManController extends Controller
      */
     public function getServerLogs(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User get server log', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Request */

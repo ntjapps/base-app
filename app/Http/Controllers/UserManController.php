@@ -27,7 +27,8 @@ class UserManController extends Controller
      */
     public function userManPage(Request $request): View
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User open user role management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('super-pg.userman');
@@ -38,7 +39,8 @@ class UserManController extends Controller
      */
     public function getUserList(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User is requesting get user list for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Request */
@@ -66,7 +68,8 @@ class UserManController extends Controller
      */
     public function getUserRolePerm(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         return response()->json([
@@ -80,7 +83,8 @@ class UserManController extends Controller
      */
     public function postUserManSubmit(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User is requesting submit user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Request */
@@ -150,7 +154,8 @@ class UserManController extends Controller
      */
     public function postDeleteUserManSubmit(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User is requesting delete user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Request */
@@ -175,7 +180,8 @@ class UserManController extends Controller
      */
     public function postResetPasswordUserManSubmit(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User is requesting reset password user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Request */

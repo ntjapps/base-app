@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\InterfaceClass;
+use App\Models\User;
 use App\Rules\TokenPlatformValidation;
 use App\Rules\TurnstileValidation;
 use App\Traits\AuthFunction;
@@ -25,7 +26,8 @@ class AuthController extends Controller
      */
     public function loginPage(Request $request): View
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('Computer access login page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('auth-pg.login');
@@ -36,7 +38,8 @@ class AuthController extends Controller
      */
     public function postLogout(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Call common logout function */
@@ -55,7 +58,8 @@ class AuthController extends Controller
      */
     public function getLogout(Request $request): RedirectResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('Computer Access Logout Request', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         /** Call common logout function */
@@ -70,7 +74,8 @@ class AuthController extends Controller
      */
     public function postLogin(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('Computer access post login', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate request */
@@ -113,7 +118,8 @@ class AuthController extends Controller
      */
     public function postToken(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::debug('Computer access post token', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate request */
@@ -162,7 +168,8 @@ class AuthController extends Controller
      */
     public function postTokenRevoke(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         Log::info('Username revoking token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'apiUserIp' => $request->ip()]);
 
         /** Match bearer token with access token */

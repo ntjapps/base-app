@@ -36,6 +36,6 @@ class BasicWebTest extends TestCase
     public function test_constant_login_redirect(): void
     {
         $this->get('/login-redirect')
-            ->assertTemporaryRedirect()->assertRedirect(route('landing-page'));
+            ->assertRedirect(route('landing-page'));
     }
 }

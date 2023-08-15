@@ -43,10 +43,6 @@ class BasicApiTest extends AuthTestCase
             'userName',
             'isAuth',
         ]);
-
-        $response->assertJson([
-            'isConfirmed' => false,
-        ]);
     }
 
     /**

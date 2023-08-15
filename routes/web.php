@@ -37,7 +37,7 @@ Route::middleware(['guest'])->group(function () {
 });
 
 /** Routes that need authentication first */
-Route::middleware(['auth', 'auth.session'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::post('/post-logout', [AuthController::class, 'postLogout'])->name('post-logout');
     Route::get('/get-logout', [AuthController::class, 'getLogout'])->name('get-logout');
     Route::get('/profile', [ProfileController::class, 'profilePage'])->name('profile');

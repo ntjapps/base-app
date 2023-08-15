@@ -21,7 +21,7 @@ trait AuthFunction
             $user = User::where('username', $validated['username'])->first();
             Log::debug('User Auth Check Data', ['user' => $user?->username]);
         } catch (\Throwable $e) {
-            Log::error('Failed to check user', ['exception' => $e]);
+            Log::error('Failed to check user', ['errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
 
             return null;
         }
@@ -45,9 +45,11 @@ trait AuthFunction
      */
     protected function checkAuthLogout(Request $request): void
     {
+        $userId = Auth::id() ?? Auth::guard('api')->id();
+        $user = User::where('id', $userId)->first();
         /** Logout if user is authenticated */
         if (Auth::check()) {
-            Log::info('User '.Auth::user()?->name.' logging out', ['userId' => Auth::user()?->id]);
+            Log::info('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
             Auth::logout();
             $request->session()->invalidate();

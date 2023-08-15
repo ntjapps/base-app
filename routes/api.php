@@ -31,7 +31,7 @@ Route::middleware(['xss'])->group(function () {
     /** Routes that need authentication first */
     Route::middleware(['auth:api'])->group(function () {
         Route::post('/post-token-revoke', [AuthController::class, 'postTokenRevoke'])->name('post-token-revoke')->middleware(['throttle:api-secure']);
-        Route::post('/post-update-profile', [ProfileController::class, 'updateProfile'])->name('update-profile');
+        Route::post('/post-update-profile', [ProfileController::class, 'updateProfile'])->name('post-update-profile');
 
         Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {
             Route::post('/get-user-list', [UserManController::class, 'getUserList'])->name('get-user-list');

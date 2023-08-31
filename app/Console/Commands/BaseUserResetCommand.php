@@ -14,14 +14,14 @@ class BaseUserResetCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:base-user-reset-command';
+    protected $signature = 'user:reset {username}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Reset password for user';
 
     /**
      * Execute the console command.

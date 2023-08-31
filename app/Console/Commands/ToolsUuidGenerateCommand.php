@@ -13,14 +13,14 @@ class ToolsUuidGenerateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:tools-uuid-generate-command';
+    protected $signature = 'tools:uuid:generate';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generate UUID Tools';
 
     /**
      * Execute the console command.

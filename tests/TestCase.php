@@ -2,11 +2,10 @@
 
 namespace Tests;
 
-use App\Models\PassportClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Routing\Middleware\ThrottleRequestsWithRedis;
-use Laravel\Passport\ClientRepository;
+use Illuminate\Support\Facades\Artisan;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -31,12 +30,6 @@ abstract class TestCase extends BaseTestCase
      */
     protected function CommonPreparePat(): void
     {
-        $client = new ClientRepository();
-        $client->createPersonalAccessClient(null, 'Test Client', 'http://localhost');
-
-        $dbClient = PassportClient::where('name', 'Test Client')->first();
-        $dbClient->id = env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID');
-        $dbClient->secret = env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET');
-        $dbClient->save();
+        Artisan::call('passport:client:env');
     }
 }

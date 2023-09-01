@@ -19,7 +19,7 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    use JsonResponse, AuthFunction;
+    use AuthFunction, JsonResponse;
 
     /**
      * GET request for login landing page

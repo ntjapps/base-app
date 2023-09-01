@@ -55,8 +55,8 @@ class UserLoginTest extends TestCase
 
         $response->assertOk()->assertJson([
             'status' => 'success',
-            'title' => __('app.password.valid.title'),
-            'message' => __('app.password.valid.message'),
+            'title' => __('app.login.title'),
+            'message' => __('app.login.message'),
             'redirect' => route('dashboard'),
         ]);
     }

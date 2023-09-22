@@ -2,6 +2,7 @@ import { createApp, App } from "vue";
 import { createPinia, Pinia } from "pinia";
 const pinia: Pinia = createPinia();
 import PrimeVue from "primevue/config";
+import Tailwind from "primevue/passthrough/tailwind";
 
 /** Vue router needed for navigation menu */
 import { router } from "./AppRouter";
@@ -15,7 +16,7 @@ import Tooltip from "primevue/tooltip";
 const MainApp: App<Element> = createApp({})
     .use(router)
     .use(pinia)
-    .use(PrimeVue)
+    .use(PrimeVue, { unstyled: true, pt: Tailwind })
     .use(DialogService)
     .use(ToastService)
     .directive("tooltip", Tooltip);

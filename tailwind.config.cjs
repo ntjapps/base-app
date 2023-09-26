@@ -16,6 +16,7 @@ module.exports = {
         "resources/vue/**/*.vue",
         "resources/vue/**/*.js",
         "resources/vue/**/*.ts",
+        "./node_modules/primevue/**/*.{vue,js,ts,jsx,tsx}",
     ],
     darkMode: "class",
     daisyui: {

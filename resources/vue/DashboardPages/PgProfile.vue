@@ -63,8 +63,7 @@ const postProfileData = () => {
                         @keyup.enter="postProfileData"
                     />
                     <label class="w-full" for="newpas"
-                        >New Password (Must be filled if changing password,
-                        leave empty if don't want to change password)</label
+                        >New Password (leave empty if don't want to change password)</label
                     >
                 </span>
             </div>
@@ -80,8 +79,7 @@ const postProfileData = () => {
                         @keyup.enter="postProfileData"
                     />
                     <label class="w-full" for="confi"
-                        >Confirm Password (Must be filled if changing password,
-                        leave empty if don't want to change password)</label
+                        >Confirm Password (leave empty if don't want to change password)</label
                     >
                 </span>
             </div>

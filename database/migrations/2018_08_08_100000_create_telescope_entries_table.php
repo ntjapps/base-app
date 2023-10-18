@@ -34,6 +34,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        /** Don't run migration if environment not local */
+        if (! App::environment('local')) {
+            return;
+        }
+
         $this->schema->create('telescope_entries', function (Blueprint $table) {
             $table->bigIncrements('sequence');
             $table->uuid('uuid');

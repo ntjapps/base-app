@@ -41,6 +41,6 @@ class PassportClientEnvCommand extends Command
         $this->info('Client id: '.$dbClient->id);
         $this->info('Client id and secret generated from .env');
 
-        Log::alert('Console passport:client:env executed', ['appName' => config('app.name')]);
+        Log::debug('Console passport:client:env executed', ['appName' => config('app.name')]);
     }
 }

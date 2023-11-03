@@ -35,7 +35,7 @@ return new class extends Migration
     public function up(): void
     {
         /** Don't run migration if environment not local */
-        if (! App::environment('local')) {
+        if (! App::environment('local') && ! App::environment('testing')) {
             return;
         }
 

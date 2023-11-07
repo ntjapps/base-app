@@ -13,10 +13,20 @@ import DialogService from "primevue/dialogservice";
 import ToastService from "primevue/toastservice";
 import Tooltip from "primevue/tooltip";
 
-const CustomTailwind = usePassThrough(Tailwind, {
-    mergeSections: true,
-    mergeProps: false,
-});
+import dropdown from "./PrimevueThemes/dropdown";
+import fileupload from "./PrimevueThemes/fileupload";
+
+const CustomTailwind = usePassThrough(
+    Tailwind,
+    {
+        dropdown,
+        fileupload,
+    },
+    {
+        mergeSections: true,
+        mergeProps: false,
+    }
+);
 
 // Mount Application Instances
 const MainApp: App<Element> = createApp({})

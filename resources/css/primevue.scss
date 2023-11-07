@@ -1,2 +1,31 @@
 /** Core PrimeVue CSS */
 @import "primeicons/primeicons.css";
+
+/** Component CSS */
+.pc-input {
+    @apply input input-bordered w-full placeholder:text-transparent bg-white border-blue-500 focus:outline-blue-700;
+
+    &.with-icon-left {
+        @apply pl-14;
+    }
+
+    &.with-icon-left-password {
+        @apply pl-12;
+    }
+
+    &.placeholder-shown {
+        @apply placeholder:text-gray-500;
+    }
+}
+
+.pc-input-label {
+    @apply floating-label text-gray-500 bg-white peer-focus:bg-white peer-placeholder-shown:bg-transparent;
+
+    &.with-icon-left {
+        @apply left-10;
+    }
+}
+
+.pc-input-icon {
+    @apply absolute inset-y-0 left-0 flex items-center pl-5;
+}

@@ -22,7 +22,7 @@ onBeforeMount(() => {
 
 <template>
     <CmpLayout>
-        <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
             <h2 class="title-font font-bold">
                 {{ timeGreet + userName }}
             </h2>

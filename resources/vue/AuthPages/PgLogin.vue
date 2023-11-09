@@ -21,7 +21,7 @@ const loading = ref(false);
 const turnchild = ref<typeof CmpTurnstile>();
 const toastchild = ref<typeof CmpToast>();
 
-const postLogindata = () => {
+const postLoginData = () => {
     loading.value = true;
     axios
         .post(webapi.postLogin, {
@@ -50,10 +50,13 @@ const clearData = () => {
 <template>
     <CmpToast ref="toastchild" />
     <div
-        class="grid content-center w-screen h-screen bg-slate-200 object-fill bg-no-repeat bg-cover bg-center"
+        class="grid content-center w-screen h-screen bg-neutral object-fill bg-no-repeat bg-cover bg-center"
     >
         <div class="flex justify-center">
-            <div v-show="!loading" class="bg-white rounded-lg drop-shadow-lg">
+            <div
+                v-show="!loading"
+                class="bg-base-300 rounded-lg drop-shadow-lg"
+            >
                 <div class="m-auto p-5">
                     <div class="text-center font-bold my-2.5">
                         {{ appName }}
@@ -70,41 +73,37 @@ const clearData = () => {
                     <div class="text-center font-bold my-2.5">
                         Login to your account
                     </div>
-                    <div
-                        class="flex justify-center flex-col mt-8 my-2.5 p-float-label"
-                    >
-                        <div class="w-full">
-                            <span class="p-float-label w-full">
+                    <div class="flex justify-center flex-col mt-8 my-2.5">
+                        <div class="relative w-full">
+                            <span class="flex flex-col w-full">
+                                <label for="username"> Username </label>
                                 <InputText
                                     id="username"
                                     v-model="username"
-                                    type="text"
-                                    class="text-center w-full"
-                                    @keyup.enter="postLogindata"
+                                    class="text-left"
+                                    placeholder=""
+                                    @keypress.enter="postLoginData"
                                 />
-                                <label class="w-full" for="username"
-                                    >Username</label
-                                >
                             </span>
                         </div>
                     </div>
-                    <div
-                        class="flex justify-center flex-col mt-8 my-2.5 p-float-label"
-                    >
-                        <div class="w-full">
-                            <span class="p-float-label w-full">
+                    <div class="flex justify-center flex-col my-2.5">
+                        <div class="relative w-full">
+                            <span class="flex flex-col w-full">
+                                <label for="password"> Password </label>
                                 <Password
-                                    id="password"
                                     v-model="password"
+                                    input-id="password"
                                     type="text"
-                                    class="w-full"
-                                    input-class="w-full text-center"
+                                    placeholder=""
+                                    :pt="{
+                                        input: {
+                                            class: 'text-left w-full',
+                                        },
+                                    }"
                                     :feedback="false"
-                                    @keyup.enter="postLogindata"
+                                    @keyup.enter="postLoginData"
                                 />
-                                <label class="w-full" for="password"
-                                    >Password</label
-                                >
                             </span>
                         </div>
                     </div>

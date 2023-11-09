@@ -4,7 +4,7 @@ import CmpFooter from "../Components/CmpFooter.vue";
 </script>
 
 <template>
-    <div class="content-container bg-slate-200">
+    <div class="content-container bg-base-100">
         <CmpHeader />
         <div class="content-child-container">
             <slot />

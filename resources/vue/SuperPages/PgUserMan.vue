@@ -101,7 +101,7 @@ onBeforeMount(() => {
 <template>
     <CmpToast ref="toastchild" />
     <CmpLayout :bread-crumb="breadCrumb">
-        <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
             <h2 class="title-font font-bold">{{ timeGreet + greetings }}</h2>
             <h3 class="title-font">User Role Management</h3>
             <div class="grid grid-flow-row text-sm">
@@ -138,7 +138,7 @@ onBeforeMount(() => {
                 <span class="m-1">Create</span>
             </button>
         </div>
-        <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
             <DataTable
                 class="p-datatable-sm editable-cells-table"
                 :value="userListData"

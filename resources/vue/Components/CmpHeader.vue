@@ -21,7 +21,7 @@ const toggleMenu = (event: Event) => {
 
 <template>
     <div class="header-container">
-        <div class="bg-indigo-800 py-3 px-5 flex flex-row">
+        <div class="bg-base-300 py-3 px-5 flex flex-row">
             <div class="flex flex-row w-full">
                 <button class="btn" @click.prevent="toggleMenu">
                     <i class="pi pi-bars m-1" />

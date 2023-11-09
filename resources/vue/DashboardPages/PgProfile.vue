@@ -38,7 +38,7 @@ const postProfileData = () => {
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <div class="my-3 mx-5 p-5 bg-white rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
             <h3 class="title-font">Update profile in {{ appName }}</h3>
             <div class="mt-10 mb-5">
                 <span class="p-float-label w-full">

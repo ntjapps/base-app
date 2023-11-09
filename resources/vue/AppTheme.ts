@@ -3,6 +3,7 @@ import dropdown from "./PrimevueThemes/dropdown";
 import fileupload from "./PrimevueThemes/fileupload";
 import global from "./PrimevueThemes/global";
 import inputtext from "./PrimevueThemes/inputtext";
+import menu from "./PrimevueThemes/menu";
 import panelmenu from "./PrimevueThemes/panelmenu";
 import password from "./PrimevueThemes/password";
 import progressspiner from "./PrimevueThemes/progressspinner";
@@ -15,6 +16,7 @@ export const AppTheme = {
     fileupload: fileupload,
     global: global,
     inputtext: inputtext,
+    menu: menu,
     panelmenu: panelmenu,
     password: password,
     progressspiner: progressspiner,

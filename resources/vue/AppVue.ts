@@ -2,8 +2,6 @@ import { createApp, App } from "vue";
 import { createPinia, Pinia } from "pinia";
 const pinia: Pinia = createPinia();
 import PrimeVue from "primevue/config";
-import { usePassThrough } from "primevue/passthrough";
-import Tailwind from "primevue/passthrough/tailwind";
 
 /** Vue router needed for navigation menu */
 import { router } from "./AppRouter";
@@ -13,26 +11,13 @@ import DialogService from "primevue/dialogservice";
 import ToastService from "primevue/toastservice";
 import Tooltip from "primevue/tooltip";
 
-import dropdown from "./PrimevueThemes/dropdown";
-import fileupload from "./PrimevueThemes/fileupload";
-
-const CustomTailwind = usePassThrough(
-    Tailwind,
-    {
-        dropdown,
-        fileupload,
-    },
-    {
-        mergeSections: true,
-        mergeProps: false,
-    }
-);
+import { AppTheme } from "./AppTheme";
 
 // Mount Application Instances
 const MainApp: App<Element> = createApp({})
     .use(router)
     .use(pinia)
-    .use(PrimeVue, { ripple: true, unstyled: true, pt: CustomTailwind })
+    .use(PrimeVue, { ripple: true, unstyled: true, pt: AppTheme })
     .use(DialogService)
     .use(ToastService)
     .directive("tooltip", Tooltip);

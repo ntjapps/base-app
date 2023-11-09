@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default {
-    root: ({ props }: { props: Record<string, unknown> }) => ({
+    root: ({ props }: { props: any }) => ({
         class: [
             "cursor-pointer inline-flex relative select-none",
             "bg-white border border-gray-400 transition-colors duration-200 ease-in-out rounded-md",
@@ -11,7 +12,7 @@ export default {
             },
         ],
     }),
-    input: ({ props }: { props: Record<string, unknown> }) => ({
+    input: ({ props }: { props: any }) => ({
         class: [
             "cursor-pointer block flex flex-auto overflow-hidden overflow-ellipsis whitespace-nowrap relative",
             "bg-transparent border-0 text-gray-800",
@@ -35,7 +36,7 @@ export default {
         ],
     },
     list: "py-3 list-none m-0",
-    item: ({ context }: { context: Record<string, unknown> }) => ({
+    item: ({ context }: { context: any }) => ({
         class: [
             "cursor-pointer font-normal overflow-hidden relative whitespace-nowrap",
             "m-0 p-3 border-0  transition-shadow duration-200 rounded-none",

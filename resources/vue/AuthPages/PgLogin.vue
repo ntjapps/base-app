@@ -9,7 +9,6 @@ import CmpToast from "../Components/CmpToast.vue";
 
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
-import ProgressSpinner from "primevue/progressspinner";
 
 const webapi = useWebApiStore();
 const main = useMainStore();
@@ -120,7 +119,7 @@ const clearData = () => {
             <div v-show="loading" class="bg-white rounded-lg drop-shadow-lg">
                 <div class="m-auto p-5">
                     <div class="text-center font-bold my-2.5">
-                        <ProgressSpinner />
+                        <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
                     </div>
                     <div class="text-center font-bold my-2.5">Loading</div>
                 </div>

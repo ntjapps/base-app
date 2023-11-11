@@ -45,7 +45,7 @@ export default {
             "hover:bg-primary", // Hover
             {
                 "bg-primary-focus": context.focused,
-            }
+            },
         ],
     }),
     action: {

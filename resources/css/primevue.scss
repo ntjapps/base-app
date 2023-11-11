@@ -2,24 +2,3 @@
 @import "primeicons/primeicons.css";
 
 /** Component CSS */
-.pc-input {
-    &.with-icon-left {
-        @apply pl-14;
-    }
-
-    &.with-icon-left-password {
-        @apply pl-12;
-    }
-}
-
-.pc-input-label {
-    @apply floating-label text-neutral-content bg-base-100 peer-focus:bg-neutral-focus peer-placeholder-shown:bg-transparent;
-
-    &.with-icon-left {
-        @apply left-10;
-    }
-}
-
-.pc-input-icon {
-    @apply absolute inset-y-0 left-0 flex items-center pl-5;
-}

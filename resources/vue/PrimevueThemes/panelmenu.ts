@@ -12,7 +12,7 @@ export const TRANSITIONS = {
 };
 
 export default {
-    root: "w-full md:w-[25rem]",
+    root: "w-full",
     panel: "mb-1",
     header: {
         class: [

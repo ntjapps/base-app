@@ -1,14 +1,27 @@
 <script setup lang="ts">
 import CmpHeader from "../Components/CmpHeader.vue";
 import CmpFooter from "../Components/CmpFooter.vue";
+import CmpMenu from "../Components/CmpMenu.vue";
+
+const props = defineProps({
+    pageTitle: {
+        type: String,
+        default: "",
+    },
+});
 </script>
 
 <template>
-    <div class="content-container bg-base-100">
-        <CmpHeader />
-        <div class="content-child-container">
-            <slot />
+    <div class="flex flex-row w-full">
+        <div class="flex flex-grow-0 min-h-full w-1/6 bg-base-200">
+            <CmpMenu />
         </div>
-        <CmpFooter />
+        <div class="content-container bg-base-100 w-full">
+            <CmpHeader :page-title="props.pageTitle" />
+            <div class="content-child-container">
+                <slot />
+            </div>
+            <CmpFooter />
+        </div>
     </div>
 </template>

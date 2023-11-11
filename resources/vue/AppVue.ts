@@ -17,7 +17,7 @@ import { AppTheme } from "./AppTheme";
 const MainApp: App<Element> = createApp({})
     .use(router)
     .use(pinia)
-    .use(PrimeVue, { ripple: true, unstyled: true, pt: AppTheme })
+    .use(PrimeVue, { unstyled: true, pt: AppTheme })
     .use(DialogService)
     .use(ToastService)
     .directive("tooltip", Tooltip);

@@ -3,5 +3,5 @@
 
 @section('body')
     @parent
-    <router-view page-title="Overview Dashboard" />
+    <router-view />
 @endsection

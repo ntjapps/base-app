@@ -1,0 +1,137 @@
+.bg-primary-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--p) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-primary-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--pc) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-secondary-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--s) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-secondary-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--sc) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-accent-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--a) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-accent-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--ac) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-neutral-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--n) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-neutral-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--nc) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-base-100-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--b1) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-base-200-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(
+        var(--b2, var(--b1)) / var(--tw-bg-opacity)
+    ) !important;
+}
+
+.bg-base-300-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(
+        var(--b3, var(--b2)) / var(--tw-bg-opacity)
+    ) !important;
+}
+
+.bg-base-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--bc) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-info-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--in) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-info-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(
+        var(--inc, var(--nc)) / var(--tw-bg-opacity)
+    ) !important;
+}
+
+.bg-success-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--su) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-success-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(
+        var(--suc, var(--nc)) / var(--tw-bg-opacity)
+    ) !important;
+}
+
+.bg-warning-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--wa) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-warning-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(
+        var(--wac, var(--nc)) / var(--tw-bg-opacity)
+    ) !important;
+}
+
+.bg-error-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(var(--er) / var(--tw-bg-opacity)) !important;
+}
+
+.bg-error-content-important {
+    --tw-bg-opacity: 1 !important;
+
+    background-color: hsl(
+        var(--erc, var(--nc)) / var(--tw-bg-opacity)
+    ) !important;
+}
+
+.text-initial-important {
+    --tw-text-opacity: 1 !important;
+
+    color: hsl(var(--i) / var(--tw-text-opacity)) !important;
+}

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- <link rel="icon" type="image/webp" href="{{ asset('mix-images/icon.webp') }}"/> --}}
+    {{-- <link rel="icon" type="image/webp" href="{{ Vite::asset('resources/images/icon.webp') }}"/> --}}
 
     <title>@yield('title')</title>
     </head>

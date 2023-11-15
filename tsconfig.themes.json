@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "noImplicitAny": false,
+        "noImplicitAny": false
     },
     "include": ["resources/themes/*.ts"]
 }

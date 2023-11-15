@@ -22,7 +22,7 @@
         "resources/**/*.tsx",
         "resources/**/*.vue"
     ],
-    "references": [{ "path": "./tsconfig.node.json" }],
+    "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.themes.json" }],
     "exclude": ["node_modules"],
     "vueCompilerOptions": {
 		"skipTemplateCodegen": true

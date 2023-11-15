@@ -12,7 +12,4 @@ import "../vue/AppVue";
 /**
  * Load static assets
  */
-import.meta.glob([
-    '../images/**',
-    '../fonts/**',
-]);
+import.meta.glob(["../images/**", "../fonts/**"]);

@@ -43,10 +43,10 @@ const getUserRoleListData = () => {
                         usermanData?.roles?.findIndex(
                             (userRole: { id: string; name: string }) => {
                                 return userRole.name === role.name;
-                            }
+                            },
                         ) !== -1
                     );
-                }
+                },
             );
             selectedPermListData.value = response.data.permissions.filter(
                 (perm: { id: string; name: string }) => {
@@ -54,10 +54,10 @@ const getUserRoleListData = () => {
                         usermanData?.permissions?.findIndex(
                             (userPerm: { id: string; name: string }) => {
                                 return userPerm.name === perm.name;
-                            }
+                            },
                         ) !== -1
                     );
-                }
+                },
             );
         })
         .catch((error) => {
@@ -75,12 +75,12 @@ const postUserManData = () => {
             roles: selectedRoleListData.value?.map(
                 (role: { id: string; name: string }) => {
                     return role.name;
-                }
+                },
             ),
             permissions: selectedPermListData.value?.map(
                 (perm: { id: string; name: string }) => {
                     return perm.name;
-                }
+                },
             ),
         })
         .then((response) => {

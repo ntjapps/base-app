@@ -3,7 +3,7 @@ interface Window {
         ready: (callback: () => void) => void;
         render: (
             container: string | HTMLElement,
-            params: RenderParameters
+            params: RenderParameters,
         ) => void;
         reset: () => void;
     };

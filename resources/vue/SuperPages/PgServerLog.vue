@@ -190,7 +190,7 @@ onBeforeMount(() => {
                     <template #body="slotProps">
                         {{
                             new Date(slotProps.data.created_at).toLocaleString(
-                                "en-UK"
+                                "en-UK",
                             )
                         }}
                     </template>

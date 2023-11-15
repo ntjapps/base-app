@@ -18,7 +18,7 @@ if (typeof window.turnstile === "undefined") {
     const srcJs = document.createElement("script");
     srcJs.setAttribute(
         "src",
-        "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad"
+        "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad",
     );
     srcJs.async = true;
     srcJs.defer = true;

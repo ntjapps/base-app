@@ -8,3 +8,11 @@ import "../css/app.scss";
  */
 import "./bootstrap";
 import "../vue/AppVue";
+
+/**
+ * Load static assets
+ */
+import.meta.glob([
+    '../images/**',
+    '../fonts/**',
+]);

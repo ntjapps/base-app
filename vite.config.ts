@@ -3,8 +3,7 @@ import { defineConfig, splitVendorChunkPlugin } from "vite";
 import { configDefaults } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import laravel from "laravel-vite-plugin";
-import { viteStaticCopy } from 'vite-plugin-static-copy'
-
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
     server: {
@@ -29,12 +28,12 @@ export default defineConfig({
         splitVendorChunkPlugin(),
         viteStaticCopy({
             targets: [
-              {
-                src: 'resources/images',
-                dest: 'assets'
-              }
-            ]
-          })
+                {
+                    src: "resources/images",
+                    dest: "assets",
+                },
+            ],
+        }),
     ],
     resolve: {
         alias: {

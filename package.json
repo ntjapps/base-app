@@ -7,12 +7,12 @@
         "test": "vitest",
         "browser": "echo \"const supportedBrowsers = $(browserslist-useragent-regexp --allowHigherVersions);\n\nexport { supportedBrowsers };\" > resources/ts/browser.ts",
         "presstyle:fix": "npm run prettier:fix && npm run stylelint:fix && npm run eslint:fix",
-        "eslint": "eslint --ext .js,.ts,.vue resources",
-        "eslint:fix": "eslint --ext .js,.ts,.vue resources --fix",
+        "eslint": "eslint --ext .cjs,.js,.ts,.vue resources",
+        "eslint:fix": "eslint --ext .cjs,.js,.ts,.vue resources --fix",
         "stylelint": "stylelint resources/**/*.{css,scss,vue}",
         "stylelint:fix": "stylelint resources/**/*.{css,scss,vue} --fix",
-        "prettier": "prettier --check resources/**/*.{css,scss,vue,js,ts,json,md}",
-        "prettier:fix": "prettier --write resources/**/*.{css,scss,vue,js,ts,json,md}"
+        "prettier": "prettier --check resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md}",
+        "prettier:fix": "prettier --write resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md}"
     },
     "devDependencies": {
         "@fortawesome/fontawesome-free": "^6.4.2",

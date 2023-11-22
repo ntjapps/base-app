@@ -37,6 +37,7 @@ export default defineConfig({
                 compact: true,
             },
         },
+        manifest: 'manifest.json',
     },
     test: {
         environment: "happy-dom",

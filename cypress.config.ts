@@ -8,11 +8,14 @@ export default defineConfig({
             on('file:preprocessor', vitePreprocessor(config))
         },
         video: true,
+        screenshotOnRunFailure: true,
     },
     component: {
         devServer: {
             framework: 'vue',
             bundler: 'vite',
         },
+        video: true,
+        screenshotOnRunFailure: true,
     },
 })

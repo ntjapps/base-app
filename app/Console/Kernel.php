@@ -23,7 +23,6 @@ class Kernel extends ConsoleKernel
     {
         /** Packages Cron */
         $schedule->command('horizon:snapshot')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
-        $schedule->command('storage:link')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
         $schedule->command('model:prune')->hourly()->runInBackground()->withoutOverlapping();
         $schedule->command('queue:prune-failed')->hourly()->runInBackground()->withoutOverlapping();
         $schedule->command('queue:flush')->hourly()->runInBackground()->withoutOverlapping();

@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "moduleResolution": "NodeNext",
+      "lib": ["es5", "dom"],
+      "types": ["cypress", "node"],
+      "jsx": "preserve"
+    },
+    "include": ["**/*.ts", "../cypress.d.ts"]
+}

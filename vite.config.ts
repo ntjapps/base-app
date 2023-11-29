@@ -1,6 +1,4 @@
-/// <reference types="vitest" />
 import { defineConfig, splitVendorChunkPlugin } from "vite";
-import { configDefaults } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import laravel from "laravel-vite-plugin";
 
@@ -38,9 +36,5 @@ export default defineConfig({
             },
         },
         manifest: 'manifest.json',
-    },
-    test: {
-        environment: "happy-dom",
-        exclude: [...configDefaults.exclude],
     },
 });

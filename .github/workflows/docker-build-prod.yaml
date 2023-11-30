@@ -106,7 +106,7 @@ jobs:
               with:
                   images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
             - name: Clean Build App # Remove unused files & dirs
-              run: rm -rf node_modules public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env .env.example .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js
+              run: rm -rf node_modules public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env .env.example .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js
             - name: Build & Push Container # Build & Push Container
               uses: docker/build-push-action@v3
               if: env.REGISTRY != '' && env.IMAGE_NAME != ''

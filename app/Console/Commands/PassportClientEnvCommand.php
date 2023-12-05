@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\PassportClient;
+use App\Models\PassportPersonalAccessClient;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Passport\ClientRepository;
 
@@ -28,15 +30,31 @@ class PassportClientEnvCommand extends Command
      */
     public function handle()
     {
-        PassportClient::where('name', 'Personal Access Client Env')->delete();
+        $passportClient = PassportClient::where('name', 'Personal Access Client Env')->first();
+        if (! is_null($passportClient)) {
+            PassportPersonalAccessClient::where('client_id', $passportClient->id)->delete();
+            $passportClient->delete();
+        }
 
         $client = new ClientRepository();
         $client->createPersonalAccessClient(null, 'Personal Access Client Env', 'http://localhost');
 
         $dbClient = PassportClient::where('name', 'Personal Access Client Env')->first();
-        $dbClient->id = config('passport.personal_access_client.id');
-        $dbClient->secret = config('passport.personal_access_client.secret');
-        $dbClient->save();
+        if (! is_null($dbClient)) {
+            DB::transaction(function () use ($dbClient) {
+                PassportPersonalAccessClient::where('client_id', $dbClient->id)->delete();
+
+                $dbClient->id = config('passport.personal_access_client.id');
+                $dbClient->secret = config('passport.personal_access_client.secret');
+                $dbClient->save();
+
+                PassportPersonalAccessClient::create([
+                    'client_id' => $dbClient->id,
+                ]);
+            });
+        } else {
+            $this->error('Client not found');
+        }
 
         $this->info('Client id: '.$dbClient->id);
         $this->info('Client id and secret generated from .env');

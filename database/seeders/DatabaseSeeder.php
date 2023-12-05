@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PassportInitSeeder::class,
             RolesPermissionSeeder::class,
-            LocalDataSeeder::class,
+            LocalUserSeeder::class,
         ]);
     }
 }

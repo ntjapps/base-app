@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 /** Route start here, WEB used for GET only */
 Route::get('/sanctum/csrf-cookie', function () {
-    return response()->json(['status' => 'success']);
+    return response()->json(['status' => 'success', 'csrf_token' => app()->environment('production') ? 'token' : csrf_token()]);
 });
 Route::get('/app/healthcheck', function () {
     return response()->json(['status' => 'success']);

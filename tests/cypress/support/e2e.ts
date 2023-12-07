@@ -1,3 +1,4 @@
+import './commands';
 import { activatePreTesting, returnPostTesting } from './swap-env';
 
 before(() => {

@@ -1,5 +1,5 @@
-import './commands';
-import { activatePreTesting, returnPostTesting } from './swap-env';
+import "./commands";
+import { activatePreTesting, returnPostTesting } from "./swap-env";
 
 before(() => {
     activatePreTesting();

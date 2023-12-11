@@ -10,8 +10,8 @@
         "eslint:fix": "eslint --ext .cjs,.js,.ts,.vue resources --fix",
         "stylelint": "stylelint resources/**/*.{css,scss,vue}",
         "stylelint:fix": "stylelint resources/**/*.{css,scss,vue} --fix",
-        "prettier": "prettier --check resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md} cypress/**/*.{css,scss,vue,js,cjs,ts,json,md}",
-        "prettier:fix": "prettier --write resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md} cypress/**/*.{css,scss,vue,js,cjs,ts,json,md}"
+        "prettier": "prettier --check resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md} tests/**/*.{css,scss,vue,js,cjs,ts,json,md}",
+        "prettier:fix": "prettier --write resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md} tests/**/*.{css,scss,vue,js,cjs,ts,json,md}"
     },
     "devDependencies": {
         "@pinia/testing": "^0.1.3",

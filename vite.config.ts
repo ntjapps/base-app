@@ -35,6 +35,6 @@ export default defineConfig({
                 compact: true,
             },
         },
-        manifest: 'manifest.json',
+        manifest: "manifest.json",
     },
 });

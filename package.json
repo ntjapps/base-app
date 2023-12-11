@@ -4,7 +4,6 @@
     "scripts": {
         "dev": "rm -rf public/build && vite",
         "build": "rm -rf public/build public/hot && vite build",
-        "test": "cypress run",
         "browser": "echo \"const supportedBrowsers = $(browserslist-useragent-regexp --allowHigherVersions);\n\nexport { supportedBrowsers };\" > resources/ts/browser.ts",
         "presstyle:fix": "npm run prettier:fix ; npm run eslint:fix",
         "eslint": "eslint --ext .cjs,.js,.ts,.vue resources",

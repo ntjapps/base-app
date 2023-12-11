@@ -5,7 +5,7 @@
         "dev": "rm -rf public/build && vite",
         "build": "rm -rf public/build public/hot && vite build",
         "browser": "echo \"const supportedBrowsers = $(browserslist-useragent-regexp --allowHigherVersions);\n\nexport { supportedBrowsers };\" > resources/ts/browser.ts",
-        "presstyle:fix": "npm run prettier:fix && npm run eslint:fix",
+        "presstyle:fix": "npm run prettier:fix ; npm run eslint:fix",
         "eslint": "eslint --ext .cjs,.js,.ts,.vue resources",
         "eslint:fix": "eslint --ext .cjs,.js,.ts,.vue resources --fix",
         "prettier": "prettier --check resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md} tests/**/*.{css,scss,vue,js,cjs,ts,json,md}",

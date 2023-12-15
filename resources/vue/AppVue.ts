@@ -3,7 +3,7 @@ import { createPinia, Pinia } from "pinia";
 const pinia: Pinia = createPinia();
 import PrimeVue from "primevue/config";
 
-import Lara from './presets/lara';
+import PrimeTailwind from "./presets/custom";
 import * as Sentry from "@sentry/vue";
 
 /** Vue router needed for navigation menu */
@@ -40,7 +40,7 @@ const MainApp: App<Element> = createApp({})
     .use(pinia)
     .use(PrimeVue, {
         unstyled: true,
-        pt: Lara,
+        pt: PrimeTailwind,
         ptOptions: { mergeProps: true },
     })
     .use(DialogService)

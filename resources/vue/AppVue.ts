@@ -2,7 +2,8 @@ import { createApp, App } from "vue";
 import { createPinia, Pinia } from "pinia";
 const pinia: Pinia = createPinia();
 import PrimeVue from "primevue/config";
-import Tailwind from "primevue/passthrough/tailwind";
+
+import Lara from './presets/lara';
 import * as Sentry from "@sentry/vue";
 
 /** Vue router needed for navigation menu */
@@ -18,8 +19,11 @@ Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     integrations: [
         new Sentry.BrowserTracing({
-        // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-        tracePropagationTargets: ["localhost", import.meta.env.VITE_APP_URL],
+            // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+            tracePropagationTargets: [
+                "localhost",
+                import.meta.env.VITE_APP_URL,
+            ],
         }),
         new Sentry.Replay(),
     ],
@@ -36,7 +40,7 @@ const MainApp: App<Element> = createApp({})
     .use(pinia)
     .use(PrimeVue, {
         unstyled: true,
-        pt: Tailwind,
+        pt: Lara,
         ptOptions: { mergeProps: true },
     })
     .use(DialogService)

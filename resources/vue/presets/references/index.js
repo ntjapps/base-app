@@ -11,6 +11,7 @@ import card from "./card";
 import checkbox from "./checkbox";
 import chip from "./chip";
 import chips from "./chips";
+import datatable from "./datatable";
 import dialog from "./dialog";
 import dropdown from "./dropdown";
 import fieldset from "./fieldset";
@@ -24,6 +25,7 @@ import panelmenu from "./panelmenu";
 import menubar from "./menubar";
 import message from "./message";
 import overlaypanel from "./overlaypanel";
+import paginator from "./paginator";
 import panel from "./panel";
 import password from "./password";
 import progressbar from "./progressbar";
@@ -65,6 +67,10 @@ export default {
     //buttons
     button,
     splitbutton,
+
+    //datatables
+    datatable,
+    paginator,
 
     //panels
     accordion,

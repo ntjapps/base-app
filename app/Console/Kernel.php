@@ -22,18 +22,18 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         /** Packages Cron */
-        $schedule->command('horizon:snapshot')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
-        $schedule->command('model:prune')->hourly()->runInBackground()->withoutOverlapping();
-        $schedule->command('queue:prune-failed')->hourly()->runInBackground()->withoutOverlapping();
-        $schedule->command('queue:flush')->hourly()->runInBackground()->withoutOverlapping();
-        $schedule->command('passport:purge')->hourly()->runInBackground()->withoutOverlapping();
+        $schedule->command('horizon:snapshot')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('model:prune')->hourly()->withoutOverlapping();
+        $schedule->command('queue:prune-failed')->hourly()->withoutOverlapping();
+        $schedule->command('queue:flush')->hourly()->withoutOverlapping();
+        $schedule->command('passport:purge')->hourly()->withoutOverlapping();
 
         if (config('cache.default') === 'redis') {
-            $schedule->command('cache:prune-stale-tags')->hourly()->runInBackground()->withoutOverlapping();
+            $schedule->command('cache:prune-stale-tags')->hourly()->withoutOverlapping();
         }
 
         if ($this->app->environment('local')) {
-            $schedule->command('telescope:prune')->hourly()->runInBackground()->withoutOverlapping();
+            $schedule->command('telescope:prune')->hourly()->withoutOverlapping();
         }
 
         /** Custom Jobs Cron */

@@ -17,7 +17,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements PermissionConst
 {
-    use HasApiTokens, HasFactory, HasFeatures, HasRoles, HasUuids, Prunable, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasFeatures, HasRoles, HasUuids, Notifiable, Prunable, SoftDeletes;
 
     protected function getDefaultGuardName(): string
     {

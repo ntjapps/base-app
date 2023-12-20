@@ -10,7 +10,7 @@ trait JsonResponse
     /**
      * JSON return wrapper for success
      */
-    public function jsonSuccess(string $title, string $message, string $route = null, array $data = null): Response|HttpJsonResponse
+    public function jsonSuccess(string $title, string $message, ?string $route = null, ?array $data = null): Response|HttpJsonResponse
     {
         if ($route !== null) {
             return response()->json([
@@ -33,7 +33,7 @@ trait JsonResponse
     /**
      * JSON return wrapper for failed
      */
-    public function jsonFailed(string $title, string $message, string $route = null, array $data = null): Response|HttpJsonResponse
+    public function jsonFailed(string $title, string $message, ?string $route = null, ?array $data = null): Response|HttpJsonResponse
     {
         if ($route !== null) {
             return response()->json([

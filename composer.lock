@@ -1580,16 +1580,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v10.37.3",
+            "version": "v10.38.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "996375dd61f8c6e4ac262b57ed485655d71fcbdc"
+                "reference": "ced4689f495213e9d23995b36098f12a802cc15b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/996375dd61f8c6e4ac262b57ed485655d71fcbdc",
-                "reference": "996375dd61f8c6e4ac262b57ed485655d71fcbdc",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/ced4689f495213e9d23995b36098f12a802cc15b",
+                "reference": "ced4689f495213e9d23995b36098f12a802cc15b",
                 "shasum": ""
             },
             "require": {
@@ -1635,6 +1635,8 @@
                 "voku/portable-ascii": "^2.0"
             },
             "conflict": {
+                "carbonphp/carbon-doctrine-types": ">=3.0",
+                "doctrine/dbal": ">=4.0",
                 "tightenco/collect": "<5.5.33"
             },
             "provide": {
@@ -1746,6 +1748,7 @@
                 "files": [
                     "src/Illuminate/Collections/helpers.php",
                     "src/Illuminate/Events/functions.php",
+                    "src/Illuminate/Filesystem/functions.php",
                     "src/Illuminate/Foundation/helpers.php",
                     "src/Illuminate/Support/helpers.php"
                 ],
@@ -1778,7 +1781,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-12-13T20:10:58+00:00"
+            "time": "2023-12-20T14:52:12+00:00"
         },
         {
             "name": "laravel/horizon",
@@ -1938,16 +1941,16 @@
         },
         {
             "name": "laravel/pennant",
-            "version": "v1.5.0",
+            "version": "v1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pennant.git",
-                "reference": "a76f147694e588db5656fbb608168dab534e2216"
+                "reference": "6464d2aeb6cd8d1ad493b6cb101cdea552451f67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pennant/zipball/a76f147694e588db5656fbb608168dab534e2216",
-                "reference": "a76f147694e588db5656fbb608168dab534e2216",
+                "url": "https://api.github.com/repos/laravel/pennant/zipball/6464d2aeb6cd8d1ad493b6cb101cdea552451f67",
+                "reference": "6464d2aeb6cd8d1ad493b6cb101cdea552451f67",
                 "shasum": ""
             },
             "require": {
@@ -2010,7 +2013,7 @@
                 "issues": "https://github.com/laravel/pennant/issues",
                 "source": "https://github.com/laravel/pennant"
             },
-            "time": "2023-08-31T12:48:24+00:00"
+            "time": "2023-12-14T15:27:11+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -4838,16 +4841,16 @@
         },
         {
             "name": "sentry/sentry",
-            "version": "4.1.0",
+            "version": "4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-php.git",
-                "reference": "89666f297891ff937fceb2f3d1fb967a6848cf37"
+                "reference": "d858b32e0f9733f41dab847a0dc8c8198ba17d8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/89666f297891ff937fceb2f3d1fb967a6848cf37",
-                "reference": "89666f297891ff937fceb2f3d1fb967a6848cf37",
+                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/d858b32e0f9733f41dab847a0dc8c8198ba17d8b",
+                "reference": "d858b32e0f9733f41dab847a0dc8c8198ba17d8b",
                 "shasum": ""
             },
             "require": {
@@ -4871,7 +4874,7 @@
                 "phpbench/phpbench": "^1.0",
                 "phpstan/phpstan": "^1.3",
                 "phpunit/phpunit": "^8.5.14|^9.4",
-                "symfony/phpunit-bridge": "^5.2|^6.0",
+                "symfony/phpunit-bridge": "^5.2|^6.0|^7.0",
                 "vimeo/psalm": "^4.17"
             },
             "suggest": {
@@ -4911,7 +4914,7 @@
             ],
             "support": {
                 "issues": "https://github.com/getsentry/sentry-php/issues",
-                "source": "https://github.com/getsentry/sentry-php/tree/4.1.0"
+                "source": "https://github.com/getsentry/sentry-php/tree/4.2.0"
             },
             "funding": [
                 {
@@ -4923,7 +4926,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2023-12-04T12:41:21+00:00"
+            "time": "2023-12-19T16:43:17+00:00"
         },
         {
             "name": "sentry/sentry-laravel",

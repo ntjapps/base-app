@@ -1,5 +1,5 @@
 export default {
-    root: ({ props, context }) => ({
+    root: ({ props, context, parent }) => ({
         class: [
             "relative",
 
@@ -7,19 +7,23 @@ export default {
             "items-center inline-flex text-center align-bottom justify-center",
 
             // Sizes & Spacing
+            "leading-[normal]",
             {
-                "px-4 py-3 leading-none":
-                    props.size === null && props.label !== null,
-                "text-xs py-2 px-3": props.size === "small",
+                "px-4 py-3": props.size === null && props.label !== null,
+                "text-sm py-2 px-3": props.size === "small",
                 "text-xl py-3 px-4": props.size === "large",
             },
             {
-                "h-12 w-12 p-0": props.label == null,
+                "w-12 p-0 py-3": props.label == null,
             },
 
             // Shapes
             { "shadow-lg": props.raised },
             { "rounded-md": !props.rounded, "rounded-full": props.rounded },
+            {
+                "rounded-none first:rounded-l-md last:rounded-r-md":
+                    parent.instance.$name == "InputGroup",
+            },
 
             // Link Button
             {
@@ -100,14 +104,14 @@ export default {
             },
             // Secondary Text Button
             {
-                "text-surface-500 dark:text-surface-400":
+                "text-surface-500 dark:text-surface-300":
                     props.text &&
                     props.severity === "secondary" &&
                     !props.plain,
             },
             // Secondary Outlined Button
             {
-                "text-surface-500 border border-surface-500 hover:bg-surface-300/20":
+                "text-surface-500 dark:text-surface-300 border border-surface-500 hover:bg-surface-300/20":
                     props.outlined &&
                     props.severity === "secondary" &&
                     !props.plain,
@@ -115,7 +119,7 @@ export default {
 
             // Success Button
             {
-                "text-white dark:text-surface-900":
+                "text-white dark:text-green-900":
                     props.severity === "success" &&
                     !props.text &&
                     !props.outlined &&
@@ -133,10 +137,8 @@ export default {
             },
             // Success Text Button
             {
-                "text-surface-500 dark:text-surface-400":
-                    props.text &&
-                    props.severity === "secondary" &&
-                    !props.plain,
+                "text-green-500 dark:text-green-400":
+                    props.text && props.severity === "success" && !props.plain,
             },
             // Success Outlined Button
             {
@@ -297,11 +299,7 @@ export default {
             },
             {
                 "focus:ring-primary-400/50 dark:focus:ring-primary-300/50":
-                    !props.link &&
-                    props.severity === null &&
-                    !props.text &&
-                    !props.outlined &&
-                    !props.plain,
+                    props.severity === null,
             },
             // Text & Outlined Button
             {
@@ -411,7 +409,7 @@ export default {
                     !props.plain,
             },
 
-            // Warning
+            // Danger
             {
                 "hover:bg-red-600 dark:hover:bg-red-300 hover:border-red-600 dark:hover:border-red-300":
                     props.severity === "danger" &&
@@ -466,6 +464,19 @@ export default {
                 "mb-2": props.iconPos == "top" && props.label != null,
                 "mt-2": props.iconPos == "bottom" && props.label != null,
             },
+        ],
+    }),
+    loadingicon: ({ props }) => ({
+        class: [
+            "h-4 w-4",
+            "mx-0",
+            {
+                "mr-2": props.iconPos == "left" && props.label != null,
+                "ml-2 order-1": props.iconPos == "right" && props.label != null,
+                "mb-2": props.iconPos == "top" && props.label != null,
+                "mt-2": props.iconPos == "bottom" && props.label != null,
+            },
+            "animate-spin",
         ],
     }),
     badge: ({ props }) => ({

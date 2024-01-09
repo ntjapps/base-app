@@ -1,5 +1,5 @@
 export default {
-    root: ({ props, context }) => ({
+    root: ({ props, context, parent }) => ({
         class: [
             "relative",
 
@@ -24,6 +24,10 @@ export default {
                 "shadow-lg": props.raised,
             },
             { "rounded-md": !props.rounded, "rounded-full": props.rounded },
+            {
+                "rounded-none first:rounded-l-md last:rounded-r-md self-center":
+                    parent.instance.$name == "InputGroup",
+            },
 
             // Link Button
             { "text-primary-600 bg-transparent ring-transparent": props.link },
@@ -116,7 +120,7 @@ export default {
 
             // Success Button
             {
-                "text-white dark:text-surface-900":
+                "text-white dark:text-green-900":
                     props.severity === "success" &&
                     !props.text &&
                     !props.outlined &&
@@ -134,10 +138,8 @@ export default {
             },
             // Success Text Button
             {
-                "text-surface-500 dark:text-surface-400":
-                    props.text &&
-                    props.severity === "secondary" &&
-                    !props.plain,
+                "text-green-500 dark:text-green-400":
+                    props.text && props.severity === "success" && !props.plain,
             },
             // Success Outlined Button
             {
@@ -415,7 +417,7 @@ export default {
                     !props.plain,
             },
 
-            // Warning
+            // Danger
             {
                 "hover:bg-red-600 dark:hover:bg-red-300 hover:ring-red-600 dark:hover:ring-red-300":
                     props.severity === "danger" &&
@@ -463,7 +465,6 @@ export default {
     }),
     icon: ({ props }) => ({
         class: [
-            "before:text-xs before:leading-none",
             "mx-0",
             {
                 "mr-2": props.iconPos == "left" && props.label != null,
@@ -483,6 +484,7 @@ export default {
                 "mb-2": props.iconPos == "top" && props.label != null,
                 "mt-2": props.iconPos == "bottom" && props.label != null,
             },
+            "animate-spin",
         ],
     }),
     badge: ({ props }) => ({

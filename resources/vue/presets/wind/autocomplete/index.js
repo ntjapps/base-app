@@ -84,12 +84,11 @@ export default {
             { "py-1.5 px-3": !props.multiple, "p-0": props.multiple },
 
             // Colors
+            "text-surface-700 dark:text-white/80",
             {
-                "text-surface-700 dark:text-white/80": !props.multiple,
                 "bg-surface-0 dark:bg-surface-900": !props.multiple,
                 "border border-surface-300 dark:border-surface-700":
                     !props.multiple,
-                "text-surface-700 dark:text-white/80": props.multiple,
                 "border-0 bg-transparent": props.multiple,
             },
 
@@ -170,7 +169,7 @@ export default {
     loadingicon: {
         class: [
             "text-sm leading-none text-surface-500 dark:text-surface-0/70",
-            "absolute top-[50%] right-[0.5rem] -mt-2",
+            "absolute top-[50%] right-[0.5rem] -mt-2 animate-spin",
         ],
     },
     panel: {
@@ -217,6 +216,10 @@ export default {
             {
                 "text-surface-700 dark:text-white/80":
                     !context.focused && !context.selected,
+            },
+            {
+                "bg-surface-200 dark:bg-surface-600/60 text-surface-700 dark:text-white/80":
+                    context.focused && !context.selected,
             },
             {
                 "bg-primary-500 dark:bg-primary-400 text-white dark:text-surface-700":

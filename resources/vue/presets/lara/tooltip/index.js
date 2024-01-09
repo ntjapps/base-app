@@ -48,14 +48,14 @@ export default {
 
             // Spacing
             {
-                "-m-t-1 ":
+                "-mt-1 ":
                     context?.right ||
                     (!context?.right &&
                         !context?.left &&
                         !context?.top &&
                         !context?.bottom),
-                "-m-t-1": context?.left,
-                "-m-l-1": context?.top || context?.bottom,
+                "-mt-1": context?.left,
+                "-ml-1": context?.top || context?.bottom,
             },
         ],
     }),

@@ -1,5 +1,5 @@
 export default {
-    root: ({ props }) => ({
+    root: ({ props, parent }) => ({
         class: [
             // Display
             "inline-flex",
@@ -12,7 +12,20 @@ export default {
             //Sizing
             { "!w-16": props.showButtons && props.buttonLayout == "vertical" },
 
-            "ring-1 ring-surface-300 dark:ring-surface-700 ring-offset-0",
+            // Shape
+            {
+                "first:rounded-l-md rounded-none last:rounded-r-md":
+                    parent.instance.$name == "InputGroup" && !props.showButtons,
+            },
+            {
+                "border-0 border-y border-l last:border-r border-surface-300 dark:border-surface-600":
+                    parent.instance.$name == "InputGroup" && !props.showButtons,
+            },
+
+            {
+                "ring-1 ring-surface-300 dark:ring-surface-700 ring-offset-0":
+                    parent.instance.$name !== "InputGroup",
+            },
             "shadow-sm",
             "rounded-md",
         ],
@@ -20,6 +33,9 @@ export default {
     input: {
         root: ({ parent }) => ({
             class: [
+                // Display
+                "flex flex-auto",
+
                 //Text
                 "sm:text-sm",
                 {

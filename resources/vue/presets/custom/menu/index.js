@@ -39,6 +39,28 @@ export default {
             "hover:bg-surface-100 dark:bg-surface-700 dark:hover:bg-surface-400/10",
         ],
     }),
+    action: {
+        class: [
+            "relative",
+            // Flexbox
+
+            "flex",
+            "items-center",
+
+            // Spacing
+            "py-3",
+            "px-5",
+
+            // Color
+            "text-surface-700 dark:text-white/80",
+
+            // Misc
+            "no-underline",
+            "overflow-hidden",
+            "cursor-pointer",
+            "select-none",
+        ],
+    },
     icon: {
         class: [
             // Spacing

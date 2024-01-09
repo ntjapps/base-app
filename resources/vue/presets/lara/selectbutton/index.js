@@ -36,7 +36,7 @@ export default {
             // States
             "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-400/50 dark:focus:ring-primary-300/50",
             {
-                "hover:bg-surface-50 dark:hover:bg-surface-800/80 ":
+                "hover:bg-surface-50 dark:hover:bg-surface-800/80":
                     !context.active,
                 "hover:bg-primary-600 dark:hover:bg-primary-300":
                     context.active,

@@ -24,8 +24,7 @@ class AppConstController extends Controller
 
         try {
             $authCheck = Auth::check() ? true : Auth::guard('api')->check();
-            $userId = Auth::id() ?? Auth::guard('api')->id();
-            $user = User::where('id', $userId)->first();
+            $user = Auth::user() ?? Auth::guard('api')->user();
             Log::debug('User is requesting app constants', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
         } catch (OAuthServerException $e) {
             Log::warning('Client is requesting app constants but not authenticated', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
@@ -56,6 +55,7 @@ class AppConstController extends Controller
         }
 
         /** Constant now set in Vue State, this now used to check if authenticated or not */
+        /** @disregard P1013 Auth facade used to fetch model */
         return response()->json([
             /** App Name */
             'appName' => config('app.name'),
@@ -79,8 +79,7 @@ class AppConstController extends Controller
      */
     public function logAgent(Request $request): HttpJsonResponse
     {
-        $userId = Auth::id() ?? Auth::guard('api')->id();
-        $user = User::where('id', $userId)->first();
+        $user = Auth::user() ?? Auth::guard('api')->user();
         /** Log unsupported browser trigger from client */
         Log::debug('Unsupported browser trigger', ['userId' => $user?->id, 'userName' => $user?->name, 'userAgent' => $request->userAgent(), 'apiUserIp' => $request->ip()]);
 
@@ -92,8 +91,7 @@ class AppConstController extends Controller
      */
     public function getCurrentAppVersion(Request $request): HttpJsonResponse
     {
-        $userId = Auth::id() ?? Auth::guard('api')->id();
-        $user = User::where('id', $userId)->first();
+        $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('API hit trigger get current app version', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         /** Validate Input */

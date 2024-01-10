@@ -22,8 +22,7 @@ class ProfileController extends Controller
      */
     public function profilePage(Request $request): View
     {
-        $userId = Auth::id() ?? Auth::guard('api')->id();
-        $user = User::where('id', $userId)->first();
+        $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('dash-pg.profile');
@@ -34,8 +33,7 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request): HttpJsonResponse
     {
-        $userId = Auth::id() ?? Auth::guard('api')->id();
-        $user = User::where('id', $userId)->first();
+        $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User updating profile', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         $validate = Validator::make($request->all(), [
@@ -54,6 +52,8 @@ class ProfileController extends Controller
         if (isset($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
+
+        /** @disregard P1013 Auth facade fetch user model */
         $user->save();
 
         Log::notice('User updated profile', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);

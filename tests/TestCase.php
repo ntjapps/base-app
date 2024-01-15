@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Database\Seeders\RolesPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Routing\Middleware\ThrottleRequestsWithRedis;
@@ -28,7 +29,7 @@ abstract class TestCase extends BaseTestCase
         ]);
 
         return [
-            \Database\Seeders\RolesPermissionSeeder::class,
+            RolesPermissionSeeder::class,
         ];
     }
 

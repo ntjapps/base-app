@@ -14,6 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        /** Flush All Cache */
+        Cache::flush();
+
         $this->call([
             PassportInitSeeder::class,
             RolesPermissionSeeder::class,

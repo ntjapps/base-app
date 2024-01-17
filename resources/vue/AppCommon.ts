@@ -50,4 +50,26 @@ function fileDownload(response: AxiosResponse<any, any>) {
     window.URL.revokeObjectURL(url);
 }
 
-export { timeGreetings, timeView, syncPromise, fileDownload };
+function formatBytesNumber(bytes: number) {
+    /** If size less than 1 KB return Bytes */
+    if (bytes < 1024) {
+        return bytes.toLocaleString("en-UK", { maximumFractionDigits: 2 }) + " Bytes";
+    }
+
+    /** If size less than 1 MB return KB */
+    if (bytes < 1048576) {
+        return (bytes / 1024).toLocaleString("en-UK", { maximumFractionDigits: 2 }) + " KB";
+    }
+
+    /** If size less than 1 GB return MB */
+    if (bytes < 1073741824) {
+        return (bytes / 1048576).toLocaleString("en-UK", { maximumFractionDigits: 2 }) + " MB";
+    }
+
+    /** If size less than 1 TB return GB */
+    if (bytes < 1099511627776) {
+        return (bytes / 1073741824).toLocaleString("en-UK", { maximumFractionDigits: 2 }) + " GB";
+    }
+};
+
+export { timeGreetings, timeView, syncPromise, fileDownload, formatBytesNumber };

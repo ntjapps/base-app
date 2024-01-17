@@ -46,6 +46,7 @@ export const useMainStore = defineStore("main", {
         userName: "",
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
+        expandedKeysMenu: {},
         turnstileToken: "",
     }),
 
@@ -91,6 +92,12 @@ export const useMainStore = defineStore("main", {
             axios.get("/sanctum/csrf-cookie").then(() => {
                 console.log("csrf cookie init");
             });
+        },
+
+        updateExpandedKeysMenu(expandedKeys: string) {
+            this.$patch({ expandedKeysMenu: {
+                [expandedKeys]: true,
+            } });
         },
     },
 });

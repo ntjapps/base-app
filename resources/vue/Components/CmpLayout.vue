@@ -2,8 +2,9 @@
 import CmpHeader from "../Components/CmpHeader.vue";
 import CmpFooter from "../Components/CmpFooter.vue";
 import CmpMenu from "../Components/CmpMenu.vue";
+import CmpToast from "../Components/CmpToast.vue";
 
-const props = defineProps({
+defineProps({
     pageTitle: {
         type: String,
         default: "",
@@ -13,6 +14,7 @@ const props = defineProps({
 
 <template>
     <div class="flex flex-row w-full">
+        <CmpToast ref="toastchild" />
         <div class="flex flex-grow-0 min-h-full w-1/6 bg-base-200">
             <CmpMenu />
         </div>

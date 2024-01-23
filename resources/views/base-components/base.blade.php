@@ -9,7 +9,7 @@
 
     {{-- <link rel="icon" type="image/webp" href="{{ Vite::asset('resources/images/icon.webp') }}"/> --}}
 
-    <title>@yield('title')</title>
+    <title>@yield('title') - {{ config('app.name') }}</title>
     </head>
 
     <body>

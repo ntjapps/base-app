@@ -8,6 +8,24 @@ use Illuminate\Support\Facades\Gate;
 
 trait MenuItemConst
 {
+    public static function currentRouteExpandedKeys(string $getName): ?string
+    {
+        /** Case for route name */
+        switch ($getName) {
+            case 'user-man':
+                $expandedKeys = '99';
+                break;
+            case 'server-logs':
+                $expandedKeys = '99';
+                break;
+            default:
+                $expandedKeys = null;
+                break;
+        }
+
+        return $expandedKeys;
+    }
+
     public static function dashboardMenu(): array
     {
         return [

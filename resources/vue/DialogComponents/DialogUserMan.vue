@@ -126,6 +126,7 @@ onMounted(() => {
 </script>
 
 <template>
+    <CmpToast ref="toastchild" />
     <div class="flex w-full mt-1">
         <div class="w-28 my-auto text-sm">Name:</div>
         <div class="flex w-full text-sm">

@@ -26,6 +26,7 @@ describe("Initialization of Cypress", () => {
 
     it("Try to login", () => {
         cy.formLogin("admin");
+
         cy.visit("/dashboard");
         cy.get("head").should("exist");
         cy.get("head meta[name=cypress]")
@@ -38,6 +39,7 @@ describe("Initialization of Cypress", () => {
 
     it("Try to logout", () => {
         cy.formLogin("admin");
+
         cy.visit("/dashboard");
 
         cy.get("body").should("exist");

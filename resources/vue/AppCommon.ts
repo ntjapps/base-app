@@ -34,16 +34,19 @@ function syncPromise(): Promise<boolean> {
     });
 }
 
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function fileDownload(response: AxiosResponse<any, any>) {
-    const contentDisposition = response.headers['content-disposition'];
-    const filename = contentDisposition.split(';')[1].trim().split('=')[1].replace(/"/g, '');
+    const contentDisposition = response.headers["content-disposition"];
+    const filename = contentDisposition
+        .split(";")[1]
+        .trim()
+        .split("=")[1]
+        .replace(/"/g, "");
 
     const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.setAttribute('download', filename);
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -53,23 +56,44 @@ function fileDownload(response: AxiosResponse<any, any>) {
 function formatBytesNumber(bytes: number) {
     /** If size less than 1 KB return Bytes */
     if (bytes < 1024) {
-        return bytes.toLocaleString("en-UK", { maximumFractionDigits: 2 }) + " Bytes";
+        return (
+            bytes.toLocaleString("en-UK", { maximumFractionDigits: 2 }) +
+            " Bytes"
+        );
     }
 
     /** If size less than 1 MB return KB */
     if (bytes < 1048576) {
-        return (bytes / 1024).toLocaleString("en-UK", { maximumFractionDigits: 2 }) + " KB";
+        return (
+            (bytes / 1024).toLocaleString("en-UK", {
+                maximumFractionDigits: 2,
+            }) + " KB"
+        );
     }
 
     /** If size less than 1 GB return MB */
     if (bytes < 1073741824) {
-        return (bytes / 1048576).toLocaleString("en-UK", { maximumFractionDigits: 2 }) + " MB";
+        return (
+            (bytes / 1048576).toLocaleString("en-UK", {
+                maximumFractionDigits: 2,
+            }) + " MB"
+        );
     }
 
     /** If size less than 1 TB return GB */
     if (bytes < 1099511627776) {
-        return (bytes / 1073741824).toLocaleString("en-UK", { maximumFractionDigits: 2 }) + " GB";
+        return (
+            (bytes / 1073741824).toLocaleString("en-UK", {
+                maximumFractionDigits: 2,
+            }) + " GB"
+        );
     }
-};
+}
 
-export { timeGreetings, timeView, syncPromise, fileDownload, formatBytesNumber };
+export {
+    timeGreetings,
+    timeView,
+    syncPromise,
+    fileDownload,
+    formatBytesNumber,
+};

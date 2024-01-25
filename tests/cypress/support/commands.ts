@@ -10,27 +10,10 @@ declare namespace Cypress {
 
 Cypress.Commands.add("formLogin", (username) => {
     cy.session("login-" + username, () => {
-        cy.request("/sanctum/csrf-cookie")
-            .its("body")
-            .then((body) => {
-                const csrfToken = body.csrf_token;
-                cy.request({
-                    method: "POST",
-                    url: "/post-login",
-                    failOnStatusCode: false,
-                    form: true,
-                    body: {
-                        username: username,
-                        password: "password",
-                        token: "XXXX.DUMMY.TOKEN.XXXX",
-                    },
-                    headers: {
-                        "X-CSRF-TOKEN": csrfToken,
-                    },
-                }).then((response) => {
-                    cy.getCookie("laravel_session").should("exist");
-                    expect(response.status).to.gte(200).and.to.lte(399);
-                });
-            });
+        cy.visit("/login-redirect");
+        cy.get('[data-test="username"]').type(username);
+        cy.get('[data-test="password"]').type("password");
+        cy.get('[data-test="login"]').click();
+        cy.url().should("include", "/dashboard");
     });
 });

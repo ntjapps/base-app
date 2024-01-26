@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\MenuItemClass;
 use App\Logger\Models\ServerLog;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
@@ -23,7 +24,9 @@ class ServerManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('super-pg.serverlog');
+        return view('super-pg.serverlog', [
+            'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
+        ]);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\MenuItemClass;
 use App\Models\User;
 use App\Traits\JsonResponse;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
@@ -25,7 +26,9 @@ class ProfileController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('dash-pg.profile');
+        return view('dash-pg.profile', [
+            'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
+        ]);
     }
 
     /**

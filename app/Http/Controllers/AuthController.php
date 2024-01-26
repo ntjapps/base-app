@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\InterfaceClass;
+use App\Interfaces\MenuItemClass;
 use App\Models\User;
 use App\Rules\TokenPlatformValidation;
 use App\Rules\TurnstileValidation;
@@ -29,7 +30,9 @@ class AuthController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('Computer access login page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('auth-pg.login');
+        return view('auth-pg.login', [
+            'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
+        ]);
     }
 
     /**

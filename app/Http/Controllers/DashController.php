@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\MenuItemClass;
 use App\Traits\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,8 @@ class DashController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User accessed dashboard page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('dash-pg.dashboard');
+        return view('dash-pg.dashboard', [
+            'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
+        ]);
     }
 }

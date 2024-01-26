@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\MenuItemClass;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Traits\JsonResponse;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +29,9 @@ class UserManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open user role management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('super-pg.userman');
+        return view('super-pg.userman', [
+            'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
+        ]);
     }
 
     /**
@@ -39,24 +40,9 @@ class UserManController extends Controller
     public function getUserList(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting get user list for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User is requesting get user list for User Role Management', ['userId' => $user?->id, 'uwserName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
-        /** Validate Request */
-        $validate = Validator::make($request->all(), [
-            'username' => ['nullable', 'string'],
-            'name' => ['nullable', 'string'],
-        ]);
-        if ($validate->fails()) {
-            throw new ValidationException($validate);
-        }
-        (array) $validated = $validate->validated();
-
-        $data = User::with(['permissions', 'roles'])
-            ->when($validated['username'] ?? false, function (Builder|QueryBuilder $query, $username) {
-                $query->where('username', 'ILIKE', '%'.$username.'%');
-            })->when($validated['name'] ?? false, function (Builder|QueryBuilder $query, $name) {
-                $query->where('name', 'ILIKE', '%'.$name.'%');
-            })->orderBy('username')->get();
+        $data = User::with(['permissions', 'roles'])->orderBy('username')->get();
 
         return response()->json($data);
     }

@@ -2,7 +2,7 @@
 import axios from "axios";
 import { ref, onBeforeMount } from "vue";
 import { timeGreetings } from "../AppCommon";
-import { useApiStore } from "../AppState";
+import { useApiStore, useMainStore } from "../AppState";
 import { useDialog } from "primevue/usedialog";
 
 import CmpToast from "../Components/CmpToast.vue";
@@ -10,15 +10,18 @@ import CmpLayout from "../Components/CmpLayout.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
+import Breadcrumb from "primevue/breadcrumb";
+import { FilterMatchMode } from "primevue/api";
 
 import DialogUserMan from "../DialogComponents/DialogUserMan.vue";
 
 const api = useApiStore();
+const main = useMainStore();
 const timeGreet = timeGreetings();
 const dialog = useDialog();
 const toastchild = ref<typeof CmpToast>();
 
-defineProps({
+const props = defineProps({
     appName: {
         type: String,
         required: true,
@@ -26,6 +29,10 @@ defineProps({
     greetings: {
         type: String,
         required: true,
+    },
+    expandedKeysProps: {
+        type: String,
+        default: "",
     },
 });
 
@@ -44,19 +51,21 @@ type UserListDataInterface = {
     user_permission: Array<string>;
 };
 
-const breadCrumb = ref([{ label: "User Role Management - YOVoucher" }]);
 const userListData = ref(Array<UserListDataInterface>());
 const loading = ref<boolean>(false);
-const usernameData = ref<string>("");
-const nameData = ref<string>("");
+
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    username: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    user_roles: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    user_permission: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 const getUserListData = () => {
     loading.value = true;
     axios
-        .post(api.getUserList, {
-            username: usernameData.value,
-            name: nameData.value,
-        })
+        .post(api.getUserList)
         .then((response) => {
             userListData.value = response.data;
             loading.value = false;
@@ -93,52 +102,40 @@ const openEditUserDialog = (data: UserListDataInterface | null) => {
     });
 };
 
+/** Breadcrumb */
+const home = ref({
+    icon: "pi pi-home",
+});
+const items = ref([{ label: "Administration" }, { label: "User Management" }]);
+
 onBeforeMount(() => {
     getUserListData();
+    main.updateExpandedKeysMenu(props.expandedKeysProps);
 });
 </script>
 
 <template>
-    <CmpLayout :bread-crumb="breadCrumb">
-        <CmpToast ref="toastchild" />
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
-            <h2 class="title-font font-bold">{{ timeGreet + greetings }}</h2>
-            <h3 class="title-font">User Role Management</h3>
-            <div class="grid grid-flow-row text-sm">
-                <div class="flex w-full my-0.5">
-                    <div class="flex w-full">
-                        <div class="w-28 my-auto text-sm">User Name</div>
-                        <div class="flex w-full text-sm">
-                            <InputText
-                                v-model="usernameData"
-                                class="w-72 text-sm"
-                                placeholder="Enter username"
-                            />
-                        </div>
-                    </div>
-                    <div class="flex w-full">
-                        <div class="w-28 my-auto text-sm">Name</div>
-                        <div class="flex w-full text-sm">
-                            <InputText
-                                v-model="nameData"
-                                class="w-72 text-sm"
-                                placeholder="Enter name"
-                            />
-                        </div>
-                    </div>
+    <CmpLayout>
+        <Breadcrumb :home="home" :model="items" />
+        <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full my-auto">
+                    <h2 class="title-font font-bold">
+                        {{ timeGreet + greetings }}
+                    </h2>
+                    <h3 class="title-font">User Role Management</h3>
+                </div>
+                <div class="flex flex-row-reverse w-full my-auto">
+                    <button
+                        class="btn btn-primary w-20"
+                        @click="openEditUserDialog(null)"
+                    >
+                        <span class="m-1">Create</span>
+                    </button>
                 </div>
             </div>
-            <button class="btn btn-accent w-20 mt-2.5" @click="getUserListData">
-                <span class="m-1">Find</span>
-            </button>
-            <button
-                class="btn w-20 mt-2.5 mx-2"
-                @click="openEditUserDialog(null)"
-            >
-                <span class="m-1">Create</span>
-            </button>
         </div>
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
             <DataTable
                 class="p-datatable-sm editable-cells-table"
                 :value="userListData"
@@ -148,7 +145,21 @@ onBeforeMount(() => {
                 :rows="10"
                 paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                 :rows-per-page-options="[10, 20, 50, 100]"
+                v-model:filters="filters"
+                :global-filter-fields="['username', 'name']"
+                filter-display="row"
             >
+                <template #header>
+                    <div class="flex justify-between">
+                        <div class="flex w-full">
+                            <InputText
+                                v-model="filters['global'].value"
+                                placeholder="Search by username or name"
+                                class="p-inputtext-sm w-full"
+                            />
+                        </div>
+                    </div>
+                </template>
                 <template #footer>
                     <div class="flex text-sm">
                         Total records: {{ userListData.length }}
@@ -182,10 +193,26 @@ onBeforeMount(() => {
                             {{ slotProps.data.username }}
                         </div>
                     </template>
+                    <template #filter="{ filterModel, filterCallback }">
+                        <InputText
+                            v-model="filterModel.value"
+                            class="w-full"
+                            placeholder="Search by username"
+                            @input="filterCallback()"
+                        />
+                    </template>
                 </Column>
                 <Column field="name" header="Name" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">{{ slotProps.data.name }}</div>
+                    </template>
+                    <template #filter="{ filterModel, filterCallback }">
+                        <InputText
+                            v-model="filterModel.value"
+                            class="w-full"
+                            placeholder="Search by name"
+                            @input="filterCallback()"
+                        />
                     </template>
                 </Column>
                 <Column field="user_roles" header="Roles" class="text-sm">
@@ -198,6 +225,14 @@ onBeforeMount(() => {
                             {{ role.name }}
                         </div>
                     </template>
+                    <template #filter="{ filterModel, filterCallback }">
+                        <InputText
+                            v-model="filterModel.value"
+                            class="w-full"
+                            placeholder="Search by roles"
+                            @input="filterCallback()"
+                        />
+                    </template>
                 </Column>
                 <Column
                     field="user_permission"
@@ -208,6 +243,14 @@ onBeforeMount(() => {
                         <div class="text-center">
                             {{ slotProps.data.user_permission.join(", ") }}
                         </div>
+                    </template>
+                    <template #filter="{ filterModel, filterCallback }">
+                        <InputText
+                            v-model="filterModel.value"
+                            class="w-full"
+                            placeholder="Search by permission"
+                            @input="filterCallback()"
+                        />
                     </template>
                 </Column>
             </DataTable>

@@ -36,11 +36,11 @@ class ServerManController extends Controller
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [
-            'date_start' => 'nullable|date',
-            'date_end' => 'nullable|date',
-            'log_level' => 'nullable|string',
-            'log_message' => 'nullable|string',
-            'log_extra' => 'nullable|string',
+            'date_start' => ['nullable', 'date', 'before_or_equal:date_end'],
+            'date_end' => ['nullable', 'date', 'after_or_equal:date_start'],
+            'log_level' => ['nullable', 'string'],
+            'log_message' => ['nullable', 'string'],
+            'log_extra' => ['nullable', 'string'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);

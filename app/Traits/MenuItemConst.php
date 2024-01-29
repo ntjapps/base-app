@@ -79,6 +79,10 @@ trait MenuItemConst
             ];
         }
 
+        if (empty($childMenu)) {
+            return [];
+        }
+
         return [
             'label' => 'Administration',
             'icon' => 'pi pi-cog',

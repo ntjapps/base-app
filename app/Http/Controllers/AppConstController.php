@@ -51,7 +51,7 @@ class AppConstController extends Controller
                 ];
             }
 
-            $menuItems = json_encode($menuArray);
+            $menuItems = json_encode(array_filter($menuArray));
         }
 
         /** Constant now set in Vue State, this now used to check if authenticated or not */

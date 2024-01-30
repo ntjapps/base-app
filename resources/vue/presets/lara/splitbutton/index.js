@@ -23,7 +23,7 @@ export default {
                     "px-4 py-3 leading-none":
                         parent.props.size === null &&
                         parent.props.label !== null,
-                    "text-xs py-2 px-3": parent.props.size === "small",
+                    "text-sm py-2 px-3": parent.props.size === "small",
                     "text-xl py-3 px-4": parent.props.size === "large",
                 },
                 {

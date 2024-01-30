@@ -137,6 +137,7 @@ onBeforeMount(() => {
         </div>
         <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
             <DataTable
+                v-model:filters="filters"
                 class="p-datatable-sm editable-cells-table"
                 :value="userListData"
                 show-gridlines
@@ -145,7 +146,6 @@ onBeforeMount(() => {
                 :rows="10"
                 paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                 :rows-per-page-options="[10, 20, 50, 100]"
-                v-model:filters="filters"
                 :global-filter-fields="['username', 'name']"
                 filter-display="row"
             >

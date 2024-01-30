@@ -120,7 +120,7 @@ export default {
     icon: {
         class: "mr-2",
     },
-    submenuicon: ({ props, context }) => ({
+    submenuicon: ({ props }) => ({
         class: [
             {
                 "ml-auto sm:ml-2": props.root,

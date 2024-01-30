@@ -116,13 +116,15 @@ export default {
         class: [
             // Transitions
             "transition",
-            "duration-200",
+            "duration-300",
             { "p-5": !props.position == "full" },
 
             // Background and Effects
             {
-                "bg-surface-500/70 dark:bg-surface-700/70": props.modal,
-                "backdrop-blur-sm": props.modal,
+                "has-[.mask-active]:bg-transparent dark:has-[.mask-active]:bg-transparent bg-surface-500/70 dark:bg-surface-700/70":
+                    props.modal,
+                "has-[.mask-active]:backdrop-blur-none backdrop-blur-sm":
+                    props.modal,
             },
         ],
     }),
@@ -130,37 +132,38 @@ export default {
         return props.position === "top"
             ? {
                   enterFromClass:
-                      "translate-x-0 -translate-y-full translate-z-0",
-                  leaveToClass: "translate-x-0 -translate-y-full translate-z-0",
+                      "translate-x-0 -translate-y-full translate-z-0 mask-active",
+                  leaveToClass:
+                      "translate-x-0 -translate-y-full translate-z-0 mask-active",
               }
             : props.position === "bottom"
               ? {
                     enterFromClass:
-                        "translate-x-0 translate-y-full translate-z-0",
+                        "translate-x-0 translate-y-full translate-z-0 mask-active",
                     leaveToClass:
-                        "translate-x-0 translate-y-full translate-z-0",
+                        "translate-x-0 translate-y-full translate-z-0 mask-active",
                 }
               : props.position === "left"
                 ? {
                       enterFromClass:
-                          "-translate-x-full translate-y-0 translate-z-0",
+                          "-translate-x-full translate-y-0 translate-z-0 mask-active",
                       leaveToClass:
-                          "-translate-x-full translate-y-0 translate-z-0",
+                          "-translate-x-full translate-y-0 translate-z-0 mask-active",
                   }
                 : props.position === "right"
                   ? {
                         enterFromClass:
-                            "translate-x-full translate-y-0 translate-z-0",
+                            "translate-x-full translate-y-0 translate-z-0 mask-active",
                         leaveToClass:
-                            "translate-x-full translate-y-0 translate-z-0",
+                            "translate-x-full translate-y-0 translate-z-0 mask-active",
                     }
                   : {
-                        enterFromClass: "opacity-0",
+                        enterFromClass: "opacity-0 mask-active",
                         enterActiveClass:
                             "transition-opacity duration-400 ease-in",
                         leaveActiveClass:
                             "transition-opacity duration-400 ease-in",
-                        leaveToClass: "opacity-0",
+                        leaveToClass: "opacity-0 mask-active",
                     };
     },
 };

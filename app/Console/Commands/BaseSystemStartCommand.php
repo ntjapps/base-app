@@ -48,6 +48,8 @@ class BaseSystemStartCommand extends Command
             Feature::purge();
         }
 
+        Artisan::call('storage:link');
+
         $this->info('Cache cleared');
 
         $this->info('System startup scripts executed');

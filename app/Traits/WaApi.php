@@ -33,7 +33,7 @@ trait WaApi
 
             /** Fallback to second number on failure */
             if ($response['status'] != true) {
-                Log::warning('Fallback Message', ['phoneNum' => $phone]);
+                Log::warning('Fallback Message, WA failed', ['phoneNum' => $phone, 'deviceId' => config('waapi.device_id')]);
                 $this->sendMessageFallback($phone, $message, $file);
             }
         } catch (ConnectionException $error) {
@@ -48,14 +48,14 @@ trait WaApi
     {
         try {
             if ($file != null) {
-                Http::asForm()->post('https://app.whacenter.com/api/send', [
+                $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
                     'device_id' => config('waapi.device_id_2'),
                     'number' => $phone,
                     'message' => $message,
                     'file' => $file,
                 ]);
             } else {
-                Http::asForm()->post('https://app.whacenter.com/api/send', [
+                $response = Http::asForm()->post('https://app.whacenter.com/api/send', [
                     'device_id' => config('waapi.device_id_2'),
                     'number' => $phone,
                     'message' => $message,
@@ -63,6 +63,11 @@ trait WaApi
             }
 
             Log::debug('Sending WA', ['deviceId' => config('waapi.device_id_2')]);
+
+            /** Log Failed attempt to send message */
+            if ($response['status'] != true) {
+                Log::error('Total Failure, WA failed', ['phoneNum' => $phone, 'deviceId' => config('waapi.device_id_2')]);
+            }
         } catch (ConnectionException $error) {
             Log::channel('wamonitor')->error($error, ['app' => config('app.name')]);
         }

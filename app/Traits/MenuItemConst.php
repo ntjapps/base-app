@@ -84,7 +84,7 @@ trait MenuItemConst
         }
 
         return [
-            'label' => 'Administration',
+            'label' => 'System Admin',
             'icon' => 'pi pi-cog',
             'items' => $childMenu,
         ];

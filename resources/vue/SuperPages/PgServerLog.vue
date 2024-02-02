@@ -77,7 +77,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <CmpLayout :bread-crumb="breadCrumb">
+    <CmpLayout>
         <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
             <div class="flex justify-between">
                 <div>

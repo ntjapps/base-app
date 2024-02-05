@@ -116,6 +116,7 @@ onBeforeMount(() => {
 
 <template>
     <CmpLayout>
+        <CmpToast ref="toastchild" />
         <Breadcrumb :home="home" :model="items" />
         <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
             <div class="flex flex-row">

@@ -315,6 +315,7 @@ export default {
                     // Misc
                     "cursor-pointer",
                     "select-none",
+                    "hidden",
                 ],
             }),
         },

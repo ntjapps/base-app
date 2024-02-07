@@ -13,11 +13,39 @@ const toastSuccess = (detailData: string) =>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const toastError = (error: any) => {
-    if (error.response.data.errors === undefined) {
+    if (error.response.status === 500) {
+        toast.add({
+            severity: "error",
+            summary: "Server Error",
+            detail: "Please contact the administrator",
+            life: 30000,
+        });
+    } else if (error.response.status === 401) {
+        toast.add({
+            severity: "error",
+            summary: "Unauthorized",
+            detail: "Action not authorized. Please contact the administrator",
+            life: 30000,
+        });
+    } else if (error.response.status === 403) {
+        toast.add({
+            severity: "error",
+            summary: "Forbidden",
+            detail: "Access denied. Please contact the administrator",
+            life: 30000,
+        });
+    } else if (error.response.status === 404) {
+        toast.add({
+            severity: "error",
+            summary: "Not Found",
+            detail: "Resource not found. Please contact the administrator",
+            life: 30000,
+        });
+    } else if (error.response.data.errors === undefined) {
         toast.add({
             severity: "error",
             summary: "Unknown Error",
-            detail: error.response.toString(),
+            detail: "Please contact the administrator, status code: " + error.response.status,
             life: 30000,
         });
     } else {

@@ -24,21 +24,21 @@ const toastError = (error: any) => {
         toast.add({
             severity: "error",
             summary: "Unauthorized",
-            detail: "Action not authorized. Please contact the administrator",
+            detail: "Action not authorized.",
             life: 30000,
         });
     } else if (error.response.status === 403) {
         toast.add({
             severity: "error",
             summary: "Forbidden",
-            detail: "Access denied. Please contact the administrator",
+            detail: "Access denied.",
             life: 30000,
         });
     } else if (error.response.status === 404) {
         toast.add({
             severity: "error",
             summary: "Not Found",
-            detail: "Resource not found. Please contact the administrator",
+            detail: "Resource not found.",
             life: 30000,
         });
     } else if (error.response.data.errors === undefined) {

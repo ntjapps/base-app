@@ -148,7 +148,7 @@ onBeforeMount(() => {
                 paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                 :rows-per-page-options="[10, 20, 50, 100]"
                 :global-filter-fields="['username', 'name']"
-                filter-display="row"
+                filter-display="menu"
             >
                 <template #header>
                     <div class="flex justify-between">

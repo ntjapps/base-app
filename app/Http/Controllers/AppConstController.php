@@ -59,6 +59,7 @@ class AppConstController extends Controller
         return response()->json([
             /** App Name */
             'appName' => config('app.name'),
+            'appVersion' => InterfaceClass::readApplicationVersion(),
             'userName' => $user?->name ?? $user?->name ?? '',
 
             /** Check if Auth */

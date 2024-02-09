@@ -43,6 +43,7 @@ export const useMainStore = defineStore("main", {
     state: () => ({
         /** Additional data */
         appName: import.meta.env.APP_NAME,
+        appVersion: "",
         userName: "",
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
@@ -59,6 +60,9 @@ export const useMainStore = defineStore("main", {
                 .then((response) => {
                     this.$patch({
                         appName: response.data.appName,
+                    });
+                    this.$patch({
+                        appVersion: response.data.appVersion,
                     });
                     this.$patch({
                         userName: response.data.userName,

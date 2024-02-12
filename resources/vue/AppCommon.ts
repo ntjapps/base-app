@@ -28,6 +28,15 @@ function timeView(data: string | number | Date): string | null {
     }
 }
 
+function dateView(data: string | number | Date): string | null {
+    if (data === null) {
+        return null;
+    } else {
+        const date = new Date(data);
+        return date.toLocaleDateString();
+    }
+}
+
 function syncPromise(): Promise<boolean> {
     return new Promise((resolve) => {
         resolve(true);
@@ -105,6 +114,7 @@ export type UserDataInterface = {
 export {
     timeGreetings,
     timeView,
+    dateView,
     syncPromise,
     fileDownload,
     formatBytesNumber,

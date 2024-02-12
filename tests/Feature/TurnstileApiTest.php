@@ -20,7 +20,7 @@ class TurnstileApiTest extends TestCase
                 'success' => true,
             ]),
         ]);
-        
+
         $this->assertTrue($this->verifyChallenge('test'));
     }
 

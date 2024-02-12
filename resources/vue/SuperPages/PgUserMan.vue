@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from "axios";
 import { ref, onBeforeMount } from "vue";
-import { timeGreetings } from "../AppCommon";
+import { timeGreetings, UserDataInterface } from "../AppCommon";
 import { useApiStore, useMainStore } from "../AppState";
 import { useDialog } from "primevue/usedialog";
 
@@ -36,22 +36,7 @@ const props = defineProps({
     },
 });
 
-type UserListDataInterface = {
-    id: string;
-    username: string;
-    name: string;
-    roles: Array<{
-        id: string;
-        name: string;
-    }>;
-    permissions: Array<{
-        id: string;
-        name: string;
-    }>;
-    user_permission: Array<string>;
-};
-
-const userListData = ref(Array<UserListDataInterface>());
+const userListData = ref(Array<UserDataInterface>());
 const loading = ref<boolean>(false);
 
 const filters = ref({
@@ -84,7 +69,7 @@ const showViewButton = (data: string | null | undefined): boolean => {
     }
 };
 
-const openEditUserDialog = (data: UserListDataInterface | null) => {
+const openEditUserDialog = (data: UserDataInterface | null) => {
     dialog.open(DialogUserMan, {
         props: {
             header: data === null ? "Create User" : "Edit User",

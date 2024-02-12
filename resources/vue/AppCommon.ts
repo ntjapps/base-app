@@ -90,6 +90,18 @@ function formatBytesNumber(bytes: number) {
     }
 }
 
+export type UserDataInterface = {
+    id: string;
+    name: string;
+    username: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
+    user_permission: Array<any>;
+    permissions: Array<any>;
+    roles: Array<any>;
+};
+
 export {
     timeGreetings,
     timeView,

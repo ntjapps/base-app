@@ -106,8 +106,11 @@ export type UserDataInterface = {
     created_at: string;
     updated_at: string;
     deleted_at: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     user_permission: Array<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     permissions: Array<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     roles: Array<any>;
 };
 

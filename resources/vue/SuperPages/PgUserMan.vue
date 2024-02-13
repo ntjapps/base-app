@@ -43,7 +43,6 @@ const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     username: { value: null, matchMode: FilterMatchMode.CONTAINS },
     name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    user_roles: { value: null, matchMode: FilterMatchMode.CONTAINS },
     user_permission: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
@@ -211,14 +210,6 @@ onBeforeMount(() => {
                             {{ role.name }}
                         </div>
                     </template>
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by roles"
-                            @input="filterCallback()"
-                        />
-                    </template>
                 </Column>
                 <Column
                     field="user_permission"
@@ -243,9 +234,3 @@ onBeforeMount(() => {
         </div>
     </CmpLayout>
 </template>
-
-<style lang="scss" scoped>
-:deep(.p-column-header-content) {
-    @apply justify-center;
-}
-</style>

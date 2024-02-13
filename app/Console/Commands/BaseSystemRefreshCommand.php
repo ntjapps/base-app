@@ -31,7 +31,7 @@ class BaseSystemRefreshCommand extends Command
      */
     public function handle()
     {
-        Artisan::call('passport:client:env');
+        $this->call('passport:client:env');
         $this->info('Passport client generated');
 
         Redis::connection('horizon')->flushdb();
@@ -41,11 +41,11 @@ class BaseSystemRefreshCommand extends Command
         $this->info('All horizon cleared');
 
         if (App::environment('local')) {
-            Artisan::call('telescope:prune', ['--hours' => 0]);
+            $this->call('telescope:prune', ['--hours' => 0]);
             $this->info('Telescope pruned');
         }
 
-        Artisan::call('cache:clear');
+        $this->call('cache:clear');
         if (config('pennant.default') === 'database') {
             Feature::flushCache();
             Feature::purge();

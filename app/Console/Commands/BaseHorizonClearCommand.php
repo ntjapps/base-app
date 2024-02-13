@@ -30,8 +30,8 @@ class BaseHorizonClearCommand extends Command
     {
         Cache::flush();
 
-        Artisan::call('horizon:clear');
-        Artisan::call('horizon:clear', ['--queue' => 'long-run']);
+        $this->call('horizon:clear');
+        $this->call('horizon:clear', ['--queue' => 'long-run']);
 
         $this->info('All horizon cleared');
 

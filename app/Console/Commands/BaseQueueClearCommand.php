@@ -28,9 +28,9 @@ class BaseQueueClearCommand extends Command
      */
     public function handle()
     {
-        Artisan::call('queue:clear', ['--queue' => 'default']);
-        Artisan::call('queue:clear', ['--queue' => 'long-run']);
-        Artisan::call('queue:flush');
+        $this->call('queue:clear', ['--queue' => 'default']);
+        $this->call('queue:clear', ['--queue' => 'long-run']);
+        $this->call('queue:flush');
         Cache::flush();
 
         $this->info('All queue cleared');

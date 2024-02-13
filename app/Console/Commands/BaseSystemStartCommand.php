@@ -30,25 +30,25 @@ class BaseSystemStartCommand extends Command
     public function handle()
     {
         if (! App::environment('local')) {
-            Artisan::call('migrate', ['--force' => true]);
+            $this->call('migrate', ['--force' => true]);
             $this->info('Migrated');
         }
 
         if (App::environment('local')) {
-            Artisan::call('telescope:prune', ['--hours' => 0]);
+            $this->call('telescope:prune', ['--hours' => 0]);
             $this->info('Telescope pruned');
         }
 
-        Artisan::call('passport:client:env');
+        $this->call('passport:client:env');
         $this->info('Passport client generated');
 
-        Artisan::call('cache:clear');
+        $this->call('cache:clear');
         if (config('pennant.default') === 'database') {
             Feature::flushCache();
             Feature::purge();
         }
 
-        Artisan::call('storage:link');
+        $this->call('storage:link');
 
         $this->info('Cache cleared');
 

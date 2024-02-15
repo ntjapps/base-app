@@ -109,7 +109,7 @@ class AppConstController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('API hit trigger validation success', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('API hit trigger validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
 
         /** Get Current App Version */
         (string) $currentAppVersion = config('mobile.app_version');
@@ -117,7 +117,7 @@ class AppConstController extends Controller
 
         /** If force update then submit force update */
         if ($forceUpdate) {
-            Log::info('API hit trigger force update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+            Log::info('API hit trigger force update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
             return response()->json([
                 'appUpdate' => true,
@@ -135,7 +135,7 @@ class AppConstController extends Controller
 
         /** If current version is same with device version then submit no update */
         if ($checkSemVersion) {
-            Log::info('API hit trigger no update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+            Log::info('API hit trigger no update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
             return response()->json([
                 'appUpdate' => false,
@@ -143,7 +143,7 @@ class AppConstController extends Controller
                 'deviceVersion' => $validated['app_version'],
             ]);
         } else {
-            Log::info('API hit trigger update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+            Log::info('API hit trigger update', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
             return response()->json([
                 'appUpdate' => true,

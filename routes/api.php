@@ -41,6 +41,7 @@ Route::middleware(['xss'])->group(function () {
             Route::post('/post-reset-password-user-man-submit', [UserManController::class, 'postResetPasswordUserManSubmit'])->name('post-reset-password-user-man-submit');
 
             Route::post('/get-server-logs', [ServerManController::class, 'getServerLogs'])->name('get-server-logs');
+            Route::post('/post-clear-app-cache', [ServerManController::class, 'postClearAppCache'])->name('post-clear-app-cache');
         });
     });
 });

@@ -21,6 +21,7 @@ export const useApiStore = defineStore("api", {
         getAllUserPermission: "/api/get-all-user-permission",
         logAgent: "/api/post-log-agent",
         getServerLogs: "/api/get-server-logs",
+        postClearAppCache: "/api/post-clear-app-cache",
         getUserList: "/api/get-user-list",
         getUserRolePerm: "/api/get-user-role-perm",
         postUserManSubmit: "/api/post-user-man-submit",

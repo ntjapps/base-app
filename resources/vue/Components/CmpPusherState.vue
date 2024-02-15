@@ -58,7 +58,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <div class="flex ml-auto">
+    <div class="flex mx-2">
         <button v-if="connected" class="btn btn-success text-xs">
             <i class="ico ico-chart-bar w-5 h-5" />
             <span class="m-1">Connected</span>

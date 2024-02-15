@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import { useMainStore } from "../AppState";
 
 import CmpPusherState from "./CmpPusherState.vue";
+import CmpClearCacheButton from "./CmpClearCacheButton.vue";
 
 const main = useMainStore();
 const { browserSuppport } = storeToRefs(main);
@@ -29,12 +30,14 @@ const props = defineProps({
                     v-if="browserSuppport"
                     class="flex flex-row-reverse w-full my-auto"
                 >
+                    <CmpClearCacheButton />
                     <CmpPusherState />
                 </div>
                 <div
                     v-if="!browserSuppport"
                     class="flex flex-row-reverse w-full my-auto"
                 >
+                    <CmpClearCacheButton />
                     <button class="btn btn-sm btn-error">
                         <i class="pi pi-times m-1" />
                         <span class="m-1">Browser Unsupported</span>

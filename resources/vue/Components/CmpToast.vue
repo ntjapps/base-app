@@ -45,7 +45,9 @@ const toastError = (error: any) => {
         toast.add({
             severity: "error",
             summary: "Unknown Error",
-            detail: "Please contact the administrator, status code: " + error.response.status,
+            detail:
+                "Please contact the administrator, status code: " +
+                error.response.status,
             life: 30000,
         });
     } else {

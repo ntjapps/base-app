@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -65,5 +66,19 @@ class ServerManController extends Controller
         })->orderBy('id', 'desc')->limit(20000)->get();
 
         return response()->json($data);
+    }
+
+    /**
+     * POST request to clear application cache
+     */
+    public function postClearAppCache(Request $request): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User clear app cache', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
+        /** Clear Cache */
+        Cache::flush();
+
+        return $this->jsonSuccess('Cache cleared', 'Cache cleared successfully');
     }
 }

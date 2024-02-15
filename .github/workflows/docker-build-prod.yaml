@@ -35,7 +35,7 @@ jobs:
 
       # NPM Setup
       - name: NPM Setup # Install NPM dependencies
-        uses: bahmutov/npm-install@v1
+        uses: bahmutov/npm-install@v1.6.0
 
       - name: NPM Build # Build NPM assets
         run: npx vite build

@@ -12,7 +12,7 @@
         "doctrine/dbal": "^3.8",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^10.43",
-        "laravel/horizon": "^5.22",
+        "laravel/horizon": "^5.23",
         "laravel/passport": "^11.10",
         "laravel/pennant": "^1.6",
         "laravel/tinker": "^2.9",

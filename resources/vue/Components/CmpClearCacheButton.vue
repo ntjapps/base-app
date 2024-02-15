@@ -28,7 +28,7 @@ const postClearCache = () => {
             class="btn btn-error text-xs"
             @click="postClearCache"
         >
-            <i class="pi pi-sync w-5 h-5" />
+            <i class="pi pi-sync" />
         </button>
     </div>
 </template>

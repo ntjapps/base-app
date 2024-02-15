@@ -17,10 +17,6 @@ jobs:
       contents: read
       packages: write
 
-    outputs:
-      composer-cache: ${{ steps.composer-cache-dir.outputs.dir }}
-      npm-cache: ${{ steps.npm-cache-dir.outputs.dir }}
-
     steps:
       - name: Checkout # Checkout the repository
         uses: actions/checkout@v4
@@ -31,45 +27,21 @@ jobs:
         run: |
           echo "APP_VERSION_HASH=${{ github.sha }}" >> .constants
 
-      # Composer Cache
-      - name: Get Composer Cache Directory
-        id: composer-cache-dir
-        run: |
-          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-      - name: Composer Cache
-        id: composer-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+      # Composer Setup
       - name: Composer Install # Install composer dependencies
-        run: composer install --optimize-autoloader --no-dev --ignore-platform-reqs
-
-      # NPM Cache
-      - name: Set NodeJS Version # Set NodeJS Version
-        uses: actions/setup-node@v4
+        uses: "ramsey/composer-install@v2"
         with:
-          node-version: "20"
-      - name: Get npm cache directory
-        id: npm-cache-dir
-        run: |
-          echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+            composer-options: "--ignore-platform-reqs --optimize-autoloader"
 
-      - name: NPM CI Install # Install NPM dependencies (node_modules folder is not cached)
-        run: npm ci --force
+      # NPM Setup
+      - name: NPM Setup # Install NPM dependencies
+        uses: bahmutov/npm-install@v1
+
       - name: NPM Build # Build NPM assets
         run: npx vite build
 
-      - name: Build Cache # Build Cache
+      # Build Cache
+      - name: Build Cache
         run: |
           php artisan event:cache
           php artisan route:cache

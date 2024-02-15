@@ -91,7 +91,7 @@ class AuthController extends Controller
         $validatedLog = $validated;
         unset($validatedLog['password']);
         unset($validatedLog['token']);
-        Log::info('Username validating', ['username' => $validated['username'], 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('Username logging in validation', ['username' => $validated['username'], 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
 
         /** If user not found or password false return failed */
         if (is_null($user = $this->checkAuthUser($validated))) {
@@ -142,7 +142,7 @@ class AuthController extends Controller
 
         $validatedLog = $validated;
         unset($validatedLog['password']);
-        Log::info('Username validating', ['username' => $validated['username'], 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('Username getting token validation', ['username' => $validated['username'], 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
 
         /** If user not found or password false return failed */
         if (is_null($user = $this->checkAuthUser($validated))) {

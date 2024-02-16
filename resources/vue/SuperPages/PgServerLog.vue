@@ -32,7 +32,6 @@ type LogLevelDropdownType = Array<{
     value: string;
 }>;
 
-const breadCrumb = ref<BreadCrumbType>([{ label: "Server Log" }]);
 const loadingstat = ref<boolean>(true);
 const serverLogData = ref<Array<ServerLogDataType>>(Array<ServerLogDataType>());
 const dateStartData = ref<Date>(new Date());

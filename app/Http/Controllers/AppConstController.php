@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\User;
 use App\Rules\TokenPlatformValidation;

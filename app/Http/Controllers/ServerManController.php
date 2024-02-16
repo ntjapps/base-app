@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Litespeed\LSCache\LSCache;
 use Monolog\Logger;
 
 class ServerManController extends Controller
@@ -81,6 +82,11 @@ class ServerManController extends Controller
 
         /** Clear Cache */
         Cache::flush();
+
+        /** Clear LSWS Cache */
+        if (in_array('Litespeed\LSCache\LSCacheServiceProvider', config('app.providers'))) {
+            LSCache::purgeAll(false);
+        }
 
         return $this->jsonSuccess('Cache cleared', 'Cache cleared successfully');
     }

@@ -18,7 +18,6 @@ const api = useApiStore();
 const main = useMainStore();
 const { appName, userName } = storeToRefs(main);
 
-type BreadCrumbType = Array<{ label: string }>;
 type ServerLogDataType = Array<{
     id: number;
     log_level: string;

@@ -195,9 +195,6 @@ onMounted(() => {
         </div>
     </div>
     <div class="flex w-full mt-2.5 justify-center">
-        <button class="btn w-24 mx-2 text-sm" @click="postUserManData">
-            <span class="m-1">Submit</span>
-        </button>
         <button
             v-if="showDeleted"
             class="btn btn-error w-24 mx-2 text-sm"
@@ -211,6 +208,9 @@ onMounted(() => {
             @click="postResetPasswordUserMandata()"
         >
             <span class="m-1">Reset Password</span>
+        </button>
+        <button class="btn w-24 mx-2 text-sm" @click="postUserManData">
+            <span class="m-1">Submit</span>
         </button>
     </div>
 </template>

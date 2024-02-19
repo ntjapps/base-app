@@ -33,6 +33,6 @@ class {{ class }}
      */
     public function tags({{ event }} $event): array
     {
-        return ['Listener: '.{{ class }}.' Event: '.'{{ event }}'];
+        return ['Listener: {{ class }} Event: {{ event }}'];
     }
 }

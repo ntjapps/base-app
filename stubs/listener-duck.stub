@@ -30,8 +30,8 @@ class {{ class }}
      *
      * @return array<int, string>
      */
-    public function tags(object $event): array
+    public function tags({{ event }} $event): array
     {
-        return ['Listener: '.{{ class }}.' Event: '.'object'];
+        return ['Listener: {{ class }} Event: {{ event }}'];
     }
 }

@@ -55,7 +55,7 @@ class DeferDatabaseLogJob implements ShouldQueue, Silenced
      */
     public function uniqueId(): string
     {
-        return '{{ class }}';
+        return 'DeferDatabaseLogJob';
     }
 
     /**

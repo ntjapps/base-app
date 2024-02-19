@@ -54,7 +54,7 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
      */
     public function uniqueId(): string
     {
-        return '{{ class }}';
+        return 'DeferTelegramLogJob';
     }
 
     /**

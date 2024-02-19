@@ -26,4 +26,14 @@ class {{ class }} implements ShouldQueue
     {
         //
     }
+
+    /**
+     * Get the tags that should be assigned to the listener.
+     *
+     * @return array<int, string>
+     */
+    public function tags(object $event): array
+    {
+        return ['Listener: '.{{ class }}.' Event: '.'object'];
+    }
 }

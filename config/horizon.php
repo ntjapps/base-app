@@ -181,7 +181,7 @@ return [
         ],
 
         'supervisor-logger-1' => [
-            'connection' => 'redis',
+            'connection' => 'redis_logger',
             'queue' => ['logger'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'size',

@@ -13,21 +13,6 @@ import DialogService from "primevue/dialogservice";
 import ToastService from "primevue/toastservice";
 import Tooltip from "primevue/tooltip";
 
-/** Sentry iniitialization */
-Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    integrations: [
-        Sentry.browserTracingIntegration({ router }),
-        Sentry.replayIntegration(),
-    ],
-
-    // Performance Monitoring
-    tracesSampleRate: 0.01, //  Capture 1% of the transactions
-    // Session Replay
-    replaysSessionSampleRate: 0.01, // This sets the sample rate at 1%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-});
-
 // Mount Application Instances
 const MainApp: App<Element> = createApp({})
     .use(router)
@@ -43,6 +28,22 @@ const MainApp: App<Element> = createApp({})
 /** Global Composenent / Page Registration */
 import CmpAppSet from "./Components/CmpAppSet.vue";
 MainApp.component("CmpAppSet", CmpAppSet);
+
+/** Sentry iniitialization */
+Sentry.init({
+    app: MainApp,
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    integrations: [
+        Sentry.browserTracingIntegration({ router }),
+        Sentry.replayIntegration(),
+    ],
+
+    // Performance Monitoring
+    tracesSampleRate: 0.01, //  Capture 1% of the transactions
+    // Session Replay
+    replaysSessionSampleRate: 0.01, // This sets the sample rate at 1%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+});
 
 router.isReady().then(() => {
     MainApp.mount("#app");

@@ -45,10 +45,9 @@ trait AuthFunction
      */
     protected function checkAuthLogout(Request $request): void
     {
-        $userId = Auth::id() ?? Auth::guard('api')->id();
-        $user = User::where('id', $userId)->first();
+        $user = Auth::user() ?? Auth::guard('api')->user();
         /** Logout if user is authenticated */
-        if (Auth::check()) {
+        if (! is_null($user)) {
             Log::info('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
             Auth::logout();

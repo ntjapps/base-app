@@ -71,7 +71,7 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
      */
     public function tags(): array
     {
-        return ['DeferTelegramLogJob', 'uniqueId: ' . $this->uniqueId()];
+        return ['DeferTelegramLogJob', 'uniqueId: '.$this->uniqueId()];
     }
 
     /**

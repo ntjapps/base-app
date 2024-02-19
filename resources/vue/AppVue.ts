@@ -3,7 +3,6 @@ import { createPinia, Pinia } from "pinia";
 const pinia: Pinia = createPinia();
 import PrimeVue from "primevue/config";
 
-import PrimeTailwind from "./presets/custom";
 import * as Sentry from "@sentry/vue";
 
 /** Vue router needed for navigation menu */
@@ -18,15 +17,10 @@ import Tooltip from "primevue/tooltip";
 Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     integrations: [
-        new Sentry.BrowserTracing({
-            // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-            tracePropagationTargets: [
-                "localhost",
-                import.meta.env.VITE_APP_URL,
-            ],
-        }),
-        new Sentry.Replay(),
+        Sentry.browserTracingIntegration({ router }),
+        Sentry.replayIntegration(),
     ],
+
     // Performance Monitoring
     tracesSampleRate: 0.01, //  Capture 1% of the transactions
     // Session Replay
@@ -40,7 +34,6 @@ const MainApp: App<Element> = createApp({})
     .use(pinia)
     .use(PrimeVue, {
         unstyled: true,
-        pt: PrimeTailwind,
         ptOptions: { mergeProps: true },
     })
     .use(DialogService)

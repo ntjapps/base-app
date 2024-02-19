@@ -72,7 +72,7 @@ class PruneLogDebugLevelJob implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['PruneLogDebugLevelJob', 'uniqueId: ' . $this->uniqueId()];
+        return ['PruneLogDebugLevelJob', 'uniqueId: '.$this->uniqueId()];
     }
 
     /**

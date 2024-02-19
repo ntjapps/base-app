@@ -72,7 +72,7 @@ class RolePermissionSyncJob implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['RolePermissionSyncJob', 'uniqueId: ' . $this->uniqueId()];
+        return ['RolePermissionSyncJob', 'uniqueId: '.$this->uniqueId()];
     }
 
     /**

@@ -72,7 +72,7 @@ class DeferDatabaseLogJob implements ShouldQueue, Silenced
      */
     public function tags(): array
     {
-        return ['DeferDatabaseLogJob', 'uniqueId: ' . $this->uniqueId()];
+        return ['DeferDatabaseLogJob', 'uniqueId: '.$this->uniqueId()];
     }
 
     /**

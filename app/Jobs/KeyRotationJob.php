@@ -73,7 +73,7 @@ class KeyRotationJob implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['KeyRotationJob', 'uniqueId: ' . $this->uniqueId()];
+        return ['KeyRotationJob', 'uniqueId: '.$this->uniqueId()];
     }
 
     /**

@@ -53,6 +53,11 @@ trait AuthFunction
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
+            /** Also revoke all user token even if this is web routes */
+            foreach ($user?->tokens as $token) {
+                $token?->revoke();
+            }
         }
     }
 }

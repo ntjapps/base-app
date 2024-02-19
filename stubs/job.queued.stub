@@ -19,7 +19,32 @@ class {{ class }} implements ShouldQueue
      */
     public function __construct()
     {
-        //
+        //$this->onQueue('default');
+    }
+
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    //public $timeout = 60;
+
+    /**
+     * Calculate the number of seconds to wait before retrying the job.
+     *
+     * @return array<int, int>
+     */
+    public function backoff(): array
+    {
+        return [1, 5, 10];
+    }
+
+    /**
+     * Determine number of times the job may be attempted.
+     */
+    public function tries(): int
+    {
+        return 3;
     }
  
     /**

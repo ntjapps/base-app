@@ -171,10 +171,25 @@ return [
             'balance' => 'auto',
             'autoScalingStrategy' => 'size',
             'maxProcesses' => 1,
-            'maxTime' => 0,
-            'maxJobs' => 0,
+            'maxTime' => 86400,
+            'maxJobs' => 1000000,
             'memory' => 256,
-            'tries' => 1,
+            'tries' => 3,
+            'timeout' => 60,
+            'nice' => 0,
+            'force' => true,
+        ],
+
+        'supervisor-logger-1' => [
+            'connection' => 'redis',
+            'queue' => ['logger'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'size',
+            'maxProcesses' => 1,
+            'maxTime' => 86400,
+            'maxJobs' => 1000000,
+            'memory' => 256,
+            'tries' => 3,
             'timeout' => 60,
             'nice' => 0,
             'force' => true,
@@ -186,10 +201,10 @@ return [
             'balance' => 'auto',
             'autoScalingStrategy' => 'size',
             'maxProcesses' => 1,
-            'maxTime' => 0,
-            'maxJobs' => 0,
+            'maxTime' => 86400,
+            'maxJobs' => 1000000,
             'memory' => 256,
-            'tries' => 1,
+            'tries' => 3,
             'timeout' => 3600,
             'nice' => 1,
         ],
@@ -198,6 +213,11 @@ return [
     'environments' => [
         'production' => [
             'supervisor-1' => [
+                'maxProcesses' => 5,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+            'supervisor-logger-1' => [
                 'maxProcesses' => 5,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
@@ -211,6 +231,9 @@ return [
 
         'local' => [
             'supervisor-1' => [
+                'maxProcesses' => 4,
+            ],
+            'supervisor-logger-1' => [
                 'maxProcesses' => 4,
             ],
             'supervisor-long-run-1' => [

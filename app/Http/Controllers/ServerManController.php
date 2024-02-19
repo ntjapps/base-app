@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Interfaces\MenuItemClass;
 use App\Logger\Models\ServerLog;
+use App\Traits\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,8 @@ use Monolog\Logger;
 
 class ServerManController extends Controller
 {
+    use JsonResponse;
+
     /**
      * GET request to view server logs layouts
      */

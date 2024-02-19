@@ -67,6 +67,16 @@ class KeyRotationJob implements ShouldQueue
     public $uniqueFor = 60;
 
     /**
+     * Get the tags that should be assigned to the job.
+     *
+     * @return array<int, string>
+     */
+    public function tags(): array
+    {
+        return ['KeyRotationJob', 'uniqueId: ' . $this->uniqueId()];
+    }
+
+    /**
      * Execute the job.
      */
     public function handle(): void

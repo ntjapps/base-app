@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Interfaces\InterfaceClass;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -53,6 +54,6 @@ class BaseSystemStartCommand extends Command
 
         $this->info('System startup scripts executed');
 
-        Log::alert('Console system:start executed', ['appName' => config('app.name')]);
+        Log::alert('Console system:start executed', ['appName' => config('app.name'), 'appVersion' => InterfaceClass::readApplicationVersion()]);
     }
 }

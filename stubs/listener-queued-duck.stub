@@ -32,8 +32,8 @@ class {{ class }} implements ShouldQueue
      *
      * @return array<int, string>
      */
-    public function tags({{ event }} $event): array
+    public function tags(object $event): array
     {
-        return ['Listener: {{ class }} Event: {{ event }}'];
+        return ['Listener: {{ class }} Event: object'];
     }
 }

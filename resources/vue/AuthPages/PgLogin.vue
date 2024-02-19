@@ -3,6 +3,7 @@ import axios from "axios";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useMainStore, useWebApiStore } from "../AppState";
+import { useWebStore } from "../AppRouter";
 
 import CmpTurnstile from "../Components/CmpTurnstile.vue";
 import CmpToast from "../Components/CmpToast.vue";
@@ -10,6 +11,7 @@ import CmpToast from "../Components/CmpToast.vue";
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 
+const web = useWebStore();
 const webapi = useWebApiStore();
 const main = useMainStore();
 const { appName, turnstileToken, browserSuppport } = storeToRefs(main);
@@ -30,8 +32,8 @@ const postLoginData = () => {
         })
         .then((response) => {
             clearData();
-            toastchild.value?.toastSuccess("Welcome to " + appName.value);
-            window.location.href = response.data.redirect;
+            toastchild.value?.toastSuccess(response.data.message);
+            window.location.href = web.dashboard;
         })
         .catch((error) => {
             loading.value = false;

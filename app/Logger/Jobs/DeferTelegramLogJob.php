@@ -65,6 +65,16 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
     public $uniqueFor = 60;
 
     /**
+     * Get the tags that should be assigned to the job.
+     *
+     * @return array<int, string>
+     */
+    public function tags(): array
+    {
+        return ['DeferTelegramLogJob', 'uniqueId: ' . $this->uniqueId()];
+    }
+
+    /**
      * Execute the job.
      */
     public function handle(): void

@@ -8,24 +8,6 @@ use Illuminate\Support\Facades\Gate;
 
 trait MenuItemConst
 {
-    public static function currentRouteExpandedKeys(string $getName): ?string
-    {
-        /** Case for route name */
-        switch ($getName) {
-            case 'user-man':
-                $expandedKeys = '99';
-                break;
-            case 'server-logs':
-                $expandedKeys = '99';
-                break;
-            default:
-                $expandedKeys = null;
-                break;
-        }
-
-        return $expandedKeys;
-    }
-
     public static function dashboardMenu(): array
     {
         return [
@@ -60,23 +42,23 @@ trait MenuItemConst
 
         if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
 
-            $childMenu[] = [
+            array_push($childMenu, [
                 'label' => 'User Management',
                 'icon' => 'pi pi-users',
                 'url' => parse_url(route('user-man'), PHP_URL_PATH),
-            ];
+            ]);
 
-            $childMenu[] = [
+            array_push($childMenu, [
                 'label' => 'Server Queue - Horizon',
                 'icon' => 'pi pi-bolt',
                 'url' => parse_url(route('horizon.index'), PHP_URL_PATH),
-            ];
+            ]);
 
-            $childMenu[] = [
+            array_push($childMenu, [
                 'label' => 'Server Logs',
                 'icon' => 'pi pi-server',
                 'url' => parse_url(route('server-logs'), PHP_URL_PATH),
-            ];
+            ]);
         }
 
         if (empty($childMenu)) {

@@ -37,20 +37,19 @@ class AppConstController extends Controller
 
         /** Menu Items */
         if ($authCheck) {
+            $menuArray = []; /** Menu Array */
+
+            /** Top Order Menu */
+            array_push($menuArray, MenuItemClass::dashboardMenu());
+            array_push($menuArray, MenuItemClass::editProfileMenu());
+
+            /** Administration Menu */
             if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
-                $menuArray = [
-                    MenuItemClass::dashboardMenu(),
-                    MenuItemClass::editProfileMenu(),
-                    MenuItemClass::logoutMenu(),
-                    MenuItemClass::administrationMenu(),
-                ];
-            } else {
-                $menuArray = [
-                    MenuItemClass::dashboardMenu(),
-                    MenuItemClass::editProfileMenu(),
-                    MenuItemClass::logoutMenu(),
-                ];
+                array_push($menuArray, MenuItemClass::administrationMenu());
             }
+
+            /** Bottom Order Menu */
+            array_push($menuArray, MenuItemClass::logoutMenu());
 
             $menuItems = json_encode(array_filter($menuArray));
         }

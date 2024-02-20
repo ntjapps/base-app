@@ -8,7 +8,8 @@ export default {
 
             // Size
             "max-h-[90vh]",
-            "w-[50vw]",
+            "min-w-[50vw]",
+            "max-w-[90vw]",
             "m-0",
 
             // Color

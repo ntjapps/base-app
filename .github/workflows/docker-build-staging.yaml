@@ -31,11 +31,11 @@ jobs:
       - name: Composer Install # Install composer dependencies
         uses: "ramsey/composer-install@v2"
         with:
-            composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev"
+          composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev"
 
       # NPM Setup
       - name: NPM Setup # Install NPM dependencies
-        uses: bahmutov/npm-install@v1.6.0
+        uses: bahmutov/npm-install@v1
 
       - name: NPM Build # Build NPM assets
         run: npx vite build
@@ -98,6 +98,6 @@ jobs:
       - name: Delete Artifacts # Delete Artifacts
         uses: jimschubert/delete-artifacts-action@v1
         with:
-          log_level: 'debug'
-          min_bytes: '0'
-          active_duration: '30m'
+          log_level: "debug"
+          min_bytes: "0"
+          active_duration: "30m"

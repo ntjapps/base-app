@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('horizon:snapshot')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('model:prune')->everyMinute()->withoutOverlapping();
         $schedule->command('queue:prune-failed')->hourly()->withoutOverlapping();
+        $schedule->command('queue:prune-batches')->hourly()->withoutOverlapping();
         $schedule->command('queue:flush')->hourly()->withoutOverlapping();
         $schedule->command('passport:purge')->hourly()->withoutOverlapping();
 

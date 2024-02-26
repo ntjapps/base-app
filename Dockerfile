@@ -9,6 +9,6 @@ COPY . /var/www/vhosts/localhost
 
 RUN rm -rf /var/www/vhosts/localhost/Dockerfile && \
     ln -sf /var/www/vhosts/localhost/public /var/www/vhosts/localhost/html && \
-    chown nobody:nobody -R /var/www/vhosts/localhost
+    chown nobody:nogroup -R /var/www/vhosts/localhost
 
 VOLUME ["/var/www/vhosts/localhost/storage"]

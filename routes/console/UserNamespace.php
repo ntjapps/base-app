@@ -12,7 +12,7 @@ Artisan::command('user:create {username} {password?}', function () {
         return $this->info('Username: '.$this->argument('username').' already exists');
     }
 
-    $password = is_null($this->argument('password')) ? config('auth.reset_password_data') : $this->argument('password');
+    $password = is_null($this->argument('password')) ? config('auth.defaults.reset_password_data') : $this->argument('password');
 
     User::create([
         'username' => $this->argument('username'),
@@ -59,12 +59,25 @@ Artisan::command('user:reset {username}', function () {
     }
 
     $user = User::where('username', $this->argument('username'))->first();
-    $user->password = Hash::make(config('auth.reset_password_data'));
+    $user->password = Hash::make(config('auth.defaults.reset_password_data'));
     $user->save();
 
-    $this->info('Reset password for user with username: '.$this->argument('username'));
+    $this->info('Reset password for user with username: '.$this->argument('username'). ' and default password: '.config('auth.defaults.reset_password_data'));
     Log::alert('Console user:reset executed', ['username' => $this->argument('username')]);
 })->purpose('Reset password for user');
+
+Artisan::command('user:login {username} {password}', function () {
+    $userExists = User::where('username', $this->argument('username'))->exists();
+    if (! $userExists) {
+        return $this->info('Username: '.$this->argument('username').' not found');
+    }
+
+    $user = User::where('username', $this->argument('username'))->first();
+    $hashCheck = Hash::check($this->argument('password'), $user->password);
+
+    $this->info('Check password for user with username: '.$this->argument('username').' and password: '.($hashCheck ? 'true' : 'false'));
+    Log::alert('Console user:login executed', ['username' => $this->argument('username')]);
+})->purpose('Check password for user');
 
 Artisan::command('user:restore {username}', function () {
     $userExists = User::onlyTrashed()->where('username', $this->argument('username'))->exists();

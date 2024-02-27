@@ -10,7 +10,7 @@ class MenuItemClass
 
     /**
      * Get current route expanded keys
-     */    
+     */
     public static function currentRouteExpandedKeys(string $getName): ?string
     {
         /** Case for route name */

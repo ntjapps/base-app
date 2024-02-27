@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('oauth_personal_access_clients')) {
+            return;
+        }
+
         Schema::create('oauth_personal_access_clients', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('client_id')->constrained('oauth_clients')->cascadeOnUpdate()->cascadeOnDelete();

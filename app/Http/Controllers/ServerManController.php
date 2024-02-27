@@ -61,7 +61,7 @@ class ServerManController extends Controller
         $data = ServerLog::when($validated['date_start'] ?? null, function ($query, $date_start) {
             return $query->where('created_at', '>=', Carbon::parse($date_start, 'Asia/Jakarta')->startOfDay());
         })->when($validated['date_end'] ?? null, function ($query, $date_end) {
-            return $query->where('created_at', '<=', Carbon::parse($date_end, 'Asia/Jakarta')->startOfDay()->addDay());
+            return $query->where('created_at', '<=', Carbon::parse($date_end, 'Asia/Jakarta')->endOfDay());
         })->when($validated['log_level'] ?? null, function ($query, $log_level) {
             $log_level === 'all' ? $log_level = 'debug' : $log_level = $log_level;
 

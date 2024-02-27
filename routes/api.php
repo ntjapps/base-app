@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
+use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 /** All API Route should be sanitized with XSS Middleware */
-Route::middleware(['xss'])->group(function () {
+Route::middleware([XssProtection::class])->group(function () {
     /** Get Constant */
     Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
     Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');

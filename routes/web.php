@@ -5,6 +5,7 @@ use App\Http\Controllers\DashController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
+use App\Http\Middleware\ProfileFillIfEmpty;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/get-logout', [AuthController::class, 'getLogout'])->name('get-logout');
         Route::get('/profile', [ProfileController::class, 'profilePage'])->name('profile');
         /** Check if profile fillled if not, force go to profile page */
-        Route::middleware(['profil'])->group(function () {
+        Route::middleware([ProfileFillIfEmpty::class])->group(function () {
             Route::get('/dashboard', [DashController::class, 'dashboardPage'])->name('dashboard');
 
             Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {

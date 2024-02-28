@@ -51,7 +51,7 @@ class AppConstController extends Controller
             /** Bottom Order Menu */
             array_push($menuArray, MenuItemClass::logoutMenu());
 
-            $menuItems = json_encode(array_filter($menuArray));
+            $menuItems = array_filter($menuArray);
         }
 
         /** Constant now set in Vue State, this now used to check if authenticated or not */
@@ -66,7 +66,7 @@ class AppConstController extends Controller
             'isAuth' => $authCheck,
 
             /** Menu Items */
-            'menuItems' => $menuItems ?? json_encode([]),
+            'menuItems' => $menuItems ?? [],
 
             /** Permission Data */
             'permissionData' => $user?->getAllPermissions()->pluck('name')->toArray() ?? [],

@@ -25,17 +25,17 @@ const props = defineProps({
                 </div>
             </div>
 
-            <div class="flex flex-row-reverse w-full">
+            <div class="flex justify-end w-full">
                 <div
                     v-if="browserSuppport"
-                    class="flex flex-row-reverse w-full my-auto"
+                    class="flex justify-end w-full my-auto"
                 >
                     <CmpClearCacheButton />
                     <CmpPusherState />
                 </div>
                 <div
                     v-if="!browserSuppport"
-                    class="flex flex-row-reverse w-full my-auto"
+                    class="flex justify-end w-full my-auto"
                 >
                     <CmpClearCacheButton />
                     <button class="btn btn-sm btn-error">

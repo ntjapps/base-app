@@ -110,7 +110,7 @@ onBeforeMount(() => {
                     </h2>
                     <h3 class="title-font">User Role Management</h3>
                 </div>
-                <div class="flex flex-row-reverse w-full my-auto">
+                <div class="flex justify-end w-full my-auto">
                     <button
                         class="btn btn-primary w-20"
                         @click="openEditUserDialog(null)"

@@ -24,7 +24,10 @@ function timeView(data: string | number | Date): string | null {
         return null;
     } else {
         const date = new Date(data);
-        return date.toLocaleString("en-UK");
+        return date.toLocaleString("en-UK", {
+            dateStyle: "short",
+            timeStyle: "short",
+        });
     }
 }
 
@@ -33,7 +36,9 @@ function dateView(data: string | number | Date): string | null {
         return null;
     } else {
         const date = new Date(data);
-        return date.toLocaleDateString();
+        return date.toLocaleString("en-UK", {
+            dateStyle: "short",
+        });
     }
 }
 

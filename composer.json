@@ -33,7 +33,7 @@
         "laravel/telescope": "^4.17",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^7.10",
-        "phpunit/phpunit": "^11.0",
+        "phpunit/phpunit": "^10.0",
         "spatie/laravel-ignition": "^2.4"
     },
     "autoload": {

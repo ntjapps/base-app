@@ -40,7 +40,8 @@ export default {
                     props.value !== undefined,
                 "border-surface-300 dark:border-surface-700":
                     props.value !== props.modelValue &&
-                    props.value !== undefined,
+                    props.value !== undefined &&
+                    !props.invalid,
                 "border-primary-500 dark:border-primary-400":
                     props.value == props.modelValue &&
                     props.value !== undefined,
@@ -48,11 +49,13 @@ export default {
                     props.value == props.modelValue &&
                     props.value !== undefined,
             },
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             // States
             {
                 "peer-hover:border-primary-500 dark:peer-hover:border-primary-400":
-                    !props.disabled,
+                    !props.disabled && !props.invalid,
                 "peer-hover:border-primary-600 dark:peer-hover:border-primary-300 peer-hover:bg-primary-600 dark:peer-hover:bg-primary-300":
                     !props.disabled &&
                     props.value == props.modelValue &&
@@ -87,7 +90,7 @@ export default {
             "border-2 border-surface-200 dark:border-surface-700",
 
             // Misc
-            "appareance-none",
+            "appearance-none",
             "cursor-pointer",
         ],
     },

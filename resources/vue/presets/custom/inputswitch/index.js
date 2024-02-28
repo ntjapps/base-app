@@ -31,7 +31,7 @@ export default {
             "before:bg-surface-0 before:dark:bg-surface-900",
 
             // Colors
-            "border border-transparent",
+            "border",
             {
                 "bg-surface-200 dark:bg-surface-700": !(
                     props.modelValue == props.trueValue
@@ -39,6 +39,11 @@ export default {
                 "bg-primary-500 dark:bg-primary-400":
                     props.modelValue == props.trueValue,
             },
+
+            { "border-transparent": !props.invalid },
+
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             // States
             {
@@ -81,7 +86,7 @@ export default {
             "outline-none",
 
             // Misc
-            "appareance-none",
+            "appearance-none",
             "cursor-pointer",
         ],
     },

@@ -56,7 +56,7 @@ export default {
 
             // Color
             {
-                "text-surface-700 dark:text-surface-200 hover:text-surface-900 hover:text-surface-900":
+                "text-surface-700 dark:text-surface-200 hover:text-surface-900":
                     props.toggleable,
             },
 

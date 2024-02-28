@@ -4,6 +4,9 @@ export default {
             // Font
             "font-sans leading-6",
 
+            // Flex
+            { "flex-1 w-[1%]": parent.instance.$name == "InputGroup" },
+
             // Spacing
             "m-0",
             {
@@ -18,9 +21,14 @@ export default {
             "bg-surface-0 dark:bg-surface-900",
             "shadow-sm",
             {
-                "ring-1 ring-inset ring-surface-300 dark:ring-surface-700 ring-offset-0":
+                "ring-1 ring-inset ring-offset-0":
                     parent.instance.$name !== "InputGroup",
             },
+
+            { "ring-surface-300 dark:ring-surface-700": !props.invalid },
+
+            // Invalid State
+            { "ring-red-500 dark:ring-red-400": props.invalid },
 
             // Shape
             { "rounded-md": parent.instance.$name !== "InputGroup" },
@@ -33,7 +41,7 @@ export default {
                     parent.instance.$name == "InputGroup",
             },
             {
-                "first:ml-0 ml-[-1px]":
+                "first:ml-0 -ml-px":
                     parent.instance.$name == "InputGroup" && !props.showButtons,
             },
             "appearance-none",
@@ -44,6 +52,12 @@ export default {
                     !context.disabled,
                 "opacity-60 select-none pointer-events-none cursor-default":
                     context.disabled,
+            },
+
+            // Filled State *for FloatLabel
+            {
+                filled:
+                    parent.instance?.$name == "FloatLabel" && context.filled,
             },
         ],
     }),

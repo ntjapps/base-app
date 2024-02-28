@@ -17,7 +17,7 @@ export default {
         ],
     },
     paginatorwrapper: {
-        class: "mt-[-1px]",
+        class: "-mt-px",
     },
     firstpagebutton: ({ context }) => ({
         class: [
@@ -33,7 +33,7 @@ export default {
             "border-t-2 border-transparent",
 
             // Size
-            "min-w-[3rem] h-12 mt-[-1px]",
+            "min-w-[3rem] h-12 -mt-px",
 
             // Color
             "text-surface-500 dark:text-white/60",
@@ -71,7 +71,7 @@ export default {
             "border-t-2 border-transparent",
 
             // Size
-            "min-w-[3rem] h-12 mt-[-1px]",
+            "min-w-[3rem] h-12 -mt-px",
 
             // Color
             "text-surface-500 dark:text-white/60",
@@ -109,7 +109,7 @@ export default {
             "border-t-2 border-transparent",
 
             // Size
-            "min-w-[3rem] h-12 mt-[-1px]",
+            "min-w-[3rem] h-12 -mt-px",
 
             // Color
             "text-surface-500 dark:text-white/60",
@@ -147,7 +147,7 @@ export default {
             "border-t-2 border-transparent",
 
             // Size
-            "min-w-[3rem] h-12 mt-[-1px]",
+            "min-w-[3rem] h-12 -mt-px",
 
             // Color
             "text-surface-500 dark:text-white/60",
@@ -185,7 +185,7 @@ export default {
             "border-t-2",
 
             // Size
-            "min-w-[3rem] h-12 mt-[-1px]",
+            "min-w-[3rem] h-12 -mt-px",
 
             // Color
             {

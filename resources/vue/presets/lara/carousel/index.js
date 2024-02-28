@@ -92,12 +92,29 @@ export default {
     item: ({ props }) => ({
         class: [
             // Flexbox
-            "flex shrink-0 grow",
+            "flex shrink-0 grow ",
 
-            // Width
+            // Size
             {
-                "w-1/3": props.orientation !== "vertical",
-                "w-full": props.orientation == "vertical",
+                "w-full sm:w-[50%] md:w-[33.333333333333336%]":
+                    props.orientation !== "vertical",
+
+                "w-full h-full": props.orientation == "vertical",
+            },
+        ],
+    }),
+    itemcloned: ({ props }) => ({
+        class: [
+            // Flexbox
+            "flex shrink-0 grow",
+            "unvisible",
+
+            // Size
+            {
+                "w-full sm:w-[50%] md:w-[33.333333333333336%]":
+                    props.orientation !== "vertical",
+
+                "w-full h-full": props.orientation == "vertical",
             },
         ],
     }),

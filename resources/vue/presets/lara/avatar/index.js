@@ -34,7 +34,13 @@ export default {
             },
         ],
     }),
-    image: {
-        class: "h-full w-full",
-    },
+    image: ({ props }) => ({
+        class: [
+            "h-full w-full",
+            {
+                "rounded-lg": props.shape == "square",
+                "rounded-full": props.shape == "circle",
+            },
+        ],
+    }),
 };

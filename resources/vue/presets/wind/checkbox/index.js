@@ -35,10 +35,13 @@ export default {
             "text-surface-600",
             {
                 "border-surface-300 bg-surface-0 dark:border-surface-700 dark:bg-surface-900":
-                    !context.checked,
+                    !context.checked && !props.invalid,
                 "border-primary-500 bg-primary-500 dark:border-primary-400 dark:bg-primary-400":
                     context.checked,
             },
+
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             {
                 "ring-2 ring-primary-500 dark:ring-primary-400":
@@ -86,7 +89,7 @@ export default {
             "border-2 border-surface-300 dark:border-surface-700",
 
             // Misc
-            "appareance-none",
+            "appearance-none",
         ],
     },
     icon: {

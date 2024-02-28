@@ -40,7 +40,7 @@ export default {
             },
 
             // Colors
-            "border-2 border-transparent",
+            "border",
             {
                 "bg-surface-200 dark:bg-surface-700": !(
                     props.modelValue == props.trueValue
@@ -48,6 +48,11 @@ export default {
                 "bg-primary-500 dark:bg-primary-400":
                     props.modelValue == props.trueValue,
             },
+
+            { "border-transparent": !props.invalid },
+
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             // States
             {
@@ -95,7 +100,7 @@ export default {
             "border-2 border-surface-300 dark:border-surface-700",
 
             // Misc
-            "appareance-none",
+            "appearance-none",
         ],
     },
 };

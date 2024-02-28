@@ -43,10 +43,17 @@ export default {
             "text-surface-700 dark:text-white/80",
             "placeholder:text-surface-400 dark:placeholder:text-surface-500",
             "bg-surface-0 dark:bg-surface-900",
-            "border border-surface-300 dark:border-surface-700",
+            "border",
+            { "border-surface-300 dark:border-surface-600": !props.invalid },
+
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             // States
-            "hover:border-primary-500 dark:hover:border-primary-400",
+            {
+                "hover:border-primary-500 dark:hover:border-primary-400":
+                    !props.invalid,
+            },
             "focus:outline-none focus:outline-offset-0",
             {
                 "ring ring-primary-400/50 dark:ring-primary-300/50":
@@ -85,12 +92,16 @@ export default {
 
             // Colors
             "text-surface-700 dark:text-white/80",
+            "border",
             {
                 "bg-surface-0 dark:bg-surface-900": !props.multiple,
-                "border border-surface-300 dark:border-surface-700":
-                    !props.multiple,
+                " border-surface-300 dark:border-surface-700":
+                    !props.multiple && !props.invalid,
                 "border-0 bg-transparent": props.multiple,
             },
+
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             // States
             {

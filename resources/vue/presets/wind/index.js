@@ -4,6 +4,7 @@ import avatar from "./avatar";
 import avatargroup from "./avatargroup";
 import badge from "./badge";
 import badgedirective from "./badgedirective";
+import blockui from "./blockui";
 import breadcrumb from "./breadcrumb";
 import button from "./button";
 import calendar from "./calendar";
@@ -24,12 +25,19 @@ import divider from "./divider";
 import dock from "./dock";
 import dropdown from "./dropdown";
 import fieldset from "./fieldset";
+import fileupload from "./fileupload";
+import floatlabel from "./floatlabel";
+import galleria from "./galleria";
 import global from "./global";
+import iconfield from "./iconfield";
+import image from "./image";
 import inlinemessage from "./inlinemessage";
+import inplace from "./inplace";
 import inputgroup from "./inputgroup";
 import inputgroupaddon from "./inputgroupaddon";
 import inputmask from "./inputmask";
 import inputnumber from "./inputnumber";
+import inputotp from "./inputotp";
 import inputswitch from "./inputswitch";
 import inputtext from "./inputtext";
 import knob from "./knob";
@@ -38,6 +46,7 @@ import megamenu from "./megamenu";
 import menu from "./menu";
 import menubar from "./menubar";
 import message from "./message";
+import metergroup from "./metergroup";
 import multiselect from "./multiselect";
 import orderlist from "./orderlist";
 import organizationchart from "./organizationchart";
@@ -48,6 +57,7 @@ import panelmenu from "./panelmenu";
 import password from "./password";
 import picklist from "./picklist";
 import progressbar from "./progressbar";
+import progressspinner from "./progressspinner";
 import radiobutton from "./radiobutton";
 import rating from "./rating";
 import ripple from "./ripple";
@@ -57,7 +67,11 @@ import selectbutton from "./selectbutton";
 import sidebar from "./sidebar";
 import skeleton from "./skeleton";
 import slider from "./slider";
+import speeddial from "./speeddial";
 import splitbutton from "./splitbutton";
+import splitter from "./splitter";
+import splitterpanel from "./splitterpanel";
+import stepper from "./stepper";
 import steps from "./steps";
 import tabmenu from "./tabmenu";
 import tabview from "./tabview";
@@ -65,6 +79,7 @@ import tag from "./tag";
 import terminal from "./terminal";
 import textarea from "./textarea";
 import tieredmenu from "./tieredmenu";
+import timeline from "./timeline";
 import toast from "./toast";
 import togglebutton from "./togglebutton";
 import toolbar from "./toolbar";
@@ -108,10 +123,14 @@ export default {
     tristatecheckbox,
     textarea,
     password,
+    iconfield,
+    floatlabel,
+    inputotp,
 
     //buttons
     button,
     splitbutton,
+    speeddial,
 
     //data
     paginator,
@@ -123,6 +142,7 @@ export default {
     orderlist,
     picklist,
     treetable,
+    timeline,
 
     //panels
     accordion,
@@ -133,6 +153,12 @@ export default {
     divider,
     toolbar,
     scrollpanel,
+    splitter,
+    splitterpanel,
+    stepper,
+
+    //file
+    fileupload,
 
     //menu
     contextmenu,
@@ -159,6 +185,8 @@ export default {
 
     //media
     carousel,
+    galleria,
+    image,
 
     //misc
     badge,
@@ -170,4 +198,8 @@ export default {
     skeleton,
     scrolltop,
     terminal,
+    blockui,
+    metergroup,
+    inplace,
+    progressspinner,
 };

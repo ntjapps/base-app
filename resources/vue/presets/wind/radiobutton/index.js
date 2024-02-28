@@ -42,11 +42,15 @@ export default {
                     props.value !== undefined,
                 "border-surface-300 dark:border-surface-700":
                     props.value !== props.modelValue &&
-                    props.value !== undefined,
+                    props.value !== undefined &&
+                    !props.invalid,
                 "border-primary-500 dark:border-primary-400":
                     props.value == props.modelValue &&
                     props.value !== undefined,
             },
+
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             // States
             {
@@ -81,7 +85,7 @@ export default {
             "border-2 border-surface-300 dark:border-surface-700",
 
             // Misc
-            "appareance-none",
+            "appearance-none",
             "cursor-default",
         ],
     },

@@ -46,10 +46,22 @@ export default {
 
             // States
             "focus:outline-none focus:outline-offset-0",
+            // States
             {
-                "ring-1 ring-inset ring-surface-300 dark:ring-surface-700 ring-offset-0":
-                    !state.focused,
-                "ring-2 ring-primary-500 dark:ring-primary-400": state.focused,
+                "ring-1 ring-inset": !state.focused,
+                "ring-2 ring-inset ring-primary-500 dark:ring-primary-400":
+                    state.focused,
+            },
+
+            {
+                "ring-surface-300 dark:ring-surface-600":
+                    !props.invalid && !state.focused,
+            },
+
+            // Invalid State
+            {
+                "ring-red-500 dark:ring-red-400":
+                    props.invalid && !state.focused,
             },
 
             // Transition
@@ -85,12 +97,16 @@ export default {
 
             // Colors
             "text-surface-700 dark:text-white/80",
+            "border",
             {
                 "bg-surface-0 dark:bg-surface-900": !props.multiple,
-                "border border-surface-300 dark:border-surface-700":
-                    !props.multiple,
+                "border-surface-300 dark:border-surface-700":
+                    !props.multiple && !props.invalid,
                 "border-0 bg-transparent": props.multiple,
             },
+
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             // States
             {
@@ -152,7 +168,7 @@ export default {
 
                 // Size
                 "px-2.5 py-1.5",
-                "-ml-[1px]",
+                "-ml-px",
 
                 // Colors
                 "text-surface-600 dark:text-surface-100",

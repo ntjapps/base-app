@@ -1,13 +1,13 @@
 export default {
     root: ({ props, parent }) => ({
         class: [
-            // Display
+            // Flex
             "inline-flex",
-
             {
                 "flex-col":
                     props.showButtons && props.buttonLayout == "vertical",
             },
+            { "flex-1 w-[1%]": parent.instance.$name == "InputGroup" },
 
             // Shape
             {
@@ -19,7 +19,7 @@ export default {
                     parent.instance.$name == "InputGroup" && !props.showButtons,
             },
             {
-                "first:ml-0 ml-[-1px]":
+                "first:ml-0 -ml-px":
                     parent.instance.$name == "InputGroup" && !props.showButtons,
             },
 
@@ -72,18 +72,35 @@ export default {
                             "InputGroup" && !parent.props.showButtons,
                 },
 
-                // Colorsh
+                // Colors
                 "text-surface-600 dark:text-surface-200",
                 "placeholder:text-surface-400 dark:placeholder:text-surface-500",
                 "bg-surface-0 dark:bg-surface-900",
-                "border border-surface-300 dark:border-surface-600",
+                "border",
+                {
+                    "border-surface-300 dark:border-surface-600":
+                        !parent.props.invalid,
+                },
+
+                // Invalid State
+                { "border-red-500 dark:border-red-400": parent.props.invalid },
 
                 // States
-                "hover:border-primary-500 dark:hover:border-primary-400",
-                "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-500/50 dark:focus:ring-primary-400/50",
+                {
+                    "hover:border-primary-500 dark:hover:border-primary-400":
+                        !parent.props.invalid,
+                },
+                "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-500/50 dark:focus:ring-primary-400/50 focus:z-10",
                 {
                     "opacity-60 select-none pointer-events-none cursor-default":
                         context.disabled,
+                },
+
+                // Filled State *for FloatLabel
+                {
+                    filled:
+                        parent.instance?.$name == "FloatLabel" &&
+                        context.filled,
                 },
 
                 //Position

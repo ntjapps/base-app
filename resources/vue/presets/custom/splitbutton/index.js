@@ -19,15 +19,16 @@ export default {
                 "items-center inline-flex text-center align-bottom justify-center",
 
                 // Sizes & Spacing
+                "leading-[normal]",
                 {
-                    "px-4 py-3 leading-none":
-                        parent.props.size === null &&
-                        parent.props.label !== null,
+                    "px-4 py-3": parent.props.size === null,
                     "text-sm py-2 px-3": parent.props.size === "small",
                     "text-xl py-3 px-4": parent.props.size === "large",
                 },
                 {
-                    "h-12 w-12 p-0": parent.props.label == null,
+                    "min-w-12 p-0 py-3":
+                        parent.props.label == null &&
+                        parent.props.icon !== null,
                 },
 
                 // Shape
@@ -498,15 +499,16 @@ export default {
                 "items-center inline-flex text-center align-bottom justify-center",
 
                 // Sizes & Spacing
+                "leading-[normal]",
                 {
-                    "px-4 py-3 leading-none":
-                        parent.props.size === null &&
-                        parent.props.label !== null,
-                    "text-xs py-2 px-3": parent.props.size === "small",
+                    "px-4 py-3": parent.props.size === null,
+                    "text-sm py-2 px-3": parent.props.size === "small",
                     "text-xl py-3 px-4": parent.props.size === "large",
                 },
                 {
-                    "h-12 w-12 p-0": parent.props.label == null,
+                    "min-w-12 p-0 py-3":
+                        parent.props.label == null &&
+                        parent.props.icon !== null,
                 },
 
                 // Shape
@@ -963,6 +965,132 @@ export default {
         }),
         label: {
             class: ["hidden"],
+        },
+    },
+    menu: {
+        root: {
+            class: [
+                // Shape
+                "rounded-md",
+
+                // Size
+                "min-w-[12rem]",
+                "py-1",
+
+                // Colors
+                "bg-surface-0 dark:bg-surface-700",
+                "border border-surface-200 dark:border-surface-700",
+            ],
+        },
+        menu: {
+            class: [
+                // Spacings and Shape
+                "list-none",
+                "m-0",
+                "p-0",
+                "outline-none",
+            ],
+        },
+        menuitem: {
+            class: [
+                // Position
+                "relative",
+            ],
+        },
+        content: ({ context }) => ({
+            class: [
+                //Shape
+                "rounded-none",
+
+                //  Colors
+                {
+                    "text-surface-500 dark:text-white/70":
+                        !context.focused && !context.active,
+                    "text-surface-500 dark:text-white/70 bg-surface-200 dark:bg-surface-600/90":
+                        context.focused && !context.active,
+                    "text-primary-700 dark:text-surface-0/80 bg-primary-50 dark:bg-primary-400/30":
+                        context.focused && context.active,
+                    "text-primary-700 dark:text-surface-0/80 bg-primary-50 dark:bg-primary-400/30":
+                        !context.focused && context.active,
+                },
+
+                // Hover States
+                {
+                    "hover:bg-surface-100 dark:hover:bg-surface-600/80":
+                        !context.active,
+                    "hover:bg-primary-500/50 dark:hover:bg-primary-300/30 text-primary-700 dark:text-surface-0/80":
+                        context.active,
+                },
+
+                // Transitions
+                "transition-shadow",
+                "duration-200",
+            ],
+        }),
+        action: {
+            class: [
+                "relative",
+                // Flexbox
+
+                "flex",
+                "items-center",
+
+                // Spacing
+                "py-3",
+                "px-5",
+
+                // Color
+                "text-surface-700 dark:text-white/80",
+
+                // Misc
+                "no-underline",
+                "overflow-hidden",
+                "cursor-pointer",
+                "select-none",
+            ],
+        },
+        icon: {
+            class: [
+                // Spacing
+                "mr-2",
+
+                // Color
+                "text-surface-600 dark:text-white/70",
+            ],
+        },
+        label: {
+            class: ["leading-none"],
+        },
+        submenuicon: {
+            class: [
+                // Position
+                "ml-auto",
+            ],
+        },
+        submenu: {
+            class: [
+                // Size
+                "w-full sm:w-48",
+
+                // Spacing
+                "py-1",
+                "m-0",
+                "list-none",
+
+                // Shape
+                "shadow-none sm:shadow-md",
+                "border-0",
+
+                // Position
+                "static sm:absolute",
+                "z-10",
+
+                // Color
+                "bg-surface-0 dark:bg-surface-700",
+            ],
+        },
+        separator: {
+            class: "border-t border-surface-200 dark:border-surface-600 my-1",
         },
     },
 };

@@ -241,7 +241,7 @@ export default {
                         leaveActiveClass:
                             "transition-all duration-200 ease-out",
                         leaveToClass:
-                            "opacity-0 scale-75 opacity-0 scale-75 translate-x-full translate-y-0 translate-z-0 mask-active",
+                            "opacity-0 scale-75 translate-x-full translate-y-0 translate-z-0 mask-active",
                     }
                   : {
                         enterFromClass: "opacity-0 scale-75 mask-active",

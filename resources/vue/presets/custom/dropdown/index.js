@@ -6,19 +6,25 @@ export default {
             "relative",
 
             // Shape
-            "w-full md:w-56",
             "rounded-md",
 
             // Color and Background
             "bg-surface-0 dark:bg-surface-900",
-            "border border-surface-300 dark:border-surface-700",
+            "border",
+            { "border-surface-300 dark:border-surface-600": !props.invalid },
+
+            // Invalid State
+            { "border-red-500 dark:border-red-400": props.invalid },
 
             // Transitions
             "transition-all",
             "duration-200",
 
             // States
-            "hover:border-primary-500 dark:hover:border-primary-300",
+            {
+                "hover:border-primary-500 dark:hover:border-primary-300":
+                    !props.invalid,
+            },
             {
                 "outline-none outline-offset-0 ring ring-primary-400/50 dark:ring-primary-300/50":
                     state.focused,

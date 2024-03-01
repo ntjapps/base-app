@@ -5,9 +5,11 @@ namespace App\Jobs;
 use App\Logger\Models\ServerLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Monolog\Logger;
 
@@ -84,10 +86,22 @@ class PruneLogDebugLevelJob implements ShouldQueue
     {
         try {
             Log::debug('Job Executed', ['jobName' => 'PruneLogDebugLevelJob']);
+            /** Delete Server Logs */
             ServerLog::where('level', Logger::toMonologLevel('debug'))->where('created_at', '<=', now()->subWeek())->delete();
             ServerLog::where('level', Logger::toMonologLevel('info'))->where('created_at', '<=', now()->subWeeks(2))->delete();
             ServerLog::where('level', Logger::toMonologLevel('notice'))->where('created_at', '<=', now()->subWeeks(3))->delete();
             ServerLog::where('level', Logger::toMonologLevel('warning'))->where('created_at', '<=', now()->subWeeks(4))->delete();
+
+            /** Delete Notifications */
+            DB::beginTransaction();
+            try {
+                DB::table('notifications')->where('created_at', '<=', now()->subMonth())->delete();
+                DB::commit();
+            } catch (QueryException $e) {
+                DB::rollBack();
+                Log::warning('Notification Prune Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
+            }
+
             Log::debug('Job Finished', ['jobName' => 'PruneLogDebugLevelJob']);
         } catch (\Throwable $e) {
             Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);

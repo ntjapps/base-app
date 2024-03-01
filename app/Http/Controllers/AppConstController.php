@@ -183,7 +183,8 @@ class AppConstController extends Controller
         DB::beginTransaction();
         try {
             if (! is_null($validated['notification_id'])) {
-                DB::table('notifications')->where('id', $validated['notification_id'])->update(['read_at' => Carbon::now()]);
+                /** @disregard */
+                $user?->notifications()->where('id', $validated['notification_id'])->markAsRead();
             } else {
                 $user?->unreadNotifications->markAsRead();
             }

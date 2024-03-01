@@ -61,6 +61,7 @@ class AppConstController extends Controller
             'appName' => config('app.name'),
             'appVersion' => InterfaceClass::readApplicationVersion(),
             'userName' => $user?->name ?? $user?->name ?? '',
+            'userAllNotifications' => $user?->notifications,
 
             /** Check if Auth */
             'isAuth' => $authCheck,

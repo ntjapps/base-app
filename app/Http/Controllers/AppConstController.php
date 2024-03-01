@@ -6,7 +6,6 @@ use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\User;
 use App\Rules\TokenPlatformValidation;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,8 +62,6 @@ class AppConstController extends Controller
             'appName' => config('app.name'),
             'appVersion' => InterfaceClass::readApplicationVersion(),
             'userName' => $user?->name ?? $user?->name ?? '',
-            'userAllNotifications' => $user?->notifications,
-            'userUnreadNotifications' => $user?->unreadNotifications,
 
             /** Check if Auth */
             'isAuth' => $authCheck,
@@ -158,6 +155,21 @@ class AppConstController extends Controller
     }
 
     /**
+     * POST get notification list
+     */
+    public function getNotificationList(Request $request): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('API hit trigger get notification list', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
+        /** Get Notification List */
+        $notificationList = $user?->notifications;
+
+        /** Return Response */
+        return response()->json($notificationList);
+    }
+
+    /**
      * POST post notification as read
      */
     public function postNotificationAsRead(Request $request): HttpJsonResponse
@@ -184,7 +196,7 @@ class AppConstController extends Controller
         try {
             if (! is_null($validated['notification_id'])) {
                 /** @disregard */
-                $user?->notifications()->where('id', $validated['notification_id'])->markAsRead();
+                $user?->notifications->where('id', $validated['notification_id'])->markAsRead();
             } else {
                 $user?->unreadNotifications->markAsRead();
             }

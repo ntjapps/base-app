@@ -25,6 +25,7 @@ Route::middleware([XssProtection::class])->group(function () {
     Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
     Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');
     Route::post('/post-get-current-app-version', [AppConstController::class, 'getCurrentAppVersion'])->name('post-get-current-app-version');
+    Route::post('/get-notification-list', [AppConstController::class, 'getNotificationList'])->name('get-notification-list');
     Route::post('/post-notification-as-read', [AppConstController::class, 'postNotificationAsRead'])->name('post-notification-as-read');
     Route::post('/post-notification-clear-all', [AppConstController::class, 'postNotificationClearAll'])->name('post-notification-clear-all');
 

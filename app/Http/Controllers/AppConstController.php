@@ -6,9 +6,11 @@ use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\User;
 use App\Rules\TokenPlatformValidation;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -152,5 +154,44 @@ class AppConstController extends Controller
                 'deviceVersion' => $validated['app_version'],
             ]);
         }
+    }
+
+    /**
+     * POST post notification as read
+     */
+    public function postNotificationAsRead(Request $request): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('API hit trigger post notification as read', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
+        /** Validate Input */
+        $validate = Validator::make($request->all(), [
+            'notification_id' => ['required', 'exists:notifications,id'],
+        ]);
+        if ($validate->fails()) {
+            Log::warning('API hit trigger post notification as read failed', ['apiUserIp' => $request->ip(), 'errors' => $validate->errors()]);
+
+            throw new ValidationException($validate);
+        }
+        (array) $validated = $validate->validated();
+
+        $validatedLog = $validated;
+        Log::info('API hit trigger post notification as read validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+
+        /** Updated Notification as Read */
+        DB::beginTransaction();
+        try {
+            DB::table('notifications')->where('id', $validated['notification_id'])->update(['read_at' => Carbon::now()]);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('API hit trigger post notification as read failed', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
+
+            throw $e;
+        }
+
+        /** Return Response */
+        return response()->json('OK', 200);
     }
 }

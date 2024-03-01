@@ -62,7 +62,7 @@ Artisan::command('user:reset {username}', function () {
     $user->password = Hash::make(config('auth.defaults.reset_password_data'));
     $user->save();
 
-    $this->info('Reset password for user with username: '.$this->argument('username'). ' and default password: '.config('auth.defaults.reset_password_data'));
+    $this->info('Reset password for user with username: '.$this->argument('username').' and default password: '.config('auth.defaults.reset_password_data'));
     Log::alert('Console user:reset executed', ['username' => $this->argument('username')]);
 })->purpose('Reset password for user');
 

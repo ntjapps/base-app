@@ -128,13 +128,17 @@ onMounted(() => {
 <template>
     <CmpToast ref="toastchild" />
     <div class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">Name:</div>
+        <div class="w-28 my-auto text-sm">
+            <span>Name:<span class="text-red-500 font-bold">*</span></span>
+        </div>
         <div class="flex w-full text-sm">
             <InputText v-model="nameData" class="w-full text-sm" />
         </div>
     </div>
     <div class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">Username:</div>
+        <div class="w-28 my-auto text-sm">
+            <span>Username:<span class="text-red-500 font-bold">*</span></span>
+        </div>
         <div class="flex w-full text-sm">
             <InputText v-model="usernameData" class="w-full text-sm" />
         </div>

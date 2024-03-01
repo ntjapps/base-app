@@ -20,6 +20,9 @@ export const useApiStore = defineStore("api", {
         appConst: "/api/post-app-const",
         getAllUserPermission: "/api/get-all-user-permission",
         logAgent: "/api/post-log-agent",
+        getNotificationList: "/api/get-notification-list",
+        postNotificationAsRead: "/api/post-notification-as-read",
+        postNotificationClearAll: "/api/post-notification-clear-all",
         getServerLogs: "/api/get-server-logs",
         postClearAppCache: "/api/post-clear-app-cache",
         getUserList: "/api/get-user-list",
@@ -46,6 +49,7 @@ export const useMainStore = defineStore("main", {
         appName: import.meta.env.APP_NAME,
         appVersion: "",
         userName: "",
+        notificationList: [],
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
         expandedKeysMenu: {},
@@ -97,6 +101,21 @@ export const useMainStore = defineStore("main", {
             axios.get("/sanctum/csrf-cookie").then(() => {
                 console.log("csrf cookie init");
             });
+        },
+
+        async getNotificationList() {
+            /**
+             * Get notification list
+             */
+            const api = useApiStore();
+            axios
+                .post(api.getNotificationList)
+                .then((response) => {
+                    this.$patch({ notificationList: response.data });
+                })
+                .catch((error) => {
+                    console.error(error.response.data);
+                });
         },
 
         updateExpandedKeysMenu(expandedKeys: string) {

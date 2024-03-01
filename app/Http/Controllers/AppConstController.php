@@ -167,7 +167,7 @@ class AppConstController extends Controller
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
-            'notification_id' => ['required', 'exists:notifications,id'],
+            'notification_id' => ['nullable', 'exists:notifications,id'],
         ]);
         if ($validate->fails()) {
             Log::warning('API hit trigger post notification as read failed', ['apiUserIp' => $request->ip(), 'errors' => $validate->errors()]);
@@ -182,12 +182,42 @@ class AppConstController extends Controller
         /** Updated Notification as Read */
         DB::beginTransaction();
         try {
-            DB::table('notifications')->where('id', $validated['notification_id'])->update(['read_at' => Carbon::now()]);
+            if (! is_null($validated['notification_id'])) {
+                DB::table('notifications')->where('id', $validated['notification_id'])->update(['read_at' => Carbon::now()]);
+            } else {
+                $user?->unreadNotifications->markAsRead();
+            }
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('API hit trigger post notification as read failed', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
+
+            throw $e;
+        }
+
+        /** Return Response */
+        return response()->json('OK', 200);
+    }
+
+    /**
+     * POST post notification clear all
+     */
+    public function postNotificationClearAll(Request $request): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('API hit trigger post notification clear all', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+
+        /** Clear All Notification */
+        DB::beginTransaction();
+        try {
+            /** @disregard */
+            $user?->notifications()->delete();
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('API hit trigger post notification clear all failed', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
 
             throw $e;
         }

@@ -26,6 +26,7 @@ Route::middleware([XssProtection::class])->group(function () {
     Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');
     Route::post('/post-get-current-app-version', [AppConstController::class, 'getCurrentAppVersion'])->name('post-get-current-app-version');
     Route::post('/post-notification-as-read', [AppConstController::class, 'postNotificationAsRead'])->name('post-notification-as-read');
+    Route::post('/post-notification-clear-all', [AppConstController::class, 'postNotificationClearAll'])->name('post-notification-clear-all');
 
     /** Login Routes need rate limit to prevent attacks */
     Route::post('/post-token', [AuthController::class, 'postToken'])->name('post-token')->middleware(['throttle:api-secure']);

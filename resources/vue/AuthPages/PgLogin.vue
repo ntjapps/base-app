@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from "axios";
-import { ref } from "vue";
+import { ref, onBeforeUpdate } from "vue";
 import { storeToRefs } from "pinia";
 import { useMainStore, useWebApiStore } from "../AppState";
 import { useWebStore } from "../AppRouter";
@@ -14,7 +14,8 @@ import Password from "primevue/password";
 const web = useWebStore();
 const webapi = useWebApiStore();
 const main = useMainStore();
-const { appName, turnstileToken, browserSuppport } = storeToRefs(main);
+const { appName, turnstileToken, browserSuppport, userName } =
+    storeToRefs(main);
 
 const username = ref("");
 const password = ref("");
@@ -48,6 +49,12 @@ const clearData = () => {
     username.value = "";
     password.value = "";
 };
+
+onBeforeUpdate(() => {
+    if (userName.value !== "") {
+        window.location.href = web.dashboard;
+    }
+});
 </script>
 
 <template>

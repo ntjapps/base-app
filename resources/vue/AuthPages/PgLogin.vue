@@ -33,6 +33,8 @@ const postLoginData = () => {
         .then((response) => {
             clearData();
             toastchild.value?.toastSuccess(response.data.message);
+        })
+        .then(() => {
             window.location.href = web.dashboard;
         })
         .catch((error) => {

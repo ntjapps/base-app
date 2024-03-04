@@ -14,6 +14,7 @@ Artisan::command('system:refresh', function () {
 
     Redis::connection('horizon')->flushdb();
     Redis::connection('cache')->flushdb();
+    Redis::connection('cachejob')->flushdb();
     Redis::connection('default')->flushdb();
     Cache::flush();
     $this->info('All horizon cleared');
@@ -58,6 +59,10 @@ Artisan::command('system:start', function () {
 
     $this->call('storage:link');
 
+    Redis::connection('cache')->flushdb();
+    Redis::connection('cachejob')->flushdb();
+    Redis::connection('default')->flushdb();
+    Cache::flush();
     $this->info('Cache cleared');
 
     $this->info('System startup scripts executed');

@@ -33,9 +33,7 @@ Route::get('/login-redirect', function () {
 })->name('login');
 
 Route::middleware(['guest'])->group(function () {
-    Route::middleware(['lscache:max-age=86400;public'])->group(function () {
-        Route::get('/', [AuthController::class, 'loginPage'])->name('landing-page');
-    });
+    Route::get('/', [AuthController::class, 'loginPage'])->name('landing-page');
 
     Route::post('/post-login', [AuthController::class, 'postLogin'])->name('post-login');
 });
@@ -44,17 +42,15 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/post-logout', [AuthController::class, 'postLogout'])->name('post-logout');
 
-    Route::middleware(['lscache:max-age=86400;private'])->group(function () {
-        Route::get('/get-logout', [AuthController::class, 'getLogout'])->name('get-logout');
-        Route::get('/profile', [ProfileController::class, 'profilePage'])->name('profile');
-        /** Check if profile fillled if not, force go to profile page */
-        Route::middleware([ProfileFillIfEmpty::class])->group(function () {
-            Route::get('/dashboard', [DashController::class, 'dashboardPage'])->name('dashboard');
+    Route::get('/get-logout', [AuthController::class, 'getLogout'])->name('get-logout');
+    Route::get('/profile', [ProfileController::class, 'profilePage'])->name('profile');
+    /** Check if profile fillled if not, force go to profile page */
+    Route::middleware([ProfileFillIfEmpty::class])->group(function () {
+        Route::get('/dashboard', [DashController::class, 'dashboardPage'])->name('dashboard');
 
-            Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {
-                Route::get('/user-man', [UserManController::class, 'userManPage'])->name('user-man');
-                Route::get('/server-logs', [ServerManController::class, 'serverLogs'])->name('server-logs');
-            });
+        Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {
+            Route::get('/user-man', [UserManController::class, 'userManPage'])->name('user-man');
+            Route::get('/server-logs', [ServerManController::class, 'serverLogs'])->name('server-logs');
         });
     });
 });

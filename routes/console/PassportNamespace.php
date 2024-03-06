@@ -48,7 +48,7 @@ Artisan::command('passport:client:env', function () {
     Log::debug('Console passport:client:env executed', ['appName' => config('app.name')]);
 })->purpose('Generate personal access client from .env');
 
-Artisan::command('passport:clientgrant:env', function () {
+Artisan::command('passport:client:grant:env', function () {
     if (config('passport.client_credentials_grant_client.id') === null) {
         $this->error('Please set PASSPORT_CLIENT_CREDENTIALS_GRANT_CLIENT_ID in .env');
         return;

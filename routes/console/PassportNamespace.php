@@ -37,9 +37,15 @@ Artisan::command('passport:client:env', function () {
     DB::transaction(function () use (&$client) {
         $client = (new ClientRepository)->createPersonalAccessClient(null, 'Personal Access Client Env', 'http://localhost');
 
+        PassportPersonalAccessClient::where('client_id', $client->id)->delete();
+
         $client->id = config('passport.personal_access_client.id');
         $client->secret = config('passport.personal_access_client.secret', Str::random(40));
         $client->save();
+
+        PassportPersonalAccessClient::create([
+            'client_id' => $client->id,
+        ]);
     });
 
     $this->info('Client id: '.$client?->id);

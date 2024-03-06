@@ -20,6 +20,11 @@ Artisan::command('passport:client:delete {id}', function () {
 })->purpose('Delete passport client');
 
 Artisan::command('passport:client:env', function () {
+    if (config('passport.personal_access_client.id') === null) {
+        $this->error('Please set PASSPORT_PERSONAL_ACCESS_CLIENT_ID in .env');
+        return;
+    }
+    
     $passportClient = PassportClient::where('name', 'Personal Access Client Env')->first();
     if (! is_null($passportClient)) {
         PassportPersonalAccessClient::where('client_id', $passportClient->id)->delete();
@@ -44,6 +49,11 @@ Artisan::command('passport:client:env', function () {
 })->purpose('Generate personal access client from .env');
 
 Artisan::command('passport:clientgrant:env', function () {
+    if (config('passport.client_credentials_grant_client.id') === null) {
+        $this->error('Please set PASSPORT_CLIENT_CREDENTIALS_GRANT_CLIENT_ID in .env');
+        return;
+    }
+
     $passportClient = PassportClient::where('name', 'Client Credentials Client Env')->first();
     if (! is_null($passportClient)) {
         PassportPersonalAccessClient::where('client_id', $passportClient->id)->delete();

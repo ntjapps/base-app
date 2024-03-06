@@ -29,8 +29,7 @@ Artisan::command('passport:client:env', function () {
     $client = collect();
 
     DB::transaction(function () use (&$client) {
-        $clientInit = new ClientRepository();
-        $client = $clientInit->createPersonalAccessClient(null, 'Personal Access Client Env', 'http://localhost');
+        $client = (new ClientRepository())->createPersonalAccessClient(null, 'Personal Access Client Env', 'http://localhost');
 
         $client->id = config('passport.personal_access_client.id');
         $client->secret = config('passport.personal_access_client.secret', Str::random(40));
@@ -54,8 +53,7 @@ Artisan::command('passport:clientgrant:env', function () {
     $client = collect();
 
     DB::transaction(function () use (&$client) {
-        $clientInit = new ClientRepository();
-        $client = $clientInit->create(null, 'Client Credentials Client Env', '');
+        $client = (new ClientRepository())->create(null, 'Client Credentials Client Env', '');
 
         $client->id = config('passport.client_credentials_grant_client.id');
         $client->secret = config('passport.client_credentials_grant_client.secret', Str::random(40));

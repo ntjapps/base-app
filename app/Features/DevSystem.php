@@ -3,6 +3,7 @@
 namespace App\Features;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 
 class DevSystem
 {
@@ -12,7 +13,7 @@ class DevSystem
     public function resolve(User $user): bool
     {
         return match (true) {
-            $user?->hasPermissionTo(User::SUPER) => true,
+            Gate::forUser($user)->allows('hasSuperPermission', User::class) => true,
             config('app.debug') => true,
             default => false,
         };

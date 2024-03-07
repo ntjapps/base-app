@@ -19,7 +19,7 @@ class RolePermissionSyncJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct(public bool $reset = false)
     {
         //$this->onQueue('default');
     }
@@ -90,7 +90,13 @@ class RolePermissionSyncJob implements ShouldQueue
 
             /** Create roles and assign created permissions */
             $super = Role::firstOrCreate(['name' => InterfaceClass::SUPERROLE]);
-            $super->givePermissionTo(InterfaceClass::SUPER);
+            if ($this->reset) {
+                $super->syncPermissions(InterfaceClass::SUPER);
+            } else {
+                if ($super->hasAnyPermission(InterfaceClass::ALLPERM)) {
+                    $super->givePermissionTo(InterfaceClass::SUPER);
+                }
+            }
 
             /** Update all const permission */
             Permission::whereIn('name', InterfaceClass::ALLPERM)->update(['is_const' => true]);

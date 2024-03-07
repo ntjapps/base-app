@@ -91,9 +91,9 @@ class RolePermissionSyncJob implements ShouldQueue
             /** Create roles and assign created permissions */
             $super = Role::firstOrCreate(['name' => InterfaceClass::SUPERROLE]);
             if ($this->reset) {
-                $super->syncPermissions(InterfaceClass::SUPER);
+                $super->syncPermissions([InterfaceClass::SUPER]);
             } else {
-                if ($super->hasAnyPermission(InterfaceClass::ALLPERM)) {
+                if ($super->hasAnyPermission(InterfaceClass::SUPER)) {
                     $super->givePermissionTo(InterfaceClass::SUPER);
                 }
             }

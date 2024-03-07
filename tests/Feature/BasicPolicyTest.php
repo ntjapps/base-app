@@ -4,11 +4,8 @@ namespace Tests\Feature;
 
 use App\Interfaces\InterfaceClass;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Gate;
 use Tests\AuthTestCase;
-use Tests\TestCase;
 
 class BasicPolicyTest extends AuthTestCase
 {
@@ -18,7 +15,7 @@ class BasicPolicyTest extends AuthTestCase
     public function test_base_policy_trait(): void
     {
         $user = $this->commonSeedTestData();
-        
+
         $this->assertTrue(Gate::forUser($user)->allows('allowAllAction', User::class));
     }
 

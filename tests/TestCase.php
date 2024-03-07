@@ -17,6 +17,10 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         $this->withoutVite();
+
+        $this->withoutMiddleware([
+            ThrottleRequestsWithRedis::class,
+        ]);
     }
 
     /**
@@ -24,10 +28,6 @@ abstract class TestCase extends BaseTestCase
      */
     protected function testSeed(): array
     {
-        $this->withoutMiddleware([
-            ThrottleRequestsWithRedis::class,
-        ]);
-
         return [
             RolesPermissionSeeder::class,
         ];

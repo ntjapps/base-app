@@ -25,9 +25,6 @@ Route::middleware([XssProtection::class])->group(function () {
     Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
     Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');
     Route::post('/post-get-current-app-version', [AppConstController::class, 'getCurrentAppVersion'])->name('post-get-current-app-version');
-    Route::post('/get-notification-list', [AppConstController::class, 'getNotificationList'])->name('get-notification-list');
-    Route::post('/post-notification-as-read', [AppConstController::class, 'postNotificationAsRead'])->name('post-notification-as-read');
-    Route::post('/post-notification-clear-all', [AppConstController::class, 'postNotificationClearAll'])->name('post-notification-clear-all');
 
     /** Login Routes need rate limit to prevent attacks */
     Route::post('/post-token', [AuthController::class, 'postToken'])->name('post-token')->middleware(['throttle:api-secure']);
@@ -35,6 +32,9 @@ Route::middleware([XssProtection::class])->group(function () {
     /** Routes that need authentication first */
     Route::middleware(['auth:api'])->group(function () {
         Route::post('/post-token-revoke', [AuthController::class, 'postTokenRevoke'])->name('post-token-revoke')->middleware(['throttle:api-secure']);
+        Route::post('/get-notification-list', [AppConstController::class, 'getNotificationList'])->name('get-notification-list');
+        Route::post('/post-notification-as-read', [AppConstController::class, 'postNotificationAsRead'])->name('post-notification-as-read');
+        Route::post('/post-notification-clear-all', [AppConstController::class, 'postNotificationClearAll'])->name('post-notification-clear-all');
         Route::post('/post-update-profile', [ProfileController::class, 'updateProfile'])->name('post-update-profile');
 
         Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {

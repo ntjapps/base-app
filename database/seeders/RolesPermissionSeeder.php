@@ -14,6 +14,6 @@ class RolesPermissionSeeder extends Seeder
      */
     public function run()
     {
-        RolePermissionSyncJob::dispatchSync();
+        RolePermissionSyncJob::dispatchSync(true);
     }
 }

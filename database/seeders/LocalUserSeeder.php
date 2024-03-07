@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Interfaces\InterfaceClass;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\App;
@@ -22,6 +23,6 @@ class LocalUserSeeder extends Seeder
             'name' => 'Admin',
             'username' => 'admin',
         ]);
-        $user->syncRoles([User::SUPERROLE]);
+        $user->syncRoles([InterfaceClass::SUPERROLE]);
     }
 }

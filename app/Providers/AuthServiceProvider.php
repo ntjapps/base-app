@@ -41,7 +41,7 @@ class AuthServiceProvider extends ServiceProvider
          * This works in the app by using gate-related functions like auth()->user->can() and @can()
          **/
         Gate::after(function (User $user) {
-            return $user->hasPermissionTo(User::SUPER);
+            return $user->hasPermissionTo(InterfaceClass::SUPER);
         });
     }
 }

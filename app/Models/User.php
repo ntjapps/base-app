@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Interfaces\PermissionConst;
+use App\Interfaces\InterfaceClass;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -15,7 +15,7 @@ use Laravel\Passport\HasApiTokens;
 use Laravel\Pennant\Concerns\HasFeatures;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements PermissionConst
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasFeatures, HasRoles, HasUuids, Notifiable, Prunable, SoftDeletes;
 
@@ -29,7 +29,7 @@ class User extends Authenticatable implements PermissionConst
      */
     public function exceptConstPermission(): array
     {
-        return static::ALLPERM;
+        return InterfaceClass::ALLPERM;
     }
 
     /**

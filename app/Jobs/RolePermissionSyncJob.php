@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Interfaces\InterfaceClass;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -87,11 +86,11 @@ class RolePermissionSyncJob implements ShouldQueue
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
             /** Create permissions */
-            Permission::firstOrCreate(['name' => User::SUPER]);
+            Permission::firstOrCreate(['name' => InterfaceClass::SUPER]);
 
             /** Create roles and assign created permissions */
-            $super = Role::firstOrCreate(['name' => User::SUPERROLE]);
-            $super->givePermissionTo(User::SUPER);
+            $super = Role::firstOrCreate(['name' => InterfaceClass::SUPERROLE]);
+            $super->givePermissionTo(InterfaceClass::SUPER);
 
             /** Update all const permission */
             Permission::whereIn('name', InterfaceClass::ALLPERM)->update(['is_const' => true]);

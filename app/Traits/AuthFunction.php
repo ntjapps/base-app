@@ -55,9 +55,9 @@ trait AuthFunction
             $request->session()->regenerateToken();
 
             /** Also revoke all user token even if this is web routes */
-            foreach ($user?->tokens as $token) {
+            $user?->tokens->each(function ($token) {
                 $token?->revoke();
-            }
+            });
         }
     }
 }

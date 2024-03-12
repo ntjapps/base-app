@@ -101,15 +101,14 @@ class KeyRotationJob implements ShouldQueue
                 DB::transaction(function () use ($decrypterInstance, $encrypterInstance) {
                     /** Update Encrypted Data with New Key must use DB Facade not Eloquent to prevent call to CAST */
                     DB::table('users')->chunkById(1000, function (Collection $users) use ($decrypterInstance, $encrypterInstance) {
-                        foreach ($users as $user) {
-
-                            (array) $updatedData = [];
+                        $users->each(function ($user) use ($decrypterInstance, $encrypterInstance) {
+                            $updatedData = [];
                             if (! is_null($user->totp_key)) {
                                 $updatedData['totp_key'] = $encrypterInstance->encrypt($decrypterInstance->decrypt($user->totp_key, false), false);
                             }
 
                             DB::table('users')->where('id', $user->id)->update($updatedData);
-                        }
+                        });
                     });
                 });
             } catch (DecryptException $e) {

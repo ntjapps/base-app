@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use App\Interfaces\InterfaceClass;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Pennant\Feature;
@@ -23,7 +22,7 @@ class PermissionObserver
     {
         /** Reset cached roles and permissions */
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
     }
 
@@ -34,7 +33,7 @@ class PermissionObserver
     {
         /** Reset cached roles and permissions */
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
     }
 
@@ -45,7 +44,7 @@ class PermissionObserver
     {
         /** Reset cached roles and permissions */
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
     }
 
@@ -56,7 +55,7 @@ class PermissionObserver
     {
         /** Reset cached roles and permissions */
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
     }
 
@@ -67,7 +66,7 @@ class PermissionObserver
     {
         /** Reset cached roles and permissions */
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
     }
 }

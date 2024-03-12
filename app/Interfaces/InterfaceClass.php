@@ -5,7 +5,7 @@ namespace App\Interfaces;
 use App\Traits\CommonFunction;
 use ErrorException;
 
-class InterfaceClass implements CacheKeyConst, PermissionConst, ResetPassConst, RoleConst
+class InterfaceClass implements PermissionConst, ResetPassConst, RoleConst
 {
     use CommonFunction;
 

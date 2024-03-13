@@ -2,7 +2,7 @@ export default {
     root: ({ props }) => ({
         class: [
             //Size and Shape
-            "w-96 rounded-md",
+            "w-11/12 md:w-96 rounded-md",
 
             // Positioning
             {

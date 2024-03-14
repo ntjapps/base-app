@@ -41,7 +41,6 @@ jobs:
                 ls -lah .env*
                 touch database/database.sqlite
                 ls -lah database
-                php artisan migrate --graceful --ansi --force
             fi
 
       # NPM Setup
@@ -58,6 +57,9 @@ jobs:
           sudo ln -s $(pwd) /var/www/vhosts/localhost
           cd /var/www/vhosts/localhost
           pwd && ls -lah
+          php artisan package:discover --ansi
+          composer dump-autoload --ansi
+          php artisan migrate --graceful --ansi --force
           php artisan event:cache
           php artisan route:cache
           php artisan config:cache

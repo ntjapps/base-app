@@ -24,7 +24,8 @@ jobs:
       - name: Generate working directory # Generate working directory
         working-directory: /
         run: |
-          mkdir -p /var/www/vhosts/localhost
+          sudo mkdir -p /var/www/vhosts/localhost
+          sudo chown -R $USER:$USER /var/www/vhosts/localhost
           cd /var/www/vhosts/localhost
           pwd
       - name: Checkout # Checkout the repository

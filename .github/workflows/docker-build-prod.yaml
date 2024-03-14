@@ -18,13 +18,6 @@ jobs:
       packages: write
 
     steps:
-      - name: Generate working directory # Generate working directory
-        working-directory: /
-        run: |
-          sudo mkdir -p /var/www/vhosts/localhost
-          sudo chown -R $USER:$USER /var/www/vhosts/localhost
-          cd /var/www/vhosts/localhost
-          pwd
       - name: Checkout # Checkout the repository
         uses: actions/checkout@v4
       - name: Add variable for application # Add variable for application

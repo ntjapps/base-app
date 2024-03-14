@@ -25,6 +25,9 @@ jobs:
           echo "APP_VERSION_HASH=${{ github.sha }}" >> .constants
 
       # Composer Setup
+      - uses: "shivammathur/setup-php@v2"
+        with:
+            php-version: "latest"
       - name: Composer Install # Install composer dependencies
         uses: "ramsey/composer-install@v3"
         with:

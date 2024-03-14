@@ -33,6 +33,7 @@ jobs:
       - name: Create .env file # Create .env file
         run: |
             if [ -f .env.dev.encrypted ]; then
+                php -v
                 php artisan env:decrypt --env=dev --key=${{ env.ENV_KEY }} &&
                 ls -lah &&
                 ln -s .env.dev .env

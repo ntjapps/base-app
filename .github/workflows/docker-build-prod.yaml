@@ -29,13 +29,6 @@ jobs:
         uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev"
-
-      # NPM Setup
-      - name: NPM Setup # Install NPM dependencies
-        uses: bahmutov/npm-install@v1
-
-      - name: NPM Build # Build NPM assets
-        run: npx vite build
         
       - name: Create .env file # Create .env file
         run: |
@@ -44,6 +37,13 @@ jobs:
                 ls -lah &&
                 ln -s .env.prod .env
             fi
+
+      # NPM Setup
+      - name: NPM Setup # Install NPM dependencies
+        uses: bahmutov/npm-install@v1
+
+      - name: NPM Build # Build NPM assets
+        run: npx vite build
 
       # Build Cache
       - name: Build Cache

@@ -36,10 +36,9 @@ jobs:
       - name: Create .env file # Create .env file
         run: |
             if [ -f .env.prod.encrypted ]; then
-                php -v
                 php artisan env:decrypt --env=prod --key=${{ env.ENV_KEY }} &&
-                ls -lah &&
-                ln -s .env.prod .env
+                ln -s .env.prod .env &&
+                ls -lah .env
             fi
 
       # NPM Setup

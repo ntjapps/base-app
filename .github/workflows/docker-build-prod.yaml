@@ -16,8 +16,17 @@ jobs:
     permissions:
       contents: read
       packages: write
+    defaults:
+      run:
+        working-directory: /var/www/vhosts/localhost
 
     steps:
+      - name: Generate working directory # Generate working directory
+        working-directory: /
+        run: |
+          mkdir -p /var/www/vhosts/localhost
+          cd /var/www/vhosts/localhost
+          pwd
       - name: Checkout # Checkout the repository
         uses: actions/checkout@v4
       - name: Add variable for application # Add variable for application
@@ -32,12 +41,12 @@ jobs:
         uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev"
-        
+
       - name: Create .env file # Create .env file
         run: |
-            if [ -f .env.prod.encrypted ]; then
-                php artisan env:decrypt --env=prod --key=${{ env.ENV_KEY }} &&
-                ln -s .env.prod .env &&
+            if [ -f .env.dev.encrypted ]; then
+                php artisan env:decrypt --env=dev --key=${{ env.ENV_KEY }}
+                ln -s .env.dev .env
                 ls -lah .env*
                 touch database/database.sqlite
                 ls -lah database

@@ -38,7 +38,7 @@ jobs:
             if [ -f .env.dev.encrypted ]; then
                 php artisan env:decrypt --env=dev --key=${{ env.ENV_KEY }} &&
                 ln -s .env.dev .env &&
-                ls -lah .env
+                ls -lah .env*
             fi
 
       # NPM Setup

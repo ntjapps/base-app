@@ -4,9 +4,9 @@
 !observer.stub
 !observer.plain.stub
 !event.stub
-!listener-typed.stub
-!listener-queued-typed.stub
-!listener-queued.stub
+!listener.typed.stub
+!listener.typed.queued.stub
+!listener.queued.stub
 !listener.stub
 !test.stub
 !test.unit.stub

@@ -20,12 +20,6 @@ jobs:
     steps:
       - name: Checkout # Checkout the repository
         uses: actions/checkout@v4
-      - name: Create .env file # Create .env file
-        run: |
-            if [ -f .env.prod.encrypted ]; then
-                php artisan env:decrypt --env=prod --key=${{ env.ENV_KEY }}
-                mv .env.prod .env
-            fi
       - name: Add variable for application # Add variable for application
         run: |
           echo "APP_VERSION_HASH=${{ github.sha }}" >> .constants
@@ -42,6 +36,13 @@ jobs:
 
       - name: NPM Build # Build NPM assets
         run: npx vite build
+        
+      - name: Create .env file # Create .env file
+        run: |
+            if [ -f .env.prod.encrypted ]; then
+                php artisan env:decrypt --env=prod --key=${{ env.ENV_KEY }}
+                mv .env.prod .env
+            fi
 
       # Build Cache
       - name: Build Cache

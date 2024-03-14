@@ -39,6 +39,8 @@ jobs:
                 php artisan env:decrypt --env=dev --key=${{ env.ENV_KEY }} &&
                 ln -s .env.dev .env &&
                 ls -lah .env*
+                touch database/database.sqlite
+                ls -lah database
             fi
 
       # NPM Setup

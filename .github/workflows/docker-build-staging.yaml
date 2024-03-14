@@ -45,17 +45,6 @@ jobs:
         run: |
           php artisan event:cache
           php artisan route:cache
-          sudo mkdir -p /var/www/vhosts/localhost
-          sudo cp -a {.,}[!.]* /var/www/vhosts/localhost
-          sudo chmod -R 777 /var/www/vhosts/localhost
-          cd /var/www/vhosts/localhost
-          php artisan config:cache
-      - name: Output Cache as Artifact for volumes
-        uses: actions/upload-artifact@v4
-        with:
-          name: env-cache
-          path: /var/www/vhosts/localhost/bootstrap/cache
-          retention-days: 1
 
       - name: Setup QEMU # Setup QEMU
         uses: docker/setup-qemu-action@v3

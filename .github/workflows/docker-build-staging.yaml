@@ -40,8 +40,9 @@ jobs:
       - name: Create .env file # Create .env file
         run: |
             if [ -f .env.dev.encrypted ]; then
-                php artisan env:decrypt --env=dev --key=${{ env.ENV_KEY }}
-                mv .env.dev .env
+                php artisan env:decrypt --env=dev --key=${{ env.ENV_KEY }} &&
+                ls -lah &&
+                ln -s .env.dev .env
             fi
 
       # Build Cache

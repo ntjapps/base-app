@@ -54,8 +54,8 @@ jobs:
       # Build Cache
       - name: Build Cache
         run: |
-          mkdir -p /var/www/vhosts
-          ln -s $(pwd) /var/www/vhosts/localhost
+          sudo mkdir -p /var/www/vhosts
+          sudo ln -s $(pwd) /var/www/vhosts/localhost
           cd /var/www/vhosts/localhost
           pwd && ls -lah
           php artisan event:cache

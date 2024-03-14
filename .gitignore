@@ -22,8 +22,8 @@ storage/*.key
 .env
 .env.testing
 .env.local
-env-dev
-env-production
+.env.dev
+.env.prod
 .constants
 Homestead.yaml
 Homestead.json

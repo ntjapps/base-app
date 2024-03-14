@@ -121,7 +121,7 @@ onBeforeUpdate(() => {
                         <CmpTurnstile ref="turnchild" />
                     </div>
                     <div class="flex justify-center py-2.5">
-                        <button class="btn btn-primary" @click="postLogindata">
+                        <button class="btn btn-primary" @click="postLoginData">
                             <span class="m-1">Login</span>
                         </button>
                     </div>

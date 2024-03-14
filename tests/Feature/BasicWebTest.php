@@ -24,10 +24,7 @@ class BasicWebTest extends TestCase
     public function test_constant_app_healthcheck(): void
     {
         $this->get('/app/healthcheck')
-            ->assertOk()
-            ->assertJson([
-                'status' => 'success',
-            ]);
+            ->assertOk();
     }
 
     /**

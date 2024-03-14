@@ -4,8 +4,8 @@
 !observer.stub
 !observer.plain.stub
 !event.stub
-!listener-duck.stub
-!listener-queued-duck.stub
+!listener-typed.stub
+!listener-queued-typed.stub
 !listener-queued.stub
 !listener.stub
 !test.stub

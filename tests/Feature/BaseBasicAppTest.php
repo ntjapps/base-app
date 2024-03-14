@@ -17,7 +17,7 @@ class BaseBasicAppTest extends TestCase
     public function test_app_healthcheck_route(): void
     {
         $response = $this->get('/app/healthcheck');
-        $response->assertJson(['status' => 'success']);
+        $response->assertOk();
     }
 
     /** Test login redirect with named route login is redirecting to landing page */

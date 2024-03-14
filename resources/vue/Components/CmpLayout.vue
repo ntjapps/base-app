@@ -2,13 +2,6 @@
 import CmpHeader from "../Components/CmpHeader.vue";
 import CmpFooter from "../Components/CmpFooter.vue";
 import CmpMenu from "../Components/CmpMenu.vue";
-
-defineProps({
-    pageTitle: {
-        type: String,
-        default: "",
-    },
-});
 </script>
 
 <template>
@@ -17,7 +10,7 @@ defineProps({
             <CmpMenu />
         </div>
         <div class="content-container bg-base-100 w-full">
-            <CmpHeader :page-title="props.pageTitle" />
+            <CmpHeader />
             <div class="content-child-container">
                 <slot />
             </div>

@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'use' => 'horizon',
+    'use' => 'horizon_redis',
 
     /*
     |--------------------------------------------------------------------------
@@ -109,6 +109,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Silenced Jobs
+    |--------------------------------------------------------------------------
+    |
+    | Silencing a job will instruct Horizon to not place the job in the list
+    | of completed jobs within the Horizon dashboard. This setting may be
+    | used to fully remove any noisy jobs from the completed jobs list.
+    |
+    */
+
+    'silenced' => [
+        // App\Jobs\ExampleJob::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Metrics
     |--------------------------------------------------------------------------
     |
@@ -151,7 +166,7 @@ return [
     |
     */
 
-    'memory_limit' => 128,
+    'memory_limit' => 64,
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +184,7 @@ return [
             'connection' => 'redis',
             'queue' => ['default'],
             'balance' => 'auto',
-            'autoScalingStrategy' => 'size',
+            'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
             'maxTime' => 86400,
             'maxJobs' => 1000000,
@@ -184,7 +199,7 @@ return [
             'connection' => 'redis_logger',
             'queue' => ['logger'],
             'balance' => 'auto',
-            'autoScalingStrategy' => 'size',
+            'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
             'maxTime' => 86400,
             'maxJobs' => 1000000,
@@ -199,7 +214,7 @@ return [
             'connection' => 'redis_long_run',
             'queue' => ['long-run'],
             'balance' => 'auto',
-            'autoScalingStrategy' => 'size',
+            'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
             'maxTime' => 86400,
             'maxJobs' => 1000000,

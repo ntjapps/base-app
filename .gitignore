@@ -26,6 +26,7 @@ Homestead.json
 /.vagrant
 .phpunit.result.cache
 .phpunit.cache
+phpunit.xml
 
 # Ignore Laravel Mix output
 public/mix-js

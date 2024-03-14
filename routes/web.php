@@ -23,9 +23,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['status' => 'success', 'csrf_token' => app()->environment('production') ? 'token' : csrf_token()]);
 });
-Route::get('/app/healthcheck', function () {
-    return response()->json(['status' => 'success']);
-});
 
 /** Route for login redirect */
 Route::get('/login-redirect', function () {

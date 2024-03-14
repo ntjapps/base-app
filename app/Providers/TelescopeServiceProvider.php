@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
@@ -15,16 +14,15 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     public function register(): void
     {
-        Telescope::night();
+        // Telescope::night();
 
         $this->hideSensitiveRequestDetails();
 
-        Telescope::filter(function (IncomingEntry $entry) {
-            if ($this->app->environment('local')) {
-                return true;
-            }
+        $isLocal = $this->app->environment('local');
 
-            return $entry->isReportableException() ||
+        Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
+            return $isLocal ||
+                   $entry->isReportableException() ||
                    $entry->isFailedRequest() ||
                    $entry->isFailedJob() ||
                    $entry->isScheduledTask() ||
@@ -57,8 +55,10 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     protected function gate(): void
     {
-        Gate::define('viewHorizon', function (User $user) {
-            return (config('app.debug') === true) ? true : Gate::forUser($user)->allows('hasSuperPermission', User::class);
+        Gate::define('viewTelescope', function ($user) {
+            return in_array($user->email, [
+                //
+            ]);
         });
     }
 }

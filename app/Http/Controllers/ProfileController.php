@@ -26,7 +26,8 @@ class ProfileController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('dash-pg.profile', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Profile',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }
@@ -52,7 +53,7 @@ class ProfileController extends Controller
         $validatedLog = $validated;
         unset($validatedLog['password']);
         unset($validatedLog['password_confirmation']);
-        Log::info('User updating profile validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('User updating profile validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $user->name = $validated['name'];
         if (isset($validated['password'])) {

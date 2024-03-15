@@ -19,24 +19,28 @@ trait AuthFunction
         try {
             /** Attempt to login */
             $user = User::where('username', $validated['username'])->first();
-            Log::debug('User Auth Check Data', ['user' => $user?->username]);
+            if (is_null($user)) {
+                return null;
+            }
+
+            Log::debug('User Auth Check Data', ['user' => $user->username]);
+
+            /** Check against password */
+            $userCheckPassword = Hash::check($validated['password'], $user->password);
+
+            /** Check against TOTP */
+            $userCheckTotp = TOTP::create($user->totp_key)->now() == $validated['password'];
+
+            /** Check if password or TOTP is correct */
+            if (! $userCheckPassword && ! $userCheckTotp) {
+                return null;
+            } else {
+                return $user;
+            }
         } catch (\Throwable $e) {
-            Log::error('Failed to check user', ['errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
+            Log::warning('Failed to check user', ['errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
 
             return null;
-        }
-
-        /** Check against password */
-        $userCheckPassword = Hash::check($validated['password'], $user?->password);
-
-        /** Check against TOTP */
-        $userCheckTotp = TOTP::create($user?->totp_key)->now() == $validated['password'];
-
-        /** Check if password or TOTP is correct */
-        if (! $userCheckPassword && ! $userCheckTotp) {
-            return null;
-        } else {
-            return $user;
         }
     }
 

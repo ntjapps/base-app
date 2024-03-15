@@ -33,8 +33,8 @@ export default {
                 "bg-surface-0 dark:bg-surface-800": !context?.selected,
                 "border-surface-200 dark:border-surface-700":
                     !context?.selected,
-                "text-primary-700 dark:text-surface-0": context?.selected,
-                "bg-primary-50 dark:bg-primary-400/30": context?.selected,
+                "text-primary-highlight-inverse": context?.selected,
+                "bg-primary-highlight": context?.selected,
                 "border-primary-200 dark:border-primary-600": context?.selected,
             },
 
@@ -42,7 +42,7 @@ export default {
             {
                 "hover:bg-surface-100 dark:hover:bg-surface-700":
                     context?.selectable && !context?.selected,
-                "hover:bg-primary-100 dark:hover:bg-primary-300/30":
+                "hover:bg-primary-highlight-hover":
                     context?.selectable && context?.selected,
             },
 

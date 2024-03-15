@@ -4,13 +4,16 @@ namespace App\Jobs;
 
 use App\Interfaces\InterfaceClass;
 use App\Models\Permission;
+use App\Models\PermissionPrivilege;
 use App\Models\Role;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Laravel\Telescope\Telescope;
 
 class RolePermissionSyncJob implements ShouldQueue
 {
@@ -82,30 +85,46 @@ class RolePermissionSyncJob implements ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => 'RolePermissionSyncJob']);
 
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::stopRecording();
+            }
+
             /** Reset cached roles and permissions */
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
             /** Create permissions */
-            Permission::firstOrCreate(['name' => InterfaceClass::SUPER]);
+            $permission = collect(InterfaceClass::ALLPERM)->each(function ($perm) {
+                PermissionPrivilege::firstOrCreate(['title' => $perm]);
+            });
 
             /** Create roles and assign created permissions */
-            $super = Role::firstOrCreate(['name' => InterfaceClass::SUPERROLE]);
+            $role = Role::firstOrCreate(['name' => InterfaceClass::SUPERROLE, 'role_types' => PermissionPrivilege::class]);
+            $permission = Permission::whereHas('ability', function ($query) {
+                $query->where('title', InterfaceClass::SUPER);
+            })->get();
             if ($this->reset) {
-                $super->syncPermissions([InterfaceClass::SUPER]);
+                $role->syncPermissions($permission);
             } else {
-                if ($super->hasAnyPermission(InterfaceClass::SUPER)) {
-                    $super->givePermissionTo(InterfaceClass::SUPER);
+                if (! $role->hasAnyPermission($permission)) {
+                    $role->givePermissionTo($permission);
                 }
             }
 
-            /** Update all const permission */
-            Permission::whereIn('name', InterfaceClass::ALLPERM)->update(['is_const' => true]);
+            InterfaceClass::flushRolePermissionCache();
 
-            /** Update all const role */
-            Role::whereIn('name', InterfaceClass::ALLROLE)->update(['is_const' => true]);
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::startRecording();
+            }
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::startRecording();
+            }
+
             Log::error('Job Failed', ['jobName' => 'RolePermissionSyncJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;
         }

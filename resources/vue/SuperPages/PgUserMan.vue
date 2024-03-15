@@ -43,7 +43,8 @@ const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     username: { value: null, matchMode: FilterMatchMode.CONTAINS },
     name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    user_permission: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    roles_array: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    permissions_array: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 const getUserListData = () => {
@@ -55,7 +56,12 @@ const getUserListData = () => {
             loading.value = false;
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
             loading.value = false;
         });
 };
@@ -200,25 +206,29 @@ onBeforeMount(() => {
                         />
                     </template>
                 </Column>
-                <Column field="user_roles" header="Roles" class="text-sm">
+                <Column field="roles_array" header="Roles" class="text-sm">
                     <template #body="slotProps">
-                        <div
-                            v-for="role in slotProps.data.roles"
-                            :key="role.id"
-                            class="text-center"
-                        >
-                            {{ role.name }}
+                        <div class="text-center">
+                            {{ slotProps.data.roles_array.join(", ") }}
                         </div>
+                    </template>
+                    <template #filter="{ filterModel, filterCallback }">
+                        <InputText
+                            v-model="filterModel.value"
+                            class="w-full"
+                            placeholder="Search by role"
+                            @input="filterCallback()"
+                        />
                     </template>
                 </Column>
                 <Column
-                    field="user_permission"
+                    field="permissions_array"
                     header="Permission"
                     class="text-sm"
                 >
                     <template #body="slotProps">
                         <div class="text-center">
-                            {{ slotProps.data.user_permission.join(", ") }}
+                            {{ slotProps.data.permissions_array.join(", ") }}
                         </div>
                     </template>
                     <template #filter="{ filterModel, filterCallback }">

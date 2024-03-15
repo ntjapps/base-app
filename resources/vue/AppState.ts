@@ -3,6 +3,7 @@ import Echo from "laravel-echo";
 import { defineStore } from "pinia";
 import { supportedBrowsers } from "../ts/browser";
 import { MenuItem } from "primevue/menuitem";
+import { useToast } from "primevue/usetoast";
 
 export const useWebApiStore = defineStore("webapi", {
     state: () => ({
@@ -31,6 +32,15 @@ export const useApiStore = defineStore("api", {
         postDeleteUserManSubmit: "/api/post-delete-user-man-submit",
         postResetPasswordUserManSubmit:
             "/api/post-reset-password-user-man-submit",
+        getRoleList: "/api/get-role-list",
+        postRoleSubmit: "/api/post-role-submit",
+        postDeleteRoleSubmit: "/api/post-delete-role-submit",
+        postGetOauthClient: "/api/oauth/post-get-oauth-client",
+        postSubmitOauthClient: "/api/oauth/post-submit-oauth-client",
+        postUpdateOauthClient: "/api/oauth/post-update-oauth-client",
+        postDeleteOauthClient: "/api/oauth/post-delete-oauth-client",
+        postResetOauthSecret: "/api/oauth/post-reset-oauth-secret",
+        postCreateOauthClient: "/api/oauth/post-create-oauth-client",
     }),
 });
 
@@ -49,6 +59,7 @@ export const useMainStore = defineStore("main", {
         appName: import.meta.env.APP_NAME,
         appVersion: "",
         userName: "",
+        userId: "",
         notificationList: [],
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
@@ -59,6 +70,9 @@ export const useMainStore = defineStore("main", {
     actions: {
         init() {
             const api = useApiStore();
+            const echo = useEchoStore();
+            const toast = useToast();
+
             /** Get Constant */
             axios
                 .post(api.appConst)
@@ -73,8 +87,47 @@ export const useMainStore = defineStore("main", {
                         userName: response.data.userName,
                     });
                     this.$patch({
+                        userId: response.data.userId,
+                    });
+                    this.$patch({
                         menuItems: Object.values(response.data.menuItems),
                     });
+
+                    /** Register Notification Broadcast */
+                    if (
+                        response.data.userId !== "" &&
+                        response.data.userId !== undefined &&
+                        response.data.userId !== null
+                    ) {
+                        echo.laravelEcho.leave(
+                            "App.Models.User." + response.data.userId,
+                        );
+
+                        echo.laravelEcho
+                            ?.private("App.Models.User." + response.data.userId)
+                            .notification(
+                                (notification: {
+                                    severity:
+                                        | "success"
+                                        | "info"
+                                        | "warn"
+                                        | "error"
+                                        | "secondary"
+                                        | "contrast"
+                                        | undefined;
+                                    summary: string | undefined;
+                                    message: string | undefined;
+                                    life: number | undefined;
+                                }) => {
+                                    toast.add({
+                                        severity: notification.severity,
+                                        summary: notification.summary,
+                                        detail: notification.message,
+                                        life: notification.life,
+                                    });
+                                },
+                            );
+                    }
                 })
                 .catch((error) => {
                     console.error(error.response.data);

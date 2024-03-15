@@ -1,0 +1,142 @@
+services:
+  base_postgres: # FAIR WARNING, POSTGRESQL have limited support for Case Sensitivity!
+    image: postgres:alpine
+    command:
+      [
+        "postgres",
+        "-c",
+        "shared_preload_libraries=pg_stat_statements",
+        "-c",
+        "pg_stat_statements.track=all",
+        "-c",
+        "pg_stat_statements.max=10000",
+      ]
+    hostname: base_postgres
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+    environment:
+      - TZ=Asia/Jakarta
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ../storage/postgresql:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+
+  base_ols:
+    image: ntj125app/openlitespeed:latest-pcov
+    hostname: base_ols
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+      - ../public:/var/www/vhosts/localhost/html
+
+  base_worker:
+    image: ntj125app/openlitespeed:latest-pcov
+    command: ["/usr/bin/php", "/var/www/vhosts/localhost/artisan", "horizon"]
+    user: 65534:65534
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+      - ../public:/var/www/vhosts/localhost/html
+
+  base_scheduler:
+    image: ntj125app/openlitespeed:latest-pcov
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "/usr/bin/php /var/www/vhosts/localhost/artisan system:start ; /usr/bin/php /var/www/vhosts/localhost/artisan schedule:work",
+      ]
+    user: 65534:65534
+    working_dir: /var/www/vhosts/localhost/
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+      - ../public:/var/www/vhosts/localhost/html
+
+  base_redis:
+    image: redis:alpine
+    hostname: base_redis
+    command:
+      [
+        "redis-server",
+        "--loglevel",
+        "warning",
+        "--stop-writes-on-bgsave-error",
+        "no",
+        "--maxmemory",
+        "412mb",
+        "--maxmemory-policy",
+        "allkeys-lru",
+      ]
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../storage/redis:/data
+
+  base_memcached:
+    image: memcached:alpine
+    hostname: base_memcached
+    command: ["memcached", "-m", "412", "-vv"]
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 512M
+    environment:
+      - TZ=Asia/Jakarta
+
+  base_reverb:
+    image: ntj125app/openlitespeed:latest-oci-pcov
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "/usr/bin/php /var/www/vhosts/localhost/artisan reverb:start",
+      ]
+    hostname: base_reverb
+    user: 65534:65534
+    working_dir: /var/www/vhosts/localhost/
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 300M
+    ports:
+      - target: 6001
+        published: 6001
+        protocol: tcp
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+      - ../public:/var/www/vhosts/localhost/html
+
+  base_vite:
+    image: ntj125app/npm-custom
+    command: ["pnpm", "run", "dev"]
+    working_dir: /var/www/vhosts/localhost
+    ports:
+      - target: 5173
+        published: 5173
+        protocol: tcp
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+
+networks:
+  default:
+    name: compose-net
+    attachable: true
+    ipam:
+      config:
+        - subnet: "192.168.25.0/24"

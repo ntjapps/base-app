@@ -23,7 +23,7 @@ export default {
             },
 
             // Colors
-            "bg-primary-500 dark:bg-primary-400",
+            "bg-primary",
 
             // Spacing & Sizing
             "m-0",

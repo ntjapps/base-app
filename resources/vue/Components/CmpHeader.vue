@@ -26,19 +26,13 @@ const props = defineProps({
             </div>
 
             <div class="flex justify-end w-full">
-                <div
-                    v-if="browserSuppport"
-                    class="flex justify-end w-full my-auto"
-                >
+                <div class="flex justify-end w-full my-auto">
                     <CmpClearCacheButton />
-                    <CmpPusherState />
-                </div>
-                <div
-                    v-if="!browserSuppport"
-                    class="flex justify-end w-full my-auto"
-                >
-                    <CmpClearCacheButton />
-                    <button class="btn btn-sm btn-error">
+                    <CmpPusherState v-if="browserSuppport" />
+                    <button
+                        v-if="!browserSuppport"
+                        class="btn btn-sm btn-error"
+                    >
                         <i class="pi pi-times m-1" />
                         <span class="m-1">Browser Unsupported</span>
                     </button>

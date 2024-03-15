@@ -30,7 +30,7 @@ jobs:
       - name: Composer Install
         uses: ramsey/composer-install@v3
         with:
-          composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev"
+          composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist"
 
       - name: Create .env file
         run: |
@@ -40,16 +40,34 @@ jobs:
               ls -lah .env*
           fi
 
-          if [ ! -f database/database.sqlite ]; then
-              touch database/database.sqlite
-              php artisan migrate --graceful --ansi --force --database=sqlite
-          fi
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-      - name: NPM Setup
-        uses: bahmutov/npm-install@v1
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --prod
 
       - name: NPM Build
-        run: npx vite build
+        run: pnpm dlx vite build
 
       - name: Build Cache
         run: |
@@ -57,7 +75,6 @@ jobs:
           sudo ln -s $(pwd) /var/www/vhosts/localhost
           cd /var/www/vhosts/localhost
           pwd && ls -lah
-          php artisan migrate --graceful --ansi --force
           php artisan event:cache
           php artisan config:cache
 
@@ -84,7 +101,7 @@ jobs:
       - name: Clean Build App
         run: rm -rf node_modules public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh
       - name: Build & Push Container
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         if: env.REGISTRY != '' && env.IMAGE_NAME != ''
         with:
           context: .

@@ -30,7 +30,8 @@ class AuthController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('Computer access login page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('auth-pg.login', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Login',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }
@@ -91,7 +92,7 @@ class AuthController extends Controller
         $validatedLog = $validated;
         unset($validatedLog['password']);
         unset($validatedLog['token']);
-        Log::info('Username logging in validation', ['username' => $validated['username'], 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('Username logging in validation', ['username' => $validated['username'], 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** If user not found or password false return failed */
         if (is_null($user = $this->checkAuthUser($validated))) {
@@ -142,7 +143,7 @@ class AuthController extends Controller
 
         $validatedLog = $validated;
         unset($validatedLog['password']);
-        Log::info('Username getting token validation', ['username' => $validated['username'], 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('Username getting token validation', ['username' => $validated['username'], 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** If user not found or password false return failed */
         if (is_null($user = $this->checkAuthUser($validated))) {

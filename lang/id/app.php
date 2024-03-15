@@ -34,6 +34,25 @@ return [
         ],
     ],
 
+    'passport' => [
+        'reset' => [
+            'title' => 'Reset rahasia klien',
+            'message' => 'Reset rahasia klien berhasil.',
+        ],
+        'delete' => [
+            'title' => 'Klien dihapus',
+            'message' => 'Klien berhasil dihapus.',
+        ],
+        'update' => [
+            'title' => 'Klien diperbarui',
+            'message' => 'Klien berhasil diperbarui.',
+        ],
+        'create' => [
+            'title' => 'Klien berhasil dibuat',
+            'message' => 'Klien berhasil dibuat.',
+        ],
+    ],
+
     'profile' => [
         'update' => [
             'title' => 'Profil diperbarui',

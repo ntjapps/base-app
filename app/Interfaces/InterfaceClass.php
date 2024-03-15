@@ -2,8 +2,12 @@
 
 namespace App\Interfaces;
 
+use App\Models\Permission;
+use App\Models\Role;
 use App\Traits\CommonFunction;
 use ErrorException;
+use Illuminate\Support\Facades\Cache;
+use Laravel\Pennant\Feature;
 
 class InterfaceClass implements PermissionConst, ResetPassConst, RoleConst
 {
@@ -26,5 +30,13 @@ class InterfaceClass implements PermissionConst, ResetPassConst, RoleConst
         } catch (ErrorException $e) {
             return 'unknown';
         }
+    }
+
+    public static function flushRolePermissionCache(): void
+    {
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        Cache::tags([Role::class])->flush();
+        Cache::tags([Permission::class])->flush();
+        Feature::flushCache();
     }
 }

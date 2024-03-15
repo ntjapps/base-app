@@ -22,7 +22,7 @@ export default {
         ],
     },
     list: {
-        class: "py-3 list-none m-0",
+        class: "py-3 list-none m-0 outline-none",
     },
     item: ({ context }) => ({
         class: [
@@ -41,22 +41,17 @@ export default {
             "m-0",
             "py-3 px-5",
 
-            // Color
+            // Colors
             {
                 "text-surface-700 dark:text-white/80":
                     !context.focused && !context.selected,
-            },
-            {
-                "bg-surface-200 dark:bg-surface-600/60 text-surface-700 dark:text-white/80":
+                "bg-surface-200 dark:bg-surface-600/60":
                     context.focused && !context.selected,
-            },
-            {
-                "bg-primary-100 dark:bg-primary-400/40 text-primary-700 dark:text-white/80":
-                    context.focused && context.selected,
-            },
-            {
-                "bg-primary-50 dark:bg-primary-400/40 text-primary-700 dark:text-white/80":
-                    !context.focused && context.selected,
+                "text-surface-700 dark:text-white/80":
+                    context.focused && !context.selected,
+
+                "text-primary-highlight-inverse": context.selected,
+                "bg-primary-highlight": context.selected,
             },
 
             //States
@@ -64,10 +59,7 @@ export default {
                 "hover:bg-surface-100 dark:hover:bg-surface-600/80":
                     !context.focused && !context.selected,
             },
-            {
-                "hover:text-surface-700 hover:bg-surface-100 dark:hover:text-white dark:hover:bg-surface-600/80":
-                    context.focused && !context.selected,
-            },
+            { "hover:bg-primary-highlight-hover": context.selected },
             "focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring focus-visible:ring-inset focus-visible:ring-primary-400/50 dark:focus-visible:ring-primary-300/50",
 
             // Transitions
@@ -120,7 +112,6 @@ export default {
     filterinput: {
         class: [
             // Font
-            "font-sans",
             "leading-none",
 
             // Sizing
@@ -143,7 +134,7 @@ export default {
             "duration-200",
 
             // States
-            "hover:border-primary-500 dark:hover:border-primary-300",
+            "hover:border-primary",
             "focus:ring focus:outline-none focus:outline-offset-0",
             "focus:ring-primary-400/50 dark:focus:ring-primary-300/50",
 

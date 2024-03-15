@@ -85,5 +85,10 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
         }
 
         $this->sendTelegramMessage($this->data, $this->chatId);
+
+        /** Memory Leak mitigation */
+        if (App::environment('local')) {
+            Telescope::startRecording();
+        }
     }
 }

@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
-use App\Models\User;
+use App\Models\Permission;
 use App\Rules\TokenPlatformValidation;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -38,21 +39,21 @@ class AppConstController extends Controller
 
         /** Menu Items */
         if ($authCheck) {
-            $menuArray = []; /** Menu Array */
+            $menuItems = Cache::tags([Permission::class])->remember(Permission::class.'-menu-items-'.$user->id, Carbon::now()->addYear(), function () {
+                $menuArray = []; /** Menu Array */
 
-            /** Top Order Menu */
-            array_push($menuArray, MenuItemClass::dashboardMenu());
-            array_push($menuArray, MenuItemClass::editProfileMenu());
+                /** Top Order Menu */
+                array_push($menuArray, MenuItemClass::dashboardMenu());
+                array_push($menuArray, MenuItemClass::editProfileMenu());
 
-            /** Administration Menu */
-            if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
+                /** Administration Menu */
                 array_push($menuArray, MenuItemClass::administrationMenu());
-            }
 
-            /** Bottom Order Menu */
-            array_push($menuArray, MenuItemClass::logoutMenu());
+                /** Bottom Order Menu */
+                array_push($menuArray, MenuItemClass::logoutMenu());
 
-            $menuItems = array_filter($menuArray);
+                return array_filter($menuArray);
+            });
         }
 
         /** Constant now set in Vue State, this now used to check if authenticated or not */
@@ -61,18 +62,14 @@ class AppConstController extends Controller
             /** App Name */
             'appName' => config('app.name'),
             'appVersion' => InterfaceClass::readApplicationVersion(),
-            'userName' => $user?->name ?? $user?->name ?? '',
+            'userName' => $user?->name ?? '',
+            'userId' => $user?->id ?? '',
 
             /** Check if Auth */
             'isAuth' => $authCheck,
 
             /** Menu Items */
             'menuItems' => $menuItems ?? [],
-
-            /** Permission Data */
-            'permissionData' => $user?->getAllPermissions()->pluck('name')->toArray() ?? [],
-            'directPermissionData' => $user?->getDirectPermissions()->pluck('name')->toArray() ?? [],
-            'directRoleData' => $user?->getRoleNames()->toArray() ?? [],
         ], 200);
     }
 
@@ -110,7 +107,7 @@ class AppConstController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('API hit trigger validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('API hit trigger validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** Get Current App Version */
         (string) $currentAppVersion = config('mobile.app_version');
@@ -189,7 +186,7 @@ class AppConstController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('API hit trigger post notification as read validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('API hit trigger post notification as read validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** Updated Notification as Read */
         DB::beginTransaction();

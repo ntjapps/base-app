@@ -1,5 +1,5 @@
 module.exports = {
-    plugins: [require("daisyui")],
+    plugins: [],
     content: [
         "resources/views/*.php",
         "resources/views/**/*.php",
@@ -17,11 +17,24 @@ module.exports = {
         "resources/vue/**/*.js",
         "resources/vue/**/*.ts",
         "./node_modules/primevue/**/*.{vue,js,ts,jsx,tsx}",
+        "./node_modules/flowbite/**/*.js",
     ],
     darkMode: "class",
     theme: {
         extend: {
             colors: {
+                primary: "rgb(var(--primary))",
+                "primary-inverse": "rgb(var(--primary-inverse))",
+                "primary-hover": "rgb(var(--primary-hover))",
+                "primary-active-color": "rgb(var(--primary-active-color))",
+
+                "primary-highlight":
+                    "rgb(var(--primary)/var(--primary-highlight-opacity))",
+                "primary-highlight-inverse":
+                    "rgb(var(--primary-highlight-inverse))",
+                "primary-highlight-hover":
+                    "rgb(var(--primary)/var(--primary-highlight-hover-opacity))",
+
                 "primary-50": "rgb(var(--primary-50))",
                 "primary-100": "rgb(var(--primary-100))",
                 "primary-200": "rgb(var(--primary-200))",
@@ -33,6 +46,7 @@ module.exports = {
                 "primary-800": "rgb(var(--primary-800))",
                 "primary-900": "rgb(var(--primary-900))",
                 "primary-950": "rgb(var(--primary-950))",
+
                 "surface-0": "rgb(var(--surface-0))",
                 "surface-50": "rgb(var(--surface-50))",
                 "surface-100": "rgb(var(--surface-100))",
@@ -47,22 +61,5 @@ module.exports = {
                 "surface-950": "rgb(var(--surface-950))",
             },
         },
-    },
-    daisyui: {
-        styled: true,
-        themes: [
-            {
-                mytheme: {
-                    primary: "#1d4ed8",
-                    secondary: "#177bc6",
-                    accent: "#66f464",
-                    neutral: "#2563eb",
-                    "base-100": "#F2F1F3",
-                    info: "#258AEF",
-                    success: "#7BEAB3",
-                    warning: "#F8C025",
-                },
-            },
-        ],
     },
 };

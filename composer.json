@@ -1,7 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "ntj125app/base-app",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Template for Web Apps with PHP, Laravel and Vue",
+    "version": "1.0.0",
     "keywords": [
         "laravel",
         "framework"
@@ -9,13 +10,18 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^11.9",
         "laravel/horizon": "^5.23",
+        "laravel/octane": "^2.5",
         "laravel/passport": "^12.0",
         "laravel/pennant": "^1.7",
+        "laravel/pulse": "^1.2",
+        "laravel/reverb": "v1.0.0",
         "laravel/tinker": "^2.9",
+        "openswoole/core": "^22.1",
         "pusher/pusher-php-server": "^7.2",
         "sentry/sentry-laravel": "^4.3",
+        "spatie/laravel-health": "^1.29",
         "spatie/laravel-permission": "^6.4",
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/otphp": "^11.2",
@@ -29,8 +35,7 @@
         "laravel/telescope": "^5.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^11.0",
-        "spatie/laravel-ignition": "^2.4"
+        "phpunit/phpunit": "^11.0.1"
     },
     "autoload": {
         "psr-4": {

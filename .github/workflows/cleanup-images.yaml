@@ -1,0 +1,20 @@
+name: Clean up containers and images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup-apps:
+    name: Cleanup apps
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Delete all containers from package without tags
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ vars.IMAGE_NAME }}
+          package-type: container
+          delete-only-untagged-versions: true

@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Traits\JsonResponse;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -29,7 +33,8 @@ class UserManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open user role management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('super-pg.userman', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'User Role Management',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }
@@ -42,7 +47,22 @@ class UserManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting get user list for User Role Management', ['userId' => $user?->id, 'uwserName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
-        $data = User::with(['permissions', 'roles'])->orderBy('username')->get();
+        $data = User::with(['roles' => function ($query) {
+            return $query->orderBy('name');
+        }, 'permissions' => function ($query) {
+            return $query->orderBy('name');
+        }])->orderBy('username')->get()->map(function (User $user) {
+            return collect($user)->merge([
+                'roles_array' => Cache::tags([Role::class])->remember(Role::class.'-getRoles-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                    return $user->getRoleNames()->sortBy('name');
+                }),
+                'permissions_array' => Cache::tags([Permission::class])->remember(Permission::class.'-getPermissions-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                    return $user->getAllPermissions()->sortBy([
+                        ['name', 'asc'],
+                    ])->pluck('name');
+                }),
+            ]);
+        });
 
         return response()->json($data);
     }
@@ -56,8 +76,15 @@ class UserManController extends Controller
         Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         return response()->json([
-            'roles' => Role::orderBy('name')->get(),
-            'permissions' => Permission::orderBy('name')->get(),
+            'roles' => Cache::tags([Role::class])->remember(Role::class.'-orderBy-name', Carbon::now()->addYear(), function () {
+                return Role::orderBy('name')->get();
+            }),
+            'permissions' => Cache::tags([Permission::class])->remember(Permission::class.'-orderBy-name', Carbon::now()->addYear(), function () {
+                return Permission::orderBy('name')->get();
+            }),
+            'permissions_const' => Cache::tags([Permission::class])->remember(Permission::class.'-const-orderBy-name', Carbon::now()->addYear(), function () {
+                return Permission::whereIn('name', InterfaceClass::ALLPERM)->orderBy('name')->get();
+            }),
         ]);
     }
 
@@ -84,9 +111,25 @@ class UserManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User submit user role and permission for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('User submit user role and permission for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         (bool) $isRestored = false;
+
+        /** Cannot assign Super Permission if not already have super role */
+        $superRoleId = Cache::tags([Role::class])->remember(Role::class.'-superRoleId', Carbon::now()->addYear(), function () {
+            return Role::where('name', InterfaceClass::SUPERROLE)->first()->id;
+        });
+        if (in_array($superRoleId, $validated['roles'] ?? [])) {
+            Gate::forUser($user)->authorize('hasSuperPermission', User::class);
+        }
+        $superPermissionId = Cache::tags([Permission::class])->remember(Permission::class.'-superPermissionId', Carbon::now()->addYear(), function () {
+            return Permission::whereHas('ability', function ($query) {
+                return $query->where('title', InterfaceClass::SUPER);
+            })->first()->id;
+        });
+        if (in_array($superPermissionId, $validated['permissions'] ?? [])) {
+            Gate::forUser($user)->authorize('hasSuperPermission', User::class);
+        }
 
         DB::beginTransaction();
         try {
@@ -152,7 +195,7 @@ class UserManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User delete user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('User delete user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $user = User::where('id', $validated['id'])->first();
         $user->delete();
@@ -180,7 +223,7 @@ class UserManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User reset password user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('User reset password user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $user = User::where('id', $validated['id'])->first();
         $user->password = Hash::make(config('auth.defaults.reset_password_data'));

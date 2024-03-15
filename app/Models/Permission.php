@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\Permission\Models\Permission as SpatiePermission;
 
 class Permission extends SpatiePermission
@@ -23,7 +24,12 @@ class Permission extends SpatiePermission
      *
      * @var array<int, string>
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'name',
+        'guard_name',
+        'ability_type',
+        'ability_id',
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,4 +51,12 @@ class Permission extends SpatiePermission
      * @var array
      */
     protected $appends = [];
+
+    /**
+     * Model polymorphic relationship with abilities
+     */
+    public function ability(): MorphTo
+    {
+        return $this->morphTo();
+    }
 }

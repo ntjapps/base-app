@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Logger\Models\ServerLog;
 use App\Traits\JsonResponse;
@@ -28,7 +29,8 @@ class ServerManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('super-pg.serverlog', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Server Logs',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }
@@ -55,7 +57,7 @@ class ServerManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User get server log validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('User get server log validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $data = ServerLog::when($validated['date_start'] ?? null, function ($query, $date_start) {
             return $query->where('created_at', '>=', Carbon::parse($date_start, 'Asia/Jakarta')->startOfDay());
@@ -84,6 +86,7 @@ class ServerManController extends Controller
 
         /** Clear Cache */
         Cache::flush();
+        InterfaceClass::flushRolePermissionCache();
 
         return $this->jsonSuccess('Cache cleared', 'Cache cleared successfully');
     }

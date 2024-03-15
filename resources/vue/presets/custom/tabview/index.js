@@ -33,7 +33,7 @@ export default {
 
             // Colors
             "bg-surface-0 dark:bg-surface-800",
-            "text-primary-500 dark:text-primary-400",
+            "text-primary",
             "shadow-md",
         ],
     },
@@ -53,7 +53,7 @@ export default {
 
             // Colors
             "bg-surface-0 dark:bg-surface-800",
-            "text-primary-500 dark:text-primary-400",
+            "text-primary",
             "shadow-md",
         ],
     },
@@ -114,9 +114,9 @@ export default {
 
                     "bg-surface-0 dark:bg-surface-800":
                         parent.state.d_activeIndex === context.index,
-                    "border-primary-500 dark:border-primary-400":
+                    "border-primary":
                         parent.state.d_activeIndex === context.index,
-                    "text-primary-500 dark:text-primary-400":
+                    "text-primary":
                         parent.state.d_activeIndex === context.index,
                 },
 

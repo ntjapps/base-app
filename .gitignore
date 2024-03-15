@@ -1,5 +1,6 @@
 /vendor/
 node_modules/
+.pnpm-store
 npm-debug.log
 yarn-error.log
 /html/
@@ -28,6 +29,7 @@ storage/*.key
 Homestead.yaml
 Homestead.json
 /.vagrant
+.phpactor.json
 .phpunit.result.cache
 .phpunit.cache
 phpunit.xml

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Interfaces\InterfaceClass;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Prunable;
@@ -76,23 +75,4 @@ class User extends Authenticatable
         'password' => 'hashed',
         'totp_key' => 'encrypted',
     ];
-
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = [
-        'user_permission',
-    ];
-
-    /**
-     * Get user_permission attribute
-     */
-    protected function userPermission(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value, $attributes) => $this->getAllPermissions()->pluck('name')->toArray(),
-        )->shouldCache();
-    }
 }

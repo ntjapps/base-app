@@ -19,6 +19,7 @@ const newPassword = ref<string | null>("");
 const confirmPassword = ref<string | null>("");
 
 const postProfileData = () => {
+    const redirect = "";
     axios
         .post(api.postProfile, {
             name: userName.value,
@@ -26,11 +27,22 @@ const postProfileData = () => {
             password_confirmation: confirmPassword.value,
         })
         .then((response) => {
-            toastchild.value?.toastSuccess(response.data.message);
-            window.location.href = response.data.redirect;
+            toastchild.value?.toastDisplay({
+                severity: "success",
+                summary: response.data.title,
+                detail: response.data.message,
+            });
+        })
+        .then(() => {
+            window.location.href = redirect;
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
         });
 };
 </script>

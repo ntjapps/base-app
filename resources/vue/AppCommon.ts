@@ -104,6 +104,27 @@ function formatBytesNumber(bytes: number) {
     }
 }
 
+export type RoleDataInterface = {
+    id: string;
+    name: string;
+};
+
+export type PermissionDataInterface = {
+    id: string;
+    name: string;
+    ability_type: string;
+    ability: {
+        id: string;
+        title: string;
+    };
+};
+
+export type RoleListDataInterface = {
+    id: string;
+    name: string;
+    permissions: Array<PermissionDataInterface>;
+};
+
 export type UserDataInterface = {
     id: string;
     name: string;
@@ -111,12 +132,24 @@ export type UserDataInterface = {
     created_at: string;
     updated_at: string;
     deleted_at: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    user_permission: Array<any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    permissions: Array<any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    roles: Array<any>;
+    permissions: Array<PermissionDataInterface>;
+    permissions_array: Array<string>;
+    roles: Array<RoleDataInterface>;
+    roles_array: Array<string>;
+};
+
+export type ClientListDataInterface = {
+    id: string;
+    name: string;
+    password_client: boolean;
+    personal_access_client: boolean;
+    provider: null | string;
+    redirect: string;
+    revoked: boolean;
+    created_at: string;
+    updated_at: string;
+    user_id: null | string;
+    allowed_action: boolean;
 };
 
 export {

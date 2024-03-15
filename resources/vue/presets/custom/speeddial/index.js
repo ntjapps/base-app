@@ -3,7 +3,7 @@ export default {
         class: "absolute flex",
     },
     button: {
-        root: ({ props, context }) => ({
+        root: ({ props, context, parent }) => ({
             class: [
                 "relative",
                 "z-20",
@@ -51,19 +51,19 @@ export default {
 
                 // Primary Button
                 {
-                    "text-white dark:text-surface-900":
+                    "text-primary-inverse":
                         !props.link &&
                         props.severity === null &&
                         !props.text &&
                         !props.outlined &&
                         !props.plain,
-                    "bg-primary-500 dark:bg-primary-400":
+                    "bg-primary":
                         !props.link &&
                         props.severity === null &&
                         !props.text &&
                         !props.outlined &&
                         !props.plain,
-                    "border border-primary-500 dark:border-primary-400":
+                    "border border-primary":
                         !props.link &&
                         props.severity === null &&
                         !props.text &&
@@ -72,12 +72,12 @@ export default {
                 },
                 // Primary Text Button
                 {
-                    "text-primary-500 dark:text-primary-400":
+                    "text-primary":
                         props.text && props.severity === null && !props.plain,
                 },
                 // Primary Outlined Button
                 {
-                    "text-primary-500 border border-primary-500 hover:bg-primary-300/20":
+                    "text-primary border border-primary":
                         props.outlined &&
                         props.severity === null &&
                         !props.plain,
@@ -276,15 +276,44 @@ export default {
                         props.severity === "danger" &&
                         !props.plain,
                 },
+                // Contrast Button
+                {
+                    "text-white dark:text-surface-900":
+                        props.severity === "contrast" &&
+                        !props.text &&
+                        !props.outlined &&
+                        !props.plain,
+                    "bg-surface-900 dark:bg-surface-0":
+                        props.severity === "contrast" &&
+                        !props.text &&
+                        !props.outlined &&
+                        !props.plain,
+                    "border border-surface-900 dark:border-surface-0":
+                        props.severity === "contrast" &&
+                        !props.text &&
+                        !props.outlined &&
+                        !props.plain,
+                },
+                // Contrast Text Button
+                {
+                    "text-surface-900 dark:text-surface-0":
+                        props.text &&
+                        props.severity === "contrast" &&
+                        !props.plain,
+                },
+                // Contrast Outlined Button
+                {
+                    "text-surface-900 dark:text-surface-0 border border-surface-900 dark:border-surface-0":
+                        props.outlined &&
+                        props.severity === "contrast" &&
+                        !props.plain,
+                },
 
                 // --- Severity Button States ---
                 "focus:outline-none focus:outline-offset-0 focus:ring",
 
                 // Link
-                {
-                    "focus:ring-primary-400/50 dark:focus:ring-primary-300/50":
-                        props.link,
-                },
+                { "focus:ring-primary": props.link },
 
                 // Plain
                 {
@@ -299,17 +328,14 @@ export default {
 
                 // Primary
                 {
-                    "hover:bg-primary-600 dark:hover:bg-primary-300 hover:border-primary-600 dark:hover:border-primary-300":
+                    "hover:bg-primary-hover hover:border-primary-hover":
                         !props.link &&
                         props.severity === null &&
                         !props.text &&
                         !props.outlined &&
                         !props.plain,
                 },
-                {
-                    "focus:ring-primary-400/50 dark:focus:ring-primary-300/50":
-                        props.severity === null,
-                },
+                { "focus:ring-primary": props.severity === null },
                 // Text & Outlined Button
                 {
                     "hover:bg-primary-300/20":
@@ -437,7 +463,25 @@ export default {
                         props.severity === "danger" &&
                         !props.plain,
                 },
-
+                // Contrast
+                {
+                    "hover:bg-surface-800 dark:hover:bg-surface-100 hover:border-surface-800 dark:hover:border-surface-100":
+                        props.severity === "contrast" &&
+                        !props.text &&
+                        !props.outlined &&
+                        !props.plain,
+                },
+                {
+                    "focus:ring-surface-500 dark:focus:ring-surface-400":
+                        props.severity === "contrast",
+                },
+                // Text & Outlined Button
+                {
+                    "hover:bg-surface-900/10 dark:hover:bg-[rgba(255,255,255,0.03)]":
+                        (props.text || props.outlined) &&
+                        props.severity === "contrast" &&
+                        !props.plain,
+                },
                 // Disabled
                 {
                     "opacity-60 pointer-events-none cursor-default":
@@ -446,6 +490,7 @@ export default {
 
                 // Transitions
                 "transition duration-200 ease-in-out",
+                parent.state.d_visible ? "rotate-45" : "rotate-0",
 
                 // Misc
                 "cursor-pointer overflow-hidden select-none",

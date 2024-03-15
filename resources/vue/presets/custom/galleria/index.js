@@ -150,9 +150,11 @@ export default {
             "opacity-50",
 
             // States
+            '[&[data-p-active="true"]]:opacity-100',
             "hover:opacity-100",
-            "hover:transition-opacity",
-            "hover:duration-300",
+
+            // Transitions
+            "transition-opacity duration-300",
         ],
     }),
     nextthumbnailbutton: {
@@ -241,7 +243,7 @@ export default {
             },
 
             // Conditional Appearance: Highlighted
-            { "bg-primary-500 hover:bg-primary-600": context.highlighted },
+            { "bg-primary hover:bg-primary-hover": context.highlighted },
         ],
     }),
     mask: {

@@ -2,7 +2,7 @@ export default {
     root: ({ props }) => ({
         class: [
             //Size and Shape
-            "w-11/12 md:w-96 rounded-md",
+            "w-96 rounded-md",
 
             // Positioning
             {
@@ -51,9 +51,15 @@ export default {
             },
         ],
     }),
-    content: {
-        class: "flex items-start p-4",
-    },
+    content: ({ props }) => ({
+        class: [
+            "flex p-4",
+            {
+                "items-start": props.message.summary,
+                "items-center": !props.message.summary,
+            },
+        ],
+    }),
     icon: {
         class: [
             // Sizing and Spacing
@@ -72,9 +78,9 @@ export default {
     summary: {
         class: "font-bold block",
     },
-    detail: {
-        class: "mt-2 block",
-    },
+    detail: ({ props }) => ({
+        class: ["block", { "mt-2": props.message.summary }],
+    }),
     closebutton: {
         class: [
             // Flexbox

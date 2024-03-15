@@ -2,6 +2,8 @@
 
 use App\Exceptions\CommonCustomException;
 use App\Mail\TestMail;
+use App\Models\User;
+use App\Notifications\MessageNotification;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -48,3 +50,16 @@ Artisan::command('test:telegram', function () {
 
     Log::alert('Console test:telegram executed', ['appName' => config('app.name')]);
 })->purpose('Test Telegram Bot');
+
+Artisan::command('test:notification {username}', function () {
+    $user = User::where('username', $this->argument('username'))->first();
+
+    if ($user) {
+        $user->notify(new MessageNotification('Test Notification', 'This is a test notification'));
+        $this->info('Notification sent to '.$this->argument('username'));
+    } else {
+        $this->info('User not found');
+    }
+
+    Log::alert('Console test:notification executed', ['username' => $this->argument('username')]);
+})->purpose('Test Notification');

@@ -19,7 +19,7 @@ class ProfileFillIfEmpty
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check() && Auth::user()?->name === null) {
+            if (Auth::guard($guard)->check() && Auth::guard($guard)->user()?->name === null) {
                 return redirect(route('profile'));
             }
         }

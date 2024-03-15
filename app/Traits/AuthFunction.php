@@ -14,23 +14,30 @@ trait AuthFunction
     /**
      * Private common function to check auth
      */
-    private function checkAuthUser(array $validated): User|null
+    private function checkAuthUser(array $validated): ?User
     {
         try {
             /** Attempt to login */
             $user = User::where('username', $validated['username'])->first();
             Log::debug('User Auth Check Data', ['user' => $user?->username]);
         } catch (\Throwable $e) {
-            Log::error('Failed to create user', ['exception' => $e]);
-            $user = null;
+            Log::error('Failed to check user', ['errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
+
+            return null;
         }
 
         /** Check against password */
-        $user = Hash::check($validated['password'], $user?->password) ? $user : null;
-        /** Check against TOTP */
-        $user = ! is_null($user) || TOTP::create($user?->totp_key)->now() == $validated['password'] ? $user : null;
+        $userCheckPassword = Hash::check($validated['password'], $user?->password);
 
-        return $user;
+        /** Check against TOTP */
+        $userCheckTotp = TOTP::create($user?->totp_key)->now() == $validated['password'];
+
+        /** Check if password or TOTP is correct */
+        if (! $userCheckPassword && ! $userCheckTotp) {
+            return null;
+        } else {
+            return $user;
+        }
     }
 
     /**
@@ -38,13 +45,19 @@ trait AuthFunction
      */
     protected function checkAuthLogout(Request $request): void
     {
+        $user = Auth::user() ?? Auth::guard('api')->user();
         /** Logout if user is authenticated */
-        if (Auth::check()) {
-            Log::info('User '.Auth::user()?->name.' logging out', ['user_id' => Auth::id()]);
+        if (! is_null($user)) {
+            Log::info('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
+            /** Also revoke all user token even if this is web routes */
+            $user?->tokens->each(function ($token) {
+                $token?->revoke();
+            });
         }
     }
 }

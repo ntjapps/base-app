@@ -3,16 +3,18 @@ import axios from "axios";
 import { ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 import { useWebStore } from "../AppRouter";
+import { useApiStore } from "../AppState";
 
 import CmpToast from "../Components/CmpToast.vue";
 
 const web = useWebStore();
+const api = useApiStore();
 const router = useRouter();
 const toastchild = ref<typeof CmpToast>();
 
 onBeforeMount(() => {
     axios
-        .post(import.meta.env.VITE_API_ENDPOINT + "/api/post-token-revoke")
+        .post(api.postTokenLogout)
         .then(() => {
             router.push(web.landingPage);
         })

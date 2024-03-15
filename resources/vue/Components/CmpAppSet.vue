@@ -9,6 +9,7 @@ const main = useMainStore();
 
 onBeforeMount(() => {
     main.spaCsrfToken();
+    main.getNotificationList();
     main.init();
     main.browserSuppportCheck();
 });

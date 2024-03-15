@@ -20,14 +20,17 @@ public_html/hot
 
 storage/*.key
 .env
-.env.backup
-.env.production
 .env.testing
+.env.local
+.env.dev
+.env.prod
+.constants
 Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
 .phpunit.cache
+phpunit.xml
 
 # Ignore Laravel Mix output
 public/mix-js
@@ -35,10 +38,8 @@ public/mix-css
 public/mix-manifest.json
 public/debug.php
 public/build
-env-production
-env-dev
-base64_env
-base64_env_dev
+env*
+base64*
 auth.json
 
 # Ignore Debugs Files
@@ -46,5 +47,12 @@ public/*-debug.php
 
 # Ignore PrimeVue Files
 public/images
+
+# Ignore IDE Helper Files
+_ide_helper.php
+.phpstorm.meta.php
+
+# Ignore test output
+tests_output
 
 # Added blankspace for Git

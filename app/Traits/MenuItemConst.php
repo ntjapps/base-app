@@ -55,6 +55,12 @@ trait MenuItemConst
             ]);
 
             array_push($childMenu, [
+                'label' => 'Server Monitor - Pulse',
+                'icon' => 'pi pi-bolt',
+                'url' => parse_url(route('pulse'), PHP_URL_PATH),
+            ]);
+
+            array_push($childMenu, [
                 'label' => 'Server Logs',
                 'icon' => 'pi pi-server',
                 'url' => parse_url(route('server-logs'), PHP_URL_PATH),

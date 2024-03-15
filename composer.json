@@ -1,7 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "ntj125app/base-app",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Template for Web Apps with PHP, Laravel and Vue",
+    "version": "1.0.0",
     "keywords": [
         "laravel",
         "framework"
@@ -13,6 +14,7 @@
         "laravel/horizon": "^5.23",
         "laravel/passport": "^12.0",
         "laravel/pennant": "^1.7",
+        "laravel/pulse": "@beta",
         "laravel/tinker": "^2.9",
         "pusher/pusher-php-server": "^7.2",
         "sentry/sentry-laravel": "^4.3",

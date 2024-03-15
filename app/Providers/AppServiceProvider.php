@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
+use Laravel\Telescope\Telescope;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local')) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
+
+            Telescope::night();
         }
     }
 
@@ -54,6 +57,11 @@ class AppServiceProvider extends ServiceProvider
 
         /** Register Policies */
         Gate::policy(User::class, UserPolicy::class);
+
+        /** Pulse Gate */
+        Gate::define('viewPulse', function (User $user) {
+            return (config('app.debug') === true) ? true : Gate::forUser($user)->allows('hasSuperPermission', User::class);
+        });
 
         /**
          * Implicitly grant "Super User" role with some limitation to policy

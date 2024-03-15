@@ -23,7 +23,7 @@
         "@typescript-eslint/eslint-plugin": "^7.0.1",
         "@typescript-eslint/parser": "^7.0.1",
         "@vitejs/plugin-vue": "^5.0.4",
-        "@vue/eslint-config-typescript": "^12.0.0",
+        "@vue/eslint-config-typescript": "^13.0.0",
         "@vue/test-utils": "^2.4.4",
         "autoprefixer": "^10.4.17",
         "axios": "^1.6.7",

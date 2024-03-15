@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
+use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,22 +20,32 @@ use Illuminate\Support\Facades\Route;
 */
 
 /** All API Route should be sanitized with XSS Middleware */
-Route::middleware(['xss'])->group(function () {
+Route::middleware([XssProtection::class])->group(function () {
     /** Get Constant */
     Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
     Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');
+    Route::post('/post-get-current-app-version', [AppConstController::class, 'getCurrentAppVersion'])->name('post-get-current-app-version');
+    Route::post('/get-notification-list', [AppConstController::class, 'getNotificationList'])->name('get-notification-list');
 
     /** Login Routes need rate limit to prevent attacks */
     Route::post('/post-token', [AuthController::class, 'postToken'])->name('post-token')->middleware(['throttle:api-secure']);
 
     /** Routes that need authentication first */
-    Route::middleware(['auth:sanctum'])->group(function () {
+    Route::middleware(['auth:api'])->group(function () {
         Route::post('/post-token-revoke', [AuthController::class, 'postTokenRevoke'])->name('post-token-revoke')->middleware(['throttle:api-secure']);
-        Route::post('/post-update-profile', [DashController::class, 'updateProfile'])->name('update-profile');
+        Route::post('/post-notification-as-read', [AppConstController::class, 'postNotificationAsRead'])->name('post-notification-as-read');
+        Route::post('/post-notification-clear-all', [AppConstController::class, 'postNotificationClearAll'])->name('post-notification-clear-all');
+        Route::post('/post-update-profile', [ProfileController::class, 'updateProfile'])->name('post-update-profile');
 
         Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {
             Route::post('/get-user-list', [UserManController::class, 'getUserList'])->name('get-user-list');
+            Route::post('/get-user-role-perm', [UserManController::class, 'getUserRolePerm'])->name('get-user-role-perm');
+            Route::post('/post-user-man-submit', [UserManController::class, 'postUserManSubmit'])->name('post-user-man-submit');
+            Route::post('/post-delete-user-man-submit', [UserManController::class, 'postDeleteUserManSubmit'])->name('post-delete-user-man-submit');
+            Route::post('/post-reset-password-user-man-submit', [UserManController::class, 'postResetPasswordUserManSubmit'])->name('post-reset-password-user-man-submit');
+
             Route::post('/get-server-logs', [ServerManController::class, 'getServerLogs'])->name('get-server-logs');
+            Route::post('/post-clear-app-cache', [ServerManController::class, 'postClearAppCache'])->name('post-clear-app-cache');
         });
     });
 });

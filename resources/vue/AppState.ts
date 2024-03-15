@@ -15,12 +15,22 @@ export const useWebApiStore = defineStore("webapi", {
 export const useApiStore = defineStore("api", {
     state: () => ({
         /** API request */
+        postTokenLogout: "/api/post-token-revoke",
         postProfile: "/api/post-update-profile",
         appConst: "/api/post-app-const",
         getAllUserPermission: "/api/get-all-user-permission",
         logAgent: "/api/post-log-agent",
+        getNotificationList: "/api/get-notification-list",
+        postNotificationAsRead: "/api/post-notification-as-read",
+        postNotificationClearAll: "/api/post-notification-clear-all",
         getServerLogs: "/api/get-server-logs",
+        postClearAppCache: "/api/post-clear-app-cache",
         getUserList: "/api/get-user-list",
+        getUserRolePerm: "/api/get-user-role-perm",
+        postUserManSubmit: "/api/post-user-man-submit",
+        postDeleteUserManSubmit: "/api/post-delete-user-man-submit",
+        postResetPasswordUserManSubmit:
+            "/api/post-reset-password-user-man-submit",
     }),
 });
 
@@ -37,9 +47,12 @@ export const useMainStore = defineStore("main", {
     state: () => ({
         /** Additional data */
         appName: import.meta.env.APP_NAME,
+        appVersion: "",
         userName: "",
+        notificationList: [],
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
+        expandedKeysMenu: {},
         turnstileToken: "",
     }),
 
@@ -54,10 +67,13 @@ export const useMainStore = defineStore("main", {
                         appName: response.data.appName,
                     });
                     this.$patch({
+                        appVersion: response.data.appVersion,
+                    });
+                    this.$patch({
                         userName: response.data.userName,
                     });
                     this.$patch({
-                        menuItems: JSON.parse(response.data.menuItems),
+                        menuItems: Object.values(response.data.menuItems),
                     });
                 })
                 .catch((error) => {
@@ -86,33 +102,46 @@ export const useMainStore = defineStore("main", {
                 console.log("csrf cookie init");
             });
         },
+
+        async getNotificationList() {
+            /**
+             * Get notification list
+             */
+            const api = useApiStore();
+            axios
+                .post(api.getNotificationList)
+                .then((response) => {
+                    this.$patch({ notificationList: response.data });
+                })
+                .catch((error) => {
+                    console.error(error.response.data);
+                });
+        },
+
+        updateExpandedKeysMenu(expandedKeys: string) {
+            this.$patch({
+                expandedKeysMenu: {
+                    [expandedKeys]: true,
+                },
+            });
+        },
     },
 });
 
 export const useEchoStore = defineStore("echo", {
-    getters: {
-        laravelEcho: () => {
-            return new Echo({
-                broadcaster: "pusher",
-                key: import.meta.env.VITE_PUSHER_APP_KEY,
-                cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? "mt1",
-                wsHost: import.meta.env.VITE_PUSHER_HOST
-                    ? import.meta.env.VITE_PUSHER_HOST
-                    : `ws-${
-                          import.meta.env.VITE_PUSHER_APP_CLUSTER
-                      }.pusher.com`,
-                wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
-                wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
-                forceTLS:
-                    (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",
-                enabledTransports: ["ws", "wss"],
-                //authEndpoint: import.meta.env.VITE_API_ENDPOINT + "/api/broadcasting/auth",
-                //auth: {
-                //headers: {
-                //Accept: "application/json",
-                //},
-                //},
-            });
-        },
-    },
+    state: () => ({
+        laravelEcho: new Echo({
+            broadcaster: "pusher",
+            key: import.meta.env.VITE_PUSHER_APP_KEY,
+            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? "mt1",
+            wsHost: import.meta.env.VITE_PUSHER_HOST
+                ? import.meta.env.VITE_PUSHER_HOST
+                : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+            wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
+            wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
+            forceTLS:
+                (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",
+            enabledTransports: ["ws", "wss"],
+        }),
+    }),
 });

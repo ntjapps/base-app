@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use App\Interfaces\InterfaceClass;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Pennant\Feature;
@@ -10,13 +9,21 @@ use Laravel\Pennant\Feature;
 class PermissionObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the Permission "created" event.
      */
     public function created(Permission $permission): void
     {
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 
     /**
@@ -24,9 +31,10 @@ class PermissionObserver
      */
     public function updated(Permission $permission): void
     {
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 
     /**
@@ -34,9 +42,10 @@ class PermissionObserver
      */
     public function deleted(Permission $permission): void
     {
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 
     /**
@@ -44,9 +53,10 @@ class PermissionObserver
      */
     public function restored(Permission $permission): void
     {
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 
     /**
@@ -54,8 +64,9 @@ class PermissionObserver
      */
     public function forceDeleted(Permission $permission): void
     {
-        Cache::tags([InterfaceClass::MSTPERM])->flush();
+        /** Reset cached roles and permissions */
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        Cache::tags([Permission::class])->flush();
         Feature::flushCache();
-        Feature::purge();
     }
 }

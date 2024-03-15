@@ -1,6 +1,4 @@
-/// <reference types="vitest" />
 import { defineConfig, splitVendorChunkPlugin } from "vite";
-import { configDefaults } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import laravel from "laravel-vite-plugin";
 
@@ -8,7 +6,7 @@ export default defineConfig({
     server: {
         host: true /* Expose to all IP */,
         hmr: {
-            host: "docker.local" /* Set base URL for Hot Module Reload */,
+            host: "docker.localhost" /* Set base URL for Hot Module Reload */,
         },
     },
     plugins: [
@@ -35,16 +33,8 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 compact: true,
-                manualChunks: {
-                    "vue-sfc-runtime": ["vue"],
-                    "vue-vendor": ["vue-router", "pinia"],
-                    "axios-vendor": ["axios"],
-                },
             },
         },
-    },
-    test: {
-        environment: "happy-dom",
-        exclude: [...configDefaults.exclude],
+        manifest: "manifest.json",
     },
 });

@@ -1,2 +1,4 @@
 **/*.scss
 **/*.css
+
+resources/vue/presets

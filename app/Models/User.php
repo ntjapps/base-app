@@ -2,32 +2,34 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
-use App\Interfaces\PermissionConst;
+use App\Interfaces\InterfaceClass;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Passport\HasApiTokens;
+use Laravel\Pennant\Concerns\HasFeatures;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements PermissionConst
+class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasUuids, HasRoles, SoftDeletes, MassPrunable;
+    use HasApiTokens, HasFactory, HasFeatures, HasRoles, HasUuids, Notifiable, Prunable, SoftDeletes;
+
+    protected function getDefaultGuardName(): string
+    {
+        return 'web';
+    }
 
     /**
      * Exclude constant permission
      */
     public function exceptConstPermission(): array
     {
-        return [
-            static::SUPER,
-        ];
+        return InterfaceClass::ALLPERM;
     }
 
     /**
@@ -71,6 +73,26 @@ class User extends Authenticatable implements PermissionConst
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
         'totp_key' => 'encrypted',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'user_permission',
+    ];
+
+    /**
+     * Get user_permission attribute
+     */
+    protected function userPermission(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => $this->getAllPermissions()->pluck('name')->toArray(),
+        )->shouldCache();
+    }
 }

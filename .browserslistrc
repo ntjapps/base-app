@@ -7,13 +7,13 @@ not Safari < 14
 not Firefox < 65
 not Opera < 44
 not ie <= 11
-not ChromeAndroid < 106
+not ChromeAndroid < 58
 not iOS < 14
 not Samsung < 6.2
 not OperaMini all
 not op_mob < 64
 not UCAndroid < 13.4
-not Android < 106
+not Android < 58
 not FirefoxAndroid < 105
 not and_qq < 13.1
 not Baidu < 13.18

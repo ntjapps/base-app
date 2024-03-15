@@ -4,10 +4,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="cypress" content="Cypress Testing">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- <link rel="icon" type="image/webp" href="{{ asset('mix-images/icon.webp') }}"/> --}}
+    {{-- <link rel="icon" type="image/webp" href="{{ Vite::asset('resources/images/icon.webp') }}"/> --}}
 
-    <title>@yield('title')</title>
+    <title>@yield('title') - {{ config('app.name') }}</title>
     </head>
 
     <body>

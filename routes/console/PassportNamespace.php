@@ -39,8 +39,8 @@ Artisan::command('passport:client:env', function () {
 
         PassportPersonalAccessClient::where('client_id', $client->id)->delete();
 
-        $client->id = (string) config('passport.personal_access_client.id');
-        $client->secret = (string) config('passport.personal_access_client.secret', Str::random(40));
+        $client->id = config('passport.personal_access_client.id');
+        $client->secret = config('passport.personal_access_client.secret', Str::random(40));
         $client->save();
 
         PassportPersonalAccessClient::create([
@@ -73,8 +73,8 @@ Artisan::command('passport:client:grant:env', function () {
     DB::transaction(function () use (&$client) {
         $client = (new ClientRepository)->create(null, 'Client Credentials Client Env', '');
 
-        $client->id = (string) config('passport.client_credentials_grant_client.id');
-        $client->secret = (string) config('passport.client_credentials_grant_client.secret', Str::random(40));
+        $client->id = config('passport.client_credentials_grant_client.id');
+        $client->secret = config('passport.client_credentials_grant_client.secret', Str::random(40));
         $client->save();
     });
 

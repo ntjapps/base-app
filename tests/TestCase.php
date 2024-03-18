@@ -40,7 +40,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function CommonPreparePat(): void
     {
-        Config::set('passport.personal_access_client.id', Str::orderedUuid());
+        Config::set('passport.personal_access_client.id', (string) Str::orderedUuid());
         Artisan::call('passport:keys');
         Artisan::call('passport:client:env');
     }

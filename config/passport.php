@@ -55,13 +55,13 @@ return [
     */
 
     'personal_access_client' => [
-        'id' => env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID'),
-        'secret' => env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET'),
+        'id' => (string) env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID'),
+        'secret' => (string) env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET'),
     ],
 
     'client_credentials_grant_client' => [
-        'id' => env('PASSPORT_CLIENT_CREDENTIALS_CLIENT_ID'),
-        'secret' => env('PASSPORT_CLIENT_CREDENTIALS_CLIENT_SECRET'),
+        'id' => (string) env('PASSPORT_CLIENT_CREDENTIALS_CLIENT_ID'),
+        'secret' => (string) env('PASSPORT_CLIENT_CREDENTIALS_CLIENT_SECRET'),
     ],
 
 ];

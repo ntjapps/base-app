@@ -86,15 +86,17 @@ class RolePermissionSyncJob implements ShouldQueue
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
             /** Create permissions */
-            Permission::firstOrCreate(['name' => InterfaceClass::SUPER]);
+            $permission = collect(InterfaceClass::ALLPERM)->each(function ($perm) {
+                Permission::firstOrCreate(['name' => $perm]);
+            });
 
             /** Create roles and assign created permissions */
-            $super = Role::firstOrCreate(['name' => InterfaceClass::SUPERROLE]);
+            $permission = Role::firstOrCreate(['name' => InterfaceClass::SUPERROLE]);
             if ($this->reset) {
-                $super->syncPermissions([InterfaceClass::SUPER]);
+                $permission->syncPermissions([InterfaceClass::SUPER]);
             } else {
-                if ($super->hasAnyPermission(InterfaceClass::SUPER)) {
-                    $super->givePermissionTo(InterfaceClass::SUPER);
+                if ($permission->hasAnyPermission(InterfaceClass::SUPER)) {
+                    $permission->givePermissionTo(InterfaceClass::SUPER);
                 }
             }
 

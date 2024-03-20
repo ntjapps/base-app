@@ -89,7 +89,7 @@ return [
         ],
 
         'redis' => [
-            'connection' => env('PULSE_REDIS_CONNECTION'),
+            'connection' => env('PULSE_REDIS_CONNECTION', 'cachejob'),
             'chunk' => 1000,
         ],
     ],

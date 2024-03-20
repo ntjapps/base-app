@@ -23,7 +23,7 @@ if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
 
 if (class_exists(\Laravel\Pulse\PulseServiceProvider::class)) {
     Schedule::command('pulse:check', ['--once'])->everyThirtySeconds()->withoutOverlapping();
-    Schedule::command('pulse:work', ['--stop-when-empty'])->everyMinute()->withoutOverlapping();
+    Schedule::command('pulse:work', ['--stop-when-empty'])->everyTenSeconds()->withoutOverlapping(); /** Must be more frequent than pulse:check */
 
     Schedule::command('pulse:clear', ['--type=cpu,memory,system'])->hourly()->withoutOverlapping();
 }

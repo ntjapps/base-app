@@ -45,7 +45,11 @@ class UserManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting get user list for User Role Management', ['userId' => $user?->id, 'uwserName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
-        $data = User::with(['roles', 'permissions'])->orderBy('username')->get()->map(function (User $user) {
+        $data = User::with(['roles' => function ($query) {
+            return $query->orderBy('name');
+        }, 'permissions' => function ($query) {
+            return $query->orderBy('is_const', 'desc')->orderBy('name');
+        }])->orderBy('username')->get()->map(function (User $user) {
             return collect($user)->merge([
                 'roles_array' => Cache::tags([Role::class])->remember(Role::class.'-getRoles-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
                     return $user->getRoleNames()->sortBy('name');

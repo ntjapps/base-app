@@ -9,12 +9,10 @@ import CmpToast from "../Components/CmpToast.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
+import { FilterMatchMode } from "primevue/api";
 
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const errorMessageData = ref<Array<any>>([]);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const dialogRef = inject("dialogRef") as any;
@@ -27,6 +25,14 @@ const roleListData = ref<Array<string>>();
 const selectedRoleListData = ref<Array<RoleDataInterface>>();
 const permListData = ref<Array<string>>();
 const selectedPermListData = ref<Array<PermissionDataInterface>>();
+
+const filters_role = ref({
+    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+const filters_perm = ref({
+    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 const showDeleted = computed(() => {
     return !typeCreate.value;
@@ -62,7 +68,7 @@ const getUserRoleListData = () => {
             );
         })
         .catch((error) => {
-            errorMessageData.value = error.response.data.errors;
+            toastchild.value?.toastError(error);
         });
 };
 
@@ -89,7 +95,7 @@ const postUserManData = () => {
             toastchild.value?.toastSuccess(response.data.message);
         })
         .catch((error) => {
-            errorMessageData.value = error.response.data.errors;
+            toastchild.value?.toastError(error);
         });
 };
 
@@ -103,7 +109,7 @@ const postDeleteUserManData = () => {
             toastchild.value?.toastSuccess(response.data.message);
         })
         .catch((error) => {
-            errorMessageData.value = error.response.data.errors;
+            toastchild.value?.toastError(error);
         });
 };
 
@@ -117,7 +123,7 @@ const postResetPasswordUserMandata = () => {
             toastchild.value?.toastSuccess(response.data.message);
         })
         .catch((error) => {
-            errorMessageData.value = error.response.data.errors;
+            toastchild.value?.toastError(error);
         });
 };
 
@@ -147,6 +153,7 @@ onMounted(() => {
     <div class="flex w-full justify-evenly mt-2.5">
         <div class="mx-2.5">
             <DataTable
+                v-model:filters="filters_role"
                 v-model:selection="selectedRoleListData"
                 class="p-datatable-sm"
                 :value="roleListData"
@@ -155,6 +162,7 @@ onMounted(() => {
                 :rows="10"
                 paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                 :rows-per-page-options="[10, 20, 50, 100]"
+                filter-display="menu"
             >
                 <template #empty>
                     <div class="flex justify-center">No data found</div>
@@ -164,11 +172,21 @@ onMounted(() => {
                     Processing data. Please wait.
                 </template>
                 <Column selection-mode="multiple"></Column>
-                <Column field="name" header="Direct Roles" />
+                <Column field="name" header="Direct Roles">
+                    <template #filter="{ filterModel, filterCallback }">
+                        <InputText
+                            v-model="filterModel.value"
+                            class="w-full"
+                            placeholder="Search by role"
+                            @input="filterCallback()"
+                        />
+                    </template>
+                </Column>
             </DataTable>
         </div>
         <div class="mx-2.5">
             <DataTable
+                v-model:filters="filters_perm"
                 v-model:selection="selectedPermListData"
                 class="p-datatable-sm"
                 :value="permListData"
@@ -177,6 +195,7 @@ onMounted(() => {
                 :rows="10"
                 paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                 :rows-per-page-options="[10, 20, 50, 100]"
+                filter-display="menu"
             >
                 <template #empty>
                     <div class="flex justify-center">No data found</div>
@@ -186,17 +205,17 @@ onMounted(() => {
                     Processing data. Please wait.
                 </template>
                 <Column selection-mode="multiple"></Column>
-                <Column field="name" header="Direct Permissions" />
+                <Column field="name" header="Direct Permissions">
+                    <template #filter="{ filterModel, filterCallback }">
+                        <InputText
+                            v-model="filterModel.value"
+                            class="w-full"
+                            placeholder="Search by permission"
+                            @input="filterCallback()"
+                        />
+                    </template>
+                </Column>
             </DataTable>
-        </div>
-    </div>
-    <div class="flex w-full mt-1">
-        <div
-            v-for="(messages, index) in errorMessageData"
-            :key="index"
-            class="w-full text-center text-sm italic font-bold text-red-500"
-        >
-            {{ messages[0] }}
         </div>
     </div>
     <div class="flex w-full mt-2.5 justify-center">
@@ -214,7 +233,10 @@ onMounted(() => {
         >
             <span class="m-1">Reset Password</span>
         </button>
-        <button class="btn w-24 mx-2 text-sm" @click="postUserManData">
+        <button
+            class="btn btn-primary w-24 mx-2 text-sm"
+            @click="postUserManData"
+        >
             <span class="m-1">Submit</span>
         </button>
     </div>

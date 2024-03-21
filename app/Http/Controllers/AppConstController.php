@@ -68,11 +68,6 @@ class AppConstController extends Controller
 
             /** Menu Items */
             'menuItems' => $menuItems ?? [],
-
-            /** Permission Data */
-            'permissionData' => $user?->getAllPermissions()->pluck('name')->toArray() ?? [],
-            'directPermissionData' => $user?->getDirectPermissions()->pluck('name')->toArray() ?? [],
-            'directRoleData' => $user?->getRoleNames()->toArray() ?? [],
         ], 200);
     }
 

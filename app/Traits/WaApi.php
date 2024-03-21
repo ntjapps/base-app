@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Carbon\Carbon;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -83,7 +84,7 @@ trait WaApi
                 'device_id' => config('waapi.device_id'),
                 'number' => $phone,
                 'message' => $message,
-                'schedule' => now()->addMinutes(5)->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+                'schedule' => Carbon::now()->addMinutes(5)->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             ]);
 
             Log::debug('Sending WA', ['deviceId' => config('waapi.device_id')]);

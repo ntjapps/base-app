@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Traits\JsonResponse;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -42,7 +45,20 @@ class UserManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting get user list for User Role Management', ['userId' => $user?->id, 'uwserName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
-        $data = User::with(['permissions', 'roles'])->orderBy('username')->get();
+        $data = User::with(['roles', 'permissions'])->orderBy('username')->get()->map(function (User $user) {
+            return collect($user)->merge([
+                'roles_array' => Cache::tags([Role::class])->remember(Role::class.'-getRoles-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                    return $user->getRoleNames()->sortBy('name');
+                }),
+                'permissions_array' => Cache::tags([Permission::class])->remember(Permission::class.'-getPermissions-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                    return $user->getAllPermissions()->sortBy([
+                        ['is_const', 'desc'], 
+                        ['is_menu', 'asc'],
+                        ['name', 'asc'],
+                    ])->pluck('name');
+                }),
+            ]);
+        });
 
         return response()->json($data);
     }
@@ -56,8 +72,15 @@ class UserManController extends Controller
         Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         return response()->json([
-            'roles' => Role::orderBy('name')->get(),
-            'permissions' => Permission::orderBy('name')->get(),
+            'roles' => Cache::tags([Role::class])->remember(Role::class.'-orderBy-name', Carbon::now()->addYear(), function () {
+                return Role::orderBy('name')->get();
+            }),
+            'permissions' => Cache::tags([Permission::class])->remember(Permission::class.'-orderBy-name', Carbon::now()->addYear(), function () {
+                return Permission::orderBy('is_const', 'desc')->orderBy('name')->get();
+            }),
+            'permissions_const' => Cache::tags([Permission::class])->remember(Permission::class.'-const-orderBy-name', Carbon::now()->addYear(), function () {
+                return Permission::whereIn('name', InterfaceClass::ALLPERM)->orderBy('name')->get();
+            }),
         ]);
     }
 

@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
+use App\Models\Permission;
 use App\Models\User;
 use App\Rules\TokenPlatformValidation;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -38,21 +41,21 @@ class AppConstController extends Controller
 
         /** Menu Items */
         if ($authCheck) {
-            $menuArray = []; /** Menu Array */
+            $menuItems = Cache::tags([Permission::class])->remember(Permission::class.'-menu-items-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                $menuArray = []; /** Menu Array */
 
-            /** Top Order Menu */
-            array_push($menuArray, MenuItemClass::dashboardMenu());
-            array_push($menuArray, MenuItemClass::editProfileMenu());
+                /** Top Order Menu */
+                array_push($menuArray, MenuItemClass::dashboardMenu());
+                array_push($menuArray, MenuItemClass::editProfileMenu());
 
-            /** Administration Menu */
-            if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
+                /** Administration Menu */
                 array_push($menuArray, MenuItemClass::administrationMenu());
-            }
 
-            /** Bottom Order Menu */
-            array_push($menuArray, MenuItemClass::logoutMenu());
+                /** Bottom Order Menu */
+                array_push($menuArray, MenuItemClass::logoutMenu());
 
-            $menuItems = array_filter($menuArray);
+                return array_filter($menuArray);
+            });
         }
 
         /** Constant now set in Vue State, this now used to check if authenticated or not */

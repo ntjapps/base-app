@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\Permission;
-use App\Models\User;
 use App\Rules\TokenPlatformValidation;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
@@ -13,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -41,7 +39,7 @@ class AppConstController extends Controller
 
         /** Menu Items */
         if ($authCheck) {
-            $menuItems = Cache::tags([Permission::class])->remember(Permission::class.'-menu-items-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+            $menuItems = Cache::tags([Permission::class])->remember(Permission::class.'-menu-items-'.$user->id, Carbon::now()->addYear(), function () {
                 $menuArray = []; /** Menu Array */
 
                 /** Top Order Menu */

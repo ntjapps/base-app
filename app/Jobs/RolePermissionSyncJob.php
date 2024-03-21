@@ -106,6 +106,8 @@ class RolePermissionSyncJob implements ShouldQueue
             /** Update all const role */
             Role::whereIn('name', InterfaceClass::ALLROLE)->update(['is_const' => true]);
 
+            InterfaceClass::flushRolePermissionCache();
+
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {
             Log::error('Job Failed', ['jobName' => 'RolePermissionSyncJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);

@@ -10,11 +10,8 @@ use App\Models\PassportClient;
 use App\Models\PassportPersonalAccessClient;
 use App\Models\PassportRefreshToken;
 use App\Models\PassportToken;
-use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
-use App\Observers\PermissionObserver;
-use App\Observers\RoleObserver;
 use App\Policies\UserPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -96,8 +93,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MigrationEnded::class, MigrationEventListener::class);
 
         /** Registering Observers */
-        Role::observe(RoleObserver::class);
-        Permission::observe(PermissionObserver::class);
 
         /** Registering Rate Limits */
         RateLimiter::for('api', function (Request $request) {

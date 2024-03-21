@@ -3,6 +3,7 @@ import axios from "axios";
 
 import { ref, inject, computed, onMounted } from "vue";
 import { useApiStore } from "../AppState";
+import { RoleDataInterface, PermissionDataInterface } from "../AppCommon";
 
 import CmpToast from "../Components/CmpToast.vue";
 import DataTable from "primevue/datatable";
@@ -23,9 +24,9 @@ const typeCreate = ref<boolean>(dialogRef.value.data?.typeCreate);
 const nameData = ref<string>(usermanData?.name);
 const usernameData = ref<string>(usermanData?.username);
 const roleListData = ref<Array<string>>();
-const selectedRoleListData = ref<Array<{ id: string; name: string }>>();
+const selectedRoleListData = ref<Array<RoleDataInterface>>();
 const permListData = ref<Array<string>>();
-const selectedPermListData = ref<Array<{ id: string; name: string }>>();
+const selectedPermListData = ref<Array<PermissionDataInterface>>();
 
 const showDeleted = computed(() => {
     return !typeCreate.value;
@@ -38,10 +39,10 @@ const getUserRoleListData = () => {
             roleListData.value = response.data.roles;
             permListData.value = response.data.permissions;
             selectedRoleListData.value = response.data.roles.filter(
-                (role: { id: string; name: string }) => {
+                (role: RoleDataInterface) => {
                     return (
                         usermanData?.roles?.findIndex(
-                            (userRole: { id: string; name: string }) => {
+                            (userRole: RoleDataInterface) => {
                                 return userRole.name === role.name;
                             },
                         ) !== -1
@@ -49,10 +50,10 @@ const getUserRoleListData = () => {
                 },
             );
             selectedPermListData.value = response.data.permissions.filter(
-                (perm: { id: string; name: string }) => {
+                (perm: PermissionDataInterface) => {
                     return (
                         usermanData?.permissions?.findIndex(
-                            (userPerm: { id: string; name: string }) => {
+                            (userPerm: PermissionDataInterface) => {
                                 return userPerm.name === perm.name;
                             },
                         ) !== -1
@@ -73,12 +74,12 @@ const postUserManData = () => {
             name: nameData.value,
             username: usernameData.value,
             roles: selectedRoleListData.value?.map(
-                (role: { id: string; name: string }) => {
+                (role: RoleDataInterface) => {
                     return role.name;
                 },
             ),
             permissions: selectedPermListData.value?.map(
-                (perm: { id: string; name: string }) => {
+                (perm: PermissionDataInterface) => {
                     return perm.name;
                 },
             ),

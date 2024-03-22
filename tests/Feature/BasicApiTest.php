@@ -12,7 +12,7 @@ class BasicApiTest extends AuthTestCase
      */
     public function test_constant_post_app_const(): void
     {
-        $this->post(route('app-const'))
+        $this->postJson(route('app-const'))
             ->assertOk()
             ->assertJson([
                 'appName' => config('app.name'),
@@ -24,7 +24,7 @@ class BasicApiTest extends AuthTestCase
      */
     public function test_constant_post_log_agent(): void
     {
-        $this->post(route('log-agent'))
+        $this->postJson(route('log-agent'))
             ->assertOk()
             ->assertSee('OK');
     }

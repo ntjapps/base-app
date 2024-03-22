@@ -3,13 +3,32 @@ import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
 
-const toastSuccess = (detailData: string) =>
+const toastSuccess = (detailData: string) => {
     toast.add({
         severity: "success",
         summary: "Success",
         detail: detailData,
         life: 3000,
     });
+};
+
+const toastInfo = (detailData: string) => {
+    toast.add({
+        severity: "info",
+        summary: "Info",
+        detail: detailData,
+        life: 3000,
+    });
+};
+
+const toastWarn = (detailData: string) => {
+    toast.add({
+        severity: "warn",
+        summary: "Warning",
+        detail: detailData,
+        life: 3000,
+    });
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const toastError = (error: any) => {
@@ -65,6 +84,8 @@ const toastError = (error: any) => {
 
 defineExpose({
     toastSuccess,
+    toastInfo,
+    toastWarn,
     toastError,
 });
 </script>

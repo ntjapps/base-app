@@ -3,6 +3,8 @@ import { ref, onBeforeMount } from "vue";
 import { storeToRefs } from "pinia";
 import { useEchoStore } from "../AppState";
 
+import { useMainStore } from "../AppState";
+
 const pusherState = ref<string>("connecting");
 const connected = ref<boolean>(false);
 const connecting = ref<boolean>(true);
@@ -10,6 +12,9 @@ const unavailable = ref<boolean>(false);
 const echoStore = useEchoStore();
 const { laravelEcho } = storeToRefs(echoStore);
 const echo = laravelEcho.value;
+
+const main = useMainStore();
+const { appName } = storeToRefs(main);
 
 const showConnected = () => {
     connected.value = true;
@@ -58,7 +63,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <div class="flex mx-2">
+    <div class="flex mx-2" v-tooltip.bottom="appName + ' Realtime Connection Status'">
         <button v-if="connected" class="btn btn-success text-xs">
             <i class="ico ico-chart-bar w-5 h-5" />
             <span class="m-1">Connected</span>

@@ -57,7 +57,6 @@ class UserManController extends Controller
                 'permissions_array' => Cache::tags([Permission::class])->remember(Permission::class.'-getPermissions-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
                     return $user->getAllPermissions()->sortBy([
                         ['is_const', 'desc'],
-                        ['is_menu', 'asc'],
                         ['name', 'asc'],
                     ])->pluck('name');
                 }),

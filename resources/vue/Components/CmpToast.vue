@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { onBeforeMount } from "vue";
 import { AxiosResponse } from "axios";
 import { useToast } from "primevue/usetoast";
-import { storeToRefs } from "pinia";
-import { useMainStore, useEchoStore } from "../AppState";
 
-const main = useMainStore();
 const toast = useToast();
 
 export type ToastDisplay = {
@@ -99,50 +95,8 @@ const toastDisplay = (detailData: toastData) => {
     }
 };
 
-const echoStore = useEchoStore();
-const { laravelEcho } = storeToRefs(echoStore);
-
 defineExpose({
     toastDisplay,
-});
-
-onBeforeMount(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    main.$subscribe((mutation: any) => {
-        if (typeof mutation.payload?.userId !== "undefined") {
-            if (
-                mutation?.payload?.userId === null ||
-                mutation?.payload?.userId === ""
-            ) {
-                return;
-            }
-
-            laravelEcho.value
-                ?.private("App.Models.User." + mutation.payload.userId)
-                .notification(
-                    (notification: {
-                        type:
-                            | "success"
-                            | "info"
-                            | "warn"
-                            | "error"
-                            | "secondary"
-                            | "contrast"
-                            | undefined;
-                        summary: string | undefined;
-                        message: string | undefined;
-                        life: number | undefined;
-                    }) => {
-                        toast.add({
-                            severity: notification.type,
-                            summary: notification.summary,
-                            detail: notification.message,
-                            life: notification.life,
-                        });
-                    },
-                );
-        }
-    });
 });
 </script>
 

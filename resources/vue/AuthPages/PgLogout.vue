@@ -19,7 +19,12 @@ onBeforeMount(() => {
             router.push(web.landingPage);
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
         });
 });
 </script>

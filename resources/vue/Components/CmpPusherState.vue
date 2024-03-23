@@ -63,7 +63,10 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <div class="flex mx-2" v-tooltip.bottom="appName + ' Realtime Connection Status'">
+    <div
+        v-tooltip.bottom="appName + ' Realtime Connection Status'"
+        class="flex mx-2"
+    >
         <button v-if="connected" class="btn btn-success text-xs">
             <i class="ico ico-chart-bar w-5 h-5" />
             <span class="m-1">Connected</span>

@@ -12,10 +12,19 @@ const postClearCache = () => {
     axios
         .post(api.postClearAppCache)
         .then((response) => {
-            toastchild.value?.toastSuccess(response.data.message);
+            toastchild.value?.toastDisplay({
+                severity: "success",
+                summary: response.data.title,
+                detail: response.data.message,
+            });
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
         });
 };
 </script>

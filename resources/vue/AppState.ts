@@ -49,6 +49,7 @@ export const useMainStore = defineStore("main", {
         appName: import.meta.env.APP_NAME,
         appVersion: "",
         userName: "",
+        userId: "",
         notificationList: [],
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
@@ -71,6 +72,9 @@ export const useMainStore = defineStore("main", {
                     });
                     this.$patch({
                         userName: response.data.userName,
+                    });
+                    this.$patch({
+                        userId: response.data.userId,
                     });
                     this.$patch({
                         menuItems: Object.values(response.data.menuItems),

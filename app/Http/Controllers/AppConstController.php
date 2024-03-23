@@ -62,7 +62,8 @@ class AppConstController extends Controller
             /** App Name */
             'appName' => config('app.name'),
             'appVersion' => InterfaceClass::readApplicationVersion(),
-            'userName' => $user?->name ?? $user?->name ?? '',
+            'userName' => $user?->name ?? '',
+            'userId' => $user?->id ?? '',
 
             /** Check if Auth */
             'isAuth' => $authCheck,

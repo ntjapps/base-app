@@ -56,7 +56,12 @@ const getUserListData = () => {
             loading.value = false;
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
             loading.value = false;
         });
 };

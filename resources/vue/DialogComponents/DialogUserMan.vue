@@ -68,7 +68,12 @@ const getUserRoleListData = () => {
             );
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
         });
 };
 
@@ -92,10 +97,19 @@ const postUserManData = () => {
         })
         .then((response) => {
             dialogRef.value.close();
-            toastchild.value?.toastSuccess(response.data.message);
+            toastchild.value?.toastDisplay({
+                severity: "success",
+                summary: response.data.title,
+                detail: response.data.message,
+            });
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
         });
 };
 
@@ -106,10 +120,19 @@ const postDeleteUserManData = () => {
         })
         .then((response) => {
             dialogRef.value.close();
-            toastchild.value?.toastSuccess(response.data.message);
+            toastchild.value?.toastDisplay({
+                severity: "success",
+                summary: response.data.title,
+                detail: response.data.message,
+            });
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
         });
 };
 
@@ -120,10 +143,19 @@ const postResetPasswordUserMandata = () => {
         })
         .then((response) => {
             dialogRef.value.close();
-            toastchild.value?.toastSuccess(response.data.message);
+            toastchild.value?.toastDisplay({
+                severity: "success",
+                summary: response.data.title,
+                detail: response.data.message,
+            });
         })
         .catch((error) => {
-            toastchild.value?.toastError(error);
+            toastchild.value?.toastDisplay({
+                severity: "error",
+                summary: error.response.data.title,
+                detail: error.response.data.message,
+                response: error,
+            });
         });
 };
 

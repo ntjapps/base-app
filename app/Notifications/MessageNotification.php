@@ -12,7 +12,7 @@ class MessageNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(public string $title, public ?string $message = null, public string $type = 'info')
+    public function __construct(public string $title, public ?string $message = null, public string $severityType = 'info')
     {
         $this->afterCommit();
     }
@@ -37,8 +37,8 @@ class MessageNotification extends Notification
         return [
             'summary' => $this->title,
             'message' => $this->message,
-            'type' => $this->type,
-            'life' => $this->type === 'error' ? 10000 : 5000,
+            'severity' => $this->severityType,
+            'life' => $this->severityType === 'error' ? 10000 : 5000,
         ];
     }
 }

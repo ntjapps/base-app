@@ -15,6 +15,7 @@ class DevSystem
         return match (true) {
             Gate::forUser($user)->allows('hasSuperPermission', User::class) => true,
             config('app.debug') => true,
+            app()->environment('testing') => true,
             default => false,
         };
     }

@@ -98,7 +98,7 @@ export const useMainStore = defineStore("main", {
                             ?.private("App.Models.User." + response.data.userId)
                             .notification(
                                 (notification: {
-                                    type:
+                                    severity:
                                         | "success"
                                         | "info"
                                         | "warn"
@@ -111,7 +111,7 @@ export const useMainStore = defineStore("main", {
                                     life: number | undefined;
                                 }) => {
                                     toast.add({
-                                        severity: notification.type,
+                                        severity: notification.severity,
                                         summary: notification.summary,
                                         detail: notification.message,
                                         life: notification.life,

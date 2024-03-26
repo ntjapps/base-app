@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleManController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Middleware\XssProtection;
@@ -38,11 +39,17 @@ Route::middleware([XssProtection::class])->group(function () {
         Route::post('/post-update-profile', [ProfileController::class, 'updateProfile'])->name('post-update-profile');
 
         Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {
+            /** User Management API */
             Route::post('/get-user-list', [UserManController::class, 'getUserList'])->name('get-user-list');
             Route::post('/get-user-role-perm', [UserManController::class, 'getUserRolePerm'])->name('get-user-role-perm');
             Route::post('/post-user-man-submit', [UserManController::class, 'postUserManSubmit'])->name('post-user-man-submit');
             Route::post('/post-delete-user-man-submit', [UserManController::class, 'postDeleteUserManSubmit'])->name('post-delete-user-man-submit');
             Route::post('/post-reset-password-user-man-submit', [UserManController::class, 'postResetPasswordUserManSubmit'])->name('post-reset-password-user-man-submit');
+
+            /** Role Management API */
+            Route::post('/get-role-list', [RoleManController::class, 'getRoleList'])->name('get-role-list');
+            Route::post('/post-role-submit', [RoleManController::class, 'postRoleSubmit'])->name('post-role-submit');
+            Route::post('/post-delete-role-submit', [RoleManController::class, 'postDeleteRoleSubmit'])->name('post-delete-role-submit');
 
             Route::post('/get-server-logs', [ServerManController::class, 'getServerLogs'])->name('get-server-logs');
             Route::post('/post-clear-app-cache', [ServerManController::class, 'postClearAppCache'])->name('post-clear-app-cache');

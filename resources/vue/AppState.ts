@@ -32,6 +32,9 @@ export const useApiStore = defineStore("api", {
         postDeleteUserManSubmit: "/api/post-delete-user-man-submit",
         postResetPasswordUserManSubmit:
             "/api/post-reset-password-user-man-submit",
+        getRoleList: "/api/get-role-list",
+        postRoleSubmit: "/api/post-role-submit",
+        postDeleteRoleSubmit: "/api/post-delete-role-submit",
     }),
 });
 

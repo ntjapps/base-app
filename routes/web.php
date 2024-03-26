@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleManController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Middleware\ProfileFillIfEmpty;
@@ -46,7 +47,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashController::class, 'dashboardPage'])->name('dashboard');
 
         Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {
+            /** User Management Menu */
             Route::get('/user-man', [UserManController::class, 'userManPage'])->name('user-man');
+
+            /** Role management Menu */
+            Route::get('/role-man', [RoleManController::class, 'roleManPage'])->name('role-man');
+
+            /** Server Management Menu */
             Route::get('/server-logs', [ServerManController::class, 'serverLogs'])->name('server-logs');
         });
     });

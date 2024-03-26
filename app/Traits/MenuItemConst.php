@@ -49,6 +49,12 @@ trait MenuItemConst
             ]);
 
             array_push($childMenu, [
+                'label' => 'Role Management',
+                'icon' => 'pi pi-briefcase',
+                'url' => parse_url(route('role-man'), PHP_URL_PATH),
+            ]);
+
+            array_push($childMenu, [
                 'label' => 'Server Queue - Horizon',
                 'icon' => 'pi pi-bolt',
                 'url' => parse_url(route('horizon.index'), PHP_URL_PATH),

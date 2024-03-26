@@ -8,6 +8,7 @@ use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Middleware\ProfileFillIfEmpty;
 use Illuminate\Support\Facades\Route;
+use Laravel\Passport\Http\Controllers\AuthorizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,4 +58,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/server-logs', [ServerManController::class, 'serverLogs'])->name('server-logs');
         });
     });
+});
+
+/** Passport Routes */
+Route::prefix('api/oauth')->group(function () {
+    Route::get('/authorize', [AuthorizationController::class, 'authorize'])->name('passport.authorizations.authorize');
 });

@@ -8,6 +8,9 @@ use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
+use Laravel\Passport\Http\Controllers\AuthorizationController;
+use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
+use Laravel\Passport\Http\Controllers\ClientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,5 +57,16 @@ Route::middleware([XssProtection::class])->group(function () {
             Route::post('/get-server-logs', [ServerManController::class, 'getServerLogs'])->name('get-server-logs');
             Route::post('/post-clear-app-cache', [ServerManController::class, 'postClearAppCache'])->name('post-clear-app-cache');
         });
+    });
+
+    /** Passport Routes */
+    Route::prefix('oauth')->middleware(['throttle:api-secure'])->group(function () {
+        Route::post('/post-oauth-token', [AuthorizationController::class, 'issueToken'])->name('passport.token');
+
+        /** Passport Client Management */
+        Route::post('/post-get-oauth-client', [ClientController::class, 'forUser'])->name('passport.clients.index');
+        Route::post('/post-submit-oauth-client', [ClientController::class, 'store'])->name('passport.clients.store');
+        Route::post('/post-update-oauth-client/{clientId}', [ClientController::class, 'update'])->name('passport.clients.update');
+        Route::post('/post-delete-oauth-client/{clientId}', [ClientController::class, 'destroy'])->name('passport.clients.destroy');
     });
 });

@@ -42,6 +42,9 @@ class AppServiceProvider extends ServiceProvider
 
             Telescope::night();
         }
+
+        /** Register Passport */
+        Passport::ignoreRoutes();
     }
 
     /**
@@ -73,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
          */
         Passport::cookie('api_token_cookie');
         Passport::hashClientSecrets();
-        Passport::tokensExpireIn(InterfaceClass::getPassportTokenLifetime());
+        Passport::tokensExpireIn(InterfaceClass::getPassportAuthTokenLifetime());
         Passport::refreshTokensExpireIn(InterfaceClass::getPassportRefreshTokenLifetime());
         Passport::personalAccessTokensExpireIn(InterfaceClass::getPassportTokenLifetime());
 

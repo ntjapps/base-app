@@ -43,7 +43,7 @@ class PassportManController extends Controller
 
         $client = Passport::client()->orderBy('name', 'asc')->get()->map(function (Client $client) {
             return collect($client)->merge([
-                'allowed_action' => $client->id !== config('passport.personal_access_client_name.id') && $client->id !== config('passport.client_credentials_grant_client.id') ? true : false,
+                'allowed_action' => $client->id !== config('passport.personal_access_client.id') && $client->id !== config('passport.client_credentials_grant_client.id') ? true : false,
             ]);
         });
 

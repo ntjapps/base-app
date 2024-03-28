@@ -35,6 +35,12 @@ export const useApiStore = defineStore("api", {
         getRoleList: "/api/get-role-list",
         postRoleSubmit: "/api/post-role-submit",
         postDeleteRoleSubmit: "/api/post-delete-role-submit",
+        postGetOauthClient: "/api/oauth/post-get-oauth-client",
+        postSubmitOauthClient: "/api/oauth/post-submit-oauth-client",
+        postUpdateOauthClient: "/api/oauth/post-update-oauth-client",
+        postDeleteOauthClient: "/api/oauth/post-delete-oauth-client",
+        postResetOauthSecret: "/api/oauth/post-reset-oauth-secret",
+        postCreateOauthClient: "/api/oauth/post-create-oauth-client",
     }),
 });
 

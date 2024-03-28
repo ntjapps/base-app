@@ -2,15 +2,14 @@
 
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PassportManController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleManController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
-use Laravel\Passport\Http\Controllers\AuthorizationController;
-use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
-use Laravel\Passport\Http\Controllers\ClientController;
+use Laravel\Passport\Passport;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,17 +55,15 @@ Route::middleware([XssProtection::class])->group(function () {
 
             Route::post('/get-server-logs', [ServerManController::class, 'getServerLogs'])->name('get-server-logs');
             Route::post('/post-clear-app-cache', [ServerManController::class, 'postClearAppCache'])->name('post-clear-app-cache');
+
+            Route::prefix('oauth')->group(function () {
+                /** Passport Client Management */
+                Route::post('/post-get-oauth-client', [PassportManController::class, 'listPassportClients'])->name('passport.clients.index');
+                Route::post('/post-reset-oauth-secret', [PassportManController::class, 'resetClientSecret'])->name('passport.clients.reset-secret');
+                Route::post('/post-delete-oauth-client', [PassportManController::class, 'deletePassportClient'])->name('passport.clients.destroy');
+                Route::post('/post-update-oauth-client', [PassportManController::class, 'updatePassportClient'])->name('passport.clients.update');
+                Route::post('/post-create-oauth-client', [PassportManController::class, 'createPassportClient'])->name('passport.clients.store');
+            });
         });
-    });
-
-    /** Passport Routes */
-    Route::prefix('oauth')->middleware(['throttle:api-secure'])->group(function () {
-        Route::post('/post-oauth-token', [AuthorizationController::class, 'issueToken'])->name('passport.token');
-
-        /** Passport Client Management */
-        Route::post('/post-get-oauth-client', [ClientController::class, 'forUser'])->name('passport.clients.index');
-        Route::post('/post-submit-oauth-client', [ClientController::class, 'store'])->name('passport.clients.store');
-        Route::post('/post-update-oauth-client/{clientId}', [ClientController::class, 'update'])->name('passport.clients.update');
-        Route::post('/post-delete-oauth-client/{clientId}', [ClientController::class, 'destroy'])->name('passport.clients.destroy');
     });
 });

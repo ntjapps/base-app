@@ -6,6 +6,7 @@ const serverPulse = "/pulse";
 const serverLogs = "/server-logs";
 const userMan = "/user-man";
 const roleMan = "/role-man";
+const passportMan = "/passport-man";
 
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { defineStore } from "pinia";
@@ -48,6 +49,11 @@ const routes: Array<RouteRecordRaw> = [
         name: "roleMan",
         component: () => import("./SuperPages/PgRoleMan.vue"),
     },
+    {
+        path: passportMan,
+        name: "passportMan",
+        component: () => import("./SuperPages/PgPassport.vue"),
+    },
 ];
 
 export const router = createRouter({
@@ -67,5 +73,6 @@ export const useWebStore = defineStore("web", {
         serverLogs: serverLogs,
         userMan: userMan,
         roleMan: roleMan,
+        passportMan: passportMan,
     }),
 });

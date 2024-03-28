@@ -42,9 +42,6 @@ class AppServiceProvider extends ServiceProvider
 
             Telescope::night();
         }
-
-        /** Register Passport */
-        Passport::ignoreRoutes();
     }
 
     /**

@@ -34,6 +34,25 @@ return [
         ],
     ],
 
+    'passport' => [
+        'reset' => [
+            'title' => 'Client secret reset',
+            'message' => 'Client secret reset successfully.',
+        ],
+        'delete' => [
+            'title' => 'Client deleted',
+            'message' => 'Client deleted successfully.',
+        ],
+        'update' => [
+            'title' => 'Client updated',
+            'message' => 'Client updated successfully.',
+        ],
+        'create' => [
+            'title' => 'Client created',
+            'message' => 'Client created successfully.',
+        ],
+    ],
+
     'profile' => [
         'update' => [
             'title' => 'Profile updated',

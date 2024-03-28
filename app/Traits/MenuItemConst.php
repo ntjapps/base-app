@@ -55,6 +55,12 @@ trait MenuItemConst
             ]);
 
             array_push($childMenu, [
+                'label' => 'Passport Management',
+                'icon' => 'pi pi-key',
+                'url' => parse_url(route('passport-man'), PHP_URL_PATH),
+            ]);
+
+            array_push($childMenu, [
                 'label' => 'Server Queue - Horizon',
                 'icon' => 'pi pi-bolt',
                 'url' => parse_url(route('horizon.index'), PHP_URL_PATH),

@@ -133,6 +133,20 @@ export type UserDataInterface = {
     roles_array: Array<string>;
 };
 
+export type ClientListDataInterface = {
+    id: string;
+    name: string;
+    password_client: boolean;
+    personal_access_client: boolean;
+    provider: null | string;
+    redirect: string;
+    revoked: boolean;
+    created_at: string;
+    updated_at: string;
+    user_id: null | string;
+    allowed_action: boolean;
+};
+
 export {
     timeGreetings,
     timeView,

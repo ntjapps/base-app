@@ -118,7 +118,7 @@ onBeforeMount(() => {
                 </div>
                 <div class="flex justify-end w-full my-auto">
                     <button
-                        class="btn btn-primary mx-2"
+                        class="btn btn-accent mx-2"
                         @click="getClientListData"
                     >
                         <i class="pi pi-refresh"></i>

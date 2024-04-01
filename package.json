@@ -42,7 +42,7 @@
         "postcss": "^8.4.38",
         "postcss-convert-values": "^6.0.2",
         "prettier": "^3.2.5",
-        "primeicons": "^6.0.1",
+        "primeicons": "^7.0.0",
         "primevue": "^3.50.0",
         "pusher-js": "^8.4.0-rc2",
         "sass": "^1.71.0",

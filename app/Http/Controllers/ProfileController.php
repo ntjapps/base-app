@@ -26,7 +26,8 @@ class ProfileController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('dash-pg.profile', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Profile',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }

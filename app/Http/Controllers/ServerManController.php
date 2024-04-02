@@ -28,7 +28,8 @@ class ServerManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('super-pg.serverlog', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Server Logs',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }

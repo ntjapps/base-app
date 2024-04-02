@@ -32,7 +32,8 @@ class UserManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open user role management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('super-pg.userman', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'User Role Management',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }

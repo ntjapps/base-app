@@ -34,7 +34,8 @@ class RoleManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open Role Management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('super-pg.roleman', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Role Management',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }

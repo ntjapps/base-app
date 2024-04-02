@@ -1,7 +1,8 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import laravel from "laravel-vite-plugin";
-import "dotenv/config";
+
+process.env = { ...process.env, ...loadEnv("", process.cwd()) };
 
 export default defineConfig({
     server: {

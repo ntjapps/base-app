@@ -21,7 +21,8 @@ class DashController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User accessed dashboard page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('dash-pg.dashboard', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Dashboard',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }

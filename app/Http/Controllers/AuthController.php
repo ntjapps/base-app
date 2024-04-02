@@ -30,7 +30,8 @@ class AuthController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('Computer access login page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('auth-pg.login', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Login',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }

@@ -31,7 +31,6 @@
         "cypress": "^13.6.4",
         "cypress-vite": "^1.5.0",
         "daisyui": "^4.8.0",
-        "dotenv": "^16.4.5",
         "eslint": "^8.56.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.1.3",

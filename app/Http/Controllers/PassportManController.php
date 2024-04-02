@@ -28,7 +28,8 @@ class PassportManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open passport management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
-        return view('super-pg.passport', [
+        return view('base-components.base-vue', [
+            'pageTitle' => 'Passport Management',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }

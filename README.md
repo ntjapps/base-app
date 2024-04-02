@@ -2,4 +2,4 @@
 
 ## Run this template
 
-```docker compose -f .github/docker-dev.yaml up```
+`docker compose -f .github/docker-dev.yaml up`

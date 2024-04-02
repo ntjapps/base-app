@@ -12,6 +12,7 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - ../storage/postgresql:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
 
   base_ols:
     image: ghcr.io/ntj125app/openlitespeed:latest-pcov
@@ -72,6 +73,23 @@ services:
       - TZ=Asia/Jakarta
     volumes:
       - ../storage/redis:/data
+
+  base_soketi:
+    image: quay.io/soketi/soketi:1.6-16-alpine
+    command: ["soketi", "start", "--config=/soketi-cfg/config.json"]
+    hostname: base_soketi
+    ports:
+      - target: 6001
+        published: 6001
+        protocol: tcp
+        mode: host
+    environment:
+      - TZ=Asia/Jakarta
+      - SOKETI_METRICS_ENABLED=0
+      - SOKETI_MODE=server
+      - SOKETI_HTTP_ACCEPT_TRAFFIC_MEMORY_THRESHOLD=75
+    volumes:
+      - ./soketi:/soketi-cfg
 
   base_vite:
     image: ghcr.io/ntj125app/npm-custom

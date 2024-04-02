@@ -1,0 +1,96 @@
+services:
+  base_postgres: # FAIR WARNING, POSTGRESQL have limited support for Case Sensitivity!
+    image: postgres:alpine
+    hostname: base_postgres
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+        mode: host
+    environment:
+      - TZ=Asia/Jakarta
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ../storage/postgresql:/var/lib/postgresql/data
+
+  base_ols:
+    image: ghcr.io/ntj125app/openlitespeed:latest-pcov
+    hostname: base_ols
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+      - ../public:/var/www/vhosts/localhost/html
+
+  base_worker:
+    image: ghcr.io/ntj125app/openlitespeed:latest-pcov
+    command: ["/usr/bin/php", "/var/www/vhosts/localhost/artisan", "horizon"]
+    user: 65534:65534
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+      - ../public:/var/www/vhosts/localhost/html
+
+  base_scheduler:
+    image: ghcr.io/ntj125app/openlitespeed:latest-pcov
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "/usr/bin/php /var/www/vhosts/localhost/artisan system:start ; /usr/bin/php /var/www/vhosts/localhost/artisan schedule:work",
+      ]
+    user: 65534:65534
+    working_dir: /var/www/vhosts/localhost/
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+      - ../public:/var/www/vhosts/localhost/html
+
+  base_redis:
+    image: redis:alpine
+    hostname: base_redis
+    command:
+      [
+        "redis-server",
+        "--loglevel",
+        "warning",
+        "--stop-writes-on-bgsave-error",
+        "no",
+        "--maxmemory",
+        "412mb",
+        "--maxmemory-policy",
+        "allkeys-lru",
+      ]
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../storage/redis:/data
+
+  base_vite:
+    image: ghcr.io/ntj125app/npm-custom
+    command: ["npm", "run", "dev"]
+    working_dir: /var/www/vhosts/localhost
+    ports:
+      - target: 5173
+        published: 5173
+        protocol: tcp
+        mode: host
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../:/var/www/vhosts/localhost
+
+networks:
+  default:
+    name: compose-net
+    attachable: true
+    ipam:
+      config:
+        - subnet: "192.168.25.0/24"

@@ -22,7 +22,7 @@ class PermissionPrivilegeObserver
     {
         Permission::firstOrCreate([
             'name' => $permissionPrivilege->id,
-            'guard_name' => (new Permission())->getDefaultGuardName(),
+            'guard_name' => (new Permission())->guard_name,
             'ability_type' => PermissionPrivilege::class,
             'ability_id' => $permissionPrivilege->id,
         ]);

@@ -22,7 +22,7 @@ class PermissionMenuObserver
     {
         Permission::firstOrCreate([
             'name' => $permissionMenu->id,
-            'guard_name' => (new Permission())->getDefaultGuardName(),
+            'guard_name' => (new Permission())->guard_name,
             'ability_type' => PermissionMenu::class,
             'ability_id' => $permissionMenu->id,
         ]);

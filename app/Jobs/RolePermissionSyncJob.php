@@ -100,12 +100,6 @@ class RolePermissionSyncJob implements ShouldQueue
                 }
             }
 
-            /** Update all const permission */
-            Permission::whereIn('name', InterfaceClass::ALLPERM)->update(['is_const' => true]);
-
-            /** Update all const role */
-            Role::whereIn('name', InterfaceClass::ALLROLE)->update(['is_const' => true]);
-
             InterfaceClass::flushRolePermissionCache();
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);

@@ -49,7 +49,7 @@ class UserManController extends Controller
         $data = User::with(['roles' => function ($query) {
             return $query->orderBy('name');
         }, 'permissions' => function ($query) {
-            return $query->orderBy('is_const', 'desc')->orderBy('name');
+            return $query->orderBy('name');
         }])->orderBy('username')->get()->map(function (User $user) {
             return collect($user)->merge([
                 'roles_array' => Cache::tags([Role::class])->remember(Role::class.'-getRoles-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
@@ -57,7 +57,6 @@ class UserManController extends Controller
                 }),
                 'permissions_array' => Cache::tags([Permission::class])->remember(Permission::class.'-getPermissions-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
                     return $user->getAllPermissions()->sortBy([
-                        ['is_const', 'desc'],
                         ['name', 'asc'],
                     ])->pluck('name');
                 }),
@@ -80,7 +79,7 @@ class UserManController extends Controller
                 return Role::orderBy('name')->get();
             }),
             'permissions' => Cache::tags([Permission::class])->remember(Permission::class.'-orderBy-name', Carbon::now()->addYear(), function () {
-                return Permission::orderBy('is_const', 'desc')->orderBy('name')->get();
+                return Permission::orderBy('name')->get();
             }),
             'permissions_const' => Cache::tags([Permission::class])->remember(Permission::class.'-const-orderBy-name', Carbon::now()->addYear(), function () {
                 return Permission::whereIn('name', InterfaceClass::ALLPERM)->orderBy('name')->get();

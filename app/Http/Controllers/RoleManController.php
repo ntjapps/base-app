@@ -49,12 +49,11 @@ class RoleManController extends Controller
         Log::debug('User is requesting get role list for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
 
         $data = Role::with(['permissions' => function ($query) {
-            return $query->orderBy('is_const', 'desc')->orderBy('name');
+            return $query->orderBy('name');
         }])->orderBy('name')->get()->map(function (Role $role) {
             return collect($role)->merge([
                 'permissions_array' => Cache::tags([Permission::class])->remember(Permission::class.'-getPermissionsByRole-'.$role->id, Carbon::now()->addYear(), function () use ($role) {
                     return $role->getAllPermissions()->sortBy([
-                        ['is_const', 'desc'],
                         ['name', 'asc'],
                     ])->pluck('name');
                 }),

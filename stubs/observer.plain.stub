@@ -1,15 +1,9 @@
 <?php
 
 namespace {{ namespace }};
+use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
-class {{ class }}
+class {{ class }} implements ShouldHandleEventsAfterCommit
 {
-    /**
-     * Handle events after all transactions are committed.
-     *
-     * @var bool
-     */
-    public $afterCommit = true;
-
     //
 }

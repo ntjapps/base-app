@@ -11,5 +11,9 @@ interface PermissionConst
         self::SUPER,
     ];
 
+    public const PRIVILEGEPERM = [
+        self::SUPER,
+    ];
+
     public const SUPER = 'root';
 }

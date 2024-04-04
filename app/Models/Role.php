@@ -23,7 +23,11 @@ class Role extends SpatieRole
      *
      * @var array<int, string>
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'name',
+        'guard_name',
+        'role_types',
+    ];
 
     /**
      * The attributes that should be hidden for serialization.

@@ -112,6 +112,11 @@ export type RoleDataInterface = {
 export type PermissionDataInterface = {
     id: string;
     name: string;
+    ability_type: string;
+    ability: {
+        id: string;
+        title: string;
+    }
 };
 
 export type RoleListDataInterface = {

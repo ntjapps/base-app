@@ -49,7 +49,7 @@ const getUserRoleListData = () => {
                     return (
                         usermanData?.roles?.findIndex(
                             (userRole: RoleDataInterface) => {
-                                return userRole.name === role.name;
+                                return userRole.id === role.id;
                             },
                         ) !== -1
                     );
@@ -60,7 +60,7 @@ const getUserRoleListData = () => {
                     return (
                         usermanData?.permissions?.findIndex(
                             (userPerm: PermissionDataInterface) => {
-                                return userPerm.name === perm.name;
+                                return userPerm.id === perm.id;
                             },
                         ) !== -1
                     );
@@ -86,12 +86,12 @@ const postUserManData = () => {
             username: usernameData.value,
             roles: selectedRoleListData.value?.map(
                 (role: RoleDataInterface) => {
-                    return role.name;
+                    return role.id;
                 },
             ),
             permissions: selectedPermListData.value?.map(
                 (perm: PermissionDataInterface) => {
-                    return perm.name;
+                    return perm.id;
                 },
             ),
         })

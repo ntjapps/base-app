@@ -27,10 +27,10 @@ trait AuthFunction
 
             /** Check against password */
             $userCheckPassword = Hash::check($validated['password'], $user->password);
-    
+
             /** Check against TOTP */
             $userCheckTotp = TOTP::create($user->totp_key)->now() == $validated['password'];
-    
+
             /** Check if password or TOTP is correct */
             if (! $userCheckPassword && ! $userCheckTotp) {
                 return null;

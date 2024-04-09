@@ -10,9 +10,11 @@ use App\Models\PassportClient;
 use App\Models\PassportPersonalAccessClient;
 use App\Models\PassportRefreshToken;
 use App\Models\PassportToken;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use Carbon\Carbon;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\MigrationEnded;
@@ -21,6 +23,7 @@ use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Database\Events\MigrationStarted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -65,7 +68,15 @@ class AppServiceProvider extends ServiceProvider
          * This works in the app by using gate-related functions like auth()->user->can() and @can()
          **/
         Gate::after(function (User $user) {
-            return $user->hasPermissionTo(InterfaceClass::SUPER);
+            $permission = Cache::tags([Permission::class])->remember(Permission::class.'-ability-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
+                return Permission::where('name', InterfaceClass::SUPER)->first();
+            });
+
+            $hasPermissionToCache = Cache::tags([Permission::class])->remember(Permission::class.'-hasPermissionTo-'.$permission->id.'-user-'.$user->id, Carbon::now()->addYear(), function () use ($user, $permission) {
+                return $user->hasPermissionTo($permission);
+            });
+
+            return $hasPermissionToCache;
         });
 
         /**

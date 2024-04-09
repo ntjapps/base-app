@@ -12,5 +12,9 @@ Artisan::command('horizon:clear:all', function () {
 
     $this->info('All horizon cleared');
 
+    Redis::connection('horizon_redis')->flushdb();
+
+    $this->info('All horizon redis cleared');
+
     Log::alert('Console horizon:clear:all executed', ['appName' => config('app.name')]);
 })->purpose('Delete all of the jobs from all queues');

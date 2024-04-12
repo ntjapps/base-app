@@ -1288,16 +1288,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.2.0",
+            "version": "v11.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "a1750156b671f37cba702380107e2d22161c31e3"
+                "reference": "3b87d0767e9cbddec46480d883010ba720e50dea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/a1750156b671f37cba702380107e2d22161c31e3",
-                "reference": "a1750156b671f37cba702380107e2d22161c31e3",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/3b87d0767e9cbddec46480d883010ba720e50dea",
+                "reference": "3b87d0767e9cbddec46480d883010ba720e50dea",
                 "shasum": ""
             },
             "require": {
@@ -1489,20 +1489,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-04-02T14:01:33+00:00"
+            "time": "2024-04-10T15:13:49+00:00"
         },
         {
             "name": "laravel/horizon",
-            "version": "v5.23.2",
+            "version": "v5.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/horizon.git",
-                "reference": "96d154340f1223bcc161ea7cee355c8fc29ff81e"
+                "reference": "ae6bba835779db19458db831bab73b0d2a0e34e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/horizon/zipball/96d154340f1223bcc161ea7cee355c8fc29ff81e",
-                "reference": "96d154340f1223bcc161ea7cee355c8fc29ff81e",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/ae6bba835779db19458db831bab73b0d2a0e34e2",
+                "reference": "ae6bba835779db19458db831bab73b0d2a0e34e2",
                 "shasum": ""
             },
             "require": {
@@ -1566,22 +1566,22 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/horizon/issues",
-                "source": "https://github.com/laravel/horizon/tree/v5.23.2"
+                "source": "https://github.com/laravel/horizon/tree/v5.24.0"
             },
-            "time": "2024-03-23T12:11:34+00:00"
+            "time": "2024-04-09T06:56:30+00:00"
         },
         {
             "name": "laravel/passport",
-            "version": "v12.0.2",
+            "version": "v12.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/passport.git",
-                "reference": "21099f1aff81706781578a19335d8a4c7c96422a"
+                "reference": "b33d6fce4268d997299547c6e714bada2dab9888"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/passport/zipball/21099f1aff81706781578a19335d8a4c7c96422a",
-                "reference": "21099f1aff81706781578a19335d8a4c7c96422a",
+                "url": "https://api.github.com/repos/laravel/passport/zipball/b33d6fce4268d997299547c6e714bada2dab9888",
+                "reference": "b33d6fce4268d997299547c6e714bada2dab9888",
                 "shasum": ""
             },
             "require": {
@@ -1644,7 +1644,7 @@
                 "issues": "https://github.com/laravel/passport/issues",
                 "source": "https://github.com/laravel/passport"
             },
-            "time": "2024-03-21T18:44:57+00:00"
+            "time": "2024-04-05T15:09:10+00:00"
         },
         {
             "name": "laravel/pennant",
@@ -1724,16 +1724,16 @@
         },
         {
             "name": "laravel/prompts",
-            "version": "v0.1.17",
+            "version": "v0.1.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/prompts.git",
-                "reference": "8ee9f87f7f9eadcbe21e9e72cd4176b2f06cd5b5"
+                "reference": "3b5e6b03f1f1175574b5a32331d99c9819da9848"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/prompts/zipball/8ee9f87f7f9eadcbe21e9e72cd4176b2f06cd5b5",
-                "reference": "8ee9f87f7f9eadcbe21e9e72cd4176b2f06cd5b5",
+                "url": "https://api.github.com/repos/laravel/prompts/zipball/3b5e6b03f1f1175574b5a32331d99c9819da9848",
+                "reference": "3b5e6b03f1f1175574b5a32331d99c9819da9848",
                 "shasum": ""
             },
             "require": {
@@ -1775,9 +1775,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/prompts/issues",
-                "source": "https://github.com/laravel/prompts/tree/v0.1.17"
+                "source": "https://github.com/laravel/prompts/tree/v0.1.18"
             },
-            "time": "2024-03-13T16:05:43+00:00"
+            "time": "2024-04-04T17:41:50+00:00"
         },
         {
             "name": "laravel/pulse",
@@ -4660,16 +4660,16 @@
         },
         {
             "name": "sentry/sentry",
-            "version": "4.6.1",
+            "version": "4.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-php.git",
-                "reference": "5a94184175e5830b589bf923da8c9c3af2c0f409"
+                "reference": "d6769b2a5e6bf19ed3bbfbf52328ceaf8e6fcb1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/5a94184175e5830b589bf923da8c9c3af2c0f409",
-                "reference": "5a94184175e5830b589bf923da8c9c3af2c0f409",
+                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/d6769b2a5e6bf19ed3bbfbf52328ceaf8e6fcb1f",
+                "reference": "d6769b2a5e6bf19ed3bbfbf52328ceaf8e6fcb1f",
                 "shasum": ""
             },
             "require": {
@@ -4733,7 +4733,7 @@
             ],
             "support": {
                 "issues": "https://github.com/getsentry/sentry-php/issues",
-                "source": "https://github.com/getsentry/sentry-php/tree/4.6.1"
+                "source": "https://github.com/getsentry/sentry-php/tree/4.7.0"
             },
             "funding": [
                 {
@@ -4745,7 +4745,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2024-03-08T08:18:09+00:00"
+            "time": "2024-04-10T13:22:13+00:00"
         },
         {
             "name": "sentry/sentry-laravel",

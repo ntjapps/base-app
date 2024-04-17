@@ -18,7 +18,7 @@ if (class_exists(\Laravel\Passport\PassportServiceProvider::class)) {
 }
 
 if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
-    Schedule::command('telescope:prune')->everyMinute()->withoutOverlapping();
+    Schedule::command('telescope:prune')->everyFifteenMinutes()->withoutOverlapping();
 }
 
 if (class_exists(\Laravel\Pulse\PulseServiceProvider::class)) {

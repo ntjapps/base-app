@@ -84,6 +84,19 @@ services:
     volumes:
       - ../storage/redis:/data
 
+  base_memcached:
+    image: memcached:alpine
+    hostname: base_memcached
+    command: ["memcached", "-m", "412", "-vv"]
+    deploy:
+      replicas: 1
+      endpoint_mode: dnsrr
+      resources:
+        limits:
+          memory: 512M
+    environment:
+      - TZ=Asia/Jakarta
+
   base_soketi:
     image: quay.io/soketi/soketi:1.6-16-alpine
     command: ["soketi", "start", "--config=/soketi-cfg/config.json"]

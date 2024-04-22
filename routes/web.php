@@ -26,6 +26,15 @@ Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['status' => 'success', 'csrf_token' => app()->environment('production') ? 'token' : csrf_token()]);
 });
 
+Route::get('/app/horizoncheck', function () {
+    $result = Artisan::call('horizon:status');
+    if ($result === 0) {
+        return response()->json(['status' => 'success', 'message' => 'Horizon is running'], 200);
+    } else {
+        return response()->json(['status' => 'error', 'message' => 'Horizon is not running'], 500);
+    }
+});
+
 /** Route for login redirect */
 Route::get('/login-redirect', function () {
     return redirect(route('landing-page'));

@@ -25,7 +25,7 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d
 
   base_ols:
-    image: ntj125app/openlitespeed:latest-pcov
+    image: ghcr.io/ntj125app/openlitespeed:latest-pcov
     hostname: base_ols
     ports:
       - target: 80
@@ -39,7 +39,7 @@ services:
       - ../public:/var/www/vhosts/localhost/html
 
   base_worker:
-    image: ntj125app/openlitespeed:latest-pcov
+    image: ghcr.io/ntj125app/openlitespeed:latest-pcov
     command: ["/usr/bin/php", "/var/www/vhosts/localhost/artisan", "horizon"]
     user: 65534:65534
     environment:
@@ -49,7 +49,7 @@ services:
       - ../public:/var/www/vhosts/localhost/html
 
   base_scheduler:
-    image: ntj125app/openlitespeed:latest-pcov
+    image: ghcr.io/ntj125app/openlitespeed:latest-pcov
     command:
       [
         "/bin/bash",
@@ -115,7 +115,7 @@ services:
       - ./soketi:/soketi-cfg
 
   base_vite:
-    image: ntj125app/npm-custom
+    image: ghcr.io/ntj125app/npm-custom
     command: ["npm", "run", "dev"]
     working_dir: /var/www/vhosts/localhost
     ports:

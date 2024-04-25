@@ -600,4 +600,10 @@ export default {
             ],
         }),
     },
+    start: {
+        class: "mr-auto",
+    },
+    end: {
+        class: "ml-auto",
+    },
 };

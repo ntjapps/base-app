@@ -395,7 +395,7 @@ export default {
                 "cursor-col-resize",
             ],
         },
-        rowCheckbox: {
+        rowCheckbox: ({ props, context, instance }) => ({
             root: {
                 class: [
                     "relative",
@@ -416,7 +416,7 @@ export default {
                     "select-none",
                 ],
             },
-            box: ({ props, context }) => ({
+            box: {
                 class: [
                     // Alignment
                     "flex",
@@ -454,7 +454,7 @@ export default {
                     "transition-colors",
                     "duration-200",
                 ],
-            }),
+            },
             input: {
                 class: [
                     "peer",
@@ -493,14 +493,18 @@ export default {
                     "h-4",
 
                     // Colors
-                    "text-white dark:text-surface-900",
+                    {
+                        "text-white dark:text-surface-900":
+                            !instance.partialChecked,
+                        "text-gray dark:text-white": instance.partialChecked,
+                    },
 
                     // Transitions
                     "transition-all",
                     "duration-200",
                 ],
             },
-        },
+        }),
 
         transition: {
             enterFromClass: "opacity-0 scale-y-[0.8]",

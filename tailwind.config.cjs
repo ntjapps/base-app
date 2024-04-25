@@ -1,5 +1,5 @@
 module.exports = {
-    plugins: [require("daisyui"), require('flowbite/plugin')],
+    plugins: [require("daisyui"), require("flowbite/plugin")],
     content: [
         "resources/views/*.php",
         "resources/views/**/*.php",

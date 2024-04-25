@@ -116,7 +116,7 @@ services:
 
   base_vite:
     image: ghcr.io/ntj125app/npm-custom
-    command: ["npm", "run", "dev"]
+    command: ["pnpm", "run", "dev"]
     working_dir: /var/www/vhosts/localhost
     ports:
       - target: 5173

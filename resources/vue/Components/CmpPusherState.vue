@@ -25,7 +25,6 @@ const showConnected = () => {
         if (error.status >= 400 && error.status < 500) {
             console.error("Pusher error", error);
         }
-        window.location.reload();
     });
 };
 

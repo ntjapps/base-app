@@ -1,5 +1,5 @@
 # To be used with Google Cloud Build. You cannot run this Dockerfile alone because /workspace doesn't exist.
-FROM ghcr.io/ntj125app/openlitespeed:latest
+FROM ntj125app/openlitespeed:latest
 
 RUN rm -rf /var/www/vhosts/localhost && \
     mkdir -p /var/www/vhosts

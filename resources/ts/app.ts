@@ -13,8 +13,3 @@ import "../vue/AppVue";
  * Load static assets
  */
 import.meta.glob(["../images/**", "../fonts/**"]);
-
-/**
- * Load flowbite assets
- */
-import "flowbite";

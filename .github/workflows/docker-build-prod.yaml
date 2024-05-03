@@ -40,11 +40,6 @@ jobs:
               ls -lah .env*
           fi
 
-          if [ ! -f database/database.sqlite ]; then
-              touch database/database.sqlite
-              php artisan migrate --graceful --ansi --force --database=sqlite
-          fi
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -80,7 +75,6 @@ jobs:
           sudo ln -s $(pwd) /var/www/vhosts/localhost
           cd /var/www/vhosts/localhost
           pwd && ls -lah
-          php artisan migrate --graceful --ansi --force
           php artisan event:cache
           php artisan config:cache
 

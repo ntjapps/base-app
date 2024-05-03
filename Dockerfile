@@ -9,6 +9,7 @@ COPY --chown=65534:65534 . /var/www/vhosts/localhost
 
 RUN rm -rf /var/www/vhosts/localhost/Dockerfile && \
     ln -sf /var/www/vhosts/localhost/public /var/www/vhosts/localhost/html && \
+    chown 65534:65534 /var/www/vhosts/localhost/html && \
     ls -lah /var/www/vhosts/localhost
 
 VOLUME ["/var/www/vhosts/localhost/storage"]

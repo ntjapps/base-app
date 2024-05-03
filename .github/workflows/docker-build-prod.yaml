@@ -30,7 +30,7 @@ jobs:
       - name: Composer Install
         uses: ramsey/composer-install@v3
         with:
-          composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev"
+          composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --no-suggest --prefer-dist"
 
       - name: Create .env file
         run: |
@@ -69,7 +69,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --prod
 
       - name: NPM Build
         run: pnpm dlx vite build

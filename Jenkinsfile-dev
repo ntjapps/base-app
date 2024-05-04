@@ -1,0 +1,119 @@
+pipeline {
+    agent any
+
+    environment {
+        ENV_KEY = credentials('env-key')
+    }
+
+    stages {
+        stage('Setup PHP, Node.js, Composer') {
+            parallel {
+                stage('Setup PHP') {
+                    steps {
+                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost ntj125app/openlitespeed:latest-pcov php -v'
+                    }
+                }
+
+                stage('Setup Node.js') {
+                    steps {
+                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom pnpm -v'
+                    }
+                }
+
+                stage('Setup Composer') {
+                    steps {
+                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/composer-custom composer -v'
+                    }
+                }
+            }
+        }
+
+        stage('Install Composer & Node.js Dependencies') {
+            parallel {
+                stage('Install PHP Dependencies') {
+                    steps {
+                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/composer-custom install --ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist'
+                    }
+                }
+
+                stage('Install Node.js Dependencies') {
+                    steps {
+                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom pnpm install --prod'
+                    }
+                }
+            }
+        }
+
+        stage('Create .env file') {
+            steps {
+                sh '''
+                    if [ -f .env.dev.encrypted ]; then
+                        docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost ntj125app/openlitespeed:latest-pcov php artisan env:decrypt --env=dev --key=$ENV_KEY
+                        ln -sf .env.dev .env
+                    fi
+                '''
+            }
+        }
+
+        stage('NPM Build, Event Cache, Config Cache') {
+            parallel {
+                stage('NPM Build') {
+                    steps {
+                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom pnpm dlx vite build'
+                    }
+                }
+
+                stage('Event Cache') {
+                    steps {
+                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost ntj125app/openlitespeed:latest-pcov php artisan event:cache'
+                    }
+                }
+            }
+        }
+
+        stage('Clean Up Workspace Dir') {
+            steps {
+                sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom rm -rf node_modules public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh Jenkinsfile*'
+            }
+        }
+
+        stage('Build Container') {
+            steps {
+                sh 'ls -lah'
+                sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .'
+                sh 'docker buildx prune -f'
+            }
+        }
+
+        stage('Push Container also remove local image') {
+            steps {
+                script {
+                    docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-finsys-registry') {
+                        sh 'docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
+                        sh 'docker rmi $REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy via SSH') {
+            steps {
+                sshagent(credentials : ['docker-jenkins-deploy-1']) {
+                    sh 'ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST deploy-staging'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker system prune -f'
+            sh 'docker image prune -f'
+            sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom chmod -R 777 .'
+            cleanWs(cleanWhenNotBuilt: true,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true)
+        }
+    }
+}

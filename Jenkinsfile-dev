@@ -25,6 +25,12 @@ pipeline {
                         sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/composer-custom composer -v'
                     }
                 }
+
+                stage('Setup Buildx') {
+                    steps {
+                        sh 'docker pull moby/buildkit:buildx-stable-1'
+                    }
+                }
             }
         }
 

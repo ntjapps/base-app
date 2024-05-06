@@ -109,7 +109,7 @@ pipeline {
         always {
             sh 'docker system prune -f'
             sh 'docker image prune -f'
-            sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom chmod -R 777 .'
+            sh 'docker run --rm -v "$PWD":/app -w /app alpine chmod -R 777 .'
             cleanWs(cleanWhenNotBuilt: true,
                     deleteDirs: true,
                     disableDeferredWipeout: true,

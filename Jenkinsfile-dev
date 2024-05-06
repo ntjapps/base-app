@@ -88,7 +88,7 @@ pipeline {
                 sh 'ls -lah'
                 script {
                     docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-private-registry') {
-                        sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml'
+                        sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit'
                         sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push'
                         sh 'docker buildx prune -f'
                     }

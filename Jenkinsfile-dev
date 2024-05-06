@@ -91,8 +91,6 @@ pipeline {
                         sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit'
                         sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push'
                         sh 'docker buildx prune -f'
-                        sh 'docker buildx stop buildkit'
-                        sh 'docker buildx rm buildkit'
                     }
                 }
             }
@@ -111,6 +109,8 @@ pipeline {
         always {
             sh 'docker system prune -f'
             sh 'docker image prune -f'
+            sh 'docker buildx stop buildkit'
+            sh 'docker buildx rm buildkit'
             sh 'docker run --rm -v "$PWD":/app -w /app alpine chmod -R 777 .'
             cleanWs(cleanWhenNotBuilt: true,
                     deleteDirs: true,

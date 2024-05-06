@@ -91,6 +91,8 @@ pipeline {
                         sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit'
                         sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push'
                         sh 'docker buildx prune -f'
+                        sh 'docker buildx stop buildkit'
+                        sh 'docker buildx rm buildkit'
                     }
                 }
             }

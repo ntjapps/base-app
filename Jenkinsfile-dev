@@ -80,15 +80,20 @@ pipeline {
         stage('Build Container') {
             steps {
                 sh 'ls -lah'
-                sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .'
-                sh 'docker buildx prune -f'
+                script {
+                    docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-private-registry') {
+                        sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml'
+                        sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .'
+                        sh 'docker buildx prune -f'
+                    }
+                }
             }
         }
 
         stage('Push Container also remove local image') {
             steps {
                 script {
-                    docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-finsys-registry') {
+                    docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-private-registry') {
                         sh 'docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
                         sh 'docker rmi $REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
                     }

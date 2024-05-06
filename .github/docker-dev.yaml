@@ -90,7 +90,6 @@ services:
     command: ["memcached", "-m", "412", "-vv"]
     deploy:
       replicas: 1
-      endpoint_mode: dnsrr
       resources:
         limits:
           memory: 512M

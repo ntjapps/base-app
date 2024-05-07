@@ -84,7 +84,6 @@ pipeline {
         always {
             sh 'docker run --rm -v "$PWD":/app -w /app alpine chmod -R 777 .'
             sh 'docker system prune -f'
-            sh 'docker image prune -af'
             cleanWs(cleanWhenNotBuilt: true,
                     deleteDirs: true,
                     disableDeferredWipeout: true,

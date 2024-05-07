@@ -88,11 +88,11 @@ pipeline {
                 sh 'ls -lah'
                 script {
                     docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-private-registry') {
-                        sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit'
+                        sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit-$IMAGE_NAME'
                         sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push'
                         sh 'docker buildx prune -f'
                         sh 'docker buildx use default'
-                        sh 'docker buildx stop buildkit'
+                        sh 'docker buildx stop buildkit-$IMAGE_NAME'
                         sh 'docker buildx rm -f --all-inactive'
                     }
                 }

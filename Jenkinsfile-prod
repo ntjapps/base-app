@@ -6,34 +6,6 @@ pipeline {
     }
 
     stages {
-        stage('Setup PHP, Node.js, Composer') {
-            parallel {
-                stage('Setup PHP') {
-                    steps {
-                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost ntj125app/openlitespeed:latest-pcov php -v'
-                    }
-                }
-
-                stage('Setup Node.js') {
-                    steps {
-                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom pnpm -v'
-                    }
-                }
-
-                stage('Setup Composer') {
-                    steps {
-                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/composer-custom composer -v'
-                    }
-                }
-
-                stage('Setup Buildx') {
-                    steps {
-                        sh 'docker pull moby/buildkit:buildx-stable-1'
-                    }
-                }
-            }
-        }
-
         stage('Install Composer & Node.js Dependencies') {
             parallel {
                 stage('Install PHP Dependencies') {

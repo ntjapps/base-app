@@ -82,7 +82,9 @@ pipeline {
 
     post {
         always {
-            sh 'docker run --rm -v "$PWD":/app -w /app alpine chmod -R 777 .'
+            docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-private-registry') {
+                sh 'docker run --rm -v "$PWD":/app -w /app alpine chmod -R 777 .'
+            }
             sh 'docker system prune -f'
             cleanWs(cleanWhenNotBuilt: true,
                     deleteDirs: true,

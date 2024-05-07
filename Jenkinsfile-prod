@@ -88,8 +88,12 @@ pipeline {
                 sh 'ls -lah'
                 script {
                     docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-private-registry') {
-                        sh 'docker buildx build --allow security.insecure -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push'
+                        sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit'
+                        sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push'
                         sh 'docker buildx prune -f'
+                        sh 'docker buildx use default'
+                        sh 'docker buildx stop buildkit'
+                        sh 'docker buildx rm -f --all-inactive'
                     }
                 }
             }
@@ -108,7 +112,6 @@ pipeline {
         always {
             sh 'docker system prune -f'
             sh 'docker image prune -f'
-            sh 'docker buildx rm -f --all-inactive'
             sh 'docker run --rm -v "$PWD":/app -w /app alpine chmod -R 777 .'
             cleanWs(cleanWhenNotBuilt: true,
                     deleteDirs: true,

@@ -3,20 +3,35 @@ pipeline {
 
     environment {
         ENV_KEY = credentials('env-key')
+        REGISTRY_CREDS = credentials('docker-finsys-registry')
+        GIT_SHA_INFO = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     }
 
     stages {
+        stage('Docker Login, Reset Directory Permissions, Clear Workspace and Checkout') {
+            steps {
+                sh 'docker login -u $REGISTRY_CREDS_USR -p $REGISTRY_CREDS_PSW '+REGISTRY_PREFIX+REGISTRY
+                sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom chmod -R 777 .'
+                cleanWs(cleanWhenNotBuilt: true,
+                        deleteDirs: true,
+                        disableDeferredWipeout: true,
+                        notFailBuild: true)
+                sh 'docker buildx use default'
+                sh 'docker buildx rm -f --all-inactive'
+                checkout scm
+            }
+        }
         stage('Install Composer & Node.js Dependencies') {
             parallel {
                 stage('Install PHP Dependencies') {
                     steps {
-                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/composer-custom install --ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist'
+                        sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/composer-custom install --ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist'
                     }
                 }
 
                 stage('Install Node.js Dependencies') {
                     steps {
-                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom pnpm install --prod'
+                        sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom pnpm install --prod'
                     }
                 }
             }
@@ -26,10 +41,11 @@ pipeline {
             steps {
                 sh '''
                     if [ -f .env.prod.encrypted ]; then
-                        docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost ntj125app/openlitespeed:latest-pcov php artisan env:decrypt --env=dev --key=$ENV_KEY
+                        docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest-pcov php artisan env:decrypt --env=prod --key=$ENV_KEY
                         ln -sf .env.prod .env
                     fi
                 '''
+                sh 'echo "APP_VERSION_HASH=$GIT_SHA_INFO" >> .constants'
             }
         }
 
@@ -37,13 +53,13 @@ pipeline {
             parallel {
                 stage('NPM Build') {
                     steps {
-                        sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom pnpm dlx vite build'
+                        sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom pnpm dlx vite build'
                     }
                 }
 
                 stage('Event Cache') {
                     steps {
-                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost ntj125app/openlitespeed:latest-pcov php artisan event:cache'
+                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest-pcov php artisan event:cache'
                     }
                 }
             }
@@ -51,23 +67,19 @@ pipeline {
 
         stage('Clean Up Workspace Dir') {
             steps {
-                sh 'docker run --rm -v "$PWD":/app -w /app ntj125app/npm-custom rm -rf node_modules public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh Jenkinsfile*'
+                sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom rm -rf node_modules public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh Jenkinsfile*'
             }
         }
 
         stage('Build Container') {
             steps {
                 sh 'ls -lah'
-                script {
-                    docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-private-registry') {
-                        sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit-$IMAGE_NAME-$IMAGE_TAG'
-                        sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push'
-                        sh 'docker buildx prune -f'
-                        sh 'docker buildx use default'
-                        sh 'docker buildx stop buildkit-$IMAGE_NAME-$IMAGE_TAG'
-                        sh 'docker buildx rm -f --all-inactive'
-                    }
-                }
+                sh 'docker buildx create --use --config /home/jenkins/agent/buildkit.toml --name buildkit-$IMAGE_NAME-$IMAGE_TAG'
+                sh 'docker buildx build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG . --push'
+                sh 'docker buildx prune -f'
+                sh 'docker buildx use default'
+                sh 'docker buildx stop buildkit-$IMAGE_NAME-$IMAGE_TAG'
+                sh 'docker buildx rm -f --all-inactive'
             }
         }
 
@@ -82,11 +94,7 @@ pipeline {
 
     post {
         always {
-            script {
-                docker.withRegistry(REGISTRY_PREFIX+REGISTRY, 'docker-private-registry') {
-                    sh 'docker run --rm -v "$PWD":/app -w /app alpine chmod -R 777 .'
-                }
-            }
+            sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom chmod -R 777 .'
             sh 'docker system prune -f'
             cleanWs(cleanWhenNotBuilt: true,
                     deleteDirs: true,

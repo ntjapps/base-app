@@ -46,7 +46,7 @@ export default {
             // Colors
             "text-surface-600 dark:text-white/70",
             {
-                "bg-primary-50 dark:bg-primary-400/30 text-primary-600 dark:text-surface-0":
+                "bg-primary-highlight text-primary-highlight-inverse":
                     context.selected,
             },
 
@@ -141,15 +141,14 @@ export default {
                 {
                     "border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-900":
                         !context.checked,
-                    "border-primary-500 bg-primary-500 dark:border-primary-400 dark:bg-primary-400":
-                        context.checked,
+                    "border-primary bg-primary": context.checked,
                 },
 
                 // States
                 {
-                    "peer-hover:border-primary-500 dark:peer-hover:border-primary-400":
+                    "peer-hover:border-primary":
                         !props.disabled && !context.checked,
-                    "peer-hover:bg-primary-600 dark:peer-hover:bg-primary-300 peer-hover:border-primary-700 dark:peer-hover:border-primary-300":
+                    "peer-hover:bg-primary-hover peer-hover:border-primary-hover":
                         !props.disabled && context.checked,
                     "peer-focus-visible:border-primary-500 dark:peer-focus-visible:border-primary-400 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-400/20 dark:peer-focus-visible:ring-primary-300/20":
                         !props.disabled,
@@ -238,7 +237,7 @@ export default {
         class: [
             "relative",
             // Font
-            "font-sans leading-none",
+            "leading-none",
 
             // Spacing
             "m-0",
@@ -257,7 +256,7 @@ export default {
             "border border-surface-300 dark:border-surface-600",
 
             // States
-            "hover:border-primary-500 dark:hover:border-primary-400",
+            "hover:border-primary",
             "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-500/50 dark:focus:ring-primary-400/50",
 
             // Transition & Misc

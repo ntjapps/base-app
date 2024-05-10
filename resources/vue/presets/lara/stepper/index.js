@@ -87,7 +87,7 @@ export default {
 
                 // Colors (Conditional)
                 context.active
-                    ? "bg-primary-500 dark:bg-primary-400 text-surface-0 dark:text-surface-900"
+                    ? "bg-primary text-primary-inverse"
                     : "border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-0", // Adjust colors as needed
 
                 // Size and Shape
@@ -141,7 +141,7 @@ export default {
                 // Colors (Conditional for active step)
                 state.d_activeStep <= context.index
                     ? "bg-surface-200 dark:bg-surface-700"
-                    : "bg-primary-500 dark:bg-primary-400",
+                    : "bg-primary",
 
                 // Conditional for Vertical Orientation
                 parent.props.orientation === "vertical"

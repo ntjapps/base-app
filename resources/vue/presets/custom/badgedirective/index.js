@@ -2,8 +2,8 @@ export default {
     root: ({ context }) => ({
         class: [
             // Font
-            "font-bold font-sans",
-            "text-xs leading-5",
+            "font-bold",
+            "text-xs leading-[normal]",
 
             // Alignment
             "flex items-center justify-center",
@@ -28,9 +28,9 @@ export default {
             },
 
             // Color
-            "text-white dark:text-surface-900",
+            "text-primary-inverse",
             {
-                "bg-primary-500 dark:bg-primary-400":
+                "bg-primary":
                     !context.info &&
                     !context.success &&
                     !context.warning &&

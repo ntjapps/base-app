@@ -86,7 +86,7 @@ export default {
             "w-5 h-5",
 
             // Color
-            "text-primary-500 dark:text-primary-400",
+            "text-primary",
 
             // State
             {

@@ -42,10 +42,10 @@ export default {
                     props.value !== props.modelValue &&
                     props.value !== undefined &&
                     !props.invalid,
-                "border-primary-500 dark:border-primary-400":
+                "border-primary":
                     props.value == props.modelValue &&
                     props.value !== undefined,
-                "bg-primary-500 dark:bg-primary-400":
+                "bg-primary":
                     props.value == props.modelValue &&
                     props.value !== undefined,
             },
@@ -54,9 +54,9 @@ export default {
 
             // States
             {
-                "peer-hover:border-primary-500 dark:peer-hover:border-primary-400":
+                "peer-hover:border-primary dark:peer-hover:border-primary":
                     !props.disabled && !props.invalid,
-                "peer-hover:border-primary-600 dark:peer-hover:border-primary-300 peer-hover:bg-primary-600 dark:peer-hover:bg-primary-300":
+                "peer-hover:border-primary-hover peer-hover:bg-primary-hover":
                     !props.disabled &&
                     props.value == props.modelValue &&
                     props.value !== undefined,

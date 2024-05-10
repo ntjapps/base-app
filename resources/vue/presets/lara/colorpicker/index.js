@@ -14,7 +14,7 @@ export default {
     input: {
         class: [
             // Font
-            "font-sans text-base ",
+            "text-base ",
 
             // Spacing
             "m-0",
@@ -28,7 +28,7 @@ export default {
             "border border-surface-300 dark:border-surface-700",
 
             // States
-            "hover:border-primary-500 dark:hover:border-primary-400",
+            "hover:border-primary",
             "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-400/50 dark:focus:ring-primary-300/50",
 
             // Transition

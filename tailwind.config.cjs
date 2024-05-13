@@ -63,7 +63,7 @@ module.exports = {
         },
     },
     daisyui: {
-        styled: true,
+        styled: false,
         themes: [],
     },
 };

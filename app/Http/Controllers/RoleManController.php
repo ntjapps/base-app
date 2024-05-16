@@ -102,8 +102,13 @@ class RoleManController extends Controller
         }
 
         /** Cannot Add Admin or Super Permission */
-        if (in_array(InterfaceClass::SUPER, $validated['permissions'])) {
-            Gate::forUser($user)->authorize('denyAllAction', User::class);
+        $superPermissionId = Cache::tags([Permission::class])->remember(Permission::class.'-name-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
+            return Permission::whereHas('ability', function ($query) {
+                return $query->where('title', InterfaceClass::SUPER);
+            })->first()->id;
+        });
+        if (in_array($superPermissionId, $validated['permissions'])) {
+            Gate::forUser($user)->authorize('hasSuperPermission', User::class);
         }
 
         DB::beginTransaction();

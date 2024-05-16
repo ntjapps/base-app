@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -113,6 +114,22 @@ class UserManController extends Controller
         Log::info('User submit user role and permission for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
 
         (bool) $isRestored = false;
+
+        /** Cannot assign Super Permission if not already have super role */
+        $superRoleId = Cache::tags([Role::class])->remember(Role::class.'-superRoleId', Carbon::now()->addYear(), function () {
+            return Role::where('name', InterfaceClass::SUPERROLE)->first()->id;
+        });
+        if (in_array($superRoleId, $validated['roles'] ?? [])) {
+            Gate::forUser($user)->authorize('hasSuperPermission', User::class);
+        }
+        $superPermissionId = Cache::tags([Permission::class])->remember(Permission::class.'-superPermissionId', Carbon::now()->addYear(), function () {
+            return Permission::whereHas('ability', function ($query) {
+                return $query->where('title', InterfaceClass::SUPER);
+            })->first()->id;
+        });
+        if (in_array($superPermissionId, $validated['permissions'] ?? [])) {
+            Gate::forUser($user)->authorize('hasSuperPermission', User::class);
+        }
 
         DB::beginTransaction();
         try {

@@ -153,7 +153,7 @@ return [
     |
     */
 
-    'fast_termination' => false,
+    'fast_termination' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -186,8 +186,6 @@ return [
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
-            'maxTime' => 86400,
-            'maxJobs' => 1000000,
             'memory' => 256,
             'tries' => 3,
             'timeout' => 60,
@@ -201,8 +199,6 @@ return [
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
-            'maxTime' => 86400,
-            'maxJobs' => 1000000,
             'memory' => 256,
             'tries' => 3,
             'timeout' => 60,
@@ -216,8 +212,6 @@ return [
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
-            'maxTime' => 86400,
-            'maxJobs' => 1000000,
             'memory' => 256,
             'tries' => 3,
             'timeout' => 3600,

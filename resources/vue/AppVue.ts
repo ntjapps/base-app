@@ -4,8 +4,6 @@ const pinia: Pinia = createPinia();
 import PrimeVue from "primevue/config";
 import PrimeTailwind from "./presets/custom";
 
-import * as Sentry from "@sentry/vue";
-
 /** Vue router needed for navigation menu */
 import { router } from "./AppRouter";
 

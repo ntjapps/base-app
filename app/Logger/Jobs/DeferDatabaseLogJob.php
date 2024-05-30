@@ -94,5 +94,10 @@ class DeferDatabaseLogJob implements ShouldQueue, Silenced
             'context' => $this->record['context'],
             'extra' => $this->record['extra'],
         ]);
+
+        /** Memory Leak mitigation */
+        if (App::environment('local')) {
+            Telescope::startRecording();
+        }
     }
 }

@@ -9,8 +9,10 @@ use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Laravel\Telescope\Telescope;
 use Monolog\Logger;
 
 class PruneLogDebugLevelJob implements ShouldQueue
@@ -86,6 +88,12 @@ class PruneLogDebugLevelJob implements ShouldQueue
     {
         try {
             Log::debug('Job Executed', ['jobName' => 'PruneLogDebugLevelJob']);
+
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::stopRecording();
+            }
+
             /** Delete Server Logs */
             ServerLog::where('level', Logger::toMonologLevel('debug'))->where('created_at', '<=', now()->subWeek())->delete();
             ServerLog::where('level', Logger::toMonologLevel('info'))->where('created_at', '<=', now()->subWeeks(2))->delete();
@@ -103,8 +111,18 @@ class PruneLogDebugLevelJob implements ShouldQueue
                 Log::warning('Notification Prune Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             }
 
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::startRecording();
+            }
+
             Log::debug('Job Finished', ['jobName' => 'PruneLogDebugLevelJob']);
         } catch (\Throwable $e) {
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::startRecording();
+            }
+
             Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;
         }

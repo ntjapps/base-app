@@ -8,7 +8,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Laravel\Telescope\Telescope;
 
 class {{ class }} implements ShouldQueue
 {
@@ -80,10 +82,25 @@ class {{ class }} implements ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => '{{ class }}']);
 
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::stopRecording();
+            }
+
             // Do something here
+
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::startRecording();
+            }
 
             Log::debug('Job Finished', ['jobName' => '{{ class }}']);
         } catch (\Throwable $e) {
+            /** Memory Leak mitigation */
+            if (App::environment('local')) {
+                Telescope::startRecording();
+            }
+
             Log::error('Job Failed', ['jobName' => '{{ class }}', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;
         }

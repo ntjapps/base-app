@@ -16,7 +16,6 @@ services:
       - target: 5432
         published: 5432
         protocol: tcp
-        mode: host
     environment:
       - TZ=Asia/Jakarta
       - POSTGRES_PASSWORD=password
@@ -31,7 +30,6 @@ services:
       - target: 80
         published: 80
         protocol: tcp
-        mode: host
     environment:
       - TZ=Asia/Jakarta
     volumes:
@@ -104,7 +102,6 @@ services:
       - target: 6001
         published: 6001
         protocol: tcp
-        mode: host
     environment:
       - TZ=Asia/Jakarta
       - SOKETI_METRICS_ENABLED=0
@@ -121,7 +118,6 @@ services:
       - target: 5173
         published: 5173
         protocol: tcp
-        mode: host
     environment:
       - TZ=Asia/Jakarta
     volumes:

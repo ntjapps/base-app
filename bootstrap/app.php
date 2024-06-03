@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/app/healthcheck',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustProxies(headers: Request::HEADER_HTTP_X_REAL_IP);
+        $middleware->trustProxies(headers: Request::HEADER_X_FORWARDED_FOR);
 
         $middleware->web(append: [
             CreateFreshApiToken::class,

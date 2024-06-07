@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@vitejs/plugin-vue':
         specifier: ^5.0.5
-        version: 5.0.5(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0))(vue@3.4.27(typescript@5.4.5))
+        version: 5.0.5(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1))(vue@3.4.27(typescript@5.4.5))
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)
@@ -25,7 +25,7 @@ importers:
         version: 1.16.1
       laravel-vite-plugin:
         specifier: ^1.0.4
-        version: 1.0.4(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0))
+        version: 1.0.4(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1))
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -55,10 +55,10 @@ importers:
         version: 3.4.4(ts-node@10.9.2(@swc/core@1.5.25)(@types/node@20.14.2)(typescript@5.4.5))
       vite:
         specifier: ^5.2.12
-        version: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0)
+        version: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1)
       vite-plugin-static-copy:
         specifier: ^1.0.5
-        version: 1.0.5(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0))
+        version: 1.0.5(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1))
       vue:
         specifier: ^3.4.27
         version: 3.4.27(typescript@5.4.5)
@@ -116,7 +116,7 @@ importers:
         version: 13.11.0
       cypress-vite:
         specifier: ^1.5.0
-        version: 1.5.0(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0))
+        version: 1.5.0(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1012,8 +1012,8 @@ packages:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
 
-  caniuse-lite@1.0.30001628:
-    resolution: {integrity: sha512-S3BnR4Kh26TBxbi5t5kpbcUlLJb9lhtDXISDPwOfI+JoC+ik0QksvkZtUVyikw3hjnkgkMPSJ8oIM9yMm9vflA==}
+  caniuse-lite@1.0.30001629:
+    resolution: {integrity: sha512-c3dl911slnQhmxUIT4HhYzT7wnBK/XYpGnYLOj4nJBaRiw52Ibe7YxlDaAeRECvA786zCuExhxIUJ2K7nHMrBw==}
 
   caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
@@ -1226,8 +1226,8 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  electron-to-chromium@1.4.790:
-    resolution: {integrity: sha512-eVGeQxpaBYbomDBa/Mehrs28MdvCXfJmEFzaMFsv8jH/MJDLIylJN81eTJ5kvx7B7p18OiPK0BkC06lydEy63A==}
+  electron-to-chromium@1.4.794:
+    resolution: {integrity: sha512-6FApLtsYhDCY0Vglq3AptsdxQ+PJLc6AxlAM0HjEihUAiOPPbkASEsq9gtxUeZY9o0sJIEa3WnF0vVH4VT4iug==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -2316,8 +2316,8 @@ packages:
       uglify-js:
         optional: true
 
-  terser@5.31.0:
-    resolution: {integrity: sha512-Q1JFAoUKE5IMfI4Z/lkE/E6+SwgzO+x4tq4v1AyBLRj8VSYvRO6A/rQrPg1yud4g0En9EKI1TvFRF2tQFcoUkg==}
+  terser@5.31.1:
+    resolution: {integrity: sha512-37upzU1+viGvuFtBo9NPufCb9dwM0+l9hMxYyWfBA+fbwrPqNJAhbZ6W47bBFnZHKHTUBnMvi87434qq+qnxOg==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -3108,9 +3108,9 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-vue@5.0.5(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0))(vue@3.4.27(typescript@5.4.5))':
+  '@vitejs/plugin-vue@5.0.5(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1))(vue@3.4.27(typescript@5.4.5))':
     dependencies:
-      vite: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0)
+      vite: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1)
       vue: 3.4.27(typescript@5.4.5)
 
   '@vue/compiler-core@3.4.27':
@@ -3353,7 +3353,7 @@ snapshots:
   autoprefixer@10.4.19(postcss@8.4.38):
     dependencies:
       browserslist: 4.23.0
-      caniuse-lite: 1.0.30001628
+      caniuse-lite: 1.0.30001629
       fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.0.1
@@ -3412,8 +3412,8 @@ snapshots:
 
   browserslist@4.23.0:
     dependencies:
-      caniuse-lite: 1.0.30001628
-      electron-to-chromium: 1.4.790
+      caniuse-lite: 1.0.30001629
+      electron-to-chromium: 1.4.794
       node-releases: 2.0.14
       update-browserslist-db: 1.0.16(browserslist@4.23.0)
 
@@ -3440,7 +3440,7 @@ snapshots:
 
   camelcase-css@2.0.1: {}
 
-  caniuse-lite@1.0.30001628: {}
+  caniuse-lite@1.0.30001629: {}
 
   caseless@0.12.0: {}
 
@@ -3555,11 +3555,11 @@ snapshots:
 
   culori@3.3.0: {}
 
-  cypress-vite@1.5.0(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0)):
+  cypress-vite@1.5.0(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1)):
     dependencies:
       chokidar: 3.6.0
       debug: 4.3.5(supports-color@8.1.1)
-      vite: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0)
+      vite: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -3688,7 +3688,7 @@ snapshots:
       minimatch: 9.0.1
       semver: 7.6.2
 
-  electron-to-chromium@1.4.790: {}
+  electron-to-chromium@1.4.794: {}
 
   emoji-regex@8.0.0: {}
 
@@ -4260,10 +4260,10 @@ snapshots:
 
   laravel-echo@1.16.1: {}
 
-  laravel-vite-plugin@1.0.4(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0)):
+  laravel-vite-plugin@1.0.4(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1)):
     dependencies:
       picocolors: 1.0.1
-      vite: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0)
+      vite: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1)
       vite-plugin-full-reload: 1.1.0
 
   lazy-ass@1.6.0: {}
@@ -4812,12 +4812,12 @@ snapshots:
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
-      terser: 5.31.0
+      terser: 5.31.1
       webpack: 5.91.0(@swc/core@1.5.25)
     optionalDependencies:
       '@swc/core': 1.5.25
 
-  terser@5.31.0:
+  terser@5.31.1:
     dependencies:
       '@jridgewell/source-map': 0.3.6
       acorn: 8.11.3
@@ -4943,15 +4943,15 @@ snapshots:
       picocolors: 1.0.1
       picomatch: 2.3.1
 
-  vite-plugin-static-copy@1.0.5(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0)):
+  vite-plugin-static-copy@1.0.5(vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1)):
     dependencies:
       chokidar: 3.6.0
       fast-glob: 3.3.2
       fs-extra: 11.2.0
       picocolors: 1.0.1
-      vite: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0)
+      vite: 5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1)
 
-  vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.0):
+  vite@5.2.12(@types/node@20.14.2)(sass@1.77.4)(terser@5.31.1):
     dependencies:
       esbuild: 0.20.2
       postcss: 8.4.38
@@ -4960,7 +4960,7 @@ snapshots:
       '@types/node': 20.14.2
       fsevents: 2.3.3
       sass: 1.77.4
-      terser: 5.31.0
+      terser: 5.31.1
 
   vue-clipboard3@2.0.0:
     dependencies:

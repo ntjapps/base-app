@@ -94,21 +94,31 @@ services:
     environment:
       - TZ=Asia/Jakarta
 
-  base_soketi:
-    image: quay.io/soketi/soketi:1.6-16-alpine
-    command: ["soketi", "start", "--config=/soketi-cfg/config.json"]
-    hostname: base_soketi
+  base_reverb:
+    image: ntj125app/openlitespeed:latest-oci-pcov
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "/usr/bin/php /var/www/vhosts/localhost/artisan reverb:start",
+      ]
+    hostname: base_reverb
+    user: 65534:65534
+    working_dir: /var/www/vhosts/localhost/
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 300M
     ports:
       - target: 6001
         published: 6001
         protocol: tcp
     environment:
       - TZ=Asia/Jakarta
-      - SOKETI_METRICS_ENABLED=0
-      - SOKETI_MODE=server
-      - SOKETI_HTTP_ACCEPT_TRAFFIC_MEMORY_THRESHOLD=75
     volumes:
-      - ./soketi:/soketi-cfg
+      - ../:/var/www/vhosts/localhost
+      - ../public:/var/www/vhosts/localhost/html
 
   base_vite:
     image: ntj125app/npm-custom

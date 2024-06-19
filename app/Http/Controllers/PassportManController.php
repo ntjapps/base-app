@@ -69,7 +69,7 @@ class PassportManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::notice('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::notice('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** Generate new secret */
         $secret = Str::random(40);
@@ -99,7 +99,7 @@ class PassportManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::notice('User delete passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::notice('User delete passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $client = Passport::client()->where('id', $validated['id'])->first();
 
@@ -132,7 +132,7 @@ class PassportManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::notice('User update passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::notice('User update passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $client = Passport::client()->where('id', $validated['id'])->first();
 
@@ -166,7 +166,7 @@ class PassportManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::notice('User create passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::notice('User create passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $client = (new ClientRepository())->create(null, $validated['name'], $validated['redirect'] ?? '');
         $secret = Str::random(40);

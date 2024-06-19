@@ -107,7 +107,7 @@ class AppConstController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('API hit trigger validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('API hit trigger validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** Get Current App Version */
         (string) $currentAppVersion = config('mobile.app_version');
@@ -186,7 +186,7 @@ class AppConstController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('API hit trigger post notification as read validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('API hit trigger post notification as read validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** Updated Notification as Read */
         DB::beginTransaction();

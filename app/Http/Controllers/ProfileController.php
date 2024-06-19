@@ -53,7 +53,7 @@ class ProfileController extends Controller
         $validatedLog = $validated;
         unset($validatedLog['password']);
         unset($validatedLog['password_confirmation']);
-        Log::info('User updating profile validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('User updating profile validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $user->name = $validated['name'];
         if (isset($validated['password'])) {

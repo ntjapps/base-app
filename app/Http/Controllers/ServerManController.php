@@ -56,7 +56,7 @@ class ServerManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User get server log validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => $validatedLog]);
+        Log::info('User get server log validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $data = ServerLog::when($validated['date_start'] ?? null, function ($query, $date_start) {
             return $query->where('created_at', '>=', Carbon::parse($date_start, 'Asia/Jakarta')->startOfDay());

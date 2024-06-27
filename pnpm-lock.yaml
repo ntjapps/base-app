@@ -18,8 +18,8 @@ importers:
         specifier: ^1.7.2
         version: 1.7.2
       daisyui:
-        specifier: ^4.12.8
-        version: 4.12.8(postcss@8.4.38)
+        specifier: ^4.12.10
+        version: 4.12.10(postcss@8.4.38)
       laravel-echo:
         specifier: ^1.16.1
         version: 1.16.1
@@ -1147,8 +1147,8 @@ packages:
     engines: {node: ^16.0.0 || ^18.0.0 || >=20.0.0}
     hasBin: true
 
-  daisyui@4.12.8:
-    resolution: {integrity: sha512-FDdh0z9BsWMI0VeUSwZy6rwp9frEuUgd83SCPOaCYV3iULPzcgTEQT3IlcAbMCrsriu2ziDYZfGOUwPYHkHrfw==}
+  daisyui@4.12.10:
+    resolution: {integrity: sha512-jp1RAuzbHhGdXmn957Z2XsTZStXGHzFfF0FgIOZj3Wv9sH7OZgLfXTRZNfKVYxltGUOBsG1kbWAdF5SrqjebvA==}
     engines: {node: '>=16.9.0'}
 
   dashdash@1.14.1:
@@ -3618,7 +3618,7 @@ snapshots:
       untildify: 4.0.0
       yauzl: 2.10.0
 
-  daisyui@4.12.8(postcss@8.4.38):
+  daisyui@4.12.10(postcss@8.4.38):
     dependencies:
       css-selector-tokenizer: 0.8.0
       culori: 3.3.0

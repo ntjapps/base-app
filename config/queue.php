@@ -67,25 +67,7 @@ return [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
             'queue' => env('REDIS_QUEUE', 'default'),
-            'retry_after' => env('REDIS_QUEUE_RETRY_AFTER', 90),
-            'block_for' => null,
-            'after_commit' => false,
-        ],
-
-        'redis_logger' => [
-            'driver' => 'redis',
-            'connection' => env('REDIS_LOGGER_QUEUE_CONNECTION', 'default'),
-            'queue' => env('REDIS_LOGGER_QUEUE', 'logger'),
-            'retry_after' => env('REDIS_LOGGER_QUEUE_RETRY_AFTER', 90),
-            'block_for' => null,
-            'after_commit' => false,
-        ],
-
-        'redis_long_run' => [
-            'driver' => 'redis',
-            'connection' => env('REDIS_LONG_RUN_QUEUE_CONNECTION', 'default'),
-            'queue' => env('REDIS_LONG_RUN_QUEUE', 'long-run'),
-            'retry_after' => env('REDIS_LONG_RUN_QUEUE_RETRY_AFTER', 5400),
+            'retry_after' => env('REDIS_QUEUE_RETRY_AFTER', 5400),
             'block_for' => null,
             'after_commit' => false,
         ],

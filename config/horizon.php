@@ -183,7 +183,7 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            'queue' => ['default', 'logger', 'long-run'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
@@ -192,48 +192,13 @@ return [
             'timeout' => 60,
             'nice' => 0,
             'force' => true,
-        ],
-
-        'supervisor-logger-1' => [
-            'connection' => 'redis_logger',
-            'queue' => ['logger'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
-            'memory' => 256,
-            'tries' => 3,
-            'timeout' => 60,
-            'nice' => 0,
-            'force' => true,
-        ],
-
-        'supervisor-long-run-1' => [
-            'connection' => 'redis_long_run',
-            'queue' => ['long-run'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
-            'memory' => 256,
-            'tries' => 3,
-            'timeout' => 3600,
-            'nice' => 1,
         ],
     ],
 
     'environments' => [
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 5,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
-            'supervisor-logger-1' => [
-                'maxProcesses' => 5,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
-            'supervisor-long-run-1' => [
-                'maxProcesses' => 5,
+                'maxProcesses' => 20,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
@@ -241,12 +206,6 @@ return [
 
         'local' => [
             'supervisor-1' => [
-                'maxProcesses' => 4,
-            ],
-            'supervisor-logger-1' => [
-                'maxProcesses' => 4,
-            ],
-            'supervisor-long-run-1' => [
                 'maxProcesses' => 4,
             ],
         ],

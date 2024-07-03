@@ -29,7 +29,7 @@ class PassportManController extends Controller
         Log::debug('User open passport management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
 
         return view('base-components.base-vue', [
-            'pageTitle' => 'Passport Management',
+            'title' => __('app.page.passport'),
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }
@@ -62,6 +62,7 @@ class PassportManController extends Controller
         /** Validate Input */
         $validate = Validator::make($request->all(), [
             'id' => ['required', 'string', 'uuid', 'exists:App\Models\PassportClient,id'],
+            'old_secret' => ['nullable', 'string', 'min:40', 'max:40'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -72,7 +73,7 @@ class PassportManController extends Controller
         Log::notice('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** Generate new secret */
-        $secret = Str::random(40);
+        $secret = $validated['old_secret'] ?? Str::random(40);
 
         $client = Passport::client()->where('id', $validated['id'])->first();
         $client->secret = $secret;

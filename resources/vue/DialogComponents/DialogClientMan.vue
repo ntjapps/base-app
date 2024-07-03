@@ -19,6 +19,7 @@ const clientmanData = dialogRef.value.data?.clientmanData;
 const clientId = ref<string>(clientmanData?.id);
 const clientName = ref<string>(clientmanData?.name);
 const clientRedirect = ref<string>(clientmanData?.redirect);
+const oldClientSecret = ref<string>("");
 const newClientSecret = ref<string>("");
 
 const showClientId = computed(() => {
@@ -64,6 +65,8 @@ const deleteClient = (id: string) => {
                 summary: response.data.title,
                 detail: response.data.message,
             });
+        })
+        .then(() => {
             dialogRef.value.close();
         })
         .catch((error) => {
@@ -78,7 +81,10 @@ const deleteClient = (id: string) => {
 
 const resetClient = (id: string) => {
     axios
-        .post(api.postResetOauthSecret, { id: id })
+        .post(api.postResetOauthSecret, {
+            id: id,
+            old_secret: oldClientSecret.value,
+        })
         .then((response) => {
             newClientSecret.value = response.data.data.secret;
             toastchild.value?.toastDisplay({
@@ -110,6 +116,8 @@ const updateClient = (id: string) => {
                 summary: response.data.title,
                 detail: response.data.message,
             });
+        })
+        .then(() => {
             dialogRef.value.close();
         })
         .catch((error) => {
@@ -195,6 +203,18 @@ const allowEditName = computed(() => {
             />
         </div>
     </div>
+    <div class="flex w-full mt-1">
+        <div class="w-28 my-auto text-sm">
+            <span>Old Client Secret:</span>
+        </div>
+        <div class="flex w-full text-sm">
+            <InputText
+                v-model="oldClientSecret"
+                class="w-full text-sm"
+                :disabled="!allowEditName"
+            />
+        </div>
+    </div>
     <div v-if="showClientSecret" class="flex w-full mt-1">
         <div class="w-28 my-auto text-sm">
             <span>New Secret:</span>
@@ -209,22 +229,28 @@ const allowEditName = computed(() => {
         </div>
     </div>
     <div class="flex w-full mt-2.5 justify-center">
-        <button class="btn btn-error mx-2" @click="deleteClient(clientId)">
+        <button
+            class="btn btn-modal-cancel text-white font-medium mx-2"
+            @click="deleteClient(clientId)"
+        >
             <span class="m-1">Delete</span>
         </button>
-        <button class="btn btn-warning mx-2" @click="resetClient(clientId)">
+        <button
+            class="btn bg-brown-200 text-black font-medium mx-2"
+            @click="resetClient(clientId)"
+        >
             <span class="m-1">Reset Secret</span>
         </button>
         <button
             v-if="!typeCreate"
-            class="btn btn-success mx-2"
+            class="btn bg-navy-700 text-dark-50 font-medium mx-2"
             @click="updateClient(clientId)"
         >
             <span class="m-1">Update Client</span>
         </button>
         <button
             v-if="showCreateClient"
-            class="btn btn-success mx-2"
+            class="btn bg-navy-700 text-dark-50 font-medium mx-2"
             @click="createClient"
         >
             <span class="m-1">Create Client</span>

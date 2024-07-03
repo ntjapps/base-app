@@ -27,7 +27,7 @@
         "pusher-js": "8.4.0-rc2",
         "sass": "^1.77.6",
         "tailwindcss": "^3.4.4",
-        "vite": "^5.3.2",
+        "vite": "^5.3.3",
         "vite-plugin-static-copy": "^1.0.6",
         "vue": "^3.4.31",
         "vue-clipboard3": "^2.0.0",

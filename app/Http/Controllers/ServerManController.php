@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Logger\Models\ServerLog;
 use App\Traits\JsonResponse;
@@ -85,6 +86,7 @@ class ServerManController extends Controller
 
         /** Clear Cache */
         Cache::flush();
+        InterfaceClass::flushRolePermissionCache();
 
         return $this->jsonSuccess('Cache cleared', 'Cache cleared successfully');
     }

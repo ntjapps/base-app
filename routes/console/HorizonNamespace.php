@@ -1,11 +1,14 @@
 <?php
 
+use App\Interfaces\InterfaceClass;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 Artisan::command('horizon:clear:all', function () {
     Cache::flush();
+    InterfaceClass::flushRolePermissionCache();
 
     $this->call('horizon:clear');
     $this->call('horizon:clear', ['--queue' => 'long-run']);

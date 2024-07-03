@@ -16,6 +16,7 @@ Artisan::command('system:refresh', function () {
     Redis::connection('cache')->flushdb(); /** Cache Database */
     Redis::connection('cachejob')->flushdb(); /** Job Database */
     Cache::flush(); /** Cache */
+    InterfaceClass::flushRolePermissionCache();
     Redis::connection('default')->flushdb(); /** Session Database */
     $this->info('All horizon cleared');
 
@@ -63,6 +64,7 @@ Artisan::command('system:start', function () {
     Redis::connection('cache')->flushdb(); /** Cache Database */
     Redis::connection('cachejob')->flushdb(); /** Job Database */
     Cache::flush(); /** Cache */
+    InterfaceClass::flushRolePermissionCache();
     $this->info('Cache cleared');
 
     $this->info('System startup scripts executed');

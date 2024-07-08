@@ -21,7 +21,7 @@
         "lodash": "^4.17.21",
         "pinia": "^2.1.7",
         "postcss": "^8.4.39",
-        "postcss-convert-values": "^7.0.1",
+        "postcss-convert-values": "^7.0.2",
         "primeicons": "^7.0.0",
         "primevue": "^3.53.0",
         "pusher-js": "8.4.0-rc2",

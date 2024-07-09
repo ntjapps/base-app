@@ -81,7 +81,7 @@ return [
         ],
 
         RequestTerminated::class => [
-            // FlushUploadedFiles::class,
+            FlushUploadedFiles::class,
         ],
 
         TaskReceived::class => [
@@ -106,7 +106,7 @@ return [
             FlushOnce::class,
             FlushTemporaryContainerInstances::class,
             // DisconnectFromDatabases::class,
-            // CollectGarbage::class,
+            CollectGarbage::class,
         ],
 
         WorkerErrorOccurred::class => [
@@ -150,10 +150,7 @@ return [
     */
 
     'tables' => [
-        'example:1000' => [
-            'name' => 'string:1000',
-            'votes' => 'int',
-        ],
+        //
     ],
 
     /*
@@ -168,8 +165,8 @@ return [
     */
 
     'cache' => [
-        'rows' => 1000,
-        'bytes' => 10000,
+        'rows' => 0,
+        'bytes' => 0,
     ],
 
     /*

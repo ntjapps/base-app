@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc867c3782006e66d5bac42fbeea4959",
+    "content-hash": "47e690b593ab974e74bb09bb7386b75e",
     "packages": [
         {
             "name": "brick/math",
@@ -6099,16 +6099,16 @@
         },
         {
             "name": "spatie/laravel-health",
-            "version": "1.29.1",
+            "version": "1.29.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-health.git",
-                "reference": "1ea1950776038c94e225902fe71b063593e6539d"
+                "reference": "1359fded7ce29c8df8f65f4c7ba09e4c2f54223e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-health/zipball/1ea1950776038c94e225902fe71b063593e6539d",
-                "reference": "1ea1950776038c94e225902fe71b063593e6539d",
+                "url": "https://api.github.com/repos/spatie/laravel-health/zipball/1359fded7ce29c8df8f65f4c7ba09e4c2f54223e",
+                "reference": "1359fded7ce29c8df8f65f4c7ba09e4c2f54223e",
                 "shasum": ""
             },
             "require": {
@@ -6181,7 +6181,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-health/tree/1.29.1"
+                "source": "https://github.com/spatie/laravel-health/tree/1.29.3"
             },
             "funding": [
                 {
@@ -6189,7 +6189,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-06-27T07:11:39+00:00"
+            "time": "2024-07-15T12:05:09+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
@@ -11778,9 +11778,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "laravel/pulse": 10
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

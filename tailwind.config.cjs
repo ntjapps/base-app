@@ -1,5 +1,5 @@
 module.exports = {
-    plugins: [require("daisyui")],
+    plugins: [],
     content: [
         "resources/views/*.php",
         "resources/views/**/*.php",
@@ -61,9 +61,5 @@ module.exports = {
                 "surface-950": "rgb(var(--surface-950))",
             },
         },
-    },
-    daisyui: {
-        styled: false,
-        themes: [],
     },
 };

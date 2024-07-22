@@ -5,8 +5,8 @@ namespace App\Providers;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
-use Spatie\Health\Facades\Health;
 use Spatie\Health\Checks\Checks\HorizonCheck;
+use Spatie\Health\Facades\Health;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
@@ -19,7 +19,7 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
 
         if (class_exists(HorizonCheck::class)) {
             Health::checks([
-               HorizonCheck::new(), 
+                HorizonCheck::new(),
             ]);
         }
     }

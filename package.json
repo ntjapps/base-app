@@ -12,7 +12,7 @@
         "prettier:fix": "prettier --write resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md} tests/**/*.{css,scss,vue,js,cjs,ts,json,md}"
     },
     "dependencies": {
-        "@vitejs/plugin-vue": "^5.0.5",
+        "@vitejs/plugin-vue": "^5.1.0",
         "autoprefixer": "^10.4.19",
         "axios": "^1.7.2",
         "laravel-echo": "^1.16.1",

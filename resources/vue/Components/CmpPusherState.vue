@@ -5,6 +5,10 @@ import { useEchoStore } from "../AppState";
 
 import { useMainStore } from "../AppState";
 
+import Button from "primevue/button";
+
+import IconChartBar from "../Icons/IconChartBar.vue";
+
 const pusherState = ref<string>("connecting");
 const connected = ref<boolean>(false);
 const connecting = ref<boolean>(true);
@@ -62,20 +66,11 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <div
-        v-tooltip.bottom="appName + ' Realtime Connection Status'"
-        class="flex mx-2"
-    >
-        <button v-if="connected" class="btn btn-success text-xs">
-            <i class="ico ico-chart-bar w-5 h-5" />
-            <span class="m-1">Connected</span>
-        </button>
-        <button v-if="connecting" class="btn btn-warning loading text-xs">
-            <span class="m-1">Connecting</span>
-        </button>
-        <button v-if="unavailable" class="btn btn-error text-xs">
-            <i class="pi pi-times mr-1" />
-            <span class="m-1">Unavailable</span>
-        </button>
+    <div class="flex mx-2 my-auto">
+        <Button v-if="connected" v-tooltip.bottom="appName + ' Connected'" text>
+            <IconChartBar />
+        </Button>
+        <Button v-if="connecting" v-tooltip.bottom="appName + ' Connecting'" text aria-label="Connecting" icon="pi pi-spin pi-spinner" />
+        <Button v-if="unavailable" v-tooltip.bottom="appName + ' Disconnected'" text aria-label="Unavailable" icon="pi pi-times" />
     </div>
 </template>

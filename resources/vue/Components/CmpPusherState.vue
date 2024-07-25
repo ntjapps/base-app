@@ -70,7 +70,19 @@ onBeforeMount(() => {
         <Button v-if="connected" v-tooltip.bottom="appName + ' Connected'" text>
             <IconChartBar />
         </Button>
-        <Button v-if="connecting" v-tooltip.bottom="appName + ' Connecting'" text aria-label="Connecting" icon="pi pi-spin pi-spinner" />
-        <Button v-if="unavailable" v-tooltip.bottom="appName + ' Disconnected'" text aria-label="Unavailable" icon="pi pi-times" />
+        <Button
+            v-if="connecting"
+            v-tooltip.bottom="appName + ' Connecting'"
+            text
+            aria-label="Connecting"
+            icon="pi pi-spin pi-spinner"
+        />
+        <Button
+            v-if="unavailable"
+            v-tooltip.bottom="appName + ' Disconnected'"
+            text
+            aria-label="Unavailable"
+            icon="pi pi-times"
+        />
     </div>
 </template>

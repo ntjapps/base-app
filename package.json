@@ -14,7 +14,7 @@
     "dependencies": {
         "@vitejs/plugin-vue": "^5.1.1",
         "autoprefixer": "^10.4.19",
-        "axios": "^1.7.2",
+        "axios": "^1.7.3",
         "laravel-echo": "^1.16.1",
         "laravel-vite-plugin": "^1.0.5",
         "lodash": "^4.17.21",

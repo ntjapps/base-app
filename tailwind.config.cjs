@@ -1,5 +1,5 @@
 module.exports = {
-    plugins: [],
+    plugins: [require('tailwindcss-primeui')],
     content: [
         "resources/views/*.php",
         "resources/views/**/*.php",

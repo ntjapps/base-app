@@ -103,8 +103,8 @@ class PruneLogDebugLevelJob implements ShouldQueue
             /** Delete Notifications */
             DB::beginTransaction();
             try {
-                DB::table('notifications')->where('created_at', '<=', now()->subMonth())->delete();
-                DB::table('notifications')->whereNotNull('read_at')->where('read_at', '<=', now()->subWeek())->delete();
+                DB::table('notifications')->where('created_at', '<=', now()->subWeek())->delete();
+                DB::table('notifications')->whereNotNull('read_at')->where('read_at', '<=', now()->subDay())->delete();
                 DB::commit();
             } catch (QueryException $e) {
                 DB::rollBack();

@@ -10,11 +10,6 @@ class TurnstileValidation implements ValidationRule
 {
     use Turnstile;
 
-    private function verifyWebChallenge(mixed $value): bool
-    {
-        return $this->verifyChallenge($value);
-    }
-
     /**
      * Run the validation rule.
      *
@@ -26,7 +21,7 @@ class TurnstileValidation implements ValidationRule
             return;
         }
 
-        if (! $this->verifyWebChallenge($value)) {
+        if (! $this->verifyChallenge($value)) {
             $fail('The :attribute is invalid.');
         }
     }

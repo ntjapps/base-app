@@ -52,7 +52,7 @@ trait AuthFunction
         $user = Auth::user() ?? Auth::guard('api')->user();
         /** Logout if user is authenticated */
         if (! is_null($user)) {
-            Log::info('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+            Log::info('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
             Auth::logout();
             $request->session()->invalidate();

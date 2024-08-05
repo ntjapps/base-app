@@ -32,4 +32,4 @@ if (config('cache.default') === 'redis') {
 }
 
 /** Custom Jobs Cron */
-Schedule::job(new PruneLogDebugLevelJob)->everyMinute();
+Schedule::job(new PruneLogDebugLevelJob)->hourly();

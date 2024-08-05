@@ -11,7 +11,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
 import Breadcrumb from "primevue/breadcrumb";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 
 import DialogClientMan from "../DialogComponents/DialogClientMan.vue";
 
@@ -141,7 +141,7 @@ onBeforeMount(() => {
                 :loading="loading"
                 :paginator="true"
                 :rows="10"
-                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rows-per-page-options="[10, 20, 50, 100]"
                 :global-filter-fields="['name']"
                 filter-display="menu"

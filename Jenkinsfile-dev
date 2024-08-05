@@ -41,7 +41,7 @@ pipeline {
             steps {
                 sh '''
                     if [ -f .env.dev.encrypted ]; then
-                        docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest-pcov php artisan env:decrypt --env=dev --key=$ENV_KEY
+                        docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest php artisan env:decrypt --env=dev --key=$ENV_KEY
                         ln -sf .env.dev .env
                     fi
                 '''
@@ -59,7 +59,7 @@ pipeline {
 
                 stage('Event Cache') {
                     steps {
-                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest-pcov php artisan event:cache'
+                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest php artisan event:cache'
                     }
                 }
             }
@@ -67,7 +67,7 @@ pipeline {
 
         stage('Clean Up Workspace Dir') {
             steps {
-                sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom rm -rf node_modules public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh Jenkinsfile*'
+                sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs Jenkinsfile*'
             }
         }
 

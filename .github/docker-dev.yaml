@@ -24,7 +24,7 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d
 
   base_ols:
-    image: ntj125app/openlitespeed:latest-pcov
+    image: ntj125app/openlitespeed:latest
     hostname: base_ols
     ports:
       - target: 80
@@ -37,7 +37,7 @@ services:
       - ../public:/var/www/vhosts/localhost/html
 
   base_worker:
-    image: ntj125app/openlitespeed:latest-pcov
+    image: ntj125app/openlitespeed:latest
     command: ["/usr/bin/php", "/var/www/vhosts/localhost/artisan", "horizon"]
     user: 65534:65534
     environment:
@@ -47,7 +47,7 @@ services:
       - ../public:/var/www/vhosts/localhost/html
 
   base_scheduler:
-    image: ntj125app/openlitespeed:latest-pcov
+    image: ntj125app/openlitespeed:latest
     command:
       [
         "/bin/bash",
@@ -95,7 +95,7 @@ services:
       - TZ=Asia/Jakarta
 
   base_reverb:
-    image: ntj125app/openlitespeed:latest-oci-pcov
+    image: ntj125app/openlitespeed:latest
     command:
       [
         "/bin/bash",

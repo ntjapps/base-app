@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@vitejs/plugin-vue": "^5.1.2",
-        "autoprefixer": "^10.4.19",
+        "autoprefixer": "^10.4.20",
         "axios": "^1.7.3",
         "laravel-echo": "^1.16.1",
         "laravel-vite-plugin": "^1.0.5",

@@ -9,6 +9,18 @@ use Tests\AuthTestCase;
 class BasicNotificationTest extends AuthTestCase
 {
     /**
+     * Get notification list from api
+     */
+    public function test_notification_list(): void
+    {
+        $user = $this->commonSeedTestData();
+        Notification::send($user, new TestNotification);
+
+        $response = $this->actingAs($user)->postJson(route('get-notification-list'));
+        $response->assertOk()->assertJsonCount(1);
+    }
+
+    /**
      * Check if notification is exist
      */
     public function test_notification_exist(): void

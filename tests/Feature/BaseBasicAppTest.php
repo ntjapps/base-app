@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\CommonCustomException;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class BaseBasicAppTest extends TestCase
@@ -25,5 +27,15 @@ class BaseBasicAppTest extends TestCase
     {
         $response = $this->get('/login-redirect');
         $response->assertRedirect(route('landing-page'));
+    }
+
+    /** Test CommonCustomException */
+    public function test_common_custom_exception(): void
+    {
+        $exception = new CommonCustomException;
+
+        $this->assertInstanceOf(CommonCustomException::class, $exception);
+        $this->assertEquals(422, $exception->getCode());
+        $this->assertJson($exception->render(new Request)->getContent());
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Interfaces\InterfaceClass;
+use App\Jobs\RolePermissionSyncJob;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
@@ -17,6 +18,9 @@ Artisan::command('system:refresh', function () {
     Redis::connection('cachejob')->flushdb(); /** Job Database */
     Cache::flush(); /** Cache */
     InterfaceClass::flushRolePermissionCache();
+
+    RolePermissionSyncJob::dispatchSync();
+
     Redis::connection('default')->flushdb(); /** Session Database */
     $this->info('All horizon cleared');
 
@@ -66,6 +70,8 @@ Artisan::command('system:start', function () {
     Cache::flush(); /** Cache */
     InterfaceClass::flushRolePermissionCache();
     $this->info('Cache cleared');
+
+    RolePermissionSyncJob::dispatchSync();
 
     $this->info('System startup scripts executed');
 

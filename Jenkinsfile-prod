@@ -41,7 +41,7 @@ pipeline {
             steps {
                 sh '''
                     if [ -f .env.prod.encrypted ]; then
-                        docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest-pcov php artisan env:decrypt --env=prod --key=$ENV_KEY
+                        docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest php artisan env:decrypt --env=prod --key=$ENV_KEY
                         ln -sf .env.prod .env
                     fi
                 '''
@@ -59,7 +59,7 @@ pipeline {
 
                 stage('Event Cache') {
                     steps {
-                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest-pcov php artisan event:cache'
+                        sh 'docker run --rm -v "$PWD":/var/www/vhosts/localhost -w /var/www/vhosts/localhost $REGISTRY/openlitespeed:latest php artisan event:cache'
                     }
                 }
             }

@@ -14,7 +14,7 @@
     "dependencies": {
         "@vitejs/plugin-vue": "^5.1.2",
         "autoprefixer": "^10.4.20",
-        "axios": "^1.7.4",
+        "axios": "^1.7.5",
         "laravel-echo": "^1.16.1",
         "laravel-vite-plugin": "^1.0.5",
         "lodash": "^4.17.21",
@@ -36,7 +36,7 @@
     },
     "devDependencies": {
         "@pinia/testing": "^0.1.5",
-        "@swc/core": "^1.7.14",
+        "@swc/core": "^1.7.18",
         "@tsconfig/recommended": "^1.0.7",
         "@types/chai": "^4.3.17",
         "@types/jest": "^29.5.12",

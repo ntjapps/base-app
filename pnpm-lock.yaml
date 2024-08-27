@@ -82,8 +82,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7
       '@types/chai':
-        specifier: ^4.3.17
-        version: 4.3.17
+        specifier: ^4.3.18
+        version: 4.3.18
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.12
@@ -595,8 +595,8 @@ packages:
   '@tsconfig/recommended@1.0.7':
     resolution: {integrity: sha512-xiNMgCuoy4mCL4JTywk9XFs5xpRUcKxtWEcMR6FNMtsgewYTIgIR+nvlP4A4iRCAzRsHMnPhvTRrzp4AGcRTEA==}
 
-  '@types/chai@4.3.17':
-    resolution: {integrity: sha512-zmZ21EWzR71B4Sscphjief5djsLre50M6lI622OSySTmn9DB3j+C3kWroHfBQWXbOBwbgg/M8CG/hUxDLIloow==}
+  '@types/chai@4.3.18':
+    resolution: {integrity: sha512-2UfJzigyNa8kYTKn7o4hNMPphkxtu4WTJyobK3m4FBpyj7EK5xgtPcOtxLm7Dznk/Qxr0QXn+gQbkg7mCZKdfg==}
 
   '@types/eslint-scope@3.7.7':
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
@@ -2962,7 +2962,7 @@ snapshots:
 
   '@tsconfig/recommended@1.0.7': {}
 
-  '@types/chai@4.3.17': {}
+  '@types/chai@4.3.18': {}
 
   '@types/eslint-scope@3.7.7':
     dependencies:

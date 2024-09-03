@@ -19,7 +19,7 @@
         "laravel-vite-plugin": "^1.0.5",
         "lodash": "^4.17.21",
         "pinia": "^2.2.2",
-        "postcss": "^8.4.43",
+        "postcss": "^8.4.44",
         "postcss-convert-values": "^7.0.3",
         "primeicons": "^7.0.0",
         "primevue": "^3.53.0",
@@ -36,7 +36,7 @@
     },
     "devDependencies": {
         "@pinia/testing": "^0.1.5",
-        "@swc/core": "^1.7.22",
+        "@swc/core": "^1.7.23",
         "@tsconfig/recommended": "^1.0.7",
         "@types/chai": "^4.3.19",
         "@types/jest": "^29.5.12",

@@ -19,7 +19,7 @@
         "laravel-vite-plugin": "^1.0.5",
         "lodash": "^4.17.21",
         "pinia": "^2.2.2",
-        "postcss": "^8.4.43",
+        "postcss": "^8.4.44",
         "postcss-convert-values": "^7.0.3",
         "primeicons": "^7.0.0",
         "primevue": "^3.53.0",

@@ -9,7 +9,7 @@ import CmpToast from "../Components/CmpToast.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
@@ -137,7 +137,7 @@ onMounted(() => {
                 show-gridlines
                 :paginator="true"
                 :rows="10"
-                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rows-per-page-options="[10, 20, 50, 100]"
                 filter-display="menu"
             >

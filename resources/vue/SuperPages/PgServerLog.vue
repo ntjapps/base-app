@@ -9,8 +9,8 @@ import axios from "axios";
 import CmpLayout from "../Components/CmpLayout.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import Calendar from "primevue/calendar";
-import Dropdown from "primevue/dropdown";
+import DatePicker from "primevue/datepicker";
+import Select from "primevue/select";
 import InputText from "primevue/inputtext";
 
 const timeGreet = timeGreetings();
@@ -26,7 +26,7 @@ type ServerLogDataType = Array<{
     created_at: string;
     updated_at: string;
 }>;
-type LogLevelDropdownType = Array<{
+type LogLevelSelectType = Array<{
     label: string;
     value: string;
 }>;
@@ -35,7 +35,7 @@ const loadingstat = ref<boolean>(true);
 const serverLogData = ref<Array<ServerLogDataType>>(Array<ServerLogDataType>());
 const dateStartData = ref<Date>(new Date());
 const dateEndData = ref<Date>(new Date());
-const logLevelDropdown = ref<LogLevelDropdownType>([
+const logLevelSelect = ref<LogLevelSelectType>([
     { label: "All", value: "all" },
     { label: "Debug", value: "debug" },
     { label: "Info", value: "info" },
@@ -91,7 +91,7 @@ onBeforeMount(() => {
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Date Start</div>
                     <div class="flex w-full text-sm m-auto">
-                        <Calendar
+                        <DatePicker
                             v-model="dateStartData"
                             date-format="dd/mm/yy"
                             class="w-full"
@@ -101,7 +101,7 @@ onBeforeMount(() => {
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Date End</div>
                     <div class="flex w-full text-sm m-auto">
-                        <Calendar
+                        <DatePicker
                             v-model="dateEndData"
                             date-format="dd/mm/yy"
                             class="w-full"
@@ -115,9 +115,9 @@ onBeforeMount(() => {
                         Log Level Minimal
                     </div>
                     <div class="flex w-full text-sm m-auto">
-                        <Dropdown
+                        <Select
                             v-model="logLevelData"
-                            :options="logLevelDropdown"
+                            :options="logLevelSelect"
                             option-label="label"
                             option-value="value"
                             placeholder="Select a Log Level"
@@ -168,7 +168,7 @@ onBeforeMount(() => {
                 show-gridlines
                 :paginator="true"
                 :rows="20"
-                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rows-per-page-options="[10, 20, 50, 100]"
                 :loading="loadingstat"
             >

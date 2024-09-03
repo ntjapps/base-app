@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f708b109508b04d29bfeeb890051450b",
+    "content-hash": "26a8a48df88c14ab1281aae52f6eb834",
     "packages": [
         {
             "name": "brick/math",
@@ -2231,16 +2231,16 @@
         },
         {
             "name": "laravel/reverb",
-            "version": "v1.0.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/reverb.git",
-                "reference": "15e192405d39ce66a845e56ccefc207cd73c3429"
+                "reference": "d4993bc6b8664d439c1c7d248bd25ef371e532cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/reverb/zipball/15e192405d39ce66a845e56ccefc207cd73c3429",
-                "reference": "15e192405d39ce66a845e56ccefc207cd73c3429",
+                "url": "https://api.github.com/repos/laravel/reverb/zipball/d4993bc6b8664d439c1c7d248bd25ef371e532cf",
+                "reference": "d4993bc6b8664d439c1c7d248bd25ef371e532cf",
                 "shasum": ""
             },
             "require": {
@@ -2307,9 +2307,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/reverb/issues",
-                "source": "https://github.com/laravel/reverb/tree/v1.0.0"
+                "source": "https://github.com/laravel/reverb/tree/v1.2.0"
             },
-            "time": "2024-07-02T19:11:48+00:00"
+            "time": "2024-08-16T17:59:50+00:00"
         },
         {
             "name": "laravel/serializable-closure",

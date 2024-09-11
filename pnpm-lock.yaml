@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@primevue/core':
-        specifier: ^4.0.5
-        version: 4.0.5(vue@3.5.3(typescript@5.5.4))
+        specifier: ^4.0.6
+        version: 4.0.6(vue@3.5.3(typescript@5.5.4))
       '@vitejs/plugin-vue':
         specifier: ^5.1.3
         version: 5.1.3(vite@5.4.3(@types/node@22.5.4)(sass@1.78.0)(terser@5.31.6))(vue@3.5.3(typescript@5.5.4))
@@ -438,6 +438,12 @@ packages:
 
   '@primevue/core@4.0.5':
     resolution: {integrity: sha512-DUCslDA93eUOVW0A1I3yoZgRLI4zmI2++loZQXbUF5jaXCwKiAza14+iyUU+cWH27VSq+jQnCEP9QJtPZiJJ0w==}
+    engines: {node: '>=12.11.0'}
+    peerDependencies:
+      vue: ^3.0.0
+
+  '@primevue/core@4.0.6':
+    resolution: {integrity: sha512-IVIq2U++usVC8ghA/F6JTgWhsLTn8OQxqwKGBAdO20i8z9fjKOOzqITEemqwjguzZL5MOLDCh8KR4KADduZYgQ==}
     engines: {node: '>=12.11.0'}
     peerDependencies:
       vue: ^3.0.0
@@ -2882,6 +2888,12 @@ snapshots:
   '@primeuix/utils@0.0.5': {}
 
   '@primevue/core@4.0.5(vue@3.5.3(typescript@5.5.4))':
+    dependencies:
+      '@primeuix/styled': 0.0.5
+      '@primeuix/utils': 0.0.5
+      vue: 3.5.3(typescript@5.5.4)
+
+  '@primevue/core@4.0.6(vue@3.5.3(typescript@5.5.4))':
     dependencies:
       '@primeuix/styled': 0.0.5
       '@primeuix/utils': 0.0.5

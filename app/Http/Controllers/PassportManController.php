@@ -26,7 +26,7 @@ class PassportManController extends Controller
     public function passportManPage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User open passport management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
+        Log::debug('User open passport management page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return view('base-components.base-vue', [
             'title' => __('app.page.passport'),
@@ -40,7 +40,7 @@ class PassportManController extends Controller
     public function listPassportClients(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User list all passport clients', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User list all passport clients', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         $client = Passport::client()->orderBy('name', 'asc')->get()->map(function (Client $client) {
             return collect($client)->merge([
@@ -57,7 +57,7 @@ class PassportManController extends Controller
     public function resetClientSecret(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
@@ -70,7 +70,7 @@ class PassportManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::notice('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::notice('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         /** Generate new secret */
         $secret = $validated['old_secret'] ?? Str::random(40);
@@ -88,7 +88,7 @@ class PassportManController extends Controller
     public function deletePassportClient(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User delete passport client', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User delete passport client', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
@@ -100,7 +100,7 @@ class PassportManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::notice('User delete passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::notice('User delete passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         $client = Passport::client()->where('id', $validated['id'])->first();
 
@@ -119,7 +119,7 @@ class PassportManController extends Controller
     public function updatePassportClient(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User update passport client', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User update passport client', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
@@ -133,7 +133,7 @@ class PassportManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::notice('User update passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::notice('User update passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         $client = Passport::client()->where('id', $validated['id'])->first();
 
@@ -154,7 +154,7 @@ class PassportManController extends Controller
     public function createPassportClient(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User create passport client', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User create passport client', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
@@ -167,9 +167,9 @@ class PassportManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::notice('User create passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::notice('User create passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
-        $client = (new ClientRepository())->create(null, $validated['name'], $validated['redirect'] ?? '');
+        $client = (new ClientRepository)->create(null, $validated['name'], $validated['redirect'] ?? '');
         $secret = Str::random(40);
 
         $client->forceFill([

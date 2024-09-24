@@ -26,7 +26,7 @@ class BasicNotificationTest extends AuthTestCase
     public function test_notification_exist(): void
     {
         $user = $this->commonSeedTestData();
-        Notification::send($user, new TestNotification());
+        Notification::send($user, new TestNotification);
 
         $this->assertDatabaseHas('notifications', [
             'type' => 'App\Notifications\TestNotification',
@@ -44,7 +44,7 @@ class BasicNotificationTest extends AuthTestCase
     public function test_notification_mark_as_read(): void
     {
         $user = $this->commonSeedTestData();
-        Notification::send($user, new TestNotification());
+        Notification::send($user, new TestNotification);
 
         $listOfNotification = $user->notifications->toArray();
 
@@ -66,7 +66,7 @@ class BasicNotificationTest extends AuthTestCase
     public function test_notification_mark_as_read_by_id(): void
     {
         $user = $this->commonSeedTestData();
-        Notification::send($user, new TestNotification());
+        Notification::send($user, new TestNotification);
 
         $listOfNotification = $user->notifications->toArray();
 

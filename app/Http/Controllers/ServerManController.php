@@ -27,7 +27,7 @@ class ServerManController extends Controller
     public function serverLogs(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
+        Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return view('base-components.base-vue', [
             'pageTitle' => 'Server Logs',
@@ -41,7 +41,7 @@ class ServerManController extends Controller
     public function getServerLogs(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User get server log', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User get server log', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [
@@ -57,7 +57,7 @@ class ServerManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User get server log validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::info('User get server log validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         $data = ServerLog::when($validated['date_start'] ?? null, function ($query, $date_start) {
             return $query->where('created_at', '>=', Carbon::parse($date_start, 'Asia/Jakarta')->startOfDay());
@@ -82,7 +82,7 @@ class ServerManController extends Controller
     public function postClearAppCache(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User clear app cache', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User clear app cache', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Clear Cache */
         Cache::flush();

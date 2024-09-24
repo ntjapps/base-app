@@ -4,12 +4,7 @@ namespace Tests\Feature;
 
 use App\Interfaces\InterfaceClass;
 use App\Models\PassportClient;
-use App\Models\Permission;
-use App\Models\PermissionPrivilege;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\AuthTestCase;
-use Tests\TestCase;
 
 class BasicPassportManTest extends AuthTestCase
 {

@@ -19,7 +19,7 @@ class DashController extends Controller
     public function dashboardPage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User accessed dashboard page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
+        Log::debug('User accessed dashboard page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return view('base-components.base-vue', [
             'pageTitle' => 'Dashboard',

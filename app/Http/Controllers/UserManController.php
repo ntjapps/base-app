@@ -31,7 +31,7 @@ class UserManController extends Controller
     public function userManPage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User open user role management page', ['userId' => $user?->id, 'userName' => $user?->name, 'remoteIp' => $request->ip()]);
+        Log::debug('User open user role management page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return view('base-components.base-vue', [
             'pageTitle' => 'User Role Management',
@@ -45,7 +45,7 @@ class UserManController extends Controller
     public function getUserList(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting get user list for User Role Management', ['userId' => $user?->id, 'uwserName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User is requesting get user list for User Role Management', ['userId' => $user?->id, 'uwserName' => $user?->name, 'route' => $request->route()->getName()]);
 
         $data = User::with(['roles' => function ($query) {
             return $query->orderBy('name');
@@ -73,7 +73,7 @@ class UserManController extends Controller
     public function getUserRolePerm(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return response()->json([
             'roles' => Cache::tags([Role::class])->remember(Role::class.'-orderBy-name', Carbon::now()->addYear(), function () {
@@ -94,7 +94,7 @@ class UserManController extends Controller
     public function postUserManSubmit(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting submit user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User is requesting submit user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [
@@ -111,7 +111,7 @@ class UserManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User submit user role and permission for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::info('User submit user role and permission for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         (bool) $isRestored = false;
 
@@ -134,7 +134,7 @@ class UserManController extends Controller
         DB::beginTransaction();
         try {
             if ($validated['type_create']) {
-                $user = User::withTrashed()->where('username', $validated['username'])->first() ?? new User();
+                $user = User::withTrashed()->where('username', $validated['username'])->first() ?? new User;
                 $user->username = $validated['username'];
                 $user->name = $validated['name'];
                 $user->password = Hash::make(config('auth.defaults.reset_password_data'));
@@ -163,10 +163,10 @@ class UserManController extends Controller
 
             DB::commit();
 
-            Log::notice('User successfully submit user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+            Log::notice('User successfully submit user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('User failed submit user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'error' => $e->getMessage()]);
+            Log::error('User failed submit user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'error' => $e->getMessage()]);
             throw $e;
         }
 
@@ -183,7 +183,7 @@ class UserManController extends Controller
     public function postDeleteUserManSubmit(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting delete user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User is requesting delete user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [
@@ -195,12 +195,12 @@ class UserManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User delete user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::info('User delete user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         $user = User::where('id', $validated['id'])->first();
         $user->delete();
 
-        Log::warning('User successfully delete user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::warning('User successfully delete user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return $this->jsonSuccess('User deleted successfully', 'User deleted successfully');
     }
@@ -211,7 +211,7 @@ class UserManController extends Controller
     public function postResetPasswordUserManSubmit(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting reset password user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::debug('User is requesting reset password user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [
@@ -223,13 +223,13 @@ class UserManController extends Controller
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('User reset password user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::info('User reset password user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         $user = User::where('id', $validated['id'])->first();
         $user->password = Hash::make(config('auth.defaults.reset_password_data'));
         $user->save();
 
-        Log::warning('User successfully reset password user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'apiUserIp' => $request->ip()]);
+        Log::warning('User successfully reset password user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return $this->jsonSuccess('User password reset successfully', 'User password reset successfully');
     }

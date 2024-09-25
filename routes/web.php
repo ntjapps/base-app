@@ -34,6 +34,14 @@ Route::get('/php-debug', function () {
     }
 });
 
+Route::get('/php-ip-detect', function () {
+    if (! app()->environment('local')) {
+        return response()->json(['status' => 'error', 'message' => 'This feature is only available in local environment.'], 403);
+    } else {
+        return response()->json(['status' => 'success', 'ip' => request()->ip()]);
+    }
+});
+
 /** Route for login redirect */
 Route::get('/login-redirect', function () {
     return redirect(route('landing-page'));

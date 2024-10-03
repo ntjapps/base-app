@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from "vue";
-import { storeToRefs } from "pinia";
-import { timeGreetings } from "../AppCommon";
-import { useApiStore, useMainStore } from "../AppState";
+import { ref, onBeforeMount } from 'vue';
+import { storeToRefs } from 'pinia';
+import { timeGreetings } from '../AppCommon';
+import { useApiStore, useMainStore } from '../AppState';
 
-import axios from "axios";
+import axios from 'axios';
 
-import CmpLayout from "../Components/CmpLayout.vue";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import DatePicker from "primevue/datepicker";
-import Select from "primevue/select";
-import InputText from "primevue/inputtext";
+import CmpLayout from '../Components/CmpLayout.vue';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import DatePicker from 'primevue/datepicker';
+import Select from 'primevue/select';
+import InputText from 'primevue/inputtext';
 
 const timeGreet = timeGreetings();
 const api = useApiStore();
@@ -36,19 +36,19 @@ const serverLogData = ref<Array<ServerLogDataType>>(Array<ServerLogDataType>());
 const dateStartData = ref<Date>(new Date());
 const dateEndData = ref<Date>(new Date());
 const logLevelSelect = ref<LogLevelSelectType>([
-    { label: "All", value: "all" },
-    { label: "Debug", value: "debug" },
-    { label: "Info", value: "info" },
-    { label: "Notice", value: "notice" },
-    { label: "Warning", value: "warning" },
-    { label: "Error", value: "error" },
-    { label: "Critical", value: "critical" },
-    { label: "Alert", value: "alert" },
-    { label: "Emergency", value: "emergency" },
+    { label: 'All', value: 'all' },
+    { label: 'Debug', value: 'debug' },
+    { label: 'Info', value: 'info' },
+    { label: 'Notice', value: 'notice' },
+    { label: 'Warning', value: 'warning' },
+    { label: 'Error', value: 'error' },
+    { label: 'Critical', value: 'critical' },
+    { label: 'Alert', value: 'alert' },
+    { label: 'Emergency', value: 'emergency' },
 ]);
-const logLevelData = ref<string>("all");
-const logMessageData = ref<string>("");
-const logExtraData = ref<string>("");
+const logLevelData = ref<string>('all');
+const logMessageData = ref<string>('');
+const logExtraData = ref<string>('');
 
 const getServerLogData = () => {
     loadingstat.value = true;
@@ -91,35 +91,25 @@ onBeforeMount(() => {
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Date Start</div>
                     <div class="flex w-full text-sm m-auto">
-                        <DatePicker
-                            v-model="dateStartData"
-                            date-format="dd/mm/yy"
-                            class="w-full"
-                        />
+                        <DatePicker v-model="dateStartData" dateFormat="dd/mm/yy" class="w-full" />
                     </div>
                 </div>
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Date End</div>
                     <div class="flex w-full text-sm m-auto">
-                        <DatePicker
-                            v-model="dateEndData"
-                            date-format="dd/mm/yy"
-                            class="w-full"
-                        />
+                        <DatePicker v-model="dateEndData" dateFormat="dd/mm/yy" class="w-full" />
                     </div>
                 </div>
             </div>
             <div class="flex flex-row my-2">
                 <div class="flex w-full px-1">
-                    <div class="w-28 my-auto text-sm m-auto">
-                        Log Level Minimal
-                    </div>
+                    <div class="w-28 my-auto text-sm m-auto">Log Level Minimal</div>
                     <div class="flex w-full text-sm m-auto">
                         <Select
                             v-model="logLevelData"
                             :options="logLevelSelect"
-                            option-label="label"
-                            option-value="value"
+                            optionLabel="label"
+                            optionValue="value"
                             placeholder="Select a Log Level"
                             class="w-full"
                         />
@@ -140,20 +130,13 @@ onBeforeMount(() => {
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Log Extra</div>
                     <div class="flex w-full text-sm m-auto">
-                        <InputText
-                            v-model="logExtraData"
-                            class="w-full"
-                            placeholder="Log Extra"
-                        />
+                        <InputText v-model="logExtraData" class="w-full" placeholder="Log Extra" />
                     </div>
                 </div>
                 <div class="flex w-full">
                     <div class="w-28 my-auto text-sm m-auto"></div>
                     <div class="flex w-full text-sm m-auto">
-                        <button
-                            class="btn btn-success"
-                            @click="getServerLogData"
-                        >
+                        <button class="btn btn-success" @click="getServerLogData">
                             <i class="pi pi-search m-1" />
                             <span class="m-1">Search</span>
                         </button>
@@ -165,32 +148,25 @@ onBeforeMount(() => {
             <DataTable
                 class="p-datatable-sm text-sm"
                 :value="serverLogData"
-                show-gridlines
+                showGridlines
                 :paginator="true"
                 :rows="20"
-                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                :rows-per-page-options="[10, 20, 50, 100]"
+                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
+                :rowsPerPageOptions="[10, 20, 50, 100]"
                 :loading="loadingstat"
             >
                 <template #footer>
-                    <div class="flex text-sm">
-                        Total records: {{ serverLogData.length }}
-                    </div>
+                    <div class="flex text-sm">Total records: {{ serverLogData.length }}</div>
                 </template>
                 <template #empty>
                     <div class="flex justify-center">No data found</div>
                 </template>
                 <template #loading>
-                    <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data.
-                    Please wait.
+                    <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data. Please wait.
                 </template>
                 <Column field="created_at" header="Log Date">
                     <template #body="slotProps">
-                        {{
-                            new Date(slotProps.data.created_at).toLocaleString(
-                                "en-UK",
-                            )
-                        }}
+                        {{ new Date(slotProps.data.created_at).toLocaleString('en-UK') }}
                     </template>
                 </Column>
                 <Column field="message" header="Log Message" />

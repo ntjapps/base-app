@@ -3,45 +3,44 @@ export default {
         class: [
             // Misc
             {
-                "opacity-60 select-none pointer-events-none cursor-default":
-                    props.disabled,
+                'opacity-60 select-none pointer-events-none cursor-default': props.disabled,
             },
         ],
     }),
     range: {
         class: [
             // Stroke
-            "stroke-current",
+            'stroke-current',
 
             // Color
-            "stroke-surface-200 dark:stroke-surface-700",
+            'stroke-surface-200 dark:stroke-surface-700',
 
             // Fill
-            "fill-none",
+            'fill-none',
 
             // Transition
-            "transition duration-100 ease-in",
+            'transition duration-100 ease-in',
         ],
     },
     value: {
         class: [
             // Animation
-            "animate-dash-frame",
+            'animate-dash-frame',
 
             // Color
-            "stroke-primary",
+            'stroke-primary',
 
             // Fill
-            "fill-none",
+            'fill-none',
         ],
     },
     label: {
         class: [
             // Text Style
-            "text-center text-xl",
+            'text-center text-xl',
 
             // Color
-            "fill-surface-600 dark:fill-surface-200",
+            'fill-surface-600 dark:fill-surface-200',
         ],
     },
 };

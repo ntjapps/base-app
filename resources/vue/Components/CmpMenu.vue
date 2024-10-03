@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
+import { storeToRefs } from 'pinia';
 
-import { useMainStore } from "../AppState";
+import { useMainStore } from '../AppState';
 
-import PanelMenu from "primevue/panelmenu";
+import PanelMenu from 'primevue/panelmenu';
 
 const main = useMainStore();
 const { appName, menuItems } = storeToRefs(main);

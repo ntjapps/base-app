@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from "vue";
-import { storeToRefs } from "pinia";
-import { timeGreetings } from "../AppCommon";
-import { useMainStore } from "../AppState";
+import { ref, onBeforeMount } from 'vue';
+import { storeToRefs } from 'pinia';
+import { timeGreetings } from '../AppCommon';
+import { useMainStore } from '../AppState';
 
-import CmpLayout from "../Components/CmpLayout.vue";
+import CmpLayout from '../Components/CmpLayout.vue';
 
 const timeGreet = timeGreetings();
 const main = useMainStore();
 const { appName, userName } = storeToRefs(main);
 
-const clock = ref<string | null>(new Date().toLocaleString("en-UK"));
+const clock = ref<string | null>(new Date().toLocaleString('en-UK'));
 
 onBeforeMount(() => {
     /** Ticking clock */
     setInterval(() => {
-        clock.value = new Date().toLocaleString("en-UK");
+        clock.value = new Date().toLocaleString('en-UK');
     });
 });
 </script>

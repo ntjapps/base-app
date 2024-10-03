@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from "vue";
-import { storeToRefs } from "pinia";
-import { useEchoStore } from "../AppState";
+import { ref, onBeforeMount } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useEchoStore } from '../AppState';
 
-import { useMainStore } from "../AppState";
+import { useMainStore } from '../AppState';
 
-import Button from "primevue/button";
+import Button from 'primevue/button';
 
-import IconChartBar from "../Icons/IconChartBar.vue";
+import IconChartBar from '../Icons/IconChartBar.vue';
 
-const pusherState = ref<string>("connecting");
+const pusherState = ref<string>('connecting');
 const connected = ref<boolean>(false);
 const connecting = ref<boolean>(true);
 const unavailable = ref<boolean>(false);
@@ -25,9 +25,9 @@ const showConnected = () => {
     connecting.value = false;
     unavailable.value = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    echo.private("all").error((error: any) => {
+    echo.private('all').error((error: any) => {
         if (error.status >= 400 && error.status < 500) {
-            console.error("Pusher error", error);
+            console.error('Pusher error', error);
         }
     });
 };
@@ -51,10 +51,10 @@ onBeforeMount(() => {
     setInterval(() => {
         pusherState.value = echo.connector.pusher.connection.state;
         switch (pusherState.value) {
-            case "connecting":
+            case 'connecting':
                 showConnecting();
                 break;
-            case "connected":
+            case 'connected':
                 showConnected();
                 break;
             default:

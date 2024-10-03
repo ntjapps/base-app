@@ -1,150 +1,143 @@
 export default {
     root: ({ props }) => ({
         class: [
-            "relative",
+            'relative',
 
             // Size
             {
-                "h-[3px]": props.orientation == "horizontal",
-                "w-[3px]": props.orientation == "vertical",
+                'h-[3px]': props.orientation == 'horizontal',
+                'w-[3px]': props.orientation == 'vertical',
             },
 
             // Shape
-            "border-0",
-            "rounded-md",
+            'border-0',
+            'rounded-md',
 
             // Colors
-            "bg-surface-200 dark:bg-surface-800",
+            'bg-surface-200 dark:bg-surface-800',
 
             // States
             {
-                "opacity-60 select-none pointer-events-none cursor-default":
-                    props.disabled,
+                'opacity-60 select-none pointer-events-none cursor-default': props.disabled,
             },
         ],
     }),
     range: ({ props }) => ({
         class: [
             // Position
-            "block absolute",
+            'block absolute',
             {
-                "top-0 left-0": props.orientation == "horizontal",
-                "bottom-0 left-0": props.orientation == "vertical",
+                'top-0 left-0': props.orientation == 'horizontal',
+                'bottom-0 left-0': props.orientation == 'vertical',
             },
 
             //Size
             {
-                "h-full": props.orientation == "horizontal",
-                "w-full": props.orientation == "vertical",
+                'h-full': props.orientation == 'horizontal',
+                'w-full': props.orientation == 'vertical',
             },
 
             // Shape
-            "rounded-md",
+            'rounded-md',
 
             // Colors
-            "bg-primary",
+            'bg-primary',
         ],
     }),
     handle: ({ props }) => ({
         class: [
-            "flex items-center justify-center",
+            'flex items-center justify-center',
 
             // Size
-            "h-[20px]",
-            "w-[20px]",
+            'h-[20px]',
+            'w-[20px]',
             {
-                "top-[50%] -mt-[10px] -ml-[10px]":
-                    props.orientation == "horizontal",
-                "left-[50%] -mb-[10px] -ml-[10px]":
-                    props.orientation == "vertical",
+                'top-[50%] -mt-[10px] -ml-[10px]': props.orientation == 'horizontal',
+                'left-[50%] -mb-[10px] -ml-[10px]': props.orientation == 'vertical',
             },
 
             // Shape
-            "rounded-full",
+            'rounded-full',
 
-            "before:block before:w-[16px] before:h-[16px] before:rounded-full before:bg-surface-0 dark:before:bg-surface-950 before:shadow-md",
+            'before:block before:w-[16px] before:h-[16px] before:rounded-full before:bg-surface-0 dark:before:bg-surface-950 before:shadow-md',
 
             // Colors
-            "bg-surface-200 dark:bg-surface-800",
+            'bg-surface-200 dark:bg-surface-800',
 
             // States
-            "focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-1",
-            "ring-primary-500 dark:ring-primary-400",
+            'focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-1',
+            'ring-primary-500 dark:ring-primary-400',
 
             // Transitions
-            "transition duration-200",
+            'transition duration-200',
 
             // Misc
-            "cursor-grab",
-            "touch-action-none",
+            'cursor-grab',
+            'touch-action-none',
         ],
     }),
     starthandler: ({ props }) => ({
         class: [
-            "flex items-center justify-center",
+            'flex items-center justify-center',
 
             // Size
-            "h-[20px]",
-            "w-[20px]",
+            'h-[20px]',
+            'w-[20px]',
             {
-                "top-[50%] -mt-[10px] -ml-[10px]":
-                    props.orientation == "horizontal",
-                "left-[50%] -mb-[10px] -ml-[10px]":
-                    props.orientation == "vertical",
+                'top-[50%] -mt-[10px] -ml-[10px]': props.orientation == 'horizontal',
+                'left-[50%] -mb-[10px] -ml-[10px]': props.orientation == 'vertical',
             },
 
             // Shape
-            "rounded-full",
+            'rounded-full',
 
-            "before:block before:w-[16px] before:h-[16px] before:rounded-full before:bg-surface-0 dark:before:bg-surface-950 before:shadow-md",
+            'before:block before:w-[16px] before:h-[16px] before:rounded-full before:bg-surface-0 dark:before:bg-surface-950 before:shadow-md',
 
             // Colors
-            "bg-surface-200 dark:bg-surface-800",
+            'bg-surface-200 dark:bg-surface-800',
 
             // States
-            "focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-1",
-            "ring-primary-500 dark:ring-primary-400",
+            'focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-1',
+            'ring-primary-500 dark:ring-primary-400',
 
             // Transitions
-            "transition duration-200",
+            'transition duration-200',
 
             // Misc
-            "cursor-grab",
-            "touch-action-none",
+            'cursor-grab',
+            'touch-action-none',
         ],
     }),
     endhandler: ({ props }) => ({
         class: [
-            "flex items-center justify-center",
+            'flex items-center justify-center',
 
             // Size
-            "h-[20px]",
-            "w-[20px]",
+            'h-[20px]',
+            'w-[20px]',
             {
-                "top-[50%] -mt-[10px] -ml-[10px]":
-                    props.orientation == "horizontal",
-                "left-[50%] -mb-[10px] -ml-[10px]":
-                    props.orientation == "vertical",
+                'top-[50%] -mt-[10px] -ml-[10px]': props.orientation == 'horizontal',
+                'left-[50%] -mb-[10px] -ml-[10px]': props.orientation == 'vertical',
             },
 
             // Shape
-            "rounded-full",
+            'rounded-full',
 
-            "before:block before:w-[16px] before:h-[16px] before:rounded-full before:bg-surface-0 dark:before:bg-surface-950 before:shadow-md",
+            'before:block before:w-[16px] before:h-[16px] before:rounded-full before:bg-surface-0 dark:before:bg-surface-950 before:shadow-md',
 
             // Colors
-            "bg-surface-200 dark:bg-surface-800",
+            'bg-surface-200 dark:bg-surface-800',
 
             // States
-            "focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-1",
-            "ring-primary-500 dark:ring-primary-400",
+            'focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-1',
+            'ring-primary-500 dark:ring-primary-400',
 
             // Transitions
-            "transition duration-200",
+            'transition duration-200',
 
             // Misc
-            "cursor-grab",
-            "touch-action-none",
+            'cursor-grab',
+            'touch-action-none',
         ],
     }),
 };

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import axios from "axios";
-import { ref } from "vue";
-import { storeToRefs } from "pinia";
-import { useApiStore, useMainStore } from "../AppState";
+import axios from 'axios';
+import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useApiStore, useMainStore } from '../AppState';
 
-import CmpLayout from "../Components/CmpLayout.vue";
-import CmpToast from "../Components/CmpToast.vue";
-import InputText from "primevue/inputtext";
-import Password from "primevue/password";
+import CmpLayout from '../Components/CmpLayout.vue';
+import CmpToast from '../Components/CmpToast.vue';
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
 
 const api = useApiStore();
 const main = useMainStore();
@@ -15,11 +15,11 @@ const { appName, userName } = storeToRefs(main);
 
 const toastchild = ref<typeof CmpToast>();
 
-const newPassword = ref<string | null>("");
-const confirmPassword = ref<string | null>("");
+const newPassword = ref<string | null>('');
+const confirmPassword = ref<string | null>('');
 
 const postProfileData = () => {
-    const redirect = "";
+    const redirect = '';
     axios
         .post(api.postProfile, {
             name: userName.value,
@@ -28,7 +28,7 @@ const postProfileData = () => {
         })
         .then((response) => {
             toastchild.value?.toastDisplay({
-                severity: "success",
+                severity: 'success',
                 summary: response.data.title,
                 detail: response.data.message,
             });
@@ -38,7 +38,7 @@ const postProfileData = () => {
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
-                severity: "error",
+                severity: 'error',
                 summary: error.response.data.title,
                 detail: error.response.data.message,
                 response: error,
@@ -70,13 +70,13 @@ const postProfileData = () => {
                         id="newpassword"
                         v-model="newPassword"
                         class="w-full"
-                        input-class="w-full"
-                        :toggle-mask="true"
+                        inputClass="w-full"
+                        :toggleMask="true"
                         @keyup.enter="postProfileData"
                     />
                     <label class="w-full" for="newpas"
-                        >New Password (Must be filled if changing password,
-                        leave empty if don't want to change password)</label
+                        >New Password (Must be filled if changing password, leave empty if don't
+                        want to change password)</label
                     >
                 </span>
             </div>
@@ -86,14 +86,14 @@ const postProfileData = () => {
                         id="confirmpassword"
                         v-model="confirmPassword"
                         class="w-full"
-                        input-class="w-full"
-                        :toggle-mask="true"
+                        inputClass="w-full"
+                        :toggleMask="true"
                         :feedback="false"
                         @keyup.enter="postProfileData"
                     />
                     <label class="w-full" for="confi"
-                        >Confirm Password (Must be filled if changing password,
-                        leave empty if don't want to change password)</label
+                        >Confirm Password (Must be filled if changing password, leave empty if don't
+                        want to change password)</label
                     >
                 </span>
             </div>

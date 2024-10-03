@@ -11,13 +11,13 @@
 }
 
 /** Load custom CSS */
-@import "./base";
-@import "./components";
-@import "./util";
-@import "./icons";
-@import "./font";
+@import './base';
+@import './components';
+@import './util';
+@import './icons';
+@import './font';
 
-@import "primeicons/primeicons.css";
+@import 'primeicons/primeicons.css';
 
 /** X-Cloak must be at the end of all CSS */
-@import "./xcloak";
+@import './xcloak';

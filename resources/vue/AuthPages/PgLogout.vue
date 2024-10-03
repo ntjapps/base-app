@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import axios from "axios";
-import { ref, onBeforeMount } from "vue";
-import { useRouter } from "vue-router";
-import { useWebStore } from "../AppRouter";
-import { useApiStore } from "../AppState";
+import axios from 'axios';
+import { ref, onBeforeMount } from 'vue';
+import { useRouter } from 'vue-router';
+import { useWebStore } from '../AppRouter';
+import { useApiStore } from '../AppState';
 
-import CmpToast from "../Components/CmpToast.vue";
+import CmpToast from '../Components/CmpToast.vue';
 
 const web = useWebStore();
 const api = useApiStore();
@@ -20,7 +20,7 @@ onBeforeMount(() => {
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
-                severity: "error",
+                severity: 'error',
                 summary: error.response.data.title,
                 detail: error.response.data.message,
                 response: error,

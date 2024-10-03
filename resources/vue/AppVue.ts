@@ -1,16 +1,16 @@
-import { createApp, App } from "vue";
-import { createPinia, Pinia } from "pinia";
+import { createApp, App } from 'vue';
+import { createPinia, Pinia } from 'pinia';
 const pinia: Pinia = createPinia();
-import PrimeVue from "primevue/config";
-import PrimeTailwind from "./presets/custom";
+import PrimeVue from 'primevue/config';
+import PrimeTailwind from './presets/custom';
 
 /** Vue router needed for navigation menu */
-import { router } from "./AppRouter";
+import { router } from './AppRouter';
 
 /** Primevue Globals */
-import DialogService from "primevue/dialogservice";
-import ToastService from "primevue/toastservice";
-import Tooltip from "primevue/tooltip";
+import DialogService from 'primevue/dialogservice';
+import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
 
 // Mount Application Instances
 const MainApp: App<Element> = createApp({})
@@ -23,12 +23,12 @@ const MainApp: App<Element> = createApp({})
     })
     .use(DialogService)
     .use(ToastService)
-    .directive("tooltip", Tooltip);
+    .directive('tooltip', Tooltip);
 
 /** Global Composenent / Page Registration */
-import CmpAppSet from "./Components/CmpAppSet.vue";
-MainApp.component("CmpAppSet", CmpAppSet);
+import CmpAppSet from './Components/CmpAppSet.vue';
+MainApp.component('CmpAppSet', CmpAppSet);
 
 router.isReady().then(() => {
-    MainApp.mount("#app");
+    MainApp.mount('#app');
 });

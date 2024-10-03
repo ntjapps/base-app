@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import CmpHeader from "../Components/CmpHeader.vue";
-import CmpFooter from "../Components/CmpFooter.vue";
-import CmpMenu from "../Components/CmpMenu.vue";
+import CmpHeader from '../Components/CmpHeader.vue';
+import CmpFooter from '../Components/CmpFooter.vue';
+import CmpMenu from '../Components/CmpMenu.vue';
 </script>
 
 <template>

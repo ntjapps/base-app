@@ -7,7 +7,7 @@ declare const window: Window & {
 /**
  * Let's load supported browser REGEX
  */
-import { supportedBrowsers } from "./browser";
+import { supportedBrowsers } from './browser';
 window.supportedBrowsers = supportedBrowsers;
 
 /**
@@ -16,10 +16,10 @@ window.supportedBrowsers = supportedBrowsers;
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-import axios, { Axios } from "axios";
+import axios, { Axios } from 'axios';
 window.axios = axios;
 
-window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.defaults.withCredentials = true;
 
 /**
@@ -29,5 +29,5 @@ window.axios.defaults.withCredentials = true;
  *
  */
 
-import Pusher from "pusher-js";
+import Pusher from 'pusher-js';
 window.Pusher = Pusher;

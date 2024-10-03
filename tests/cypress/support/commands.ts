@@ -8,12 +8,12 @@ declare namespace Cypress {
     }
 }
 
-Cypress.Commands.add("formLogin", (username) => {
-    cy.session("login-" + username, () => {
-        cy.visit("/login-redirect");
+Cypress.Commands.add('formLogin', (username) => {
+    cy.session('login-' + username, () => {
+        cy.visit('/login-redirect');
         cy.get('[data-test="username"]').type(username);
-        cy.get('[data-test="password"]').type("password");
+        cy.get('[data-test="password"]').type('password');
         cy.get('[data-test="login"]').click();
-        cy.url().should("include", "/dashboard");
+        cy.url().should('include', '/dashboard');
     });
 });

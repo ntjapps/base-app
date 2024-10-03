@@ -1,8 +1,8 @@
-import { defineConfig, loadEnv } from "vite";
-import vue from "@vitejs/plugin-vue";
-import laravel from "laravel-vite-plugin";
+import { defineConfig, loadEnv } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import laravel from 'laravel-vite-plugin';
 
-process.env = { ...process.env, ...loadEnv("", process.cwd()) };
+process.env = { ...process.env, ...loadEnv('', process.cwd()) };
 
 export default defineConfig({
     server: {
@@ -10,12 +10,12 @@ export default defineConfig({
         hmr: {
             host:
                 process.env.VITE_PUSHER_HOST ??
-                "docker.localhost" /* Set base URL for Hot Module Reload */,
+                'docker.localhost' /* Set base URL for Hot Module Reload */,
         },
     },
     plugins: [
         laravel({
-            input: ["resources/ts/app.ts", "resources/css/app.scss"],
+            input: ['resources/ts/app.ts', 'resources/css/app.scss'],
             refresh: true,
         }),
         vue({
@@ -29,7 +29,7 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            vue: "vue/dist/vue.esm-bundler.js",
+            vue: 'vue/dist/vue.esm-bundler.js',
         },
     },
     build: {
@@ -37,16 +37,10 @@ export default defineConfig({
             output: {
                 compact: true,
                 manualChunks: {
-                    vendor: [
-                        "vue",
-                        "vue-router",
-                        "axios",
-                        "pinia",
-                        "pusher-js",
-                    ],
+                    vendor: ['vue', 'vue-router', 'axios', 'pinia', 'pusher-js'],
                 },
             },
         },
-        manifest: "manifest.json",
+        manifest: 'manifest.json',
     },
 });

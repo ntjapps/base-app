@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 
-import Dialog from "primevue/dialog";
+import Dialog from 'primevue/dialog';
 
 const props = defineProps({
     dialogTypeSuccess: {
@@ -17,12 +17,12 @@ const props = defineProps({
     dialogHeaderProps: {
         type: String,
         required: false,
-        default: "Dialog Header",
+        default: 'Dialog Header',
     },
     dialogMessageProps: {
         type: String,
         required: false,
-        default: "Dialog Message",
+        default: 'Dialog Message',
     },
 });
 
@@ -58,12 +58,7 @@ defineExpose({
 </script>
 
 <template>
-    <Dialog
-        :visible="dialogOpen"
-        :modal="true"
-        :draggable="false"
-        :closable="false"
-    >
+    <Dialog :visible="dialogOpen" :modal="true" :draggable="false" :closable="false">
         <template #default>
             <div class="flex w-full justify-center my-2.5 text-lg font-bold">
                 <i
@@ -79,9 +74,7 @@ defineExpose({
                 {{ props.dialogMessageProps }}
             </div>
             <div class="flex w-full justify-center my-2.5">
-                <button class="btn btn-primary" @click="closeDialog">
-                    Close
-                </button>
+                <button class="btn btn-primary" @click="closeDialog">Close</button>
             </div>
         </template>
     </Dialog>

@@ -1,6 +1,6 @@
 services:
-  base_postgres: # FAIR WARNING, POSTGRESQL have limited support for Case Sensitivity!
-    image: postgres:alpine
+  base_postgres:
+    image: postgres:16-alpine
     command:
       [
         "postgres",

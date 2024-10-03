@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-import { useMainStore } from "../AppState";
+import { storeToRefs } from 'pinia';
+import { useMainStore } from '../AppState';
 
-import CmpPusherState from "./CmpPusherState.vue";
-import CmpClearCacheButton from "./CmpClearCacheButton.vue";
-
-const main = useMainStore();
-const { browserSuppport } = storeToRefs(main);
+import CmpPusherState from './CmpPusherState.vue';
+import CmpClearCacheButton from './CmpClearCacheButton.vue';
 
 const props = defineProps({
     pageTitle: {
         type: String,
-        default: "",
+        default: '',
     },
 });
+const main = useMainStore();
+const { browserSuppport } = storeToRefs(main);
 </script>
 
 <template>
@@ -29,10 +28,7 @@ const props = defineProps({
                 <div class="flex justify-end w-full my-auto">
                     <CmpClearCacheButton />
                     <CmpPusherState v-if="browserSuppport" />
-                    <button
-                        v-if="!browserSuppport"
-                        class="btn btn-sm btn-error"
-                    >
+                    <button v-if="!browserSuppport" class="btn btn-sm btn-error">
                         <i class="pi pi-times m-1" />
                         <span class="m-1">Browser Unsupported</span>
                     </button>

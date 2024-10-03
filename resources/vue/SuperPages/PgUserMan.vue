@@ -1,25 +1,19 @@
 <script setup lang="ts">
-import axios from "axios";
-import { ref, onBeforeMount } from "vue";
-import { timeGreetings, UserDataInterface } from "../AppCommon";
-import { useApiStore, useMainStore } from "../AppState";
-import { useDialog } from "primevue/usedialog";
+import axios from 'axios';
+import { ref, onBeforeMount } from 'vue';
+import { timeGreetings, UserDataInterface } from '../AppCommon';
+import { useApiStore, useMainStore } from '../AppState';
+import { useDialog } from 'primevue/usedialog';
 
-import CmpToast from "../Components/CmpToast.vue";
-import CmpLayout from "../Components/CmpLayout.vue";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import InputText from "primevue/inputtext";
-import Breadcrumb from "primevue/breadcrumb";
-import { FilterMatchMode } from "@primevue/core/api";
+import CmpToast from '../Components/CmpToast.vue';
+import CmpLayout from '../Components/CmpLayout.vue';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import InputText from 'primevue/inputtext';
+import Breadcrumb from 'primevue/breadcrumb';
+import { FilterMatchMode } from '@primevue/core/api';
 
-import DialogUserMan from "../DialogComponents/DialogUserMan.vue";
-
-const api = useApiStore();
-const main = useMainStore();
-const timeGreet = timeGreetings();
-const dialog = useDialog();
-const toastchild = ref<typeof CmpToast>();
+import DialogUserMan from '../DialogComponents/DialogUserMan.vue';
 
 const props = defineProps({
     appName: {
@@ -32,9 +26,14 @@ const props = defineProps({
     },
     expandedKeysProps: {
         type: String,
-        default: "",
+        default: '',
     },
 });
+const api = useApiStore();
+const main = useMainStore();
+const timeGreet = timeGreetings();
+const dialog = useDialog();
+const toastchild = ref<typeof CmpToast>();
 
 const userListData = ref(Array<UserDataInterface>());
 const loading = ref<boolean>(false);
@@ -57,7 +56,7 @@ const getUserListData = () => {
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
-                severity: "error",
+                severity: 'error',
                 summary: error.response.data.title,
                 detail: error.response.data.message,
                 response: error,
@@ -67,7 +66,7 @@ const getUserListData = () => {
 };
 
 const showViewButton = (data: string | null | undefined): boolean => {
-    if (data !== "" && data !== null && data !== undefined) {
+    if (data !== '' && data !== null && data !== undefined) {
         return true;
     } else {
         return false;
@@ -77,7 +76,7 @@ const showViewButton = (data: string | null | undefined): boolean => {
 const openEditUserDialog = (data: UserDataInterface | null) => {
     dialog.open(DialogUserMan, {
         props: {
-            header: data === null ? "Create User" : "Edit User",
+            header: data === null ? 'Create User' : 'Edit User',
             modal: true,
         },
 
@@ -94,9 +93,9 @@ const openEditUserDialog = (data: UserDataInterface | null) => {
 
 /** Breadcrumb */
 const home = ref({
-    icon: "pi pi-home",
+    icon: 'pi pi-home',
 });
-const items = ref([{ label: "Administration" }, { label: "User Management" }]);
+const items = ref([{ label: 'Administration' }, { label: 'User Management' }]);
 
 onBeforeMount(() => {
     getUserListData();
@@ -117,10 +116,7 @@ onBeforeMount(() => {
                     <h3 class="title-font">User Role Management</h3>
                 </div>
                 <div class="flex justify-end w-full my-auto">
-                    <button
-                        class="btn btn-primary w-20"
-                        @click="openEditUserDialog(null)"
-                    >
+                    <button class="btn btn-primary w-20" @click="openEditUserDialog(null)">
                         <span class="m-1">Create</span>
                     </button>
                 </div>
@@ -131,14 +127,14 @@ onBeforeMount(() => {
                 v-model:filters="filters"
                 class="p-datatable-sm editable-cells-table"
                 :value="userListData"
-                show-gridlines
+                showGridlines
                 :loading="loading"
                 :paginator="true"
                 :rows="10"
-                paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                :rows-per-page-options="[10, 20, 50, 100]"
-                :global-filter-fields="['username', 'name']"
-                filter-display="menu"
+                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
+                :rowsPerPageOptions="[10, 20, 50, 100]"
+                :globalFilterFields="['username', 'name']"
+                filterDisplay="menu"
             >
                 <template #header>
                     <div class="flex justify-between">
@@ -152,23 +148,17 @@ onBeforeMount(() => {
                     </div>
                 </template>
                 <template #footer>
-                    <div class="flex text-sm">
-                        Total records: {{ userListData.length }}
-                    </div>
+                    <div class="flex text-sm">Total records: {{ userListData.length }}</div>
                 </template>
                 <template #empty>
                     <div class="flex justify-center">No data found</div>
                 </template>
                 <template #loading>
-                    <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data.
-                    Please wait.
+                    <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data. Please wait.
                 </template>
                 <Column field="action" header="Actions" class="text-sm">
                     <template #body="slotProps">
-                        <div
-                            v-if="showViewButton(slotProps.data.id)"
-                            class="flex justify-center"
-                        >
+                        <div v-if="showViewButton(slotProps.data.id)" class="flex justify-center">
                             <button
                                 class="btn btn-accent"
                                 @click="openEditUserDialog(slotProps.data)"
@@ -209,7 +199,7 @@ onBeforeMount(() => {
                 <Column field="roles_array" header="Roles" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">
-                            {{ slotProps.data.roles_array.join(", ") }}
+                            {{ slotProps.data.roles_array.join(', ') }}
                         </div>
                     </template>
                     <template #filter="{ filterModel, filterCallback }">
@@ -221,14 +211,10 @@ onBeforeMount(() => {
                         />
                     </template>
                 </Column>
-                <Column
-                    field="permissions_array"
-                    header="Permission"
-                    class="text-sm"
-                >
+                <Column field="permissions_array" header="Permission" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">
-                            {{ slotProps.data.permissions_array.join(", ") }}
+                            {{ slotProps.data.permissions_array.join(', ') }}
                         </div>
                     </template>
                     <template #filter="{ filterModel, filterCallback }">

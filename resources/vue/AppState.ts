@@ -1,46 +1,45 @@
-import axios from "axios";
-import Echo from "laravel-echo";
-import { defineStore } from "pinia";
-import { supportedBrowsers } from "../ts/browser";
-import { MenuItem } from "primevue/menuitem";
-import { useToast } from "primevue/usetoast";
+import axios from 'axios';
+import Echo from 'laravel-echo';
+import { defineStore } from 'pinia';
+import { supportedBrowsers } from '../ts/browser';
+import { MenuItem } from 'primevue/menuitem';
+import { useToast } from 'primevue/usetoast';
 
-export const useWebApiStore = defineStore("webapi", {
+export const useWebApiStore = defineStore('webapi', {
     state: () => ({
         /** WEB for API requests */
-        postLogin: "/post-login",
-        postLogout: "/post-logout",
+        postLogin: '/post-login',
+        postLogout: '/post-logout',
     }),
 });
 
-export const useApiStore = defineStore("api", {
+export const useApiStore = defineStore('api', {
     state: () => ({
         /** API request */
-        postTokenLogout: "/api/post-token-revoke",
-        postProfile: "/api/post-update-profile",
-        appConst: "/api/post-app-const",
-        getAllUserPermission: "/api/get-all-user-permission",
-        logAgent: "/api/post-log-agent",
-        getNotificationList: "/api/get-notification-list",
-        postNotificationAsRead: "/api/post-notification-as-read",
-        postNotificationClearAll: "/api/post-notification-clear-all",
-        getServerLogs: "/api/get-server-logs",
-        postClearAppCache: "/api/post-clear-app-cache",
-        getUserList: "/api/get-user-list",
-        getUserRolePerm: "/api/get-user-role-perm",
-        postUserManSubmit: "/api/post-user-man-submit",
-        postDeleteUserManSubmit: "/api/post-delete-user-man-submit",
-        postResetPasswordUserManSubmit:
-            "/api/post-reset-password-user-man-submit",
-        getRoleList: "/api/get-role-list",
-        postRoleSubmit: "/api/post-role-submit",
-        postDeleteRoleSubmit: "/api/post-delete-role-submit",
-        postGetOauthClient: "/api/oauth/post-get-oauth-client",
-        postSubmitOauthClient: "/api/oauth/post-submit-oauth-client",
-        postUpdateOauthClient: "/api/oauth/post-update-oauth-client",
-        postDeleteOauthClient: "/api/oauth/post-delete-oauth-client",
-        postResetOauthSecret: "/api/oauth/post-reset-oauth-secret",
-        postCreateOauthClient: "/api/oauth/post-create-oauth-client",
+        postTokenLogout: '/api/post-token-revoke',
+        postProfile: '/api/post-update-profile',
+        appConst: '/api/post-app-const',
+        getAllUserPermission: '/api/get-all-user-permission',
+        logAgent: '/api/post-log-agent',
+        getNotificationList: '/api/get-notification-list',
+        postNotificationAsRead: '/api/post-notification-as-read',
+        postNotificationClearAll: '/api/post-notification-clear-all',
+        getServerLogs: '/api/get-server-logs',
+        postClearAppCache: '/api/post-clear-app-cache',
+        getUserList: '/api/get-user-list',
+        getUserRolePerm: '/api/get-user-role-perm',
+        postUserManSubmit: '/api/post-user-man-submit',
+        postDeleteUserManSubmit: '/api/post-delete-user-man-submit',
+        postResetPasswordUserManSubmit: '/api/post-reset-password-user-man-submit',
+        getRoleList: '/api/get-role-list',
+        postRoleSubmit: '/api/post-role-submit',
+        postDeleteRoleSubmit: '/api/post-delete-role-submit',
+        postGetOauthClient: '/api/oauth/post-get-oauth-client',
+        postSubmitOauthClient: '/api/oauth/post-submit-oauth-client',
+        postUpdateOauthClient: '/api/oauth/post-update-oauth-client',
+        postDeleteOauthClient: '/api/oauth/post-delete-oauth-client',
+        postResetOauthSecret: '/api/oauth/post-reset-oauth-secret',
+        postCreateOauthClient: '/api/oauth/post-create-oauth-client',
     }),
 });
 
@@ -53,18 +52,18 @@ interface MenuItemExtended extends MenuItem {
     items?: Array<MenuItemExtended>;
 }
 
-export const useMainStore = defineStore("main", {
+export const useMainStore = defineStore('main', {
     state: () => ({
         /** Additional data */
         appName: import.meta.env.APP_NAME,
-        appVersion: "",
-        userName: "",
-        userId: "",
+        appVersion: '',
+        userName: '',
+        userId: '',
         notificationList: [],
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
         expandedKeysMenu: {},
-        turnstileToken: "",
+        turnstileToken: '',
     }),
 
     actions: {
@@ -95,25 +94,23 @@ export const useMainStore = defineStore("main", {
 
                     /** Register Notification Broadcast */
                     if (
-                        response.data.userId !== "" &&
+                        response.data.userId !== '' &&
                         response.data.userId !== undefined &&
                         response.data.userId !== null
                     ) {
-                        echo.laravelEcho.leave(
-                            "App.Models.User." + response.data.userId,
-                        );
+                        echo.laravelEcho.leave('App.Models.User.' + response.data.userId);
 
                         echo.laravelEcho
-                            ?.private("App.Models.User." + response.data.userId)
+                            ?.private('App.Models.User.' + response.data.userId)
                             .notification(
                                 (notification: {
                                     severity:
-                                        | "success"
-                                        | "info"
-                                        | "warn"
-                                        | "error"
-                                        | "secondary"
-                                        | "contrast"
+                                        | 'success'
+                                        | 'info'
+                                        | 'warn'
+                                        | 'error'
+                                        | 'secondary'
+                                        | 'contrast'
                                         | undefined;
                                     summary: string | undefined;
                                     message: string | undefined;
@@ -151,8 +148,8 @@ export const useMainStore = defineStore("main", {
             /**
              * Get new CSRF Token set everytime app is created
              */
-            axios.get("/sanctum/csrf-cookie").then(() => {
-                console.log("csrf cookie init");
+            axios.get('/sanctum/csrf-cookie').then(() => {
+                console.log('csrf cookie init');
             });
         },
 
@@ -181,20 +178,19 @@ export const useMainStore = defineStore("main", {
     },
 });
 
-export const useEchoStore = defineStore("echo", {
+export const useEchoStore = defineStore('echo', {
     state: () => ({
         laravelEcho: new Echo({
-            broadcaster: "pusher",
+            broadcaster: 'pusher',
             key: import.meta.env.VITE_PUSHER_APP_KEY,
-            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? "mt1",
+            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
             wsHost: import.meta.env.VITE_PUSHER_HOST
                 ? import.meta.env.VITE_PUSHER_HOST
                 : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
             wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
             wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
-            forceTLS:
-                (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",
-            enabledTransports: ["ws", "wss"],
+            forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+            enabledTransports: ['ws', 'wss'],
         }),
     }),
 });

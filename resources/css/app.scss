@@ -1,23 +1,11 @@
-/** Load Tailwind CSS */
-@layer tailwind-base, primevue, tailwind-utilities;
-
-@layer tailwind-base {
-    @tailwind base;
-}
-
-@layer tailwind-utilities {
-    @tailwind components;
-    @tailwind utilities;
-}
-
 /** Load custom CSS */
-@import "./base";
-@import "./components";
-@import "./util";
-@import "./icons";
-@import "./font";
+@use './base';
+@use './components';
+@use './util';
+@use './icons';
+@use './font';
 
-@import "primeicons/primeicons.css";
+@use 'primeicons/primeicons.css';
 
 /** X-Cloak must be at the end of all CSS */
-@import "./xcloak";
+@use './xcloak';

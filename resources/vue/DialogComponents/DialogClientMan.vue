@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import axios from "axios";
-import { ref, inject, computed } from "vue";
-import useClipboard from "vue-clipboard3";
-import { useApiStore } from "../AppState";
+import axios from 'axios';
+import { ref, inject, computed } from 'vue';
+import useClipboard from 'vue-clipboard3';
+import { useApiStore } from '../AppState';
 
-import CmpToast from "../Components/CmpToast.vue";
-import InputText from "primevue/inputtext";
+import CmpToast from '../Components/CmpToast.vue';
+import InputText from 'primevue/inputtext';
 
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
 const { toClipboard } = useClipboard();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const dialogRef = inject("dialogRef") as any;
+const dialogRef = inject('dialogRef') as any;
 
 const typeCreate = dialogRef.value.data?.typeCreate;
 const clientmanData = dialogRef.value.data?.clientmanData;
 const clientId = ref<string>(clientmanData?.id);
 const clientName = ref<string>(clientmanData?.name);
 const clientRedirect = ref<string>(clientmanData?.redirect);
-const oldClientSecret = ref<string>("");
-const newClientSecret = ref<string>("");
+const oldClientSecret = ref<string>('');
+const newClientSecret = ref<string>('');
 
 const showClientId = computed(() => {
     return clientId.value?.length > 0;
@@ -33,8 +33,8 @@ const computedClientId = computed(() => {
 const copyIdToClipboard = () => {
     toClipboard(clientId.value);
     toastchild.value?.toastDisplay({
-        severity: "success",
-        summary: "Success Copy ID",
+        severity: 'success',
+        summary: 'Success Copy ID',
     });
 };
 
@@ -49,8 +49,8 @@ const computedClientSecret = computed(() => {
 const copySecretToClipboard = () => {
     toClipboard(newClientSecret.value);
     toastchild.value?.toastDisplay({
-        severity: "success",
-        summary: "Success Copy Secret",
+        severity: 'success',
+        summary: 'Success Copy Secret',
     });
 };
 
@@ -61,7 +61,7 @@ const deleteClient = (id: string) => {
         })
         .then((response) => {
             toastchild.value?.toastDisplay({
-                severity: "success",
+                severity: 'success',
                 summary: response.data.title,
                 detail: response.data.message,
             });
@@ -71,7 +71,7 @@ const deleteClient = (id: string) => {
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
-                severity: "error",
+                severity: 'error',
                 summary: error.response.data.title,
                 detail: error.response.data.message,
                 response: error,
@@ -88,14 +88,14 @@ const resetClient = (id: string) => {
         .then((response) => {
             newClientSecret.value = response.data.data.secret;
             toastchild.value?.toastDisplay({
-                severity: "success",
+                severity: 'success',
                 summary: response.data.title,
                 detail: response.data.message,
             });
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
-                severity: "error",
+                severity: 'error',
                 summary: error.response.data.title,
                 detail: error.response.data.message,
                 response: error,
@@ -112,7 +112,7 @@ const updateClient = (id: string) => {
         })
         .then((response) => {
             toastchild.value?.toastDisplay({
-                severity: "success",
+                severity: 'success',
                 summary: response.data.title,
                 detail: response.data.message,
             });
@@ -122,7 +122,7 @@ const updateClient = (id: string) => {
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
-                severity: "error",
+                severity: 'error',
                 summary: error.response.data.title,
                 detail: error.response.data.message,
                 response: error,
@@ -140,14 +140,14 @@ const createClient = () => {
             clientId.value = response.data.data.id;
             newClientSecret.value = response.data.data.secret;
             toastchild.value?.toastDisplay({
-                severity: "success",
+                severity: 'success',
                 summary: response.data.title,
                 detail: response.data.message,
             });
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
-                severity: "error",
+                severity: 'error',
                 summary: error.response.data.title,
                 detail: error.response.data.message,
                 response: error,
@@ -184,11 +184,7 @@ const allowEditName = computed(() => {
             <span>Name:<span class="text-red-500 font-bold">*</span></span>
         </div>
         <div class="flex w-full text-sm">
-            <InputText
-                v-model="clientName"
-                class="w-full text-sm"
-                :disabled="!allowEditName"
-            />
+            <InputText v-model="clientName" class="w-full text-sm" :disabled="!allowEditName" />
         </div>
     </div>
     <div class="flex w-full mt-1">
@@ -196,11 +192,7 @@ const allowEditName = computed(() => {
             <span>Redirect:</span>
         </div>
         <div class="flex w-full text-sm">
-            <InputText
-                v-model="clientRedirect"
-                class="w-full text-sm"
-                :disabled="!allowEditName"
-            />
+            <InputText v-model="clientRedirect" class="w-full text-sm" :disabled="!allowEditName" />
         </div>
     </div>
     <div class="flex w-full mt-1">
@@ -235,10 +227,7 @@ const allowEditName = computed(() => {
         >
             <span class="m-1">Delete</span>
         </button>
-        <button
-            class="btn bg-brown-200 text-black font-medium mx-2"
-            @click="resetClient(clientId)"
-        >
+        <button class="btn bg-brown-200 text-black font-medium mx-2" @click="resetClient(clientId)">
             <span class="m-1">Reset Secret</span>
         </button>
         <button

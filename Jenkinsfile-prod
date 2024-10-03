@@ -17,7 +17,9 @@ pipeline {
                         disableDeferredWipeout: true,
                         notFailBuild: true)
                 sh 'docker buildx use default'
+                sh 'docker buildx stop buildkit-$IMAGE_NAME-$IMAGE_TAG || true'
                 sh 'docker buildx rm -f --all-inactive'
+                sh 'docker buildx prune -f'
                 checkout scm
             }
         }
@@ -67,7 +69,7 @@ pipeline {
 
         stage('Clean Up Workspace Dir') {
             steps {
-                sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs Jenkinsfile*'
+                sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs *.config.mjs Jenkinsfile*'
             }
         }
 
@@ -95,7 +97,7 @@ pipeline {
     post {
         always {
             sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom chmod -R 777 .'
-            sh 'docker system prune -f'
+            sh 'docker system prune -f || true'
             cleanWs(cleanWhenNotBuilt: true,
                     deleteDirs: true,
                     disableDeferredWipeout: true,

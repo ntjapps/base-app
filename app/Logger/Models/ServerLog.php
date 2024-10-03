@@ -5,8 +5,8 @@ namespace App\Logger\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\MassPrunable as Prunable;
+use Illuminate\Database\Eloquent\Model;
 
 class ServerLog extends Model
 {

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 use Spatie\Health\Checks\Checks\HorizonCheck;
+use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Facades\Health;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
@@ -17,11 +18,10 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     {
         parent::boot();
 
-        if (class_exists(HorizonCheck::class)) {
-            Health::checks([
-                HorizonCheck::new(),
-            ]);
-        }
+        Health::checks([
+            RedisCheck::new(),
+            HorizonCheck::new(),
+        ]);
     }
 
     /**

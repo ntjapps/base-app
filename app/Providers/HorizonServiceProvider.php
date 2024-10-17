@@ -17,11 +17,10 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     {
         parent::boot();
 
-        if (class_exists(HorizonCheck::class)) {
-            Health::checks([
-                HorizonCheck::new(),
-            ]);
-        }
+        Health::checks([
+            RedisCheck::new(),
+            HorizonCheck::new(),
+        ]);
     }
 
     /**

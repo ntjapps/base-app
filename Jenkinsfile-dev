@@ -17,7 +17,9 @@ pipeline {
                         disableDeferredWipeout: true,
                         notFailBuild: true)
                 sh 'docker buildx use default'
+                sh 'docker buildx stop buildkit-$IMAGE_NAME-$IMAGE_TAG || true'
                 sh 'docker buildx rm -f --all-inactive'
+                sh 'docker buildx prune -f'
                 checkout scm
             }
         }

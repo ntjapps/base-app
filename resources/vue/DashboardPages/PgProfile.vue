@@ -71,7 +71,7 @@ const postProfileData = () => {
                         v-model="newPassword"
                         class="w-full"
                         inputClass="w-full"
-                        :toggleMask="true"
+                        toggleMask
                         @keyup.enter="postProfileData"
                     />
                     <label class="w-full" for="newpas"
@@ -87,7 +87,7 @@ const postProfileData = () => {
                         v-model="confirmPassword"
                         class="w-full"
                         inputClass="w-full"
-                        :toggleMask="true"
+                        toggleMask
                         :feedback="false"
                         @keyup.enter="postProfileData"
                     />

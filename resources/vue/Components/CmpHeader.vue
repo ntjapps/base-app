@@ -5,12 +5,9 @@ import { useMainStore } from '../AppState';
 import CmpPusherState from './CmpPusherState.vue';
 import CmpClearCacheButton from './CmpClearCacheButton.vue';
 
-const props = defineProps({
-    pageTitle: {
-        type: String,
-        default: '',
-    },
-});
+const props = defineProps<{
+    pageTitle: string;
+}>();
 const main = useMainStore();
 const { browserSuppport } = storeToRefs(main);
 </script>

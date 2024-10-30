@@ -15,20 +15,11 @@ import { FilterMatchMode } from '@primevue/core/api';
 
 import DialogRoleMan from '../DialogComponents/DialogRoleMan.vue';
 
-const props = defineProps({
-    appName: {
-        type: String,
-        required: true,
-    },
-    greetings: {
-        type: String,
-        required: true,
-    },
-    expandedKeysProps: {
-        type: String,
-        default: '',
-    },
-});
+const props = defineProps<{
+    appName: string;
+    greetings: string;
+    expandedKeysProps: string;
+}>();
 const api = useApiStore();
 const main = useMainStore();
 const timeGreet = timeGreetings();
@@ -127,7 +118,7 @@ onBeforeMount(() => {
                 :value="roleListData"
                 showGridlines
                 :loading="loading"
-                :paginator="true"
+                paginator
                 :rows="10"
                 paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rowsPerPageOptions="[10, 20, 50, 100]"

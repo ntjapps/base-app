@@ -149,7 +149,7 @@ onBeforeMount(() => {
                 class="p-datatable-sm text-sm"
                 :value="serverLogData"
                 showGridlines
-                :paginator="true"
+                paginator
                 :rows="20"
                 paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rowsPerPageOptions="[10, 20, 50, 100]"

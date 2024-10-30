@@ -131,7 +131,7 @@ onMounted(() => {
                 class="p-datatable-sm"
                 :value="permListData"
                 showGridlines
-                :paginator="true"
+                paginator
                 :rows="10"
                 paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rowsPerPageOptions="[10, 20, 50, 100]"

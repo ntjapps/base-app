@@ -2,29 +2,14 @@
 import { ref } from 'vue';
 
 import Dialog from 'primevue/dialog';
+import Button from 'primevue/button';
 
-const props = defineProps({
-    dialogTypeSuccess: {
-        type: Boolean,
-        required: false,
-        default: true,
-    },
-    dialogOpenProps: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-    dialogHeaderProps: {
-        type: String,
-        required: false,
-        default: 'Dialog Header',
-    },
-    dialogMessageProps: {
-        type: String,
-        required: false,
-        default: 'Dialog Message',
-    },
-});
+const props = defineProps<{
+    dialogTypeSuccess: boolean;
+    dialogOpenProps: boolean;
+    dialogHeaderProps: string;
+    dialogMessageProps: string;
+}>();
 
 const dialogOpen = ref(props.dialogOpenProps);
 const autoCloseSuccessSeconds = ref(5);
@@ -58,7 +43,7 @@ defineExpose({
 </script>
 
 <template>
-    <Dialog :visible="dialogOpen" :modal="true" :draggable="false" :closable="false">
+    <Dialog :visible="dialogOpen" modal :draggable="false" :closable="false">
         <template #default>
             <div class="flex w-full justify-center my-2.5 text-lg font-bold">
                 <i
@@ -74,7 +59,7 @@ defineExpose({
                 {{ props.dialogMessageProps }}
             </div>
             <div class="flex w-full justify-center my-2.5">
-                <button class="btn btn-primary" @click="closeDialog">Close</button>
+                <Button label="Close" @click="closeDialog" />
             </div>
         </template>
     </Dialog>

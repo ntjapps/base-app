@@ -4,7 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Middleware\ThrottleRequestsWithRedis;
 use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Exceptions\OAuthServerException as ExceptionsOAuthServerException;
 use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
@@ -21,13 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/app/healthcheck',
     )
     ->withMiddleware(function (Middleware $middleware) {
-
         $middleware->web(append: [
             CreateFreshApiToken::class,
-        ]);
-
-        $middleware->api(prepend: [
-            ThrottleRequestsWithRedis::class.':api',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

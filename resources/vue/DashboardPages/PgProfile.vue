@@ -6,8 +6,10 @@ import { useApiStore, useMainStore } from '../AppState';
 
 import CmpLayout from '../Components/CmpLayout.vue';
 import CmpToast from '../Components/CmpToast.vue';
+
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
+import Button from 'primevue/button';
 
 const api = useApiStore();
 const main = useMainStore();
@@ -50,7 +52,7 @@ const postProfileData = () => {
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <h3 class="title-font">Update profile in {{ appName }}</h3>
             <div class="mt-10 mb-5">
                 <span class="p-float-label w-full">
@@ -71,7 +73,7 @@ const postProfileData = () => {
                         v-model="newPassword"
                         class="w-full"
                         inputClass="w-full"
-                        :toggleMask="true"
+                        toggleMask
                         @keyup.enter="postProfileData"
                     />
                     <label class="w-full" for="newpas"
@@ -87,7 +89,7 @@ const postProfileData = () => {
                         v-model="confirmPassword"
                         class="w-full"
                         inputClass="w-full"
-                        :toggleMask="true"
+                        toggleMask
                         :feedback="false"
                         @keyup.enter="postProfileData"
                     />
@@ -98,9 +100,7 @@ const postProfileData = () => {
                 </span>
             </div>
             <div class="flex justify-center">
-                <button class="btn btn-primary" @click="postProfileData">
-                    <span class="m-1">Update Profile</span>
-                </button>
+                <Button label="Update Profile" @click="postProfileData" />
             </div>
         </div>
     </CmpLayout>

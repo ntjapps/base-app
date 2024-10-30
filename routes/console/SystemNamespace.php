@@ -11,6 +11,7 @@ use Laravel\Pennant\Feature;
 
 Artisan::command('system:refresh', function () {
     $this->call('passport:client:env');
+    $this->call('passport:client:rabbitmq:env');
     $this->info('Passport client generated');
 
     Redis::connection('horizon')->flushdb(); /** Horizon Database */
@@ -35,6 +36,7 @@ Artisan::command('system:refresh', function () {
         Feature::purge();
     }
 
+    $this->call('view:clear');
     $this->info('Cache cleared');
 
     $this->info('System refreshed');
@@ -54,6 +56,7 @@ Artisan::command('system:start', function () {
     }
 
     $this->call('passport:client:env');
+    $this->call('passport:client:rabbitmq:env');
     $this->info('Passport client generated');
 
     $this->call('cache:clear');
@@ -69,6 +72,7 @@ Artisan::command('system:start', function () {
     Redis::connection('cachejob')->flushdb(); /** Job Database */
     Cache::flush(); /** Cache */
     InterfaceClass::flushRolePermissionCache();
+    $this->call('view:clear');
     $this->info('Cache cleared');
 
     RolePermissionSyncJob::dispatchSync();

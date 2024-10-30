@@ -21,7 +21,7 @@ class Role extends SpatieRole
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<int, string>
      */
     protected $fillable = [
         'name',
@@ -32,14 +32,14 @@ class Role extends SpatieRole
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<int, string>
      */
     protected $hidden = [];
 
     /**
      * The attributes that should be cast.
      *
-     * @var array<string, string>
+     * @var list<string, string>
      */
     protected $casts = [];
 

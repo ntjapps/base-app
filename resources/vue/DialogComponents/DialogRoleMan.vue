@@ -6,9 +6,11 @@ import { useApiStore } from '../AppState';
 import { PermissionDataInterface } from '../AppCommon';
 
 import CmpToast from '../Components/CmpToast.vue';
+
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 import { FilterMatchMode } from '@primevue/core/api';
 
 const api = useApiStore();
@@ -131,7 +133,7 @@ onMounted(() => {
                 class="p-datatable-sm"
                 :value="permListData"
                 showGridlines
-                :paginator="true"
+                paginator
                 :rows="10"
                 paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rowsPerPageOptions="[10, 20, 50, 100]"
@@ -159,15 +161,12 @@ onMounted(() => {
         </div>
     </div>
     <div class="flex w-full mt-2.5 justify-center">
-        <button
+        <Button
             v-if="showDeleted"
-            class="btn btn-error w-24 mx-2 text-sm"
+            severity="danger"
+            label="Delete"
             @click="postDeleteRolemanData()"
-        >
-            <span class="m-1">Delete</span>
-        </button>
-        <button class="btn btn-primary w-24 mx-2 text-sm" @click="postRolemanData">
-            <span class="m-1">Submit</span>
-        </button>
+        />
+        <Button label="Submit" @click="postRolemanData" />
     </div>
 </template>

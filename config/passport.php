@@ -64,4 +64,9 @@ return [
         'secret' => env('PASSPORT_CLIENT_CREDENTIALS_CLIENT_SECRET'),
     ],
 
+    'client_credentials_rabbitmq_client' => [
+        'id' => env('RABBITMQ_CLIENT_CREDENTIALS_CLIENT_ID'),
+        'secret' => env('RABBITMQ_CLIENT_CREDENTIALS_CLIENT_SECRET'),
+    ],
+
 ];

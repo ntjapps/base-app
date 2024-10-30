@@ -7,28 +7,21 @@ import { useDialog } from 'primevue/usedialog';
 
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
+
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Breadcrumb from 'primevue/breadcrumb';
+import Button from 'primevue/button';
 import { FilterMatchMode } from '@primevue/core/api';
 
 import DialogClientMan from '../DialogComponents/DialogClientMan.vue';
 
-const props = defineProps({
-    appName: {
-        type: String,
-        required: true,
-    },
-    greetings: {
-        type: String,
-        required: true,
-    },
-    expandedKeysProps: {
-        type: String,
-        default: '',
-    },
-});
+const props = defineProps<{
+    appName: string;
+    greetings: string;
+    expandedKeysProps: string;
+}>();
 const api = useApiStore();
 const main = useMainStore();
 const timeGreet = timeGreetings();
@@ -113,12 +106,8 @@ onBeforeMount(() => {
                     <h3 class="title-font">Passport Management</h3>
                 </div>
                 <div class="flex justify-end w-full my-auto">
-                    <button class="btn btn-accent mx-2" @click="getClientListData">
-                        <i class="pi pi-refresh"></i>
-                    </button>
-                    <button class="btn btn-primary w-20" @click="openEditClientDialog(null)">
-                        <span class="m-1">Create</span>
-                    </button>
+                    <Button icon="pi pi-refresh" @click="getClientListData" />
+                    <Button label="Create Client" @click="openEditClientDialog(null)" />
                 </div>
             </div>
         </div>
@@ -129,7 +118,7 @@ onBeforeMount(() => {
                 :value="clientListData"
                 showGridlines
                 :loading="loading"
-                :paginator="true"
+                paginator
                 :rows="10"
                 paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rowsPerPageOptions="[10, 20, 50, 100]"
@@ -159,12 +148,10 @@ onBeforeMount(() => {
                 <Column field="action" header="Actions" class="text-sm">
                     <template #body="slotProps">
                         <div v-if="slotProps.data.allowed_action" class="flex justify-center">
-                            <button
-                                class="btn btn-accent"
+                            <Button
+                                icon="pi pi-angle-double-right"
                                 @click="openEditClientDialog(slotProps.data)"
-                            >
-                                <i class="pi pi-angle-double-right"></i>
-                            </button>
+                            />
                         </div>
                     </template>
                 </Column>
@@ -186,45 +173,32 @@ onBeforeMount(() => {
                 >
                     <template #body="slotProps">
                         <div class="text-center">
-                            <button
+                            <Button
                                 v-if="slotProps.data.personal_access_client"
-                                class="btn btn-success w-20 text-sm"
-                            >
-                                <span class="m-1">Yes</span>
-                            </button>
-                            <button v-else class="btn btn-error w-20 text-sm">
-                                <span class="m-1">No</span>
-                            </button>
+                                severity="success"
+                                label="Yes"
+                            />
+                            <Button v-else severity="danger" label="No" />
                         </div>
                     </template>
                 </Column>
                 <Column field="redirect" header="Client Grant" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">
-                            <button
+                            <Button
                                 v-if="checkClientGrant(slotProps.data.redirect)"
-                                class="btn btn-success w-20 text-sm"
-                            >
-                                <span class="m-1">Yes</span>
-                            </button>
-                            <button v-else class="btn btn-error w-20 text-sm">
-                                <span class="m-1">No</span>
-                            </button>
+                                severity="success"
+                                label="Yes"
+                            />
+                            <Button v-else severity="danger" label="No" />
                         </div>
                     </template>
                 </Column>
                 <Column field="revoked" header="Revoked" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">
-                            <button
-                                v-if="slotProps.data.revoked"
-                                class="btn btn-error w-20 text-sm"
-                            >
-                                <span class="m-1">Yes</span>
-                            </button>
-                            <button v-else class="btn btn-success w-20 text-sm">
-                                <span class="m-1">No</span>
-                            </button>
+                            <Button v-if="slotProps.data.revoked" severity="danger" label="Yes" />
+                            <Button v-else severity="success" label="No" />
                         </div>
                     </template>
                 </Column>

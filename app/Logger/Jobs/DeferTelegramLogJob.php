@@ -9,10 +9,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
-use Laravel\Horizon\Contracts\Silenced;
 use Laravel\Telescope\Telescope;
 
-class DeferTelegramLogJob implements ShouldQueue, Silenced
+class DeferTelegramLogJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TelegramApi;
 
@@ -21,7 +20,7 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
      */
     public function __construct(public string $data, public string $chatId)
     {
-        //$this->onQueue('default');
+        // $this->onQueue('default');
     }
 
     /**
@@ -29,7 +28,7 @@ class DeferTelegramLogJob implements ShouldQueue, Silenced
      *
      * @var int
      */
-    //public $timeout = 60;
+    // public $timeout = 60;
 
     /**
      * Calculate the number of seconds to wait before retrying the job.

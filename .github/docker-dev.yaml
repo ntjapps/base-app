@@ -24,7 +24,7 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d
 
   base_ols:
-    image: ntj125app/openlitespeed:latest
+    image: ghcr.io/ntj125app/openlitespeed:latest
     hostname: base_ols
     ports:
       - target: 80
@@ -34,20 +34,20 @@ services:
       - TZ=Asia/Jakarta
     volumes:
       - ../:/var/www/vhosts/localhost
-      - ../public:/var/www/vhosts/localhost/html
+      - ../public:/var/www/vhosts/localhost/public
 
   base_worker:
-    image: ntj125app/openlitespeed:latest
+    image: ghcr.io/ntj125app/openlitespeed:latest
     command: ["/usr/bin/php", "/var/www/vhosts/localhost/artisan", "horizon"]
     user: 65534:65534
     environment:
       - TZ=Asia/Jakarta
     volumes:
       - ../:/var/www/vhosts/localhost
-      - ../public:/var/www/vhosts/localhost/html
+      - ../public:/var/www/vhosts/localhost/public
 
   base_scheduler:
-    image: ntj125app/openlitespeed:latest
+    image: ghcr.io/ntj125app/openlitespeed:latest
     command:
       [
         "/bin/bash",
@@ -60,7 +60,7 @@ services:
       - TZ=Asia/Jakarta
     volumes:
       - ../:/var/www/vhosts/localhost
-      - ../public:/var/www/vhosts/localhost/html
+      - ../public:/var/www/vhosts/localhost/public
 
   base_redis:
     image: redis:alpine
@@ -82,20 +82,8 @@ services:
     volumes:
       - ../storage/redis:/data
 
-  base_memcached:
-    image: memcached:alpine
-    hostname: base_memcached
-    command: ["memcached", "-m", "412", "-vv"]
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          memory: 512M
-    environment:
-      - TZ=Asia/Jakarta
-
   base_reverb:
-    image: ntj125app/openlitespeed:latest
+    image: ghcr.io/ntj125app/openlitespeed:latest
     command:
       [
         "/bin/bash",
@@ -118,10 +106,10 @@ services:
       - TZ=Asia/Jakarta
     volumes:
       - ../:/var/www/vhosts/localhost
-      - ../public:/var/www/vhosts/localhost/html
+      - ../public:/var/www/vhosts/localhost/public
 
   base_vite:
-    image: ntj125app/npm-custom
+    image: ghcr.io/ntj125app/npm-custom
     command: ["pnpm", "run", "dev"]
     working_dir: /var/www/vhosts/localhost
     ports:

@@ -7,28 +7,21 @@ import { useDialog } from 'primevue/usedialog';
 
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
+
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Breadcrumb from 'primevue/breadcrumb';
+import Button from 'primevue/button';
 import { FilterMatchMode } from '@primevue/core/api';
 
 import DialogUserMan from '../DialogComponents/DialogUserMan.vue';
 
-const props = defineProps({
-    appName: {
-        type: String,
-        required: true,
-    },
-    greetings: {
-        type: String,
-        required: true,
-    },
-    expandedKeysProps: {
-        type: String,
-        default: '',
-    },
-});
+const props = defineProps<{
+    appName: string;
+    greetings: string;
+    expandedKeysProps: string;
+}>();
 const api = useApiStore();
 const main = useMainStore();
 const timeGreet = timeGreetings();
@@ -116,9 +109,7 @@ onBeforeMount(() => {
                     <h3 class="title-font">User Role Management</h3>
                 </div>
                 <div class="flex justify-end w-full my-auto">
-                    <button class="btn btn-primary w-20" @click="openEditUserDialog(null)">
-                        <span class="m-1">Create</span>
-                    </button>
+                    <Button label="Create User" @click="openEditUserDialog(null)" />
                 </div>
             </div>
         </div>
@@ -129,7 +120,7 @@ onBeforeMount(() => {
                 :value="userListData"
                 showGridlines
                 :loading="loading"
-                :paginator="true"
+                paginator
                 :rows="10"
                 paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rowsPerPageOptions="[10, 20, 50, 100]"
@@ -159,12 +150,10 @@ onBeforeMount(() => {
                 <Column field="action" header="Actions" class="text-sm">
                     <template #body="slotProps">
                         <div v-if="showViewButton(slotProps.data.id)" class="flex justify-center">
-                            <button
-                                class="btn btn-accent"
+                            <Button
+                                icon="pi pi-angle-double-right"
                                 @click="openEditUserDialog(slotProps.data)"
-                            >
-                                <i class="pi pi-angle-double-right"></i>
-                            </button>
+                            />
                         </div>
                     </template>
                 </Column>

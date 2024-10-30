@@ -125,3 +125,33 @@ Artisan::command('passport:client:grant:env', function () {
 
     Log::debug('Console passport:client:grant:env executed', ['appName' => config('app.name')]);
 })->purpose('Generate client credentials access client from .env');
+
+Artisan::command('passport:client:rabbitmq:env', function () {
+    if (config('passport.client_credentials_rabbitmq_client.id') === null) {
+        $this->error('Please set RABBITMQ_CLIENT_CREDENTIALS_CLIENT_ID in .env');
+
+        return;
+    }
+
+    $passportClient = PassportClient::where('name', 'Rabbitmq Client Env')->first();
+    if (! is_null($passportClient)) {
+        PassportPersonalAccessClient::where('client_id', $passportClient->id)->delete();
+        $passportClient->delete();
+    }
+
+    $client = collect();
+
+    DB::transaction(function () use (&$client) {
+        $client = (new ClientRepository)->create(null, 'Rabbitmq Client Env', '');
+
+        $client->id = config('passport.client_credentials_rabbitmq_client.id');
+        $client->secret = config('passport.client_credentials_rabbitmq_client.secret', Str::random(40));
+        $client->save();
+    });
+
+    $this->info('Client id: '.$client?->id);
+    $this->info('Client secret: '.$client?->secret);
+    $this->info('Client id and secret generated from .env');
+
+    Log::debug('Console passport:client:rabbitmq:env executed', ['appName' => config('app.name')]);
+})->purpose('Generate client credentials access client from .env');

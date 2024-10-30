@@ -165,8 +165,8 @@ return [
     */
 
     'cache' => [
-        'rows' => 0,
-        'bytes' => 0,
+        'rows' => 100,
+        'bytes' => 1024,
     ],
 
     /*

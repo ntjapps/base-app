@@ -36,7 +36,7 @@
     @show
 
     @section('css')
-        @vite(['resources/css/app.scss'])
+        @vite(['resources/css/app.css'])
     @show
 
     @section('script')

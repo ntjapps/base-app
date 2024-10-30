@@ -39,7 +39,7 @@ class AppConstController extends Controller
 
         /** Menu Items */
         if ($authCheck) {
-            $menuItems = Cache::tags([Permission::class])->remember(Permission::class.'-menu-items-'.$user->id, Carbon::now()->addYear(), function () {
+            $menuItems = Cache::remember(Permission::class.'-menu-items-'.$user->id, Carbon::now()->addYear(), function () {
                 $menuArray = []; /** Menu Array */
 
                 /** Top Order Menu */

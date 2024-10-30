@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
+import tailwindcss from '@tailwindcss/vite';
 
 process.env = { ...process.env, ...loadEnv('', process.cwd()) };
 
@@ -12,12 +13,16 @@ export default defineConfig({
                 process.env.VITE_PUSHER_HOST ??
                 'docker.localhost' /* Set base URL for Hot Module Reload */,
         },
+        cors: {
+            origin: 'http://' + (process.env.VITE_PUSHER_HOST ?? 'docker.localhost'),
+        },
     },
     plugins: [
         laravel({
-            input: ['resources/ts/app.ts', 'resources/css/app.scss'],
+            input: ['resources/ts/app.ts', 'resources/css/app.css'],
             refresh: true,
         }),
+        tailwindcss(),
         vue({
             template: {
                 transformAssetUrls: {
@@ -37,9 +42,10 @@ export default defineConfig({
             output: {
                 compact: true,
                 manualChunks: {
-                    vendor: ['vue', 'vue-router', 'axios', 'pinia', 'pusher-js'],
+                    vendor: ['vue', 'vue-router', 'axios', 'pinia', 'pusher-js', 'daisyui'],
                 },
             },
+            external: ['fsevents'],
         },
         manifest: 'manifest.json',
     },

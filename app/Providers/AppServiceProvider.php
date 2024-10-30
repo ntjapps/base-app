@@ -11,22 +11,22 @@ use App\Models\PassportPersonalAccessClient;
 use App\Models\PassportRefreshToken;
 use App\Models\PassportToken;
 use App\Models\Permission;
-use App\Models\Role;
+use App\Models\PermissionMenu;
+use App\Models\PermissionPrivilege;
 use App\Models\User;
+use App\Observers\PermissionMenuObserver;
+use App\Observers\PermissionPrivilegeObserver;
 use App\Policies\UserPolicy;
 use Carbon\Carbon;
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\MigrationEnded;
 use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Database\Events\MigrationStarted;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use Laravel\Telescope\Telescope;
@@ -68,11 +68,11 @@ class AppServiceProvider extends ServiceProvider
          * This works in the app by using gate-related functions like auth()->user->can() and @can()
          **/
         Gate::after(function (User $user) {
-            $permission = Cache::tags([Permission::class])->remember(Permission::class.'-ability-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
+            $permission = Cache::remember(Permission::class.'-ability-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
                 return Permission::where('name', InterfaceClass::SUPER)->first();
             });
 
-            $hasPermissionToCache = Cache::tags([Permission::class])->remember(Permission::class.'-hasPermissionTo-'.$permission->id.'-user-'.$user->id, Carbon::now()->addYear(), function () use ($user, $permission) {
+            $hasPermissionToCache = Cache::remember(Permission::class.'-hasPermissionTo-'.$permission->id.'-user-'.$user->id, Carbon::now()->addYear(), function () use ($user, $permission) {
                 return $user->hasPermissionTo($permission);
             });
 
@@ -94,6 +94,10 @@ class AppServiceProvider extends ServiceProvider
         Passport::useClientModel(PassportClient::class);
         Passport::usePersonalAccessClientModel(PassportPersonalAccessClient::class);
 
+        Passport::tokensCan([
+            'rabbitmq' => 'Rabbitmq Access API for Queue Callbacks',
+        ]);
+
         /** Register Broadcasting */
         Broadcast::routes(['prefix' => 'api', 'middleware' => ['auth:api']]);
 
@@ -104,18 +108,9 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MigrationEnded::class, MigrationEventListener::class);
 
         /** Registering Observers */
+        PermissionPrivilege::observe(PermissionPrivilegeObserver::class);
+        PermissionMenu::observe(PermissionMenuObserver::class);
 
         /** Registering Rate Limits */
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perSecond(300)->by($request->user()?->id);
-        });
-
-        RateLimiter::for('api-min', function (Request $request) {
-            return Limit::perSecond(1)->by($request->user()?->id);
-        });
-
-        RateLimiter::for('api-secure', function (Request $request) {
-            return Limit::perMinute(10)->by($request->user()?->id);
-        });
     }
 }

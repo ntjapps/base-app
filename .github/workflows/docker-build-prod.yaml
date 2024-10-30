@@ -20,63 +20,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Add variable for application
-        run: |
-          echo "APP_VERSION_HASH=${{ github.sha }}" >> .constants
-
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: "latest"
-      - name: Composer Install
-        uses: ramsey/composer-install@v3
-        with:
-          composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist"
-
-      - name: Create .env file
-        run: |
-          if [ -f .env.prod.encrypted ]; then
-              php artisan env:decrypt --env=dev --key=${{ env.ENV_KEY }}
-              ln -s .env.prod .env
-              ls -lah .env*
-          fi
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 9
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --prod
-
-      - name: NPM Build
-        run: pnpm dlx vite build
-
-      - name: Build Cache
-        run: |
-          sudo mkdir -p /var/www/vhosts
-          sudo ln -s $(pwd) /var/www/vhosts/localhost
-          cd /var/www/vhosts/localhost
-          pwd && ls -lah
-          php artisan event:cache
-          php artisan config:cache
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
@@ -98,8 +41,6 @@ jobs:
         if: env.REGISTRY != '' && env.IMAGE_NAME != ''
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      - name: Clean Build App
-        run: rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs *.config.mjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs
       - name: Build & Push Container
         uses: docker/build-push-action@v6
         if: env.REGISTRY != '' && env.IMAGE_NAME != ''
@@ -108,5 +49,9 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-packages.outputs.tags }}
           labels: ${{ steps.meta-packages.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
+          build-args: |
+            ENV_KEY=${{ env.ENV_KEY }}
+            APP_VERSION_HASH=${{ github.sha }}
+            ENV_TYPE=prod

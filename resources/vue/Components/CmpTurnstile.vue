@@ -20,7 +20,6 @@ if (typeof window.turnstile === 'undefined') {
         'src',
         'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad',
     );
-    srcJs.async = true;
     srcJs.defer = true;
     document.body.appendChild(srcJs);
 }

@@ -10,6 +10,7 @@ import CmpToast from '../Components/CmpToast.vue';
 
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
+import Button from 'primevue/button';
 
 const web = useWebStore();
 const webapi = useWebApiStore();
@@ -66,73 +67,61 @@ onBeforeUpdate(() => {
 </script>
 
 <template>
-    <CmpToast ref="toastchild" />
-    <div
-        class="grid content-center w-screen h-screen bg-neutral object-fill bg-no-repeat bg-cover bg-center"
-    >
-        <div class="flex justify-center">
-            <div v-show="!loading" class="bg-base-300 rounded-lg drop-shadow-lg">
-                <div class="m-auto p-5">
-                    <div class="text-center font-bold my-2.5">
-                        {{ appName }}
-                    </div>
-                    <div v-if="!browserSuppport" class="text-center font-bold my-2.5">
-                        <button class="btn btn-sm btn-error">
-                            <i class="pi pi-times m-1" />
-                            <span class="m-1">Browser Unsupported</span>
-                        </button>
-                    </div>
-                    <div class="text-center font-bold my-2.5">Login to your account</div>
-                    <div class="flex justify-center flex-col mt-8 my-2.5">
-                        <div class="relative w-full">
-                            <span class="flex flex-col w-full">
-                                <label for="username"> Username </label>
+    <div>
+        <CmpToast ref="toastchild" />
+        <div class="flex justify-center w-full h-dvh bg-surface-100">
+            <div class="flex justify-center w-fit h-fit m-auto">
+                <div v-show="!loading" class="bg-surface-200 rounded-lg drop-shadow-lg">
+                    <div class="m-auto p-5">
+                        <div class="text-center font-bold my-2.5">
+                            {{ appName }}
+                        </div>
+                        <div v-if="!browserSuppport" class="text-center font-bold my-2.5">
+                            <Button
+                                icon="pi pi-times"
+                                label="Browser Unsupported"
+                                severity="danger"
+                            />
+                        </div>
+                        <div class="text-center font-bold my-2.5">Login to your account</div>
+                        <div class="flex justify-center flex-col mt-8 my-2.5">
+                            <div class="relative w-full">
                                 <InputText
                                     id="username"
                                     v-model="username"
-                                    class="text-left"
-                                    placeholder=""
+                                    class="text-left w-full"
+                                    placeholder="Username"
                                     @keypress.enter="postLoginData"
                                 />
-                            </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex justify-center flex-col my-2.5">
-                        <div class="relative w-full">
-                            <span class="flex flex-col w-full">
-                                <label for="password"> Password </label>
+                        <div class="flex justify-center flex-col my-2.5">
+                            <div class="relative w-full">
                                 <Password
                                     v-model="password"
                                     inputId="password"
                                     type="text"
-                                    placeholder=""
-                                    :pt="{
-                                        input: {
-                                            class: 'text-left w-full',
-                                        },
-                                    }"
+                                    placeholder="Password"
                                     :feedback="false"
                                     @keyup.enter="postLoginData"
                                 />
-                            </span>
+                            </div>
+                        </div>
+                        <div class="flex justify-center py-2.5">
+                            <CmpTurnstile ref="turnchild" />
+                        </div>
+                        <div class="flex justify-center py-2.5">
+                            <Button label="Login" @click="postLoginData" />
                         </div>
                     </div>
-                    <div class="flex justify-center py-2.5">
-                        <CmpTurnstile ref="turnchild" />
-                    </div>
-                    <div class="flex justify-center py-2.5">
-                        <button class="btn btn-primary" @click="postLoginData">
-                            <span class="m-1">Login</span>
-                        </button>
-                    </div>
                 </div>
-            </div>
-            <div v-show="loading" class="bg-base-200 rounded-lg drop-shadow-lg">
-                <div class="m-auto p-5">
-                    <div class="text-center font-bold my-2.5">
-                        <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                <div v-show="loading" class="bg-surface-200 rounded-lg drop-shadow-lg">
+                    <div class="m-auto p-5">
+                        <div class="text-center font-bold my-2.5">
+                            <span class="loading loading-bars loading-xl" />
+                        </div>
+                        <div class="text-center font-bold my-2.5">Loading</div>
                     </div>
-                    <div class="text-center font-bold my-2.5">Loading</div>
                 </div>
             </div>
         </div>

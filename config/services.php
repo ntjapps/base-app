@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'rabbitmq' => [
+        'enabled' => (bool) env('RABBITMQ_ENABLED', false),
+        'host' => env('RABBITMQ_HOST', 'rabbitmq'),
+        'port' => env('RABBITMQ_PORT', 5672),
+        'user' => env('RABBITMQ_USER', 'queueuser'),
+        'password' => env('RABBITMQ_PASSWORD', 'queuepass'),
+        'vhost' => env('RABBITMQ_VHOST', 'queuevhost'),
+        'timeout' => env('RABBITMQ_TIMEOUT_SECONDS', 60),
+    ],
 ];

@@ -7,11 +7,13 @@ import { useApiStore, useMainStore } from '../AppState';
 import axios from 'axios';
 
 import CmpLayout from '../Components/CmpLayout.vue';
+
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import DatePicker from 'primevue/datepicker';
 import Select from 'primevue/select';
 import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 
 const timeGreet = timeGreetings();
 const api = useApiStore();
@@ -76,7 +78,7 @@ onBeforeMount(() => {
 
 <template>
     <CmpLayout>
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <div class="flex justify-between">
                 <div>
                     <h2 class="title-font font-bold">
@@ -86,7 +88,7 @@ onBeforeMount(() => {
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <div class="flex flex-row my-2">
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Date Start</div>
@@ -136,20 +138,17 @@ onBeforeMount(() => {
                 <div class="flex w-full">
                     <div class="w-28 my-auto text-sm m-auto"></div>
                     <div class="flex w-full text-sm m-auto">
-                        <button class="btn btn-success" @click="getServerLogData">
-                            <i class="pi pi-search m-1" />
-                            <span class="m-1">Search</span>
-                        </button>
+                        <Button icon="pi pi-search" label="Search" @click="getServerLogData" />
                     </div>
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <DataTable
                 class="p-datatable-sm text-sm"
                 :value="serverLogData"
                 showGridlines
-                :paginator="true"
+                paginator
                 :rows="20"
                 paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rowsPerPageOptions="[10, 20, 50, 100]"

@@ -53,10 +53,10 @@ class UserManController extends Controller
             return $query->orderBy('name');
         }])->orderBy('username')->get()->map(function (User $user) {
             return collect($user)->merge([
-                'roles_array' => Cache::tags([Role::class])->remember(Role::class.'-getRoles-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                'roles_array' => Cache::remember(Role::class.'-getRoles-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
                     return $user->getRoleNames()->sortBy('name');
                 }),
-                'permissions_array' => Cache::tags([Permission::class])->remember(Permission::class.'-getPermissions-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                'permissions_array' => Cache::remember(Permission::class.'-getPermissions-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
                     return $user->getAllPermissions()->sortBy([
                         ['name', 'asc'],
                     ])->pluck('name');
@@ -76,13 +76,13 @@ class UserManController extends Controller
         Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return response()->json([
-            'roles' => Cache::tags([Role::class])->remember(Role::class.'-orderBy-name', Carbon::now()->addYear(), function () {
+            'roles' => Cache::remember(Role::class.'-orderBy-name', Carbon::now()->addYear(), function () {
                 return Role::orderBy('name')->get();
             }),
-            'permissions' => Cache::tags([Permission::class])->remember(Permission::class.'-orderBy-name', Carbon::now()->addYear(), function () {
+            'permissions' => Cache::remember(Permission::class.'-orderBy-name', Carbon::now()->addYear(), function () {
                 return Permission::orderBy('name')->get();
             }),
-            'permissions_const' => Cache::tags([Permission::class])->remember(Permission::class.'-const-orderBy-name', Carbon::now()->addYear(), function () {
+            'permissions_const' => Cache::remember(Permission::class.'-const-orderBy-name', Carbon::now()->addYear(), function () {
                 return Permission::whereIn('name', InterfaceClass::ALLPERM)->orderBy('name')->get();
             }),
         ]);
@@ -116,13 +116,13 @@ class UserManController extends Controller
         (bool) $isRestored = false;
 
         /** Cannot assign Super Permission if not already have super role */
-        $superRoleId = Cache::tags([Role::class])->remember(Role::class.'-superRoleId', Carbon::now()->addYear(), function () {
+        $superRoleId = Cache::remember(Role::class.'-superRoleId', Carbon::now()->addYear(), function () {
             return Role::where('name', InterfaceClass::SUPERROLE)->first()->id;
         });
         if (in_array($superRoleId, $validated['roles'] ?? [])) {
             Gate::forUser($user)->authorize('hasSuperPermission', User::class);
         }
-        $superPermissionId = Cache::tags([Permission::class])->remember(Permission::class.'-superPermissionId', Carbon::now()->addYear(), function () {
+        $superPermissionId = Cache::remember(Permission::class.'-superPermissionId', Carbon::now()->addYear(), function () {
             return Permission::whereHas('ability', function ($query) {
                 return $query->where('title', InterfaceClass::SUPER);
             })->first()->id;

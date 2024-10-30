@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CeleryQueueController;
 use App\Http\Controllers\PassportManController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleManController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
+use Laravel\Passport\Http\Middleware\CheckClientCredentials;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 /** All API Route should be sanitized with XSS Middleware */
-Route::middleware([XssProtection::class])->group(function () {
+Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
     /** Get Constant */
     Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
     Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');
@@ -30,11 +32,11 @@ Route::middleware([XssProtection::class])->group(function () {
     Route::post('/get-notification-list', [AppConstController::class, 'getNotificationList'])->name('get-notification-list');
 
     /** Login Routes need rate limit to prevent attacks */
-    Route::post('/post-token', [AuthController::class, 'postToken'])->name('post-token')->middleware(['throttle:api-secure']);
+    Route::post('/post-token', [AuthController::class, 'postToken'])->name('post-token');
 
     /** Routes that need authentication first */
     Route::middleware(['auth:api'])->group(function () {
-        Route::post('/post-token-revoke', [AuthController::class, 'postTokenRevoke'])->name('post-token-revoke')->middleware(['throttle:api-secure']);
+        Route::post('/post-token-revoke', [AuthController::class, 'postTokenRevoke'])->name('post-token-revoke');
         Route::post('/post-notification-as-read', [AppConstController::class, 'postNotificationAsRead'])->name('post-notification-as-read');
         Route::post('/post-notification-clear-all', [AppConstController::class, 'postNotificationClearAll'])->name('post-notification-clear-all');
         Route::post('/post-update-profile', [ProfileController::class, 'updateProfile'])->name('post-update-profile');
@@ -64,5 +66,19 @@ Route::middleware([XssProtection::class])->group(function () {
                 Route::post('/post-create-oauth-client', [PassportManController::class, 'createPassportClient'])->name('passport.clients.store');
             });
         });
+    });
+
+    Route::middleware([CheckClientCredentials::class.':rabbitmq'])->prefix('rabbitmq')->group(function () {
+        Route::post('/test-rabbitmq', function () {
+            if (! app()->environment('local')) {
+                return response()->json(['status' => 'error', 'message' => 'This feature is only available in local environment.'], 403);
+            } else {
+                return response()->json(['status' => 'success']);
+            }
+        });
+
+        Route::post('/send-notification', [CeleryQueueController::class, 'sendNotification']);
+        Route::post('/send-log', [CeleryQueueController::class, 'sendLog']);
+        Route::post('/send-callbacks', [CeleryQueueController::class, 'sendCallbacks']);
     });
 });

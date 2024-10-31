@@ -6,7 +6,7 @@ import CmpPusherState from './CmpPusherState.vue';
 import CmpClearCacheButton from './CmpClearCacheButton.vue';
 
 const props = defineProps<{
-    pageTitle: string;
+    pageTitle: string | undefined;
 }>();
 const main = useMainStore();
 const { browserSuppport } = storeToRefs(main);

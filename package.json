@@ -38,7 +38,7 @@
     },
     "devDependencies": {
         "@pinia/testing": "^0.1.6",
-        "@swc/core": "^1.7.40",
+        "@swc/core": "^1.7.42",
         "@tsconfig/recommended": "^1.0.8",
         "@types/chai": "^5.0.1",
         "@types/jest": "^29.5.14",

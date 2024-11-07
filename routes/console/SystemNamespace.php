@@ -35,6 +35,7 @@ Artisan::command('system:refresh', function () {
         Feature::purge();
     }
 
+    $this->call('views:clear');
     $this->info('Cache cleared');
 
     $this->info('System refreshed');
@@ -69,6 +70,7 @@ Artisan::command('system:start', function () {
     Redis::connection('cachejob')->flushdb(); /** Job Database */
     Cache::flush(); /** Cache */
     InterfaceClass::flushRolePermissionCache();
+    $this->call('views:clear');
     $this->info('Cache cleared');
 
     RolePermissionSyncJob::dispatchSync();

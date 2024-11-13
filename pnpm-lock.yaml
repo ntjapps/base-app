@@ -21,8 +21,8 @@ importers:
         specifier: ^1.7.7
         version: 1.7.7
       laravel-echo:
-        specifier: ^1.16.1
-        version: 1.16.1
+        specifier: ^1.17.0
+        version: 1.17.0
       laravel-vite-plugin:
         specifier: ^1.0.5
         version: 1.0.5(vite@5.4.10(@types/node@22.9.0)(sass@1.80.6)(terser@5.36.0))
@@ -1826,8 +1826,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  laravel-echo@1.16.1:
-    resolution: {integrity: sha512-++Ylb6M3ariC9Rk5WE5gZjj6wcEV5kvLF8b+geJ5/rRIfdoOA+eG6b9qJPrarMD9rY28Apx+l3eelIrCc2skVg==}
+  laravel-echo@1.17.0:
+    resolution: {integrity: sha512-uf+BVZMkXc7+pzxS2dG5v1P+MT3yWS+/9oDSJUcQ4KqnDKLYfM1lc7yUmnxvLtwPksGuQJv6XBtzvWLHSEheNQ==}
     engines: {node: '>=10'}
 
   laravel-vite-plugin@1.0.5:
@@ -4377,7 +4377,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  laravel-echo@1.16.1: {}
+  laravel-echo@1.17.0: {}
 
   laravel-vite-plugin@1.0.5(vite@5.4.10(@types/node@22.9.0)(sass@1.80.6)(terser@5.36.0)):
     dependencies:

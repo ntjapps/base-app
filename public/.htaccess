@@ -4,6 +4,8 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^HEAD|GET$
+    RewriteRule build/(.*) [E=Cache-Control:max-age=15552000]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

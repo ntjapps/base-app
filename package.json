@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@primevue/core": "^4.2.1",
-        "@vitejs/plugin-vue": "^5.1.5",
+        "@vitejs/plugin-vue": "^5.2.0",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.7",
         "laravel-echo": "^1.17.0",

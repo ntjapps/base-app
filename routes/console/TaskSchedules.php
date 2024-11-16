@@ -22,7 +22,6 @@ if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
 }
 
 if (class_exists(\Laravel\Pulse\PulseServiceProvider::class)) {
-    Schedule::command('pulse:check')->dailyAt('00:00')->withoutOverlapping();
     Schedule::command('pulse:work')->everyFifteenMinutes()->withoutOverlapping();
     Schedule::command('pulse:clear', ['--type=cpu,memory,system'])->everyFifteenMinutes();
 }

@@ -10,8 +10,12 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 Artisan::command('test:unit', function () {
-    /** NULL */
     $this->info('Executing test:unit...');
+
+    $data = [];
+
+    $this->info('Data: '.json_encode($data));
+
     Log::alert('Console test:unit executed', ['appName' => config('app.name')]);
 })->purpose('Test Query / Any Test / Sample test for unit testing');
 

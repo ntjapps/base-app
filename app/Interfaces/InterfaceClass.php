@@ -9,7 +9,7 @@ use ErrorException;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Pennant\Feature;
 
-class InterfaceClass implements PermissionConst, ResetPassConst, RoleConst
+class InterfaceClass
 {
     use CommonFunction;
 
@@ -17,6 +17,33 @@ class InterfaceClass implements PermissionConst, ResetPassConst, RoleConst
     {
         //
     }
+
+    /**
+     * List of user Permission
+     */
+    public const ALLPERM = [
+        self::SUPER,
+    ];
+
+    public const PRIVILEGEPERM = [
+        self::SUPER,
+    ];
+
+    public const SUPER = 'root';
+
+    /**
+     * Reset password to this password
+     */
+    public const RESETPASSWORD = 'reset';
+
+    /**
+     * List of user Roles
+     */
+    public const ALLROLE = [
+        self::SUPERROLE,
+    ];
+
+    public const SUPERROLE = 'SU';
 
     public static function readApplicationVersion(): string
     {

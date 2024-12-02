@@ -3,16 +3,17 @@ FROM ghcr.io/ntj125app/composer-custom:latest AS composer
 
 ARG ENV_KEY
 ARG APP_VERSION_HASH
+ARG ENV_TYPE=dev
 
 COPY --chown=65534:65534 . /var/www/vhosts/localhost
 
 WORKDIR /var/www/vhosts/localhost
 
-RUN echo "APP_VERSION_HASH=${{ github.sha }}" >> .constants && \
+RUN echo "APP_VERSION_HASH=${APP_VERSION_HASH}" >> .constants && \
     composer install --ignore-platform-reqs -- optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist && \
-    if [ -f .env.prod.encrypted ]; then \
+    if [ ! -z "${ENV_KEY}" ] && [ -f .env.${ENV_TYPE}.encrypted ]; then \
         php artisan env:decrypt --env=dev --key=${ENV_KEY} && \
-        ln -sf .env.prod .env && \
+        ln -sf .env.${ENV_TYPE} .env && \
         ls -lah .env* ; \
     fi
 

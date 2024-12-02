@@ -54,3 +54,4 @@ jobs:
           args: |
             ENV_KEY=${{ env.ENV_KEY }}
             APP_VERSION_HASH=${{ github.sha }}
+            ENV_TYPE=dev

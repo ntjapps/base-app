@@ -15,11 +15,11 @@ trait BasePolicy
      */
     public function hasSuperPermission(User $user): ?bool
     {
-        $permission = Cache::tags([Permission::class])->remember(Permission::class.'-ability-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
+        $permission = Cache::remember(Permission::class.'-ability-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
             return Permission::where('name', InterfaceClass::SUPER)->first();
         });
 
-        $hasPermissionToCache = Cache::tags([Permission::class])->remember(Permission::class.'-hasPermissionTo-'.$permission->id.'-user-'.$user->id, Carbon::now()->addYear(), function () use ($user, $permission) {
+        $hasPermissionToCache = Cache::remember(Permission::class.'-hasPermissionTo-'.$permission->id.'-user-'.$user->id, Carbon::now()->addYear(), function () use ($user, $permission) {
             return $user->hasPermissionTo($permission);
         });
 

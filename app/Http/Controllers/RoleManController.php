@@ -52,7 +52,7 @@ class RoleManController extends Controller
             return $query->orderBy('name');
         }])->orderBy('name')->get()->map(function (Role $role) {
             return collect($role)->merge([
-                'permissions_array' => Cache::tags([Permission::class])->remember(Permission::class.'-getPermissionsByRole-'.$role->id, Carbon::now()->addYear(), function () use ($role) {
+                'permissions_array' => Cache::remember(Permission::class.'-getPermissionsByRole-'.$role->id, Carbon::now()->addYear(), function () use ($role) {
                     return $role->getAllPermissions()->sortBy([
                         ['name', 'asc'],
                     ])->pluck('name');
@@ -91,7 +91,7 @@ class RoleManController extends Controller
         $roleId = $validated['role_id'] ?? null;
 
         /** Cannot Create or Modify Super Role and Admin Role */
-        $rolesSuper = Cache::tags([Role::class])->remember(Role::class.'-name-'.InterfaceClass::SUPERROLE, Carbon::now()->addYear(), function () {
+        $rolesSuper = Cache::remember(Role::class.'-name-'.InterfaceClass::SUPERROLE, Carbon::now()->addYear(), function () {
             return Role::where('name', InterfaceClass::SUPERROLE)->first();
         });
         if ($roleId === $rolesSuper->id) {
@@ -102,7 +102,7 @@ class RoleManController extends Controller
         }
 
         /** Cannot Add Admin or Super Permission */
-        $superPermissionId = Cache::tags([Permission::class])->remember(Permission::class.'-name-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
+        $superPermissionId = Cache::remember(Permission::class.'-name-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
             return Permission::whereHas('ability', function ($query) {
                 return $query->where('title', InterfaceClass::SUPER);
             })->first()->id;

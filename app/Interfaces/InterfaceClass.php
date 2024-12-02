@@ -62,8 +62,8 @@ class InterfaceClass
     public static function flushRolePermissionCache(): void
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        Cache::tags([Role::class])->flush();
-        Cache::tags([Permission::class])->flush();
+        Cache::flush();
+        Cache::flush();
         Feature::flushCache();
     }
 }

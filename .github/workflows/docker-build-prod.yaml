@@ -51,3 +51,6 @@ jobs:
                   labels: ${{ steps.meta-packages.outputs.labels }}
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+                  args: |
+                      ENV_KEY=${{ env.ENV_KEY }}
+                      APP_VERSION_HASH=${{ github.sha }}

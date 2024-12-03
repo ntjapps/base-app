@@ -7,11 +7,14 @@ pipeline {
         GIT_SHA_INFO = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     }
 
+    options {
+        skipDefaultCheckout()
+    }
+
     stages {
         stage('Docker Login, Reset Directory Permissions, Clear Workspace and Checkout') {
             steps {
                 sh 'docker login -u $REGISTRY_CREDS_USR -p $REGISTRY_CREDS_PSW '+REGISTRY_PREFIX+REGISTRY
-                sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom chmod -R 777 .'
                 cleanWs(cleanWhenNotBuilt: true,
                         deleteDirs: true,
                         disableDeferredWipeout: true,
@@ -38,7 +41,6 @@ pipeline {
 
     post {
         always {
-            sh 'docker run --rm -v "$PWD":/app -w /app $REGISTRY/npm-custom chmod -R 777 .'
             sh 'docker system prune -f || true'
             cleanWs(cleanWhenNotBuilt: true,
                     deleteDirs: true,

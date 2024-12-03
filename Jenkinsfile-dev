@@ -37,15 +37,12 @@ pipeline {
                 sh 'docker buildx rm -f --all-inactive'
             }
         }
-    }
-
-    post {
-        always {
-            sh 'docker system prune -f || true'
-            cleanWs(cleanWhenNotBuilt: true,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true)
+        stage('Cleanup') {
+            steps {
+                script {
+                    sh 'docker system prune -f || true'
+                }
+            }
         }
     }
 }

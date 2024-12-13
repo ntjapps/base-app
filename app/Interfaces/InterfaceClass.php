@@ -3,7 +3,6 @@
 namespace App\Interfaces;
 
 use App\Models\Permission;
-use App\Models\Role;
 use App\Traits\CommonFunction;
 use ErrorException;
 use Illuminate\Support\Facades\Cache;

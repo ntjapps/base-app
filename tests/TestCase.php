@@ -28,7 +28,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * The test seed.
      */
-    protected function testSeed(): array
+    protected function test_seed(): array
     {
         return [
             RolesPermissionSeeder::class,

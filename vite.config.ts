@@ -6,10 +6,7 @@ process.env = { ...process.env, ...loadEnv('', process.cwd()) };
 
 import { builtinModules } from 'module';
 
-const allExternal = [
-    ...builtinModules,
-    ...builtinModules.map((module) => `node:${module}`)
-]
+const allExternal = [...builtinModules, ...builtinModules.map((module) => `node:${module}`)];
 
 export default defineConfig({
     server: {
@@ -47,7 +44,7 @@ export default defineConfig({
                     vendor: ['vue', 'vue-router', 'axios', 'pinia', 'pusher-js'],
                 },
             },
-            external: ['fsevents', ...allExternal]
+            external: ['fsevents', ...allExternal],
         },
         manifest: 'manifest.json',
     },

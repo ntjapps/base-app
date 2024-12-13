@@ -38,9 +38,7 @@ Sentry.init({
     app: MainApp,
     dsn: process.env.VITE_SENTRY_DSN ?? '',
 
-    integrations: [
-      Sentry.browserTracingIntegration({ router }),
-    ],
+    integrations: [Sentry.browserTracingIntegration({ router })],
 });
 
 router.isReady().then(() => {

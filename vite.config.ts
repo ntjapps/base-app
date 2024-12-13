@@ -4,6 +4,13 @@ import laravel from 'laravel-vite-plugin';
 
 process.env = { ...process.env, ...loadEnv('', process.cwd()) };
 
+import { builtinModules } from 'module';
+
+const allExternal = [
+    ...builtinModules,
+    ...builtinModules.map((module) => `node:${module}`)
+]
+
 export default defineConfig({
     server: {
         host: true /* Expose to all IP */,
@@ -40,6 +47,7 @@ export default defineConfig({
                     vendor: ['vue', 'vue-router', 'axios', 'pinia', 'pusher-js'],
                 },
             },
+            external: ['fsevents', ...allExternal]
         },
         manifest: 'manifest.json',
     },

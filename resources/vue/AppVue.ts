@@ -30,13 +30,11 @@ import CmpAppSet from './Components/CmpAppSet.vue';
 MainApp.component('CmpAppSet', CmpAppSet);
 
 /** Add Sentry */
-import { loadEnv } from 'vite';
-process.env = { ...process.env, ...loadEnv('', process.cwd()) };
 import * as Sentry from '@sentry/vue';
 
 Sentry.init({
     app: MainApp,
-    dsn: process.env.VITE_SENTRY_DSN ?? '',
+    dsn: import.meta.env.VITE_SENTRY_DSN ?? '',
 
     integrations: [Sentry.browserTracingIntegration({ router })],
 });

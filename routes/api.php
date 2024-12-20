@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 /** All API Route should be sanitized with XSS Middleware */
-Route::middleware([XssProtection::class])->group(function () {
+Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
     /** Get Constant */
     Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
     Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');

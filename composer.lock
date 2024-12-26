@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26703b1e545531a91db5d4a5f252cf4a",
+    "content-hash": "2270607ef2673a07dcd2cfef9b843481",
     "packages": [
         {
             "name": "brick/math",
@@ -2250,16 +2250,16 @@
         },
         {
             "name": "laravel/reverb",
-            "version": "dev-fix/redis-reconnection",
+            "version": "v1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/reverb.git",
-                "reference": "762915c336f146939ef99923425153243395703a"
+                "reference": "22eab51c56c9a06e26a892b57e9b9d392e4e1da0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/reverb/zipball/762915c336f146939ef99923425153243395703a",
-                "reference": "762915c336f146939ef99923425153243395703a",
+                "url": "https://api.github.com/repos/laravel/reverb/zipball/22eab51c56c9a06e26a892b57e9b9d392e4e1da0",
+                "reference": "22eab51c56c9a06e26a892b57e9b9d392e4e1da0",
                 "shasum": ""
             },
             "require": {
@@ -2289,13 +2289,13 @@
             "type": "library",
             "extra": {
                 "laravel": {
+                    "aliases": {
+                        "Output": "Laravel\\Reverb\\Output"
+                    },
                     "providers": [
                         "Laravel\\Reverb\\ApplicationManagerServiceProvider",
                         "Laravel\\Reverb\\ReverbServiceProvider"
-                    ],
-                    "aliases": {
-                        "Output": "Laravel\\Reverb\\Output"
-                    }
+                    ]
                 }
             },
             "autoload": {
@@ -2303,16 +2303,7 @@
                     "Laravel\\Reverb\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Laravel\\Reverb\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "./vendor/bin/pest"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -2328,16 +2319,16 @@
             ],
             "description": "Laravel Reverb provides a real-time WebSocket communication backend for Laravel applications.",
             "keywords": [
+                "WebSockets",
                 "laravel",
                 "real-time",
-                "websocket",
-                "websockets"
+                "websocket"
             ],
             "support": {
-                "source": "https://github.com/laravel/reverb/tree/fix/redis-reconnection",
-                "issues": "https://github.com/laravel/reverb/issues"
+                "issues": "https://github.com/laravel/reverb/issues",
+                "source": "https://github.com/laravel/reverb/tree/v1.4.4"
             },
-            "time": "2024-12-20T13:03:32+00:00"
+            "time": "2024-12-06T18:56:46+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -11630,9 +11621,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "laravel/reverb": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

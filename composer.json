@@ -16,7 +16,7 @@
         "laravel/passport": "^12.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.2",
-        "laravel/reverb": "^1.2.0",
+        "laravel/reverb": "dev-fix/redis-reconnection",
         "laravel/tinker": "^2.9",
         "pusher/pusher-php-server": "^7.2",
         "sentry/sentry-laravel": "^4.3",
@@ -83,5 +83,11 @@
         }
     },
     "minimum-stability": "stable",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/laravel/reverb.git"
+        }
+    ],
     "prefer-stable": true
 }

@@ -21,6 +21,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/app/healthcheck',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trustProxies(at: [
+            '127.0.0.0/8',
+            '10.0.0.0/8',
+            '172.16.0.0/12',
+            '192.168.0.0/16',
+        ]);
+
+        $middleware->trustProxies(headers: Request::HEADER_X_FORWARDED_FOR |
+            Request::HEADER_X_FORWARDED_HOST |
+            Request::HEADER_X_FORWARDED_PORT |
+            Request::HEADER_X_FORWARDED_PROTO |
+            Request::HEADER_X_FORWARDED_AWS_ELB
+        );
 
         $middleware->web(append: [
             CreateFreshApiToken::class,

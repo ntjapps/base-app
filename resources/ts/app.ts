@@ -1,7 +1,7 @@
 /**
  * Let's import CSS from TS/JS this need file extension
  */
-import '../css/app.scss';
+import '../css/app.css';
 
 /**
  * Let's load our application

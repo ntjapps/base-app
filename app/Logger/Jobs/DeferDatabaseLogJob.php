@@ -30,7 +30,7 @@ class DeferDatabaseLogJob implements ShouldQueue, Silenced
      *
      * @var int
      */
-    //public $timeout = 60;
+    // public $timeout = 60;
 
     /**
      * Calculate the number of seconds to wait before retrying the job.

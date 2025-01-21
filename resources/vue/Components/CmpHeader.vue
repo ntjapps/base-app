@@ -5,9 +5,6 @@ import { useMainStore } from '../AppState';
 import CmpPusherState from './CmpPusherState.vue';
 import CmpClearCacheButton from './CmpClearCacheButton.vue';
 
-const props = defineProps<{
-    pageTitle: string | undefined;
-}>();
 const main = useMainStore();
 const { browserSuppport } = storeToRefs(main);
 </script>
@@ -15,11 +12,7 @@ const { browserSuppport } = storeToRefs(main);
 <template>
     <div class="header-container">
         <div class="bg-base-300 py-3 px-5 flex flex-row">
-            <div class="flex flex-row w-full">
-                <div class="my-auto ml-4 font-bold">
-                    {{ props.pageTitle }}
-                </div>
-            </div>
+            <div class="flex flex-row w-full" />
 
             <div class="flex justify-end w-full">
                 <div class="flex justify-end w-full my-auto">

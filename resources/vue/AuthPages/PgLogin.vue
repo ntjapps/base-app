@@ -67,63 +67,69 @@ onBeforeUpdate(() => {
 </script>
 
 <template>
-    <CmpToast ref="toastchild" />
-    <div
-        class="grid content-center w-screen h-screen bg-surface-50 object-fill bg-no-repeat bg-cover bg-center"
-    >
-        <div class="flex justify-center">
-            <div v-show="!loading" class="bg-surface-300 rounded-lg drop-shadow-lg">
-                <div class="m-auto p-5">
-                    <div class="text-center font-bold my-2.5">
-                        {{ appName }}
-                    </div>
-                    <div v-if="!browserSuppport" class="text-center font-bold my-2.5">
-                        <Button icon="pi pi-times" label="Browser Unsupported" severity="danger" />
-                    </div>
-                    <div class="text-center font-bold my-2.5">Login to your account</div>
-                    <div class="flex justify-center flex-col mt-8 my-2.5">
-                        <div class="relative w-full">
-                            <InputText
-                                id="username"
-                                v-model="username"
-                                class="text-left w-full"
-                                placeholder="Username"
-                                @keypress.enter="postLoginData"
+    <div>
+        <CmpToast ref="toastchild" />
+        <div
+            class="grid content-center w-screen h-screen bg-surface-50 object-fill bg-no-repeat bg-cover bg-center"
+        >
+            <div class="flex justify-center">
+                <div v-show="!loading" class="bg-surface-300 rounded-lg drop-shadow-lg">
+                    <div class="m-auto p-5">
+                        <div class="text-center font-bold my-2.5">
+                            {{ appName }}
+                        </div>
+                        <div v-if="!browserSuppport" class="text-center font-bold my-2.5">
+                            <Button
+                                icon="pi pi-times"
+                                label="Browser Unsupported"
+                                severity="danger"
                             />
                         </div>
-                    </div>
-                    <div class="flex justify-center flex-col my-2.5">
-                        <div class="relative w-full">
-                            <Password
-                                v-model="password"
-                                inputId="password"
-                                type="text"
-                                placeholder="Password"
-                                :pt="{
-                                    root: 'w-full',
-                                    pcInputText: {
+                        <div class="text-center font-bold my-2.5">Login to your account</div>
+                        <div class="flex justify-center flex-col mt-8 my-2.5">
+                            <div class="relative w-full">
+                                <InputText
+                                    id="username"
+                                    v-model="username"
+                                    class="text-left w-full"
+                                    placeholder="Username"
+                                    @keypress.enter="postLoginData"
+                                />
+                            </div>
+                        </div>
+                        <div class="flex justify-center flex-col my-2.5">
+                            <div class="relative w-full">
+                                <Password
+                                    v-model="password"
+                                    inputId="password"
+                                    type="text"
+                                    placeholder="Password"
+                                    :pt="{
                                         root: 'w-full',
-                                    },
-                                }"
-                                :feedback="false"
-                                @keyup.enter="postLoginData"
-                            />
+                                        pcInputText: {
+                                            root: 'w-full',
+                                        },
+                                    }"
+                                    :feedback="false"
+                                    @keyup.enter="postLoginData"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex justify-center py-2.5">
-                        <CmpTurnstile ref="turnchild" />
-                    </div>
-                    <div class="flex justify-center py-2.5">
-                        <Button label="Login" @click="postLoginData" />
+                        <div class="flex justify-center py-2.5">
+                            <CmpTurnstile ref="turnchild" />
+                        </div>
+                        <div class="flex justify-center py-2.5">
+                            <Button label="Login" @click="postLoginData" />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div v-show="loading" class="bg-base-200 rounded-lg drop-shadow-lg">
-                <div class="m-auto p-5">
-                    <div class="text-center font-bold my-2.5">
-                        <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                <div v-show="loading" class="bg-base-200 rounded-lg drop-shadow-lg">
+                    <div class="m-auto p-5">
+                        <div class="text-center font-bold my-2.5">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                        </div>
+                        <div class="text-center font-bold my-2.5">Loading</div>
                     </div>
-                    <div class="text-center font-bold my-2.5">Loading</div>
                 </div>
             </div>
         </div>

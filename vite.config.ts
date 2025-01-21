@@ -12,6 +12,9 @@ export default defineConfig({
                 process.env.VITE_PUSHER_HOST ??
                 'docker.localhost' /* Set base URL for Hot Module Reload */,
         },
+        cors: {
+            origin: 'http://' + (process.env.VITE_PUSHER_HOST ?? 'docker.localhost'),
+        },
     },
     plugins: [
         laravel({

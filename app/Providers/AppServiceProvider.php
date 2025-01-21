@@ -11,8 +11,11 @@ use App\Models\PassportPersonalAccessClient;
 use App\Models\PassportRefreshToken;
 use App\Models\PassportToken;
 use App\Models\Permission;
-use App\Models\Role;
+use App\Models\PermissionMenu;
+use App\Models\PermissionPrivilege;
 use App\Models\User;
+use App\Observers\PermissionMenuObserver;
+use App\Observers\PermissionPrivilegeObserver;
 use App\Policies\UserPolicy;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -101,6 +104,8 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MigrationEnded::class, MigrationEventListener::class);
 
         /** Registering Observers */
+        PermissionPrivilege::observe(PermissionPrivilegeObserver::class);
+        PermissionMenu::observe(PermissionMenuObserver::class);
 
         /** Registering Rate Limits */
     }

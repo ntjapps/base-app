@@ -16,7 +16,9 @@ trait BasePolicy
     public function hasSuperPermission(User $user): ?bool
     {
         $permission = Cache::remember(Permission::class.'-ability-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
-            return Permission::where('name', InterfaceClass::SUPER)->first();
+            return Permission::whereHas('ability', function ($query) {
+                return $query->where('title', InterfaceClass::SUPER);
+            })->first();
         });
 
         $hasPermissionToCache = Cache::remember(Permission::class.'-hasPermissionTo-'.$permission->id.'-user-'.$user->id, Carbon::now()->addYear(), function () use ($user, $permission) {

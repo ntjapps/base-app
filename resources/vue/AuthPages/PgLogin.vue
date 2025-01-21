@@ -10,6 +10,7 @@ import CmpToast from '../Components/CmpToast.vue';
 
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
+import Button from 'primevue/button';
 
 const web = useWebStore();
 const webapi = useWebApiStore();
@@ -68,62 +69,52 @@ onBeforeUpdate(() => {
 <template>
     <CmpToast ref="toastchild" />
     <div
-        class="grid content-center w-screen h-screen bg-neutral object-fill bg-no-repeat bg-cover bg-center"
+        class="grid content-center w-screen h-screen bg-surface-50 object-fill bg-no-repeat bg-cover bg-center"
     >
         <div class="flex justify-center">
-            <div v-show="!loading" class="bg-base-300 rounded-lg drop-shadow-lg">
+            <div v-show="!loading" class="bg-surface-300 rounded-lg drop-shadow-lg">
                 <div class="m-auto p-5">
                     <div class="text-center font-bold my-2.5">
                         {{ appName }}
                     </div>
                     <div v-if="!browserSuppport" class="text-center font-bold my-2.5">
-                        <button class="btn btn-sm btn-error">
-                            <i class="pi pi-times m-1" />
-                            <span class="m-1">Browser Unsupported</span>
-                        </button>
+                        <Button icon="pi pi-times" label="Browser Unsupported" severity="danger" />
                     </div>
                     <div class="text-center font-bold my-2.5">Login to your account</div>
                     <div class="flex justify-center flex-col mt-8 my-2.5">
                         <div class="relative w-full">
-                            <span class="flex flex-col w-full">
-                                <label for="username"> Username </label>
-                                <InputText
-                                    id="username"
-                                    v-model="username"
-                                    class="text-left"
-                                    placeholder=""
-                                    @keypress.enter="postLoginData"
-                                />
-                            </span>
+                            <InputText
+                                id="username"
+                                v-model="username"
+                                class="text-left w-full"
+                                placeholder="Username"
+                                @keypress.enter="postLoginData"
+                            />
                         </div>
                     </div>
                     <div class="flex justify-center flex-col my-2.5">
                         <div class="relative w-full">
-                            <span class="flex flex-col w-full">
-                                <label for="password"> Password </label>
-                                <Password
-                                    v-model="password"
-                                    inputId="password"
-                                    type="text"
-                                    placeholder=""
-                                    :pt="{
-                                        input: {
-                                            class: 'text-left w-full',
-                                        },
-                                    }"
-                                    :feedback="false"
-                                    @keyup.enter="postLoginData"
-                                />
-                            </span>
+                            <Password
+                                v-model="password"
+                                inputId="password"
+                                type="text"
+                                placeholder="Password"
+                                :pt="{
+                                    root: 'w-full',
+                                    pcInputText: {
+                                        root: 'w-full',
+                                    },
+                                }"
+                                :feedback="false"
+                                @keyup.enter="postLoginData"
+                            />
                         </div>
                     </div>
                     <div class="flex justify-center py-2.5">
                         <CmpTurnstile ref="turnchild" />
                     </div>
                     <div class="flex justify-center py-2.5">
-                        <button class="btn btn-primary" @click="postLoginData">
-                            <span class="m-1">Login</span>
-                        </button>
+                        <Button label="Login" @click="postLoginData" />
                     </div>
                 </div>
             </div>

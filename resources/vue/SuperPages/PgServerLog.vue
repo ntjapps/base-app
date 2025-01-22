@@ -7,11 +7,13 @@ import { useApiStore, useMainStore } from '../AppState';
 import axios from 'axios';
 
 import CmpLayout from '../Components/CmpLayout.vue';
+
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import DatePicker from 'primevue/datepicker';
 import Select from 'primevue/select';
 import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 
 const timeGreet = timeGreetings();
 const api = useApiStore();
@@ -136,10 +138,7 @@ onBeforeMount(() => {
                 <div class="flex w-full">
                     <div class="w-28 my-auto text-sm m-auto"></div>
                     <div class="flex w-full text-sm m-auto">
-                        <button class="btn btn-success" @click="getServerLogData">
-                            <i class="pi pi-search m-1" />
-                            <span class="m-1">Search</span>
-                        </button>
+                        <Button icon="pi pi-search" label="Search" @click="getServerLogData" />
                     </div>
                 </div>
             </div>

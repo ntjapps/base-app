@@ -5,7 +5,9 @@ import useClipboard from 'vue-clipboard3';
 import { useApiStore } from '../AppState';
 
 import CmpToast from '../Components/CmpToast.vue';
+
 import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
@@ -221,28 +223,19 @@ const allowEditName = computed(() => {
         </div>
     </div>
     <div class="flex w-full mt-2.5 justify-center">
-        <button
-            class="btn btn-modal-cancel text-white font-medium mx-2"
-            @click="deleteClient(clientId)"
-        >
-            <span class="m-1">Delete</span>
-        </button>
-        <button class="btn bg-brown-200 text-black font-medium mx-2" @click="resetClient(clientId)">
-            <span class="m-1">Reset Secret</span>
-        </button>
-        <button
+        <Button severity="danger" label="Delete" @click="deleteClient(clientId)" />
+        <Button severity="warning" label="Reset Secret" @click="resetClient(clientId)" />
+        <Button
             v-if="!typeCreate"
-            class="btn bg-navy-700 text-dark-50 font-medium mx-2"
+            severity="success"
+            label="Update Client"
             @click="updateClient(clientId)"
-        >
-            <span class="m-1">Update Client</span>
-        </button>
-        <button
+        />
+        <Button
             v-if="showCreateClient"
-            class="btn bg-navy-700 text-dark-50 font-medium mx-2"
+            severity="success"
+            label="Create Client"
             @click="createClient"
-        >
-            <span class="m-1">Create Client</span>
-        </button>
+        />
     </div>
 </template>

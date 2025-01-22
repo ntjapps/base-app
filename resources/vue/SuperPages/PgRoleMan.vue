@@ -7,10 +7,12 @@ import { useDialog } from 'primevue/usedialog';
 
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
+
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Breadcrumb from 'primevue/breadcrumb';
+import Button from 'primevue/button';
 import { FilterMatchMode } from '@primevue/core/api';
 
 import DialogRoleMan from '../DialogComponents/DialogRoleMan.vue';
@@ -105,9 +107,7 @@ onBeforeMount(() => {
                     <h3 class="title-font">Role Management</h3>
                 </div>
                 <div class="flex justify-end w-full my-auto">
-                    <button class="btn btn-primary w-20" @click="openEditRoleDialog(null)">
-                        <span class="m-1">Create</span>
-                    </button>
+                    <Button label="Create Role" @click="openEditRoleDialog(null)" />
                 </div>
             </div>
         </div>
@@ -148,12 +148,10 @@ onBeforeMount(() => {
                 <Column field="action" header="Actions" class="text-sm">
                     <template #body="slotProps">
                         <div v-if="showViewButton(slotProps.data.id)" class="flex justify-center">
-                            <button
-                                class="btn btn-accent"
+                            <Button
+                                icon="pi pi-angle-double-right"
                                 @click="openEditRoleDialog(slotProps.data)"
-                            >
-                                <i class="pi pi-angle-double-right"></i>
-                            </button>
+                            />
                         </div>
                     </template>
                 </Column>

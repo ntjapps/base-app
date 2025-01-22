@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import Dialog from 'primevue/dialog';
+import Button from 'primevue/button';
 
 const props = defineProps<{
     dialogTypeSuccess: boolean;
@@ -58,7 +59,7 @@ defineExpose({
                 {{ props.dialogMessageProps }}
             </div>
             <div class="flex w-full justify-center my-2.5">
-                <button class="btn btn-primary" @click="closeDialog">Close</button>
+                <Button label="Close" @click="closeDialog" />
             </div>
         </template>
     </Dialog>

@@ -6,8 +6,10 @@ import { useApiStore, useMainStore } from '../AppState';
 
 import CmpLayout from '../Components/CmpLayout.vue';
 import CmpToast from '../Components/CmpToast.vue';
+
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
+import Button from 'primevue/button';
 
 const api = useApiStore();
 const main = useMainStore();
@@ -98,9 +100,7 @@ const postProfileData = () => {
                 </span>
             </div>
             <div class="flex justify-center">
-                <button class="btn btn-primary" @click="postProfileData">
-                    <span class="m-1">Update Profile</span>
-                </button>
+                <Button label="Update Profile" @click="postProfileData" />
             </div>
         </div>
     </CmpLayout>

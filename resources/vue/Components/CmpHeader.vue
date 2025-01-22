@@ -5,6 +5,8 @@ import { useMainStore } from '../AppState';
 import CmpPusherState from './CmpPusherState.vue';
 import CmpClearCacheButton from './CmpClearCacheButton.vue';
 
+import Button from 'primevue/button';
+
 const main = useMainStore();
 const { browserSuppport } = storeToRefs(main);
 </script>
@@ -18,10 +20,12 @@ const { browserSuppport } = storeToRefs(main);
                 <div class="flex justify-end w-full my-auto">
                     <CmpClearCacheButton />
                     <CmpPusherState v-if="browserSuppport" />
-                    <button v-if="!browserSuppport" class="btn btn-sm btn-error">
-                        <i class="pi pi-times m-1" />
-                        <span class="m-1">Browser Unsupported</span>
-                    </button>
+                    <Button
+                        v-if="!browserSuppport"
+                        icon="pi pi-times"
+                        label="Browser Unsupported"
+                        severity="danger"
+                    />
                 </div>
             </div>
         </div>

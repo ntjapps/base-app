@@ -24,8 +24,8 @@ importers:
         specifier: ^1.7.9
         version: 1.7.9
       laravel-echo:
-        specifier: ^1.18.0
-        version: 1.18.0
+        specifier: ^1.19.0
+        version: 1.19.0
       laravel-vite-plugin:
         specifier: ^1.2.0
         version: 1.2.0(vite@6.0.11(@types/node@22.10.1)(jiti@1.21.7)(sass@1.83.4)(terser@5.36.0)(yaml@2.7.0))
@@ -1296,8 +1296,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  laravel-echo@1.18.0:
-    resolution: {integrity: sha512-aIeADT+vk8kFN7OliK5gcOiLVmtZUGqJ2bnc4/NoHZYYBkV9h+Sy+Ksictp6uBqKDMm3WlYMdpK+XP31YWvXtQ==}
+  laravel-echo@1.19.0:
+    resolution: {integrity: sha512-o/X4XH8BIRwij66PSjtotZfM88Z8g/4P3gzxQf2BTcZBKmGqucvI5JYYLprR2OZQ9XlGsmJ2v+hDpPGEbXwUWw==}
     engines: {node: '>=10'}
 
   laravel-vite-plugin@1.2.0:
@@ -2989,7 +2989,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  laravel-echo@1.18.0: {}
+  laravel-echo@1.19.0: {}
 
   laravel-vite-plugin@1.2.0(vite@6.0.11(@types/node@22.10.1)(jiti@1.21.7)(sass@1.83.4)(terser@5.36.0)(yaml@2.7.0)):
     dependencies:

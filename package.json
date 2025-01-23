@@ -17,7 +17,7 @@
         "@vitejs/plugin-vue": "^5.2.1",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.9",
-        "laravel-echo": "^1.18.0",
+        "laravel-echo": "^1.19.0",
         "laravel-vite-plugin": "^1.2.0",
         "lodash": "^4.17.21",
         "pinia": "^2.3.1",

@@ -51,7 +51,7 @@ jobs:
           labels: ${{ steps.meta-packages.outputs.labels }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
-          args: |
+          build-args: |
             ENV_KEY=${{ env.ENV_KEY }}
             APP_VERSION_HASH=${{ github.sha }}
             ENV_TYPE=dev

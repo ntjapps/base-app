@@ -11,11 +11,9 @@ WORKDIR /var/www/vhosts/localhost
 
 RUN echo "APP_VERSION_HASH=${APP_VERSION_HASH}" >> .constants && \
     composer install --ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist && \
-    if [ ! -z "${ENV_KEY}" ] && [ -f .env.${ENV_TYPE}.encrypted ]; then \
-        php artisan env:decrypt --env=${ENV_TYPE} --key=${ENV_KEY} && \
-        ln -sf .env.${ENV_TYPE} .env && \
-        ls -lah .env* ; \
-    fi
+    php artisan env:decrypt --env=${ENV_TYPE} --key=${ENV_KEY} || true && \
+    ln -sf .env.${ENV_TYPE} .env || true && \
+    ls -lah .env*
 
 # Second, run PNPM install
 FROM ghcr.io/ntj125app/npm-custom:latest-ns AS pnpm
@@ -37,7 +35,7 @@ WORKDIR /var/www/vhosts/localhost
 RUN php artisan storage:link && \
     php artisan event:cache && \
     php artisan view:cache && \
-    rm -rf rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs *.config.mjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs
+    rm -rf rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs *.config.mjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs Jenkinsfile*
 
 # Final build images
 FROM ghcr.io/ntj125app/openlitespeed:latest

@@ -64,6 +64,7 @@ export const useMainStore = defineStore('main', {
         menuItems: Array<MenuItemExtended>(),
         expandedKeysMenu: {},
         turnstileToken: '',
+        menuVisible: false,
     }),
 
     actions: {

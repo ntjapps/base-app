@@ -6,16 +6,16 @@ import CmpMobileMenu from '../Components/CmpMobileMenu.vue';
 </script>
 
 <template>
-    <div class="flex flex-row w-full">
+    <div class="flex flex-row w-full min-h-screen">
         <div class="md:flex hidden flex-grow-0 min-h-full w-1/6 bg-surface-200">
             <CmpMenu />
         </div>
         <div class="flex md:hidden">
             <CmpMobileMenu />
         </div>
-        <div class="content-container bg-surface-100 w-full">
+        <div class="flex flex-col bg-surface-100 w-full">
             <CmpHeader />
-            <div class="content-child-container">
+            <div>
                 <slot />
             </div>
             <CmpFooter />

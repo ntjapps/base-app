@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppConstController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CeleryQueueController;
 use App\Http\Controllers\PassportManController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleManController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
+use Laravel\Passport\Http\Middleware\CheckClientCredentials;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,5 +66,19 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::post('/post-create-oauth-client', [PassportManController::class, 'createPassportClient'])->name('passport.clients.store');
             });
         });
+    });
+
+    Route::middleware([CheckClientCredentials::class.':rabbitmq'])->prefix('rabbitmq')->group(function () {
+        Route::post('/test-rabbitmq', function () {
+            if (! app()->environment('local')) {
+                return response()->json(['status' => 'error', 'message' => 'This feature is only available in local environment.'], 403);
+            } else {
+                return response()->json(['status' => 'success']);
+            }
+        });
+
+        Route::post('/send-notification', [CeleryQueueController::class, 'sendNotification']);
+        Route::post('/send-log', [CeleryQueueController::class, 'sendLog']);
+        Route::post('/send-callbacks', [CeleryQueueController::class, 'sendCallbacks']);
     });
 });

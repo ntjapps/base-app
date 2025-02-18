@@ -14,11 +14,13 @@ import Tooltip from 'primevue/tooltip';
 // Mount Application Instances
 const MainApp: App<Element> = createApp({})
     .use(router)
-    .use(pinia)
-    .use(PrimeVue, { theme: 'none' })
-    .use(DialogService)
-    .use(ToastService)
-    .directive('tooltip', Tooltip);
+    .use(pinia) //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .use(PrimeVue as any, {
+        theme: 'none',
+    }) // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .use(DialogService as any) // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .use(ToastService as any) // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .directive('tooltip', Tooltip as any);
 
 /** Global Composenent / Page Registration */
 import CmpAppSet from './Components/CmpAppSet.vue';

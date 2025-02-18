@@ -69,11 +69,9 @@ onBeforeUpdate(() => {
 <template>
     <div>
         <CmpToast ref="toastchild" />
-        <div
-            class="grid content-center w-screen h-screen bg-surface-50 object-fill bg-no-repeat bg-cover bg-center"
-        >
-            <div class="flex justify-center">
-                <div v-show="!loading" class="bg-surface-300 rounded-lg drop-shadow-lg">
+        <div class="flex justify-center w-full h-dvh bg-surface-100">
+            <div class="flex justify-center w-fit h-fit m-auto">
+                <div v-show="!loading" class="bg-surface-200 rounded-lg drop-shadow-lg">
                     <div class="m-auto p-5">
                         <div class="text-center font-bold my-2.5">
                             {{ appName }}
@@ -104,12 +102,6 @@ onBeforeUpdate(() => {
                                     inputId="password"
                                     type="text"
                                     placeholder="Password"
-                                    :pt="{
-                                        root: 'w-full',
-                                        pcInputText: {
-                                            root: 'w-full',
-                                        },
-                                    }"
                                     :feedback="false"
                                     @keyup.enter="postLoginData"
                                 />
@@ -123,10 +115,10 @@ onBeforeUpdate(() => {
                         </div>
                     </div>
                 </div>
-                <div v-show="loading" class="bg-base-200 rounded-lg drop-shadow-lg">
+                <div v-show="loading" class="bg-surface-200 rounded-lg drop-shadow-lg">
                     <div class="m-auto p-5">
                         <div class="text-center font-bold my-2.5">
-                            <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                            <span class="loading loading-bars loading-xl" />
                         </div>
                         <div class="text-center font-bold my-2.5">Loading</div>
                     </div>

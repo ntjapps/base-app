@@ -76,12 +76,6 @@ class MenuItemClass
             ]);
 
             array_push($childMenu, [
-                'label' => 'Server Queue - Horizon',
-                'icon' => 'pi pi-bolt',
-                'url' => parse_url(route('horizon.index'), PHP_URL_PATH),
-            ]);
-
-            array_push($childMenu, [
                 'label' => 'Server Monitor - Pulse',
                 'icon' => 'pi pi-bolt',
                 'url' => parse_url(route('pulse'), PHP_URL_PATH),

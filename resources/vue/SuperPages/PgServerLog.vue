@@ -78,7 +78,7 @@ onBeforeMount(() => {
 
 <template>
     <CmpLayout>
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <div class="flex justify-between">
                 <div>
                     <h2 class="title-font font-bold">
@@ -88,7 +88,7 @@ onBeforeMount(() => {
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <div class="flex flex-row my-2">
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Date Start</div>
@@ -143,7 +143,7 @@ onBeforeMount(() => {
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-base-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <DataTable
                 class="p-datatable-sm text-sm"
                 :value="serverLogData"

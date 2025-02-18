@@ -11,6 +11,7 @@ use Laravel\Pennant\Feature;
 
 Artisan::command('system:refresh', function () {
     $this->call('passport:client:env');
+    $this->call('passport:client:rabbitmq:env');
     $this->info('Passport client generated');
 
     Redis::connection('horizon')->flushdb(); /** Horizon Database */
@@ -55,6 +56,7 @@ Artisan::command('system:start', function () {
     }
 
     $this->call('passport:client:env');
+    $this->call('passport:client:rabbitmq:env');
     $this->info('Passport client generated');
 
     $this->call('cache:clear');

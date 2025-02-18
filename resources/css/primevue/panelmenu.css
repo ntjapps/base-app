@@ -1,5 +1,5 @@
 .p-panelmenu {
-    @apply flex flex-col gap-2;
+    @apply flex flex-col gap-2 w-full;
 }
 
 .p-panelmenu-panel {

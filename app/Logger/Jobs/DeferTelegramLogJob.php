@@ -9,10 +9,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
-use Laravel\Horizon\Contracts\Silenced;
 use Laravel\Telescope\Telescope;
 
-class DeferTelegramLogJob implements ShouldQueue, Silenced
+class DeferTelegramLogJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TelegramApi;
 

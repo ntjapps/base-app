@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'database'),
+    'default' => env('QUEUE_CONNECTION', 'sync'),
 
     /*
     |--------------------------------------------------------------------------
@@ -70,21 +70,6 @@ return [
             'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 5400),
             'block_for' => null,
             'after_commit' => false,
-        ],
-
-        'rabbitmq' => [
-            'driver' => 'rabbitmq',
-            'hosts' => [
-                [
-                    'host' => env('RABBITMQ_HOST', 'rabbitmq'),
-                    'port' => env('RABBITMQ_PORT', 5672),
-                    'user' => env('RABBITMQ_USER', 'laravel'),
-                    'password' => env('RABBITMQ_PASSWORD', 'laravelqueue'),
-                    'vhost' => env('RABBITMQ_VHOST', 'laravelapp'),
-                ],
-            ],
-            /* Set to "horizon" if you wish to use Laravel Horizon. */
-            'worker' => env('RABBITMQ_WORKER', 'horizon'),
         ],
 
     ],

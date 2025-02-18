@@ -9,10 +9,6 @@ Schedule::command('queue:prune-failed')->everyMinute();
 Schedule::command('queue:prune-batches', ['--hours' => 24, '--unfinished' => 48, '--cancelled' => 48])->everyMinute();
 Schedule::command('queue:flush')->everyMinute();
 
-if (class_exists(\Laravel\Horizon\HorizonServiceProvider::class)) {
-    Schedule::command('horizon:snapshot')->everyFiveMinutes();
-}
-
 if (class_exists(\Laravel\Passport\PassportServiceProvider::class)) {
     Schedule::command('passport:purge')->everyMinute();
 }

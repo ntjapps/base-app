@@ -94,6 +94,10 @@ class AppServiceProvider extends ServiceProvider
         Passport::useClientModel(PassportClient::class);
         Passport::usePersonalAccessClientModel(PassportPersonalAccessClient::class);
 
+        Passport::tokensCan([
+            'rabbitmq' => 'Rabbitmq Access API for Queue Callbacks',
+        ]);
+
         /** Register Broadcasting */
         Broadcast::routes(['prefix' => 'api', 'middleware' => ['auth:api']]);
 

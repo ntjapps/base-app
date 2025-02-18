@@ -10,7 +10,8 @@
         px-3 py-2
         transition-colors duration-200
         shadow-[0_1px_2px_0_rgba(18,18,23,0.05)]
-        outline-none;
+        outline-none
+        w-full;
 }
 
 .p-inputtext.p-invalid {

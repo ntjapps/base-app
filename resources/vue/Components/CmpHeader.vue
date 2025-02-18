@@ -13,7 +13,7 @@ const { browserSuppport } = storeToRefs(main);
 
 <template>
     <div class="header-container">
-        <div class="bg-base-300 py-3 px-5 flex flex-row">
+        <div class="bg-surface-300 py-3 px-5 flex flex-row">
             <div class="flex flex-row w-full" />
 
             <div class="flex justify-end w-full">

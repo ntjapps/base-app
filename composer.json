@@ -11,13 +11,13 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.9",
-        "laravel/horizon": "^5.23",
         "laravel/octane": "^2.5",
         "laravel/passport": "^12.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.2",
         "laravel/reverb": "^1.2.0",
         "laravel/tinker": "^2.9",
+        "php-amqplib/php-amqplib": "v3.7",
         "pusher/pusher-php-server": "^7.2",
         "sentry/sentry-laravel": "^4.3",
         "spatie/laravel-health": "^1.29",
@@ -25,8 +25,7 @@
         "spomky-labs/base64url": "^2.0",
         "spomky-labs/otphp": "^11.2",
         "symfony/http-client": "^7.0",
-        "symfony/postmark-mailer": "^7.0",
-        "vladimir-yuldashev/laravel-queue-rabbitmq": "^14.1"
+        "symfony/postmark-mailer": "^7.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

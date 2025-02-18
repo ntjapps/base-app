@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
         "target": "ESNext",
-        "module": "ESNext",
+        "module": "NodeNext",
         "strict": true,
         "jsx": "preserve",
         "importHelpers": true,
-        "moduleResolution": "Node",
+        "moduleResolution": "NodeNext",
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,

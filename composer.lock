@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9600d9a062d01d6150fb22819bce37fe",
+    "content-hash": "d3625f77a898ce1255792479160b87eb",
     "packages": [
         {
             "name": "brick/math",
@@ -4072,16 +4072,16 @@
         },
         {
             "name": "php-amqplib/php-amqplib",
-            "version": "v3.7.0",
+            "version": "v3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-amqplib/php-amqplib.git",
-                "reference": "91fd00e74cd2eea624fd50a321d926b1c124bb99"
+                "reference": "9f50fe69a9f1a19e2cb25596a354d705de36fe59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/91fd00e74cd2eea624fd50a321d926b1c124bb99",
-                "reference": "91fd00e74cd2eea624fd50a321d926b1c124bb99",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/9f50fe69a9f1a19e2cb25596a354d705de36fe59",
+                "reference": "9f50fe69a9f1a19e2cb25596a354d705de36fe59",
                 "shasum": ""
             },
             "require": {
@@ -4147,9 +4147,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-amqplib/php-amqplib/issues",
-                "source": "https://github.com/php-amqplib/php-amqplib/tree/v3.7.0"
+                "source": "https://github.com/php-amqplib/php-amqplib/tree/v3.7.3"
             },
-            "time": "2024-07-09T21:10:28+00:00"
+            "time": "2025-02-18T20:11:13+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -11702,12 +11702,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }

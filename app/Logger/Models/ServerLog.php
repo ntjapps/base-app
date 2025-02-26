@@ -30,7 +30,7 @@ class ServerLog extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<int, string>
      */
     protected $fillable = [
         'message',
@@ -45,7 +45,7 @@ class ServerLog extends Model
     /**
      * The attributes that should be cast.
      *
-     * @var array<string, string>
+     * @var list<string, string>
      */
     protected $casts = [
         'context' => AsArrayObject::class,

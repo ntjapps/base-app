@@ -71,7 +71,7 @@ class ServerManController extends Controller
             return $query->where('message', 'ilike', '%'.$log_message.'%');
         })->when($validated['log_extra'] ?? null, function ($query, $log_extra) {
             return $query->where('context', 'ilike', '%'.$log_extra.'%');
-        })->orderBy('id', 'desc')->limit(20000)->get();
+        })->orderBy('id', 'desc')->paginate();
 
         return response()->json($data);
     }

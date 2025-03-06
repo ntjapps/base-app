@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { timeGreetings } from '../AppCommon';
 import { useApiStore, useMainStore } from '../AppState';
@@ -62,7 +62,9 @@ type LogLevelSelectType = Array<{
 
 const loadingstat = ref<boolean>(true);
 const serverLogResponse = ref<ServerLogResponseType | null>(null);
-const serverLogData = ref<Array<ServerLogDataType>>(Array<ServerLogDataType>());
+const serverLogData = computed(() => {
+    return serverLogResponse.value?.data ?? [];
+});
 const dateStartData = ref<Date>(new Date());
 const dateEndData = ref<Date>(new Date());
 const logLevelSelect = ref<LogLevelSelectType>([
@@ -81,7 +83,9 @@ const logMessageData = ref<string>('');
 const logExtraData = ref<string>('');
 
 const pageDropdownCustom = ref<number>(0);
-const pageDropdownCustomOptions = ref<Array<number>>(Array<number>());
+const pageDropdownCustomOptions = computed(() => {
+    return Array.from({ length: serverLogResponse.value?.last_page ?? 1 }, (_, i) => i + 1);
+});
 
 const getServerLogData = () => {
     loadingstat.value = true;
@@ -94,14 +98,9 @@ const getServerLogData = () => {
             log_extra: logExtraData.value,
         })
         .then((response) => {
-            serverLogData.value = response.data.data;
             serverLogResponse.value = response.data;
             loadingstat.value = false;
             pageDropdownCustom.value = response.data.current_page;
-            pageDropdownCustomOptions.value = Array.from(
-                { length: response.data.last_page },
-                (_, index) => index + 1,
-            );
         })
         .catch((error) => {
             console.error(error.response.data);
@@ -110,18 +109,11 @@ const getServerLogData = () => {
 
 const nextPageCustomCallback = () => {
     if (serverLogResponse.value?.next_page_url !== null) {
-        loadingstat.value = true;
         axios
             .post(serverLogResponse.value?.next_page_url ?? '')
             .then((response) => {
-                serverLogData.value = response.data.data;
                 serverLogResponse.value = response.data;
-                loadingstat.value = false;
                 pageDropdownCustom.value = response.data.current_page;
-                pageDropdownCustomOptions.value = Array.from(
-                    { length: response.data.last_page },
-                    (_, index) => index + 1,
-                );
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -131,18 +123,11 @@ const nextPageCustomCallback = () => {
 
 const prevPageCustomCallback = () => {
     if (serverLogResponse.value?.prev_page_url !== null) {
-        loadingstat.value = true;
         axios
             .post(serverLogResponse.value?.prev_page_url ?? '')
             .then((response) => {
-                serverLogData.value = response.data.data;
                 serverLogResponse.value = response.data;
-                loadingstat.value = false;
                 pageDropdownCustom.value = response.data.current_page;
-                pageDropdownCustomOptions.value = Array.from(
-                    { length: response.data.last_page },
-                    (_, index) => index + 1,
-                );
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -151,18 +136,11 @@ const prevPageCustomCallback = () => {
 };
 
 const changePageCustomCallback = (page: number) => {
-    loadingstat.value = true;
     axios
         .post(serverLogResponse.value?.path ?? '', { page: page })
         .then((response) => {
-            serverLogData.value = response.data.data;
             serverLogResponse.value = response.data;
-            loadingstat.value = false;
             pageDropdownCustom.value = response.data.current_page;
-            pageDropdownCustomOptions.value = Array.from(
-                { length: response.data.last_page },
-                (_, index) => index + 1,
-            );
         })
         .catch((error) => {
             console.error(error.response.data);
@@ -236,7 +214,12 @@ onBeforeMount(() => {
                 <div class="flex w-full">
                     <div class="w-28 my-auto text-sm m-auto"></div>
                     <div class="flex w-full text-sm m-auto">
-                        <Button icon="pi pi-search" label="Search" @click="getServerLogData" />
+                        <Button
+                            icon="pi pi-search"
+                            label="Search"
+                            :disabled="loadingstat"
+                            @click="getServerLogData"
+                        />
                     </div>
                 </div>
             </div>

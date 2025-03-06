@@ -20,20 +20,48 @@ const api = useApiStore();
 const main = useMainStore();
 const { appName, userName } = storeToRefs(main);
 
-type ServerLogDataType = Array<{
-    id: number;
-    log_level: string;
-    log_message: string;
-    log_extra: string;
+type ServerLogResponseType = {
+    current_page: number;
+    data: Array<ServerLogDataType>;
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    links: Array<{
+        url: string | null;
+        label: string;
+        active: boolean;
+    }>;
+    next_page_url: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: number;
+    total: number;
+};
+
+type ServerLogType = {
+    id: string;
+    message: string;
+    channel: string;
+    level: number;
+    level_name: string;
+    datetime: string;
+    context: object | null;
+    extra: object | null;
     created_at: string;
     updated_at: string;
-}>;
+};
+
+type ServerLogDataType = Array<ServerLogType>;
+
 type LogLevelSelectType = Array<{
     label: string;
     value: string;
 }>;
 
 const loadingstat = ref<boolean>(true);
+const serverLogResponse = ref<ServerLogResponseType | null>(null);
 const serverLogData = ref<Array<ServerLogDataType>>(Array<ServerLogDataType>());
 const dateStartData = ref<Date>(new Date());
 const dateEndData = ref<Date>(new Date());
@@ -52,6 +80,9 @@ const logLevelData = ref<string>('all');
 const logMessageData = ref<string>('');
 const logExtraData = ref<string>('');
 
+const pageDropdownCustom = ref<number>(0);
+const pageDropdownCustomOptions = ref<Array<number>>(Array<number>());
+
 const getServerLogData = () => {
     loadingstat.value = true;
     axios
@@ -63,8 +94,75 @@ const getServerLogData = () => {
             log_extra: logExtraData.value,
         })
         .then((response) => {
-            serverLogData.value = response.data;
+            serverLogData.value = response.data.data;
+            serverLogResponse.value = response.data;
             loadingstat.value = false;
+            pageDropdownCustom.value = response.data.current_page;
+            pageDropdownCustomOptions.value = Array.from(
+                { length: response.data.last_page },
+                (_, index) => index + 1,
+            );
+        })
+        .catch((error) => {
+            console.error(error.response.data);
+        });
+};
+
+const nextPageCustomCallback = () => {
+    if (serverLogResponse.value?.next_page_url !== null) {
+        loadingstat.value = true;
+        axios
+            .post(serverLogResponse.value?.next_page_url ?? '')
+            .then((response) => {
+                serverLogData.value = response.data.data;
+                serverLogResponse.value = response.data;
+                loadingstat.value = false;
+                pageDropdownCustom.value = response.data.current_page;
+                pageDropdownCustomOptions.value = Array.from(
+                    { length: response.data.last_page },
+                    (_, index) => index + 1,
+                );
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });
+    }
+};
+
+const prevPageCustomCallback = () => {
+    if (serverLogResponse.value?.prev_page_url !== null) {
+        loadingstat.value = true;
+        axios
+            .post(serverLogResponse.value?.prev_page_url ?? '')
+            .then((response) => {
+                serverLogData.value = response.data.data;
+                serverLogResponse.value = response.data;
+                loadingstat.value = false;
+                pageDropdownCustom.value = response.data.current_page;
+                pageDropdownCustomOptions.value = Array.from(
+                    { length: response.data.last_page },
+                    (_, index) => index + 1,
+                );
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });
+    }
+};
+
+const changePageCustomCallback = (page: number) => {
+    loadingstat.value = true;
+    axios
+        .post(serverLogResponse.value?.path ?? '', { page: page })
+        .then((response) => {
+            serverLogData.value = response.data.data;
+            serverLogResponse.value = response.data;
+            loadingstat.value = false;
+            pageDropdownCustom.value = response.data.current_page;
+            pageDropdownCustomOptions.value = Array.from(
+                { length: response.data.last_page },
+                (_, index) => index + 1,
+            );
         })
         .catch((error) => {
             console.error(error.response.data);
@@ -150,18 +248,50 @@ onBeforeMount(() => {
                 showGridlines
                 paginator
                 :rows="20"
-                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
                 :rowsPerPageOptions="[10, 20, 50, 100]"
                 :loading="loadingstat"
             >
-                <template #footer>
-                    <div class="flex text-sm">Total records: {{ serverLogData.length }}</div>
-                </template>
                 <template #empty>
                     <div class="flex justify-center">No data found</div>
                 </template>
                 <template #loading>
                     <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data. Please wait.
+                </template>
+                <template #paginatorcontainer>
+                    <div
+                        class="flex items-center gap-4 border border-primary bg-transparent rounded-full w-full py-1 px-2 justify-between"
+                    >
+                        <Button
+                            icon="pi pi-chevron-left"
+                            rounded
+                            text
+                            :disabled="serverLogResponse?.prev_page_url === null"
+                            @click="prevPageCustomCallback"
+                        />
+                        <div class="text-color font-medium">
+                            <span
+                                >Showing {{ serverLogResponse?.from }} to
+                                {{ serverLogResponse?.to }} of {{ serverLogResponse?.total }}</span
+                            >
+                            <span class="mx-2" />
+                            <span
+                                >Page
+                                <Select
+                                    v-model="pageDropdownCustom"
+                                    :options="pageDropdownCustomOptions"
+                                    @change="changePageCustomCallback(pageDropdownCustom)"
+                                />
+                                of {{ serverLogResponse?.last_page }}</span
+                            >
+                        </div>
+                        <Button
+                            icon="pi pi-chevron-right"
+                            rounded
+                            text
+                            :disabled="serverLogResponse?.next_page_url === null"
+                            @click="nextPageCustomCallback"
+                        />
+                    </div>
                 </template>
                 <Column field="created_at" header="Log Date">
                     <template #body="slotProps">

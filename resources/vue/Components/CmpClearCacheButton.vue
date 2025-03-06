@@ -34,6 +34,13 @@ const postClearCache = () => {
 <template>
     <div class="flex mx-2">
         <CmpToast ref="toastchild" />
-        <Button icon="pi pi-sync" text rounded aria-label="Clear Cache" @click="postClearCache" />
+        <Button
+            v-tooltip.bottom="'Clear Cache'"
+            icon="pi pi-sync"
+            text
+            rounded
+            aria-label="Clear Cache"
+            @click="postClearCache"
+        />
     </div>
 </template>

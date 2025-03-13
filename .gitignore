@@ -46,6 +46,7 @@ auth.json
 
 # Ignore Debugs Files
 public/*-debug.php
+public/frankenphp-worker.php
 
 # Ignore PrimeVue Files
 public/images

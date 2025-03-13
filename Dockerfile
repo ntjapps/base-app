@@ -5,9 +5,9 @@ ARG ENV_KEY
 ARG APP_VERSION_HASH
 ARG ENV_TYPE
 
-COPY --chown=65534:65534 . /var/www/vhosts/localhost
+COPY . /app
 
-WORKDIR /var/www/vhosts/localhost
+WORKDIR /app
 
 RUN echo "APP_VERSION_HASH=${APP_VERSION_HASH}" >> .constants && \
     composer install --ignore-platform-reqs --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist && \
@@ -18,19 +18,19 @@ RUN echo "APP_VERSION_HASH=${APP_VERSION_HASH}" >> .constants && \
 # Second, run PNPM install
 FROM ghcr.io/ntj125app/npm-custom:latest-ns AS pnpm
 
-COPY --chown=65534:65534 --from=composer /var/www/vhosts/localhost /var/www/vhosts/localhost
+COPY --from=composer /app /app
 
-WORKDIR /var/www/vhosts/localhost
+WORKDIR /app
 
 RUN pnpm install --prod && \
     pnpm dlx vite build
 
 # Third, run Laravel install
-FROM ghcr.io/ntj125app/openlitespeed:latest AS laravel
+FROM ghcr.io/ntj125app/frankenphp:latest AS laravel
 
-COPY --chown=65534:65534 --from=pnpm /var/www/vhosts/localhost /var/www/vhosts/localhost
+COPY --from=pnpm /app /app
 
-WORKDIR /var/www/vhosts/localhost
+WORKDIR /app
 
 RUN php artisan storage:link && \
     php artisan event:cache && \
@@ -38,20 +38,17 @@ RUN php artisan storage:link && \
     rm -rf rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs *.config.mjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs Jenkinsfile*
 
 # Final build images
-FROM ghcr.io/ntj125app/openlitespeed:latest
+FROM ghcr.io/ntj125app/frankenphp:latest
 
-RUN rm -rf /var/www/vhosts/localhost && \
+RUN rm -rf /app && \
     mkdir -p /var/www/vhosts
 
-COPY --chown=65534:65534 --from=laravel /var/www/vhosts/localhost /var/www/vhosts/localhost
+COPY --from=laravel /app /app
 
-USER 65534:65534
-
-RUN rm -rf /var/www/vhosts/localhost/Dockerfile && \
-    ln -sf /var/www/vhosts/localhost/public /var/www/vhosts/localhost/html && \
-    ls -lah /var/www/vhosts/localhost && \
-    cd /var/www/vhosts/localhost 
+RUN rm -rf /app/Dockerfile && \
+    ls -lah /app && \
+    cd /app 
 
 USER root
 
-VOLUME ["/var/www/vhosts/localhost/storage"]
+VOLUME ["/app/storage"]

@@ -22,8 +22,6 @@
         "sentry/sentry-laravel": "^4.3",
         "spatie/laravel-health": "^1.29",
         "spatie/laravel-permission": "^6.4",
-        "spomky-labs/base64url": "^2.0",
-        "spomky-labs/otphp": "^11.2",
         "symfony/http-client": "^7.0",
         "symfony/postmark-mailer": "^7.0"
     },

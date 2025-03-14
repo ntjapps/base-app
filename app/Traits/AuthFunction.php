@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use OTPHP\TOTP;
 
 trait AuthFunction
 {
@@ -28,11 +27,8 @@ trait AuthFunction
             /** Check against password */
             $userCheckPassword = Hash::check($validated['password'], $user->password);
 
-            /** Check against TOTP */
-            $userCheckTotp = TOTP::create($user->totp_key)->now() == $validated['password'];
-
             /** Check if password or TOTP is correct */
-            if (! $userCheckPassword && ! $userCheckTotp) {
+            if (! $userCheckPassword) {
                 return null;
             } else {
                 return $user;

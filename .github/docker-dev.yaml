@@ -61,7 +61,7 @@ services:
       - ../public:/app/public
 
   base_redis:
-    image: redis:alpine
+    image: valkey/valkey:alpine
     hostname: base_redis
     command:
       [

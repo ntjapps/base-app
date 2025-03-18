@@ -16,7 +16,7 @@
         "@primevue/core": "^4.3.2",
         "@sentry/vue": "^9.5.0",
         "@tailwindcss/vite": "^4.0.14",
-        "@vitejs/plugin-vue": "^5.2.1",
+        "@vitejs/plugin-vue": "^5.2.3",
         "autoprefixer": "^10.4.21",
         "axios": "^1.8.3",
         "concurrently": "^9.1.2",

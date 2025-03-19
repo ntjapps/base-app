@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, onBeforeMount } from 'vue';
+import { ref, onMounted } from 'vue';
 import { timeGreetings, UserDataInterface } from '../AppCommon';
 import { useApiStore, useMainStore } from '../AppState';
 import { useDialog } from 'primevue/usedialog';
@@ -90,7 +90,7 @@ const home = ref({
 });
 const items = ref([{ label: 'Administration' }, { label: 'User Management' }]);
 
-onBeforeMount(() => {
+onMounted(() => {
     getUserListData();
     main.updateExpandedKeysMenu(props.expandedKeysProps);
 });

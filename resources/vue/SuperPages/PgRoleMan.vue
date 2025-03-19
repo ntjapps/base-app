@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, onBeforeMount } from 'vue';
+import { ref, onMounted } from 'vue';
 import { timeGreetings, RoleListDataInterface } from '../AppCommon';
 import { useApiStore, useMainStore } from '../AppState';
 import { useDialog } from 'primevue/usedialog';
@@ -88,7 +88,7 @@ const home = ref({
 });
 const items = ref([{ label: 'Administration' }, { label: 'Role Management' }]);
 
-onBeforeMount(() => {
+onMounted(() => {
     getRoleListData();
     main.updateExpandedKeysMenu(props.expandedKeysProps);
 });

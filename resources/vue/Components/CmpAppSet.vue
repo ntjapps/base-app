@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount } from 'vue';
+import { onMounted } from 'vue';
 import { useMainStore } from '../AppState';
 
 import DynamicDialog from 'primevue/dynamicdialog';
@@ -7,7 +7,7 @@ import Toast from 'primevue/toast';
 
 const main = useMainStore();
 
-onBeforeMount(() => {
+onMounted(() => {
     main.spaCsrfToken();
     main.getNotificationList();
     main.init();

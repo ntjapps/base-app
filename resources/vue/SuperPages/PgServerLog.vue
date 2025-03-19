@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { timeGreetings } from '../AppCommon';
 import { useApiStore, useMainStore } from '../AppState';
@@ -147,7 +147,7 @@ const changePageCustomCallback = (page: number) => {
         });
 };
 
-onBeforeMount(() => {
+onMounted(() => {
     getServerLogData();
 });
 </script>

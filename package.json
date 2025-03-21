@@ -14,7 +14,7 @@
     "dependencies": {
         "@eslint/js": "^9.22.0",
         "@primevue/core": "^4.3.2",
-        "@sentry/vue": "^9.6.0",
+        "@sentry/vue": "^9.7.0",
         "@tailwindcss/vite": "^4.0.14",
         "@vitejs/plugin-vue": "^5.2.3",
         "autoprefixer": "^10.4.21",

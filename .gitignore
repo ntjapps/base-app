@@ -44,6 +44,10 @@ env*
 base64*
 auth.json
 
+# Auto-generated type declarations
+auto-imports.d.ts
+components.d.ts
+
 # Ignore Debugs Files
 public/*-debug.php
 public/frankenphp-worker.php

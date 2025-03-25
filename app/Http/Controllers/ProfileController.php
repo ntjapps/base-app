@@ -26,7 +26,7 @@ class ProfileController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
-        return view('base-components.base-vue', [
+        return view('base-components.base', [
             'pageTitle' => 'Profile',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);

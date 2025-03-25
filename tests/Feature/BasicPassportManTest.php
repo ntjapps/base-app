@@ -18,7 +18,7 @@ class BasicPassportManTest extends AuthTestCase
 
         $response = $this->actingAs($user)->get(route('passport-man'));
 
-        $response->assertOk()->assertViewIs('base-components.base-vue');
+        $response->assertOk()->assertViewIs('base-components.base');
     }
 
     /**

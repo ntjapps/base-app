@@ -29,7 +29,7 @@ class ServerManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
-        return view('base-components.base-vue', [
+        return view('base-components.base', [
             'pageTitle' => 'Server Logs',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);

@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
+import ui from '@nuxt/ui/vite';
 
 process.env = { ...process.env, ...loadEnv('', process.cwd()) };
 
@@ -31,6 +32,7 @@ export default defineConfig({
                 },
             },
         }),
+        ui(),
     ],
     resolve: {
         alias: {

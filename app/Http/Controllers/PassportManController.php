@@ -29,7 +29,7 @@ class PassportManController extends Controller
         Log::debug('User open passport management page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return view('base-components.base', [
-            'title' => __('app.page.passport'),
+            'pageTitle' => __('app.page.passport'),
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }

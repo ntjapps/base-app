@@ -16,7 +16,7 @@
         "@nuxt/ui": "^3.0.1",
         "@primevue/core": "^4.3.2",
         "@sentry/vue": "^9.9.0",
-        "@tailwindcss/vite": "^4.0.15",
+        "@tailwindcss/vite": "^4.0.16",
         "@unhead/vue": "^2.0.0",
         "@vitejs/plugin-vue": "^5.2.3",
         "autoprefixer": "^10.4.21",

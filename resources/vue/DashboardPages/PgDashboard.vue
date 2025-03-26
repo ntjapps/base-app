@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue';
+import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { timeGreetings } from '../AppCommon';
 import { useMainStore } from '../AppState';
@@ -12,7 +12,7 @@ const { appName, userName } = storeToRefs(main);
 
 const clock = ref<string | null>(new Date().toLocaleString('en-UK'));
 
-onBeforeMount(() => {
+onMounted(() => {
     /** Ticking clock */
     setInterval(() => {
         clock.value = new Date().toLocaleString('en-UK');

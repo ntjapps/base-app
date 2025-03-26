@@ -9,7 +9,7 @@
 
     {{-- <link rel="icon" type="image/webp" href="{{ Vite::asset('resources/images/icon.webp') }}"/> --}}
 
-    <title>@yield('title') - {{ config('app.name') }}</title>
+    <title>@yield('title', $pageTitle) - {{ config('app.name') }}</title>
     </head>
 
     <body>
@@ -26,9 +26,11 @@
         </div>
     </noscript>
     <div id="app">
-        <cmp-app-set></cmp-app-set>
-        @section('body')
-        @show
+        <main-app
+            app-name="{{ config('app.name') }}"
+            greetings="{{ Auth::user()?->name }}"
+            expanded-keys-props="{{ $expandedKeys ?? '' }}"
+        ></main-app>
     </div>
     @show
 

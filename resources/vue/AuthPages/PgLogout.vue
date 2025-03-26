@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, onBeforeMount } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWebStore } from '../AppRouter';
 import { useApiStore } from '../AppState';
@@ -12,7 +12,7 @@ const api = useApiStore();
 const router = useRouter();
 const toastchild = ref<typeof CmpToast>();
 
-onBeforeMount(() => {
+onMounted(() => {
     axios
         .post(api.postTokenLogout)
         .then(() => {

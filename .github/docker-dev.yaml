@@ -24,7 +24,7 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d
 
   base_ols:
-    image: ghcr.io/ntj125app/openlitespeed:latest
+    image: ghcr.io/ntj125app/frankenphp:latest
     hostname: base_ols
     ports:
       - target: 80
@@ -33,37 +33,35 @@ services:
     environment:
       - TZ=Asia/Jakarta
     volumes:
-      - ../:/var/www/vhosts/localhost
-      - ../public:/var/www/vhosts/localhost/public
+      - ../:/app
+      - ../public:/app/public
 
   base_worker:
-    image: ghcr.io/ntj125app/openlitespeed:latest
-    command: ["/usr/bin/php", "/var/www/vhosts/localhost/artisan", "horizon"]
-    user: 65534:65534
+    image: ghcr.io/ntj125app/frankenphp:latest
+    command: ["/usr/local/bin/php", "/app/artisan", "horizon"]
     environment:
       - TZ=Asia/Jakarta
     volumes:
-      - ../:/var/www/vhosts/localhost
-      - ../public:/var/www/vhosts/localhost/public
+      - ../:/app
+      - ../public:/app/public
 
   base_scheduler:
-    image: ghcr.io/ntj125app/openlitespeed:latest
+    image: ghcr.io/ntj125app/frankenphp:latest
     command:
       [
-        "/bin/bash",
+        "/bin/sh",
         "-c",
-        "/usr/bin/php /var/www/vhosts/localhost/artisan system:start ; /usr/bin/php /var/www/vhosts/localhost/artisan schedule:work",
+        "/usr/local/bin/php /app/artisan system:start ; /usr/local/bin/php /app/artisan schedule:work",
       ]
-    user: 65534:65534
-    working_dir: /var/www/vhosts/localhost/
+    working_dir: /app
     environment:
       - TZ=Asia/Jakarta
     volumes:
-      - ../:/var/www/vhosts/localhost
-      - ../public:/var/www/vhosts/localhost/public
+      - ../:/app
+      - ../public:/app/public
 
   base_redis:
-    image: redis:alpine
+    image: valkey/valkey:alpine
     hostname: base_redis
     command:
       [
@@ -83,16 +81,15 @@ services:
       - ../storage/redis:/data
 
   base_reverb:
-    image: ghcr.io/ntj125app/openlitespeed:latest
+    image: ghcr.io/ntj125app/frankenphp:latest
     command:
       [
-        "/bin/bash",
+        "/bin/sh",
         "-c",
-        "/usr/bin/php /var/www/vhosts/localhost/artisan reverb:start",
+        "/usr/local/bin/php /app/artisan reverb:start",
       ]
     hostname: base_reverb
-    user: 65534:65534
-    working_dir: /var/www/vhosts/localhost/
+    working_dir: /app
     deploy:
       replicas: 1
       resources:
@@ -105,13 +102,13 @@ services:
     environment:
       - TZ=Asia/Jakarta
     volumes:
-      - ../:/var/www/vhosts/localhost
-      - ../public:/var/www/vhosts/localhost/public
+      - ../:/app
+      - ../public:/app/public
 
   base_vite:
     image: ghcr.io/ntj125app/npm-custom
     command: ["pnpm", "run", "dev"]
-    working_dir: /var/www/vhosts/localhost
+    working_dir: /app
     ports:
       - target: 5173
         published: 5173
@@ -119,7 +116,7 @@ services:
     environment:
       - TZ=Asia/Jakarta
     volumes:
-      - ../:/var/www/vhosts/localhost
+      - ../:/app
 
 networks:
   default:

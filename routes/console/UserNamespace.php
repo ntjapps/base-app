@@ -4,7 +4,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use OTPHP\TOTP;
 
 Artisan::command('user:create {username} {password?}', function () {
     $userExists = User::withTrashed()->where('username', $this->argument('username'))->exists();
@@ -22,23 +21,6 @@ Artisan::command('user:create {username} {password?}', function () {
     $this->info('Created user with username: '.$this->argument('username'));
     Log::alert('Console user:create executed', ['username' => $this->argument('username')]);
 })->purpose('Create new user with password');
-
-Artisan::command('user:totp {username} {secret?}', function () {
-    $userExists = User::where('username', $this->argument('username'))->exists();
-    if ($userExists) {
-        return $this->info('Username: '.$this->argument('username').' already exists');
-    }
-
-    (string) $totp_key = TOTP::create($this->argument('secret'))->getSecret();
-
-    User::create([
-        'username' => $this->argument('username'),
-        'totp_key' => $totp_key,
-    ]);
-
-    $this->info('Created user with username: '.$this->argument('username').' and TOTP key: '.$totp_key);
-    Log::alert('Console user:create executed', ['username' => $this->argument('username')]);
-})->purpose('Create new user with TOTP');
 
 Artisan::command('user:delete {username}', function () {
     $userExists = User::where('username', $this->argument('username'))->exists();

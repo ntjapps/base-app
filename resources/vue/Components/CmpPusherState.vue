@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue';
+import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useEchoStore } from '../AppState';
 
@@ -44,7 +44,7 @@ const showUnavailable = () => {
     unavailable.value = true;
 };
 
-onBeforeMount(() => {
+onMounted(() => {
     //echo.connector.options.auth.headers["Authorization"] =
     //"Bearer " + secure.apiToken;
     /** Ticking status for pusher */

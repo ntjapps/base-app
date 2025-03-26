@@ -38,7 +38,6 @@ class MessageNotification extends Notification
             'summary' => $this->title,
             'message' => $this->message,
             'severity' => $this->severityType,
-            'life' => $this->severityType === 'error' ? 10000 : 5000,
         ];
     }
 }

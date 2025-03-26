@@ -1,14 +1,16 @@
 {
     "compilerOptions": {
         "target": "ESNext",
-        "module": "NodeNext",
+        "module": "ES2020",
         "strict": true,
         "jsx": "preserve",
         "importHelpers": true,
-        "moduleResolution": "NodeNext",
+        "moduleResolution": "bundler",
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
         "sourceMap": true,
         "types": ["vite/client"],
         "useDefineForClassFields": true,
@@ -20,9 +22,11 @@
         "resources/**/*.ts",
         "resources/**/*.d.ts",
         "resources/**/*.tsx",
-        "resources/**/*.vue"
+        "resources/**/*.vue",
+        "auto-imports.d.ts",
+        "components.d.ts",
+        "vite.config.ts"
     ],
-    "references": [{ "path": "./tsconfig.node.json" }],
     "exclude": ["node_modules"],
     "vueCompilerOptions": {
         "skipTemplateCodegen": true

@@ -3,7 +3,6 @@ import Echo from 'laravel-echo';
 import { defineStore } from 'pinia';
 import { supportedBrowsers } from '../ts/browser';
 import { MenuItem } from 'primevue/menuitem';
-import { useToast } from 'primevue/usetoast';
 
 export const useWebApiStore = defineStore('webapi', {
     state: () => ({
@@ -70,8 +69,6 @@ export const useMainStore = defineStore('main', {
     actions: {
         init() {
             const api = useApiStore();
-            const echo = useEchoStore();
-            const toast = useToast();
 
             /** Get Constant */
             axios
@@ -92,40 +89,6 @@ export const useMainStore = defineStore('main', {
                     this.$patch({
                         menuItems: Object.values(response.data.menuItems),
                     });
-
-                    /** Register Notification Broadcast */
-                    if (
-                        response.data.userId !== '' &&
-                        response.data.userId !== undefined &&
-                        response.data.userId !== null
-                    ) {
-                        echo.laravelEcho.leave('App.Models.User.' + response.data.userId);
-
-                        echo.laravelEcho
-                            ?.private('App.Models.User.' + response.data.userId)
-                            .notification(
-                                (notification: {
-                                    severity:
-                                        | 'success'
-                                        | 'info'
-                                        | 'warn'
-                                        | 'error'
-                                        | 'secondary'
-                                        | 'contrast'
-                                        | undefined;
-                                    summary: string | undefined;
-                                    message: string | undefined;
-                                    life: number | undefined;
-                                }) => {
-                                    toast.add({
-                                        severity: notification.severity,
-                                        summary: notification.summary,
-                                        detail: notification.message,
-                                        life: notification.life,
-                                    });
-                                },
-                            );
-                    }
                 })
                 .catch((error) => {
                     console.error(error.response.data);

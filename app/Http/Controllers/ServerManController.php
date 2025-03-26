@@ -29,7 +29,7 @@ class ServerManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
-        return view('base-components.base-vue', [
+        return view('base-components.base', [
             'pageTitle' => 'Server Logs',
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
@@ -40,9 +40,6 @@ class ServerManController extends Controller
      */
     public function getServerLogs(Request $request): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User get server log', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
-
         /** Validate Request */
         $validate = Validator::make($request->all(), [
             'date_start' => ['nullable', 'date', 'before_or_equal:date_end'],
@@ -56,9 +53,6 @@ class ServerManController extends Controller
         }
         (array) $validated = $validate->validated();
 
-        $validatedLog = $validated;
-        Log::info('User get server log validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
-
         $data = ServerLog::when($validated['date_start'] ?? null, function ($query, $date_start) {
             return $query->where('created_at', '>=', Carbon::parse($date_start, 'Asia/Jakarta')->startOfDay());
         })->when($validated['date_end'] ?? null, function ($query, $date_end) {
@@ -71,7 +65,7 @@ class ServerManController extends Controller
             return $query->where('message', 'ilike', '%'.$log_message.'%');
         })->when($validated['log_extra'] ?? null, function ($query, $log_extra) {
             return $query->where('context', 'ilike', '%'.$log_extra.'%');
-        })->orderBy('id', 'desc')->limit(20000)->get();
+        })->orderBy('id', 'desc')->paginate();
 
         return response()->json($data);
     }

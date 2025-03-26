@@ -85,7 +85,7 @@ class RoleManController extends Controller
         (array) $validated = $validate->validated();
 
         $validateLog = $validated;
-        Log::info('User is submitting role data for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => $validateLog]);
+        Log::info('User is submitting role data for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validateLog)]);
 
         $roleName = $validated['role_name'] ?? $validated['role_rename'] ?? null;
         $roleId = $validated['role_id'] ?? null;
@@ -168,7 +168,7 @@ class RoleManController extends Controller
         (array) $validated = $validate->validated();
 
         $validateLog = $validated;
-        Log::info('User is submitting delete role for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => $validateLog]);
+        Log::info('User is submitting delete role for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validateLog)]);
 
         $role = Role::where('id', $validated['id'])->first();
 

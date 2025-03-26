@@ -16,7 +16,11 @@ const prevId = ref<string | null>(null);
 const registerNotification = () => {
     main.$subscribe((mutation) => {
         if (mutation.type === 'patch object') {
-            if (mutation.payload.userId !== null && mutation.payload.userId !== undefined && mutation.payload.userId !== '') {
+            if (
+                mutation.payload.userId !== null &&
+                mutation.payload.userId !== undefined &&
+                mutation.payload.userId !== ''
+            ) {
                 if (prevId.value !== null) {
                     laravelEcho.value.leave('App.Models.User.' + prevId.value);
                 }
@@ -40,7 +44,7 @@ const registerNotification = () => {
                 prevId.value = mutation.payload.userId;
             }
         }
-    })
+    });
 };
 
 onMounted(() => {

@@ -15,7 +15,7 @@ export default defineConfig({
                 'docker.localhost' /* Set base URL for Hot Module Reload */,
         },
         cors: {
-            origin: 'http://' + (process.env.VITE_PUSHER_HOST ?? 'docker.localhost'),
+            origin: process.env.VITE_APP_URL ?? 'http://docker.localhost',
         },
     },
     plugins: [

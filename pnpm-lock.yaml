@@ -75,8 +75,8 @@ importers:
         specifier: ^4.0.16
         version: 4.0.16
       tailwindcss-primeui:
-        specifier: ^0.6.0
-        version: 0.6.0(tailwindcss@4.0.16)
+        specifier: ^0.6.1
+        version: 0.6.1(tailwindcss@4.0.16)
       vite:
         specifier: ^6.2.3
         version: 6.2.3(@types/node@22.10.1)(jiti@2.4.2)(lightningcss@1.29.2)(sass@1.86.0)(terser@5.36.0)(yaml@2.7.0)
@@ -2211,8 +2211,8 @@ packages:
     peerDependencies:
       tailwindcss: '*'
 
-  tailwindcss-primeui@0.6.0:
-    resolution: {integrity: sha512-5yaynR1dI2eWdrIL7HRKifXpcie9I2bAXBefcWLtXZAbP2GEBkAq5Zja+x+p0QG0jSoaepmmx06F6uVAQqhk/g==}
+  tailwindcss-primeui@0.6.1:
+    resolution: {integrity: sha512-T69Rylcrmnt8zy9ik+qZvsLuRIrS9/k6rYJSIgZ1trnbEzGDDQSCIdmfyZknevqiHwpSJHSmQ9XT2C+S/hJY4A==}
     peerDependencies:
       tailwindcss: '>=3.1.0'
 
@@ -4776,7 +4776,7 @@ snapshots:
       tailwind-merge: 3.0.2
       tailwindcss: 4.0.16
 
-  tailwindcss-primeui@0.6.0(tailwindcss@4.0.16):
+  tailwindcss-primeui@0.6.1(tailwindcss@4.0.16):
     dependencies:
       tailwindcss: 4.0.16
 

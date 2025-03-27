@@ -11,6 +11,7 @@ class Permission extends SpatiePermission
     use HasUuids;
 
     protected string $guard_name = 'web';
+
     public const GUARD_NAME = 'web';
 
     /**

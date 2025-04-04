@@ -16,7 +16,6 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, HasFeatures, HasRoles, HasUuids, Notifiable, Prunable, SoftDeletes;
 
     protected function getDefaultGuardName(): string

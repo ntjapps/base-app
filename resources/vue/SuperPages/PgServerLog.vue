@@ -23,7 +23,7 @@ const props = defineProps<{
 const timeGreet = timeGreetings();
 const api = useApiStore();
 const main = useMainStore();
-const { appName, userName } = storeToRefs(main);
+const { userName } = storeToRefs(main);
 
 type ServerLogResponseType = {
     current_page: number;

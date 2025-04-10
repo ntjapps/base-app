@@ -18,7 +18,7 @@ const props = defineProps<{
 }>();
 const api = useApiStore();
 const main = useMainStore();
-const { appName, userName } = storeToRefs(main);
+const { userName } = storeToRefs(main);
 
 const toastchild = ref<typeof CmpToast>();
 

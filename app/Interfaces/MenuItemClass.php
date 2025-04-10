@@ -15,6 +15,24 @@ class MenuItemClass
     {
         /** Case for route name */
         switch ($getName) {
+            case 'profile':
+                $expandedKeys = '9999';
+                break;
+            case 'user-man':
+                $expandedKeys = '9999';
+                break;
+            case 'role-man':
+                $expandedKeys = '9999';
+                break;
+            case 'passport-man':
+                $expandedKeys = '9999';
+                break;
+            case 'server-logs':
+                $expandedKeys = '9999';
+                break;
+            case 'pulse':
+                $expandedKeys = '9999';
+                break;
             default:
                 $expandedKeys = null;
                 break;
@@ -90,6 +108,7 @@ class MenuItemClass
         }
 
         return [
+            'key' => '9999',
             'label' => 'Administration',
             'icon' => 'pi pi-cog',
             'items' => $childMenu,

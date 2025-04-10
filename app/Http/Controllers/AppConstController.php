@@ -44,7 +44,6 @@ class AppConstController extends Controller
 
                 /** Top Order Menu */
                 array_push($menuArray, MenuItemClass::dashboardMenu());
-                array_push($menuArray, MenuItemClass::editProfileMenu());
 
                 /** Administration Menu */
                 array_push($menuArray, MenuItemClass::administrationMenu());

@@ -32,15 +32,6 @@ class MenuItemClass
         ];
     }
 
-    public static function editProfileMenu(): array
-    {
-        return [
-            'label' => 'Edit Profile',
-            'icon' => 'pi pi-user-edit',
-            'url' => parse_url(route('profile'), PHP_URL_PATH),
-        ];
-    }
-
     public static function logoutMenu(): array
     {
         return [
@@ -54,6 +45,12 @@ class MenuItemClass
     {
         $childMenu = [];
         $user = Auth::guard('api')->user() ?? Auth::guard('api')->user();
+
+        array_push($childMenu, [
+            'label' => 'Edit Profile',
+            'icon' => 'pi pi-user-edit',
+            'url' => parse_url(route('profile'), PHP_URL_PATH),
+        ]);
 
         if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
 

@@ -15,6 +15,11 @@ import Select from 'primevue/select';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
+const props = defineProps<{
+    appName: string;
+    greetings: string;
+    expandedKeysProps: string;
+}>();
 const timeGreet = timeGreetings();
 const api = useApiStore();
 const main = useMainStore();
@@ -149,6 +154,7 @@ const changePageCustomCallback = (page: number) => {
 
 onMounted(() => {
     getServerLogData();
+    main.updateExpandedKeysMenu(props.expandedKeysProps);
 });
 </script>
 

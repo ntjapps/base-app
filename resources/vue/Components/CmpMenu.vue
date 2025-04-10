@@ -6,7 +6,7 @@ import { useMainStore } from '../AppState';
 import PanelMenu from 'primevue/panelmenu';
 
 const main = useMainStore();
-const { appName, menuItems } = storeToRefs(main);
+const { appName, menuItems, expandedKeysMenu } = storeToRefs(main);
 </script>
 
 <template>
@@ -18,7 +18,7 @@ const { appName, menuItems } = storeToRefs(main);
                 </div>
             </div>
             <div class="flex w-full mt-10">
-                <PanelMenu :model="menuItems" />
+                <PanelMenu v-model:expandedKeys="expandedKeysMenu" :model="menuItems" />
             </div>
         </div>
     </div>

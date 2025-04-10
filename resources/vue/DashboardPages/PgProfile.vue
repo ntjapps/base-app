@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useApiStore, useMainStore } from '../AppState';
 
@@ -11,6 +11,11 @@ import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
 
+const props = defineProps<{
+    appName: string;
+    greetings: string;
+    expandedKeysProps: string;
+}>();
 const api = useApiStore();
 const main = useMainStore();
 const { appName, userName } = storeToRefs(main);
@@ -47,6 +52,10 @@ const postProfileData = () => {
             });
         });
 };
+
+onMounted(() => {
+    main.updateExpandedKeysMenu(props.expandedKeysProps);
+});
 </script>
 
 <template>

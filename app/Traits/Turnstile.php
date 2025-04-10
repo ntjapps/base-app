@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 trait Turnstile
 {
@@ -16,6 +17,10 @@ trait Turnstile
             'response' => $value,
         ]);
 
+        Log::debug('Turnstile response', [
+            'response' => $response->json(),
+        ], ['trait' => 'Turnstile']);
+
         return $response->json()['success'];
     }
 
@@ -28,6 +33,10 @@ trait Turnstile
             'secret' => config('challenge.site_secret_mobile'),
             'response' => $value,
         ]);
+
+        Log::debug('Turnstile response', [
+            'response' => $response->json(),
+        ], ['trait' => 'Turnstile']);
 
         return $response->json()['success'];
     }

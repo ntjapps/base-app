@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { timeGreetings } from '../AppCommon';
 import { useMainStore } from '../AppState';
 
 import CmpLayout from '../Components/CmpLayout.vue';
 
+const props = defineProps<{
+    appName: string;
+    greetings: string;
+    expandedKeysProps: string;
+}>();
 const timeGreet = timeGreetings();
 const main = useMainStore();
-const { appName, userName } = storeToRefs(main);
-
-const clock = ref<string | null>(new Date().toLocaleString('en-UK'));
+const { userName } = storeToRefs(main);
 
 onMounted(() => {
-    /** Ticking clock */
-    setInterval(() => {
-        clock.value = new Date().toLocaleString('en-UK');
-    });
+    main.updateExpandedKeysMenu(props.expandedKeysProps);
 });
 </script>
 

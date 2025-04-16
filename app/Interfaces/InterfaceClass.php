@@ -53,6 +53,8 @@ class InterfaceClass
                     return substr(str_replace('APP_VERSION_HASH=', '', $line), 0, 8);
                 }
             }
+
+            return 'unknown';
         } catch (ErrorException $e) {
             return 'unknown';
         }

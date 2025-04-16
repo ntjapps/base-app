@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-    <UApp :toaster="{ position: 'top-right' }" :tooltip="{ disabled: true }">
+    <UApp :toaster="{ position: 'top-right' }">
         <CmpAppSet />
         <RouterView
             :appName="appName"

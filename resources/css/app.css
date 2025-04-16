@@ -9,10 +9,6 @@
 }
 @plugin "tailwindcss-primeui";
 
-@layer utilities {
-    @import './primevue/tailwind.css';
-}
-
 /* Primary and Surface Palettes */
 :root {
     /* Primary Palette (Intended for main actions and branding) */
@@ -66,6 +62,8 @@
     --ui-color-neutral-800: var(--p-surface-800);
     --ui-color-neutral-900: var(--p-surface-900);
     --ui-color-neutral-950: var(--p-surface-950);
+
+    --p-content-border-radius: 6px;
 }
 
 /* Light */
@@ -87,13 +85,13 @@
     --p-text-hover-muted-color: var(--p-surface-600);
 }
 
-/* 
+/*
  * Dark Mode
- * Defaults to system, change the selector to match the darkMode in tailwind.config.
- * For example; 
- * darkMode: ['selector', '[class*="app-dark"]'] 
- * should be;
- * :root[class="app-dark"] {
+ * Defaults to system, change the dark variant selector to match the CSS variable configuration.
+ * For example;
+ * @custom-variant dark (&:where(.app-dark, .app-dark *));
+ * should match to;
+ * :root[class="app-dark"]
 */
 @media (prefers-color-scheme: dark) {
     :root {

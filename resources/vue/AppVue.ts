@@ -7,20 +7,12 @@ import ui from '@nuxt/ui/vue-plugin';
 /** Vue router needed for navigation menu */
 import { router } from './AppRouter.ts';
 
-/** Primevue Globals */
-import DialogService from 'primevue/dialogservice';
-import Tooltip from 'primevue/tooltip';
-
 // Mount Application Instances
 const VueApp: App<Element> = createApp({})
     .use(router)
     .use(pinia)
     .use(ui)
-    .use(PrimeVue, {
-        theme: 'none',
-    })
-    .use(DialogService)
-    .directive('tooltip', Tooltip);
+    .use(PrimeVue, { unstyled: true });
 
 /** Global Composenent / Page Registration */
 import MainApp from './MainApp.vue';

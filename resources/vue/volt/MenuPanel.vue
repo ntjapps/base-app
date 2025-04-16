@@ -2,27 +2,32 @@
     <div :class="theme.root + ' ' + theme.transition">
         <Accordion v-model:value="expandedKeysValue">
             <div v-for="(item, index) in model" :key="index">
-                <AccordionPanel v-if="item.items?.length > 0" :value="item.key ?? index">
-                    <AccordionHeader>{{ item.label }}</AccordionHeader>
-                    <AccordionContent
-                        v-for="(subItem, subIndex) in item.items"
-                        :key="subIndex"
-                        :pt="{
-                            content:
-                                theme.itemLink +
-                                ' m-2 ' +
-                                theme.itemContent +
-                                ' ' +
-                                theme.transition,
-                        }"
-                        @click="gotoPage(subItem.url)"
-                    >
-                        <i :class="theme.itemIcon + ' pi ' + subItem.icon" />
-                        <span :class="theme.item">
-                            {{ subItem.label }}
-                        </span>
-                    </AccordionContent>
-                </AccordionPanel>
+                <transition
+                    v-if="item.items?.length > 0"
+                    :enter-active-class="theme.transition.enterActiveClass"
+                    :enter-from-class="theme.transition.enterFromClass"
+                    :leave-active-class="theme.transition.leaveActiveClass"
+                    :leave-to-class="theme.transition.leaveToClass"
+                >
+                    <AccordionPanel :value="item.key ?? index">
+                        <AccordionHeader>{{ item.label }}</AccordionHeader>
+                        <AccordionContent
+                            v-for="(subItem, subIndex) in item.items"
+                            :key="subIndex"
+                            :pt="{
+                                content: theme.itemLink + ' m-2 ' + theme.itemContent,
+                            }"
+                            @click="gotoPage(subItem.url)"
+                        >
+                            <div :class="theme.item">
+                                <i :class="theme.itemIcon + ' pi ' + subItem.icon + ' mr-2'" />
+                                <span :class="theme.item">
+                                    {{ subItem.label }}
+                                </span>
+                            </div>
+                        </AccordionContent>
+                    </AccordionPanel>
+                </transition>
                 <div
                     v-else
                     :class="theme.itemLink + ' m-2 ' + theme.itemContent"

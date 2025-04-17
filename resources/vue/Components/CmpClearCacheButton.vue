@@ -3,8 +3,6 @@ import axios from 'axios';
 import { ref } from 'vue';
 import { useApiStore } from '../AppState';
 
-import Button from 'primevue/button';
-
 import CmpToast from './CmpToast.vue';
 
 const api = useApiStore();
@@ -34,13 +32,10 @@ const postClearCache = () => {
 <template>
     <div class="flex mx-2">
         <CmpToast ref="toastchild" />
-        <Button
-            v-tooltip.bottom="'Clear Cache'"
-            icon="pi pi-sync"
-            text
-            rounded
-            aria-label="Clear Cache"
-            @click="postClearCache"
-        />
+        <UTooltip text="Clear Cache">
+            <UButton size="xl" variant="ghost" @click="postClearCache">
+                <i class="pi pi-fw pi-sync" />
+            </UButton>
+        </UTooltip>
     </div>
 </template>

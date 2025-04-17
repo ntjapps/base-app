@@ -3,8 +3,6 @@ import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMainStore, useEchoStore } from '../AppState';
 
-import DynamicDialog from 'primevue/dynamicdialog';
-
 const main = useMainStore();
 const echo = useEchoStore();
 const { laravelEcho } = storeToRefs(echo);
@@ -57,5 +55,5 @@ onMounted(() => {
 </script>
 
 <template>
-    <DynamicDialog />
+    <slot />
 </template>

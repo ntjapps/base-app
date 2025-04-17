@@ -8,9 +8,8 @@ import { useWebStore } from '../AppRouter';
 import CmpTurnstile from '../Components/CmpTurnstile.vue';
 import CmpToast from '../Components/CmpToast.vue';
 
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Button from 'primevue/button';
+import InputText from '../volt/InputText.vue';
+import Password from '../volt/Password.vue';
 
 const web = useWebStore();
 const webapi = useWebApiStore();
@@ -77,11 +76,9 @@ onBeforeUpdate(() => {
                             {{ appName }}
                         </div>
                         <div v-if="!browserSuppport" class="text-center font-bold my-2.5">
-                            <Button
-                                icon="pi pi-times"
-                                label="Browser Unsupported"
-                                severity="danger"
-                            />
+                            <UButton size="xl" severity="danger" color="error"
+                                ><i class="pi pi-times" />Browser Unsupported</UButton
+                            >
                         </div>
                         <div class="text-center font-bold my-2.5">Login to your account</div>
                         <div class="flex justify-center flex-col mt-8 my-2.5">
@@ -111,7 +108,7 @@ onBeforeUpdate(() => {
                             <CmpTurnstile ref="turnchild" />
                         </div>
                         <div class="flex justify-center py-2.5">
-                            <Button label="Login" @click="postLoginData" />
+                            <UButton size="xl" label="Login" @click="postLoginData" />
                         </div>
                     </div>
                 </div>

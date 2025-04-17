@@ -3,10 +3,6 @@ import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useEchoStore } from '../AppState';
 
-import { useMainStore } from '../AppState';
-
-import Button from 'primevue/button';
-
 import IconChartBar from '../Icons/IconChartBar.vue';
 
 const pusherState = ref<string>('connecting');
@@ -16,9 +12,6 @@ const unavailable = ref<boolean>(false);
 const echoStore = useEchoStore();
 const { laravelEcho } = storeToRefs(echoStore);
 const echo = laravelEcho.value;
-
-const main = useMainStore();
-const { appName } = storeToRefs(main);
 
 const showConnected = () => {
     connected.value = true;
@@ -67,22 +60,16 @@ onMounted(() => {
 
 <template>
     <div class="flex mx-2 my-auto">
-        <Button v-if="connected" v-tooltip.bottom="appName + ' Connected'" text>
-            <IconChartBar />
-        </Button>
-        <Button
-            v-if="connecting"
-            v-tooltip.bottom="appName + ' Connecting'"
-            text
-            aria-label="Connecting"
-            icon="pi pi-spin pi-spinner"
-        />
-        <Button
-            v-if="unavailable"
-            v-tooltip.bottom="appName + ' Disconnected'"
-            text
-            aria-label="Unavailable"
-            icon="pi pi-times"
-        />
+        <UTooltip v-if="connected" text="Connected">
+            <UButton size="xl" variant="ghost">
+                <IconChartBar />
+            </UButton>
+        </UTooltip>
+        <UTooltip v-if="connecting" text="Connecting">
+            <UButton size="xl" variant="ghost"><i class="pi pi-spinner animate-spin" /></UButton>
+        </UTooltip>
+        <UTooltip v-if="unavailable" text="Unavailable">
+            <UButton size="xl" variant="ghost"><i class="pi pi-times" /></UButton>
+        </UTooltip>
     </div>
 </template>

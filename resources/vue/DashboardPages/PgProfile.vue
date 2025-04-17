@@ -7,9 +7,8 @@ import { useApiStore, useMainStore } from '../AppState';
 import CmpLayout from '../Components/CmpLayout.vue';
 import CmpToast from '../Components/CmpToast.vue';
 
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Button from 'primevue/button';
+import InputText from '../volt/InputText.vue';
+import Password from '../volt/Password.vue';
 
 const props = defineProps<{
     appName: string;
@@ -109,7 +108,7 @@ onMounted(() => {
                 </span>
             </div>
             <div class="flex justify-center">
-                <Button label="Update Profile" @click="postProfileData" />
+                <UButton size="xl" label="Update Profile" @click="postProfileData" />
             </div>
         </div>
     </CmpLayout>

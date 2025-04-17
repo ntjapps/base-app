@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\Permission;
@@ -57,9 +58,7 @@ class UserManController extends Controller
                     return $user->getRoleNames()->sortBy('name');
                 }),
                 'permissions_array' => Cache::remember(Permission::class.'-getPermissions-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
-                    return $user->getAllPermissions()->sortBy([
-                        ['name', 'asc'],
-                    ])->pluck('name');
+                    return Permission::with('ability')->whereIn('id', $user->getAllPermissions()->pluck('id'))->orderBy('ability_type')->get()->pluck('ability')->pluck('title');
                 }),
             ]);
         });
@@ -76,16 +75,12 @@ class UserManController extends Controller
         Log::debug('User is requesting get user role and permission for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
 
         return response()->json([
-            'roles' => Cache::remember(Role::class.'-orderBy-name', Carbon::now()->addYear(), function () {
-                return Role::orderBy('name')->get();
-            }),
-            'permissions' => Cache::remember(Permission::class.'-orderBy-name', Carbon::now()->addYear(), function () {
-                return Permission::orderBy('name')->get();
-            }),
-            'permissions_const' => Cache::remember(Permission::class.'-const-orderBy-name', Carbon::now()->addYear(), function () {
-                return Permission::whereIn('name', InterfaceClass::ALLPERM)->orderBy('name')->get();
-            }),
+            'roles' => CentralCacheInterfaceClass::rememberRoleOrderByName(),
+            'permissions' => CentralCacheInterfaceClass::rememberPermissionOrderByName(),
+            'permissions_const' => CentralCacheInterfaceClass::rememberPermissionConstOrderByName(),
+            'permissions_menu' => CentralCacheInterfaceClass::rememberPermissionMenuOrderByName(),
         ]);
+
     }
 
     /**

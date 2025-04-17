@@ -1,28 +1,39 @@
 <script setup lang="ts">
 import axios from 'axios';
 
-import { ref, inject, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useApiStore } from '../AppState';
-import { RoleDataInterface, PermissionDataInterface } from '../AppCommon';
+import { RoleDataInterface, PermissionDataInterface, UserDataInterface } from '../AppCommon';
 
 import CmpToast from '../Components/CmpToast.vue';
 
-import DataTable from 'primevue/datatable';
+import DataTable from '../volt/DataTable.vue';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
+import InputText from '../volt/InputText.vue';
 import { FilterMatchMode } from '@primevue/core/api';
 
+const props = defineProps<{
+    dialogOpen: boolean;
+    dialogData: UserDataInterface | null;
+    dialogTypeCreate: boolean;
+}>();
+const emit = defineEmits(['update:dialogOpen']);
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
+watch(
+    () => props.dialogOpen,
+    (newValue) => {
+        emit('update:dialogOpen', newValue);
+    },
+);
+const closeDialog = () => {
+    emit('update:dialogOpen', false);
+};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const dialogRef = inject('dialogRef') as any;
-
-const usermanData = dialogRef.value.data?.usermanData;
-const typeCreate = ref<boolean>(dialogRef.value.data?.typeCreate);
-const nameData = ref<string>(usermanData?.name);
-const usernameData = ref<string>(usermanData?.username);
+const usermanData = props.dialogData;
+const typeCreate = ref<boolean>(props.dialogTypeCreate);
+const nameData = ref<string>(usermanData?.name ?? '');
+const usernameData = ref<string>(usermanData?.username ?? '');
 const roleListData = ref<Array<string>>();
 const selectedRoleListData = ref<Array<RoleDataInterface>>();
 const permListData = ref<Array<string>>();
@@ -88,7 +99,7 @@ const postUserManData = () => {
             }),
         })
         .then((response) => {
-            dialogRef.value.close();
+            closeDialog();
             toastchild.value?.toastDisplay({
                 severity: 'success',
                 summary: response.data.title,
@@ -111,7 +122,7 @@ const postDeleteUserManData = () => {
             id: usermanData?.id,
         })
         .then((response) => {
-            dialogRef.value.close();
+            closeDialog();
             toastchild.value?.toastDisplay({
                 severity: 'success',
                 summary: response.data.title,
@@ -134,7 +145,7 @@ const postResetPasswordUserMandata = () => {
             id: usermanData?.id,
         })
         .then((response) => {
-            dialogRef.value.close();
+            closeDialog();
             toastchild.value?.toastDisplay({
                 severity: 'success',
                 summary: response.data.title,
@@ -157,99 +168,129 @@ onMounted(() => {
 </script>
 
 <template>
-    <CmpToast ref="toastchild" />
-    <div class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">
-            <span>Name:<span class="text-red-500 font-bold">*</span></span>
+    <div>
+        <CmpToast ref="toastchild" />
+        <div class="flex w-full mt-1">
+            <div class="w-28 my-auto text-sm">
+                <span>Name:<span class="text-red-500 font-bold">*</span></span>
+            </div>
+            <div class="flex w-full text-sm">
+                <InputText v-model="nameData" class="w-full text-sm" />
+            </div>
         </div>
-        <div class="flex w-full text-sm">
-            <InputText v-model="nameData" class="w-full text-sm" />
+        <div class="flex w-full mt-1">
+            <div class="w-28 my-auto text-sm">
+                <span>Username:<span class="text-red-500 font-bold">*</span></span>
+            </div>
+            <div class="flex w-full text-sm">
+                <InputText v-model="usernameData" class="w-full text-sm" />
+            </div>
         </div>
-    </div>
-    <div class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">
-            <span>Username:<span class="text-red-500 font-bold">*</span></span>
-        </div>
-        <div class="flex w-full text-sm">
-            <InputText v-model="usernameData" class="w-full text-sm" />
-        </div>
-    </div>
-    <div class="flex w-full justify-evenly mt-2.5">
-        <div class="mx-2.5">
-            <DataTable
-                v-model:filters="filters_role"
-                v-model:selection="selectedRoleListData"
-                class="p-datatable-sm"
-                :value="roleListData"
-                showGridlines
-                paginator
-                :rows="10"
-                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                :rowsPerPageOptions="[10, 20, 50, 100]"
-                filterDisplay="menu"
-            >
-                <template #empty>
-                    <div class="flex justify-center">No data found</div>
-                </template>
-                <template #loading>
-                    <i class="pi pi-spin pi-spinner mr-2.5"></i>
-                    Processing data. Please wait.
-                </template>
-                <Column selectionMode="multiple"></Column>
-                <Column field="name" header="Direct Roles">
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by role"
-                            @input="filterCallback()"
-                        />
+        <div class="flex w-full justify-evenly mt-2.5">
+            <div class="mx-2.5">
+                <DataTable
+                    :filters="filters_role"
+                    :selection="selectedRoleListData"
+                    class="p-datatable-sm"
+                    :value="roleListData"
+                    showGridlines
+                    paginator
+                    :rows="10"
+                    paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
+                    :rowsPerPageOptions="[10, 20, 50, 100]"
+                    filterDisplay="menu"
+                >
+                    <template #empty>
+                        <div class="flex justify-center">No data found</div>
                     </template>
-                </Column>
-            </DataTable>
-        </div>
-        <div class="mx-2.5">
-            <DataTable
-                v-model:filters="filters_perm"
-                v-model:selection="selectedPermListData"
-                class="p-datatable-sm"
-                :value="permListData"
-                showGridlines
-                paginator
-                :rows="10"
-                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                :rowsPerPageOptions="[10, 20, 50, 100]"
-                filterDisplay="menu"
-            >
-                <template #empty>
-                    <div class="flex justify-center">No data found</div>
-                </template>
-                <template #loading>
-                    <i class="pi pi-spin pi-spinner mr-2.5"></i>
-                    Processing data. Please wait.
-                </template>
-                <Column selectionMode="multiple"></Column>
-                <Column field="name" header="Direct Permissions">
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by permission"
-                            @input="filterCallback()"
-                        />
+                    <template #loading>
+                        <i class="pi pi-spin pi-spinner mr-2.5"></i>
+                        Processing data. Please wait.
                     </template>
-                </Column>
-            </DataTable>
+                    <Column selectionMode="multiple"></Column>
+                    <Column field="name" header="Direct Roles">
+                        <template #filter="{ filterModel, filterCallback }">
+                            <InputText
+                                v-model="filterModel.value"
+                                class="w-full"
+                                placeholder="Search by role"
+                                @input="filterCallback()"
+                            />
+                        </template>
+                    </Column>
+                    <Column field="role_types" header="Type">
+                        <template #filter="{ filterModel, filterCallback }">
+                            <InputText
+                                v-model="filterModel.value"
+                                class="w-full"
+                                placeholder="Search by type"
+                                @input="filterCallback()"
+                            />
+                        </template>
+                    </Column>
+                </DataTable>
+            </div>
+            <div class="mx-2.5">
+                <DataTable
+                    :filters="filters_perm"
+                    :selection="selectedPermListData"
+                    class="p-datatable-sm"
+                    :value="permListData"
+                    showGridlines
+                    paginator
+                    :rows="10"
+                    paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
+                    :rowsPerPageOptions="[10, 20, 50, 100]"
+                    filterDisplay="menu"
+                >
+                    <template #empty>
+                        <div class="flex justify-center">No data found</div>
+                    </template>
+                    <template #loading>
+                        <i class="pi pi-spin pi-spinner mr-2.5"></i>
+                        Processing data. Please wait.
+                    </template>
+                    <Column selectionMode="multiple"></Column>
+                    <Column field="ability.title" header="Direct Permissions">
+                        <template #filter="{ filterModel, filterCallback }">
+                            <InputText
+                                v-model="filterModel.value"
+                                class="w-full"
+                                placeholder="Search by permission"
+                                @input="filterCallback()"
+                            />
+                        </template>
+                    </Column>
+                    <Column field="ability_type" header="Type">
+                        <template #filter="{ filterModel, filterCallback }">
+                            <InputText
+                                v-model="filterModel.value"
+                                class="w-full"
+                                placeholder="Search by type"
+                                @input="filterCallback()"
+                            />
+                        </template>
+                    </Column>
+                </DataTable>
+            </div>
         </div>
-    </div>
-    <div class="flex w-full mt-2.5 justify-center">
-        <Button
-            v-if="showDeleted"
-            severity="danger"
-            label="Delete"
-            @click="postDeleteUserManData()"
-        />
-        <Button severity="warning" label="Reset Password" @click="postResetPasswordUserMandata()" />
-        <Button label="Submit" @click="postUserManData()" />
+        <div class="flex w-full mt-2.5 justify-center">
+            <UButton
+                v-if="showDeleted"
+                size="xl"
+                color="error"
+                label="Delete"
+                class="m-2"
+                @click="postDeleteUserManData()"
+            />
+            <UButton
+                size="xl"
+                severity="warning"
+                label="Reset Password"
+                class="m-2"
+                @click="postResetPasswordUserMandata()"
+            />
+            <UButton size="xl" label="Submit" class="m-2" @click="postUserManData()" />
+        </div>
     </div>
 </template>

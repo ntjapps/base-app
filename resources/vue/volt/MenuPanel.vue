@@ -1,6 +1,6 @@
 <template>
     <div :class="theme.root + ' ' + theme.transition">
-        <Accordion v-model:value="expandedKeysValue">
+        <Accordion :value="expandedKeysValue">
             <div v-for="(item, index) in model" :key="index">
                 <transition
                     v-if="item.items?.length > 0"

@@ -18,7 +18,7 @@ const { appName, menuItems, expandedKeysMenu } = storeToRefs(main);
                 </div>
             </div>
             <div class="flex w-full mt-10">
-                <MenuPanel v-model:expandedKeys="expandedKeysMenu" :model="menuItems" />
+                <MenuPanel :expandedKeys="expandedKeysMenu" :model="menuItems" />
             </div>
         </div>
     </div>

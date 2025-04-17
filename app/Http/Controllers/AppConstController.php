@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Interfaces\InterfaceClass;
-use App\Interfaces\MenuItemClass;
-use App\Models\Permission;
 use App\Rules\TokenPlatformValidation;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -39,20 +36,7 @@ class AppConstController extends Controller
 
         /** Menu Items */
         if ($authCheck) {
-            $menuItems = Cache::remember(Permission::class.'-menu-items-'.$user->id, Carbon::now()->addYear(), function () {
-                $menuArray = []; /** Menu Array */
-
-                /** Top Order Menu */
-                array_push($menuArray, MenuItemClass::dashboardMenu());
-
-                /** Administration Menu */
-                array_push($menuArray, MenuItemClass::administrationMenu());
-
-                /** Bottom Order Menu */
-                array_push($menuArray, MenuItemClass::logoutMenu());
-
-                return array_filter($menuArray);
-            });
+            $menuItems = CentralCacheInterfaceClass::mainMenuCache($user);
         }
 
         /** Constant now set in Vue State, this now used to check if authenticated or not */

@@ -8,17 +8,13 @@
     >
         <template #closebutton="{ closeCallback }">
             <SecondaryButton variant="text" rounded @click="closeCallback" autofocus>
-                <template #icon>
-                    <TimesIcon />
-                </template>
+                <TimesIcon />
             </SecondaryButton>
         </template>
         <template #maximizebutton="{ maximized, maximizeCallback }">
             <SecondaryButton variant="text" rounded @click="maximizeCallback" autofocus>
-                <template #icon>
-                    <WindowMinimizeIcon v-if="maximized" />
-                    <WindowMaximizeIcon v-else />
-                </template>
+                <WindowMinimizeIcon v-if="maximized" />
+                <WindowMaximizeIcon v-else />
             </SecondaryButton>
         </template>
         <template v-for="(_, slotName) in $slots" v-slot:[slotName]="slotProps">

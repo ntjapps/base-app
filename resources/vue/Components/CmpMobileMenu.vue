@@ -7,11 +7,11 @@ import MenuPanel from '../volt/MenuPanel.vue';
 import Drawer from '../volt/DrawerLeft.vue';
 
 const main = useMainStore();
-const { menuItems, menuVisible } = storeToRefs(main);
+const { menuItems, menuVisible, expandedKeysMenu } = storeToRefs(main);
 </script>
 
 <template>
-    <Drawer v-model:visible="menuVisible" header="Menu">
-        <MenuPanel v-model:expandedKeys="expandedKeysMenu" :model="menuItems" />
+    <Drawer :visible="menuVisible" header="Menu">
+        <MenuPanel :expandedKeys="expandedKeysMenu" :model="menuItems" />
     </Drawer>
 </template>

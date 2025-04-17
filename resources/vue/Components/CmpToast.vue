@@ -9,9 +9,9 @@ export type ToastDisplay = {
 };
 
 type toastData = {
-    color: 'success' | 'info' | 'warning' | 'error' | undefined;
+    severity: 'success' | 'info' | 'warning' | 'error' | undefined;
     title: string | undefined;
-    description: string | undefined;
+    detail: string | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     response?: AxiosResponse<any, any> | any;
 };

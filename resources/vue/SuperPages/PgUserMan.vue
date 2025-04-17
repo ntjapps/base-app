@@ -3,16 +3,14 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { timeGreetings, UserDataInterface } from '../AppCommon';
 import { useApiStore, useMainStore } from '../AppState';
-import { useDialog } from 'primevue/usedialog';
 
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
 
-import DataTable from 'primevue/datatable';
+import Dialog from '../volt/Dialog.vue';
+import DataTable from '../volt/DataTable.vue';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
-import Breadcrumb from 'primevue/breadcrumb';
-import Button from 'primevue/button';
+import InputText from '../volt/InputText.vue';
 import { FilterMatchMode } from '@primevue/core/api';
 
 import DialogUserMan from '../DialogComponents/DialogUserMan.vue';
@@ -25,7 +23,6 @@ const props = defineProps<{
 const api = useApiStore();
 const main = useMainStore();
 const timeGreet = timeGreetings();
-const dialog = useDialog();
 const toastchild = ref<typeof CmpToast>();
 
 const userListData = ref(Array<UserDataInterface>());
@@ -66,29 +63,24 @@ const showViewButton = (data: string | null | undefined): boolean => {
     }
 };
 
+const dialogOpen = ref<boolean>(false);
+const dialogData = ref<UserDataInterface | null>(null);
+const dialogHeader = ref<string>('Create User');
+
 const openEditUserDialog = (data: UserDataInterface | null) => {
-    dialog.open(DialogUserMan, {
-        props: {
-            header: data === null ? 'Create User' : 'Edit User',
-            modal: true,
-        },
-
-        data: {
-            typeCreate: data === null ? true : false,
-            usermanData: data,
-        },
-
-        onClose: () => {
-            getUserListData();
-        },
-    });
+    dialogOpen.value = true;
+    dialogData.value = data;
+    if (data === null) {
+        dialogHeader.value = 'Create User';
+    } else {
+        dialogHeader.value = 'Edit User';
+    }
 };
 
-/** Breadcrumb */
-const home = ref({
-    icon: 'pi pi-home',
-});
-const items = ref([{ label: 'Administration' }, { label: 'User Management' }]);
+const closeEditUserDialog = () => {
+    dialogOpen.value = false;
+    dialogData.value = null;
+};
 
 onMounted(() => {
     getUserListData();
@@ -99,8 +91,16 @@ onMounted(() => {
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <Breadcrumb :home="home" :model="items" />
-        <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
+        <Dialog v-model:visible="dialogOpen" modal :header="dialogHeader">
+            <DialogUserMan
+                ref="dialog"
+                v-model:dialogOpen="dialogOpen"
+                :dialogData="dialogData"
+                :dialogTypeCreate="dialogData === null ? true : false"
+                @closeDialog="closeEditUserDialog"
+            />
+        </Dialog>
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <div class="flex flex-row">
                 <div class="flex flex-col w-full my-auto">
                     <h2 class="title-font font-bold">
@@ -109,13 +109,13 @@ onMounted(() => {
                     <h3 class="title-font">User Role Management</h3>
                 </div>
                 <div class="flex justify-end w-full my-auto">
-                    <Button label="Create User" @click="openEditUserDialog(null)" />
+                    <UButton size="xl" label="Create User" @click="openEditUserDialog(null)" />
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <DataTable
-                v-model:filters="filters"
+                :filters="filters"
                 class="p-datatable-sm editable-cells-table"
                 :value="userListData"
                 showGridlines
@@ -150,10 +150,9 @@ onMounted(() => {
                 <Column field="action" header="Actions" class="text-sm">
                     <template #body="slotProps">
                         <div v-if="showViewButton(slotProps.data.id)" class="flex justify-center">
-                            <Button
-                                icon="pi pi-angle-double-right"
-                                @click="openEditUserDialog(slotProps.data)"
-                            />
+                            <UButton size="xl" @click="openEditUserDialog(slotProps.data)"
+                                ><i class="pi pi-angle-double-right"
+                            /></UButton>
                         </div>
                     </template>
                 </Column>

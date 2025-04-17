@@ -23,7 +23,7 @@ defineProps<Props>();
 
 const theme = ref<AccordionContentPassThroughOptions>({
     root: `flex flex-col`,
-    content: `bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 pt-0 px-[1.125rem] pb-[1.125rem]`,
+    content: `bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 pt-0 px-[1.125rem]`,
     transition: {
         enterFromClass: 'max-h-0',
         enterActiveClass:

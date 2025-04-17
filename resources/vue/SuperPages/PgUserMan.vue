@@ -115,7 +115,7 @@ onMounted(() => {
         </div>
         <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <DataTable
-                :filters="filters"
+                v-model:filters="filters"
                 class="p-datatable-sm editable-cells-table"
                 :value="userListData"
                 showGridlines

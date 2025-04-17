@@ -14,12 +14,11 @@
                         <AccordionContent
                             v-for="(subItem, subIndex) in item.items"
                             :key="subIndex"
-                            :pt="{
-                                content: theme.itemLink + ' m-2 ' + theme.itemContent,
-                            }"
                             @click="gotoPage(subItem.url)"
                         >
-                            <div :class="theme.item">
+                            <div
+                                :class="theme.itemLink + ' ' + theme.itemContent + ' ' + theme.item"
+                            >
                                 <i :class="theme.itemIcon + ' pi ' + subItem.icon + ' mr-2'" />
                                 <span :class="theme.item">
                                     {{ subItem.label }}

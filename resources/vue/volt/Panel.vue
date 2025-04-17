@@ -13,10 +13,8 @@
                 @click="toggleCallback"
                 @keydown="keydownCallback"
             >
-                <template #icon>
-                    <PlusIcon v-if="collapsed" />
-                    <MinusIcon v-else />
-                </template>
+                <PlusIcon v-if="collapsed" />
+                <MinusIcon v-else />
             </SecondaryButton>
         </template>
         <template v-for="(_, slotName) in $slots" v-slot:[slotName]="slotProps">

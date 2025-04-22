@@ -12,7 +12,7 @@
         "prettier:fix": "prettier --write resources/**/*.{css,scss,vue,js,cjs,ts,json,md} *.{css,scss,vue,js,cjs,ts,json,md} tests/**/*.{css,scss,vue,js,cjs,ts,json,md}"
     },
     "dependencies": {
-        "@eslint/js": "^9.24.0",
+        "@eslint/js": "^9.25.1",
         "@nuxt/ui": "^3.0.2",
         "@primevue/core": "^4.3.3",
         "@sentry/vue": "^9.12.0",

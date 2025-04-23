@@ -8,12 +8,11 @@ import axios from 'axios';
 
 import CmpLayout from '../Components/CmpLayout.vue';
 
-import DataTable from 'primevue/datatable';
+import DataTable from '../volt/DataTable.vue';
 import Column from 'primevue/column';
-import DatePicker from 'primevue/datepicker';
-import Select from 'primevue/select';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
+import DatePicker from '../volt/DatePicker.vue';
+import Select from '../volt/Select.vue';
+import InputText from '../volt/InputText.vue';
 
 const props = defineProps<{
     appName: string;
@@ -220,12 +219,9 @@ onMounted(() => {
                 <div class="flex w-full">
                     <div class="w-28 my-auto text-sm m-auto"></div>
                     <div class="flex w-full text-sm m-auto">
-                        <Button
-                            icon="pi pi-search"
-                            label="Search"
-                            :disabled="loadingstat"
-                            @click="getServerLogData"
-                        />
+                        <UButton size="xl" :disabled="loadingstat" @click="getServerLogData"
+                            ><i class="pi pi-search" />Search</UButton
+                        >
                     </div>
                 </div>
             </div>
@@ -250,13 +246,13 @@ onMounted(() => {
                     <div
                         class="flex items-center gap-4 border border-primary bg-transparent rounded-full w-full py-1 px-2 justify-between"
                     >
-                        <Button
-                            icon="pi pi-chevron-left"
-                            rounded
-                            text
+                        <UButton
+                            size="xl"
                             :disabled="serverLogResponse?.prev_page_url === null"
+                            class="rounded-full"
                             @click="prevPageCustomCallback"
-                        />
+                            ><i class="pi pi-chevron-left"
+                        /></UButton>
                         <div class="text-color font-medium">
                             <span
                                 >Showing {{ serverLogResponse?.from }} to
@@ -273,13 +269,13 @@ onMounted(() => {
                                 of {{ serverLogResponse?.last_page }}</span
                             >
                         </div>
-                        <Button
-                            icon="pi pi-chevron-right"
-                            rounded
-                            text
+                        <UButton
+                            size="xl"
                             :disabled="serverLogResponse?.next_page_url === null"
+                            class="rounded-full"
                             @click="nextPageCustomCallback"
-                        />
+                            ><i class="pi pi-chevron-right"
+                        /></UButton>
                     </div>
                 </template>
                 <Column field="created_at" header="Log Date">

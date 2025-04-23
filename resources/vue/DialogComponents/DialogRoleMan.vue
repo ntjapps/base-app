@@ -84,7 +84,7 @@ const postRolemanData = () => {
             role_id: typeCreate.value ? null : rolemanData?.id,
             role_rename: typeCreate.value ? null : nameData.value,
             permissions: selectedPermListData.value?.map((perm: PermissionDataInterface) => {
-                return perm.name;
+                return perm.id;
             }),
         })
         .then((response) => {

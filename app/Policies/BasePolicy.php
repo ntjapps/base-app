@@ -35,4 +35,12 @@ trait BasePolicy
     {
         return ! is_null($user);
     }
+
+    /**
+     * Deny all action for any user
+     */
+    public function denyAllAction(): bool
+    {
+        return false;
+    }
 }

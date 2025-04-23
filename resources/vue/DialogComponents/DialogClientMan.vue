@@ -1,26 +1,47 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, inject, computed } from 'vue';
-import useClipboard from 'vue-clipboard3';
+
+import { ref, computed, watch } from 'vue';
 import { useApiStore } from '../AppState';
+import useClipboard from 'vue-clipboard3';
+import { ClientListDataInterface } from '../AppCommon';
 
 import CmpToast from '../Components/CmpToast.vue';
 
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
+import InputText from '../volt/InputText.vue';
 
+const props = defineProps<{
+    dialogOpen: boolean;
+    dialogData: ClientListDataInterface | null;
+    dialogTypeCreate: boolean;
+}>();
+const emit = defineEmits<{
+    (e: 'closeDialog'): void;
+    (e: 'update:dialogOpen', value: boolean): void;
+}>();
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
 const { toClipboard } = useClipboard();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const dialogRef = inject('dialogRef') as any;
+watch(
+    () => props.dialogOpen,
+    (newValue) => {
+        if (!newValue) {
+            emit('closeDialog');
+        }
+        emit('update:dialogOpen', newValue);
+    },
+);
+const closeDialogFunction = () => {
+    emit('closeDialog');
+    emit('update:dialogOpen', false);
+};
 
-const typeCreate = dialogRef.value.data?.typeCreate;
-const clientmanData = dialogRef.value.data?.clientmanData;
-const clientId = ref<string>(clientmanData?.id);
-const clientName = ref<string>(clientmanData?.name);
-const clientRedirect = ref<string>(clientmanData?.redirect);
+const clientmanData = props.dialogData;
+const typeCreate = ref<boolean>(props.dialogTypeCreate);
+const clientId = ref<string>(clientmanData?.id ?? '');
+const clientName = ref<string>(clientmanData?.name ?? '');
+const clientRedirect = ref<string>(clientmanData?.redirect ?? '');
 const oldClientSecret = ref<string>('');
 const newClientSecret = ref<string>('');
 
@@ -52,7 +73,7 @@ const copySecretToClipboard = () => {
     toClipboard(newClientSecret.value);
     toastchild.value?.toastDisplay({
         severity: 'success',
-        summary: 'Success Copy Secret',
+        detail: 'Success Copy Secret',
     });
 };
 
@@ -69,7 +90,7 @@ const deleteClient = (id: string) => {
             });
         })
         .then(() => {
-            dialogRef.value.close();
+            closeDialogFunction();
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
@@ -120,7 +141,7 @@ const updateClient = (id: string) => {
             });
         })
         .then(() => {
-            dialogRef.value.close();
+            closeDialogFunction();
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({
@@ -158,84 +179,112 @@ const createClient = () => {
 };
 
 const showCreateClient = computed(() => {
-    return typeCreate && !showClientId.value;
+    return typeCreate.value && !showClientId.value;
 });
 
 const allowEditName = computed(() => {
-    return (!typeCreate && showClientId.value) || showCreateClient.value;
+    return (!typeCreate.value && showClientId.value) || showCreateClient.value;
 });
 </script>
 
 <template>
-    <CmpToast ref="toastchild" />
-    <div v-if="showClientId" class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">
-            <span>ID:</span>
+    <div>
+        <CmpToast ref="toastchild" />
+        <div v-if="showClientId" class="flex w-full mt-1">
+            <div class="w-28 my-auto text-sm">
+                <span>ID:</span>
+            </div>
+            <div class="flex w-full text-sm">
+                <InputText
+                    v-model="computedClientId"
+                    class="w-full text-sm"
+                    @click="copyIdToClipboard"
+                />
+            </div>
         </div>
-        <div class="flex w-full text-sm">
-            <InputText
-                v-model="computedClientId"
-                v-tooltip.top="'Click to copy'"
-                class="w-full text-sm"
-                @click="copyIdToClipboard"
+        <div class="flex w-full mt-1">
+            <div class="w-28 my-auto text-sm">
+                <span>Name:<span class="text-red-500 font-bold">*</span></span>
+            </div>
+            <div class="flex w-full text-sm">
+                <InputText v-model="clientName" class="w-full text-sm" :disabled="!allowEditName" />
+            </div>
+        </div>
+        <div class="flex w-full mt-1">
+            <div class="w-28 my-auto text-sm">
+                <span>Redirect:</span>
+            </div>
+            <div class="flex w-full text-sm">
+                <InputText
+                    v-model="clientRedirect"
+                    class="w-full text-sm"
+                    :disabled="!allowEditName"
+                />
+            </div>
+        </div>
+        <div class="flex w-full mt-1">
+            <div class="w-28 my-auto text-sm">
+                <span>Old Client Secret:</span>
+            </div>
+            <div class="flex w-full text-sm">
+                <InputText
+                    v-model="oldClientSecret"
+                    class="w-full text-sm"
+                    :disabled="!allowEditName"
+                />
+            </div>
+        </div>
+        <div v-if="showClientSecret" class="flex w-full mt-1">
+            <div class="w-28 my-auto text-sm">
+                <span>New Secret:</span>
+            </div>
+            <div class="flex w-full text-sm">
+                <InputText
+                    v-model="computedClientSecret"
+                    class="w-full text-sm"
+                    @click="copySecretToClipboard"
+                />
+            </div>
+        </div>
+        <div class="flex w-full mt-2.5 justify-center">
+            <UButton
+                size="xl"
+                class="m-2"
+                color="error"
+                label="Delete"
+                @click="deleteClient(clientId)"
+            />
+            <UButton
+                size="xl"
+                class="m-2"
+                color="warning"
+                label="Reset Secret"
+                @click="resetClient(clientId)"
+            />
+            <UButton
+                v-if="!typeCreate"
+                size="xl"
+                class="m-2"
+                color="success"
+                label="Update Client"
+                @click="updateClient(clientId)"
+            />
+            <UButton
+                v-if="showCreateClient"
+                size="xl"
+                class="m-2"
+                color="success"
+                label="Create Client"
+                @click="createClient"
+            />
+            <UButton
+                v-if="!showCreateClient && typeCreate"
+                size="xl"
+                class="m-2"
+                color="success"
+                label="Close & Refresh"
+                @click="closeDialogFunction"
             />
         </div>
-    </div>
-    <div class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">
-            <span>Name:<span class="text-red-500 font-bold">*</span></span>
-        </div>
-        <div class="flex w-full text-sm">
-            <InputText v-model="clientName" class="w-full text-sm" :disabled="!allowEditName" />
-        </div>
-    </div>
-    <div class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">
-            <span>Redirect:</span>
-        </div>
-        <div class="flex w-full text-sm">
-            <InputText v-model="clientRedirect" class="w-full text-sm" :disabled="!allowEditName" />
-        </div>
-    </div>
-    <div class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">
-            <span>Old Client Secret:</span>
-        </div>
-        <div class="flex w-full text-sm">
-            <InputText
-                v-model="oldClientSecret"
-                class="w-full text-sm"
-                :disabled="!allowEditName"
-            />
-        </div>
-    </div>
-    <div v-if="showClientSecret" class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">
-            <span>New Secret:</span>
-        </div>
-        <div class="flex w-full text-sm">
-            <InputText
-                v-model="computedClientSecret"
-                v-tooltip.top="'Click to copy'"
-                class="w-full text-sm"
-                @click="copySecretToClipboard"
-            />
-        </div>
-    </div>
-    <div class="flex w-full mt-2.5 justify-center">
-        <Button severity="danger" label="Delete" @click="deleteClient(clientId)" />
-        <Button severity="warning" label="Reset Secret" @click="resetClient(clientId)" />
-        <Button
-            v-if="!typeCreate"
-            severity="success"
-            label="Update Client"
-            @click="updateClient(clientId)"
-        />
-        <Button
-            v-if="showCreateClient"
-            severity="success"
-            label="Create Client"
-            @click="createClient"
-        />
     </div>
 </template>

@@ -3,16 +3,14 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { timeGreetings, ClientListDataInterface, dateView } from '../AppCommon';
 import { useApiStore, useMainStore } from '../AppState';
-import { useDialog } from 'primevue/usedialog';
 
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
 
-import DataTable from 'primevue/datatable';
+import Dialog from '../volt/Dialog.vue';
+import DataTable from '../volt/DataTable.vue';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
-import Breadcrumb from 'primevue/breadcrumb';
-import Button from 'primevue/button';
+import InputText from '../volt/InputText.vue';
 import { FilterMatchMode } from '@primevue/core/api';
 
 import DialogClientMan from '../DialogComponents/DialogClientMan.vue';
@@ -25,7 +23,6 @@ const props = defineProps<{
 const api = useApiStore();
 const main = useMainStore();
 const timeGreet = timeGreetings();
-const dialog = useDialog();
 const toastchild = ref<typeof CmpToast>();
 
 const clientListData = ref(Array<ClientListDataInterface>());
@@ -63,29 +60,19 @@ const checkClientGrant = (data: string | null | undefined): boolean => {
     }
 };
 
+const dialogOpen = ref<boolean>(false);
+const dialogData = ref<ClientListDataInterface | null>(null);
+const dialogHeader = ref<string>('Create Client');
+
 const openEditClientDialog = (data: ClientListDataInterface | null) => {
-    dialog.open(DialogClientMan, {
-        props: {
-            header: data === null ? 'Create Client' : 'Edit Client',
-            modal: true,
-        },
-
-        data: {
-            typeCreate: data === null ? true : false,
-            clientmanData: data,
-        },
-
-        onClose: () => {
-            getClientListData();
-        },
-    });
+    dialogOpen.value = true;
+    dialogData.value = data;
+    if (data === null) {
+        dialogHeader.value = 'Create Client';
+    } else {
+        dialogHeader.value = 'Edit Client';
+    }
 };
-
-/** Breadcrumb */
-const home = ref({
-    icon: 'pi pi-home',
-});
-const items = ref([{ label: 'Administration' }, { label: 'Passport Management' }]);
 
 onMounted(() => {
     getClientListData();
@@ -96,8 +83,15 @@ onMounted(() => {
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <Breadcrumb :home="home" :model="items" />
-        <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
+        <Dialog v-model:visible="dialogOpen" modal :header="dialogHeader">
+            <DialogClientMan
+                v-model:dialogOpen="dialogOpen"
+                :dialogData="dialogData"
+                :dialogTypeCreate="dialogData === null ? true : false"
+                @closeDialog="getClientListData()"
+            />
+        </Dialog>
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <div class="flex flex-row">
                 <div class="flex flex-col w-full my-auto">
                     <h2 class="title-font font-bold">
@@ -106,12 +100,19 @@ onMounted(() => {
                     <h3 class="title-font">Passport Management</h3>
                 </div>
                 <div class="flex justify-end w-full my-auto">
-                    <Button icon="pi pi-refresh" @click="getClientListData" />
-                    <Button label="Create Client" @click="openEditClientDialog(null)" />
+                    <UButton size="xl" class="m-2" @click="getClientListData">
+                        <i class="pi pi-refresh" />
+                    </UButton>
+                    <UButton
+                        size="xl"
+                        class="m-2"
+                        label="Create Client"
+                        @click="openEditClientDialog(null)"
+                    />
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <DataTable
                 v-model:filters="filters"
                 class="p-datatable-sm editable-cells-table"
@@ -148,10 +149,9 @@ onMounted(() => {
                 <Column field="action" header="Actions" class="text-sm">
                     <template #body="slotProps">
                         <div v-if="slotProps.data.allowed_action" class="flex justify-center">
-                            <Button
-                                icon="pi pi-angle-double-right"
-                                @click="openEditClientDialog(slotProps.data)"
-                            />
+                            <UButton size="xl" @click="openEditClientDialog(slotProps.data)">
+                                <i class="pi pi-angle-double-right" />
+                            </UButton>
                         </div>
                     </template>
                 </Column>
@@ -173,32 +173,39 @@ onMounted(() => {
                 >
                     <template #body="slotProps">
                         <div class="text-center">
-                            <Button
+                            <UButton
                                 v-if="slotProps.data.personal_access_client"
-                                severity="success"
+                                size="xl"
+                                color="success"
                                 label="Yes"
                             />
-                            <Button v-else severity="danger" label="No" />
+                            <UButton v-else size="xl" color="error" label="No" />
                         </div>
                     </template>
                 </Column>
                 <Column field="redirect" header="Client Grant" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">
-                            <Button
+                            <UButton
                                 v-if="checkClientGrant(slotProps.data.redirect)"
-                                severity="success"
+                                size="xl"
+                                color="success"
                                 label="Yes"
                             />
-                            <Button v-else severity="danger" label="No" />
+                            <UButton v-else size="xl" color="error" label="No" />
                         </div>
                     </template>
                 </Column>
                 <Column field="revoked" header="Revoked" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">
-                            <Button v-if="slotProps.data.revoked" severity="danger" label="Yes" />
-                            <Button v-else severity="success" label="No" />
+                            <UButton
+                                v-if="slotProps.data.revoked"
+                                size="xl"
+                                color="error"
+                                label="Yes"
+                            />
+                            <UButton v-else size="xl" color="success" label="No" />
                         </div>
                     </template>
                 </Column>

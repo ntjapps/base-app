@@ -3,16 +3,14 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { timeGreetings, RoleListDataInterface } from '../AppCommon';
 import { useApiStore, useMainStore } from '../AppState';
-import { useDialog } from 'primevue/usedialog';
 
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
 
-import DataTable from 'primevue/datatable';
+import Dialog from '../volt/Dialog.vue';
+import DataTable from '../volt/DataTable.vue';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
-import Breadcrumb from 'primevue/breadcrumb';
-import Button from 'primevue/button';
+import InputText from '../volt/InputText.vue';
 import { FilterMatchMode } from '@primevue/core/api';
 
 import DialogRoleMan from '../DialogComponents/DialogRoleMan.vue';
@@ -25,7 +23,6 @@ const props = defineProps<{
 const api = useApiStore();
 const main = useMainStore();
 const timeGreet = timeGreetings();
-const dialog = useDialog();
 const toastchild = ref<typeof CmpToast>();
 
 const roleListData = ref(Array<RoleListDataInterface>());
@@ -64,29 +61,19 @@ const showViewButton = (data: string | null | undefined): boolean => {
     }
 };
 
+const dialogOpen = ref<boolean>(false);
+const dialogData = ref<RoleListDataInterface | null>(null);
+const dialogHeader = ref<string>('Create Role');
+
 const openEditRoleDialog = (data: RoleListDataInterface | null) => {
-    dialog.open(DialogRoleMan, {
-        props: {
-            header: data === null ? 'Create Role' : 'Edit Role',
-            modal: true,
-        },
-
-        data: {
-            typeCreate: data === null ? true : false,
-            rolemanData: data,
-        },
-
-        onClose: () => {
-            getRoleListData();
-        },
-    });
+    dialogOpen.value = true;
+    dialogData.value = data;
+    if (data === null) {
+        dialogHeader.value = 'Create Role';
+    } else {
+        dialogHeader.value = 'Edit Role';
+    }
 };
-
-/** Breadcrumb */
-const home = ref({
-    icon: 'pi pi-home',
-});
-const items = ref([{ label: 'Administration' }, { label: 'Role Management' }]);
 
 onMounted(() => {
     getRoleListData();
@@ -97,8 +84,15 @@ onMounted(() => {
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <Breadcrumb :home="home" :model="items" />
-        <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
+        <Dialog v-model:visible="dialogOpen" modal :header="dialogHeader">
+            <DialogRoleMan
+                v-model:dialogOpen="dialogOpen"
+                :dialogData="dialogData"
+                :dialogTypeCreate="dialogData === null ? true : false"
+                @closeDialog="getRoleListData()"
+            />
+        </Dialog>
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <div class="flex flex-row">
                 <div class="flex flex-col w-full my-auto">
                     <h2 class="title-font font-bold">
@@ -107,11 +101,11 @@ onMounted(() => {
                     <h3 class="title-font">Role Management</h3>
                 </div>
                 <div class="flex justify-end w-full my-auto">
-                    <Button label="Create Role" @click="openEditRoleDialog(null)" />
+                    <UButton size="xl" label="Create Role" @click="openEditRoleDialog(null)" />
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-neutral rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <DataTable
                 v-model:filters="filters"
                 class="p-datatable-sm editable-cells-table"
@@ -148,10 +142,9 @@ onMounted(() => {
                 <Column field="action" header="Actions" class="text-sm">
                     <template #body="slotProps">
                         <div v-if="showViewButton(slotProps.data.id)" class="flex justify-center">
-                            <Button
-                                icon="pi pi-angle-double-right"
-                                @click="openEditRoleDialog(slotProps.data)"
-                            />
+                            <UButton size="xl" @click="openEditRoleDialog(slotProps.data)">
+                                <i class="pi pi-angle-double-right" />
+                            </UButton>
                         </div>
                     </template>
                 </Column>

@@ -17,7 +17,10 @@ const props = defineProps<{
     dialogData: UserDataInterface | null;
     dialogTypeCreate: boolean;
 }>();
-const emit = defineEmits(['update:dialogOpen', 'closeDialog']);
+const emit = defineEmits<{
+    (e: 'closeDialog'): void;
+    (e: 'update:dialogOpen', value: boolean): void;
+}>();
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
 watch(
@@ -193,7 +196,7 @@ onMounted(() => {
         <div class="flex w-full justify-evenly mt-2.5">
             <div class="mx-2.5">
                 <DataTable
-                    v-model::filters="filters_role"
+                    v-model:filters="filters_role"
                     v-model:selection="selectedRoleListData"
                     class="p-datatable-sm"
                     :value="roleListData"
@@ -236,7 +239,7 @@ onMounted(() => {
             </div>
             <div class="mx-2.5">
                 <DataTable
-                    v-model::filters="filters_perm"
+                    v-model:filters="filters_perm"
                     v-model:selection="selectedPermListData"
                     class="p-datatable-sm"
                     :value="permListData"

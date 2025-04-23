@@ -53,9 +53,7 @@ class RoleManController extends Controller
         }])->orderBy('name')->get()->map(function (Role $role) {
             return collect($role)->merge([
                 'permissions_array' => Cache::remember(Permission::class.'-getPermissionsByRole-'.$role->id, Carbon::now()->addYear(), function () use ($role) {
-                    return $role->getAllPermissions()->sortBy([
-                        ['name', 'asc'],
-                    ])->pluck('name');
+                    return Permission::with('ability')->whereIn('id', $role->getAllPermissions()->pluck('id'))->orderBy('ability_type')->get()->pluck('ability')->pluck('title');
                 }),
             ]);
         });

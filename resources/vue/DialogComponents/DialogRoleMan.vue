@@ -1,27 +1,45 @@
 <script setup lang="ts">
 import axios from 'axios';
 
-import { ref, inject, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useApiStore } from '../AppState';
-import { PermissionDataInterface } from '../AppCommon';
+import { PermissionDataInterface, RoleListDataInterface } from '../AppCommon';
 
 import CmpToast from '../Components/CmpToast.vue';
 
-import DataTable from 'primevue/datatable';
+import DataTable from '../volt/DataTable.vue';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
+import InputText from '../volt/InputText.vue';
 import { FilterMatchMode } from '@primevue/core/api';
 
+const props = defineProps<{
+    dialogOpen: boolean;
+    dialogData: RoleListDataInterface | null;
+    dialogTypeCreate: boolean;
+}>();
+const emit = defineEmits<{
+    (e: 'closeDialog'): void;
+    (e: 'update:dialogOpen', value: boolean): void;
+}>();
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
+watch(
+    () => props.dialogOpen,
+    (newValue) => {
+        if (!newValue) {
+            emit('closeDialog');
+        }
+        emit('update:dialogOpen', newValue);
+    },
+);
+const closeDialogFunction = () => {
+    emit('closeDialog');
+    emit('update:dialogOpen', false);
+};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const dialogRef = inject('dialogRef') as any;
-
-const rolemanData = dialogRef.value.data?.rolemanData;
-const typeCreate = ref<boolean>(dialogRef.value.data?.typeCreate);
-const nameData = ref<string>(rolemanData?.name);
+const rolemanData = props.dialogData;
+const typeCreate = ref<boolean>(props.dialogTypeCreate);
+const nameData = ref<string>(rolemanData?.name ?? '');
 const permListData = ref<Array<string>>();
 const selectedPermListData = ref<Array<PermissionDataInterface>>();
 
@@ -70,7 +88,7 @@ const postRolemanData = () => {
             }),
         })
         .then((response) => {
-            dialogRef.value.close();
+            closeDialogFunction();
             toastchild.value?.toastDisplay({
                 severity: 'success',
                 summary: response.data.title,
@@ -93,7 +111,7 @@ const postDeleteRolemanData = () => {
             id: rolemanData?.id,
         })
         .then((response) => {
-            dialogRef.value.close();
+            closeDialogFunction();
             toastchild.value?.toastDisplay({
                 severity: 'success',
                 summary: response.data.title,
@@ -147,7 +165,7 @@ onMounted(() => {
                     Processing data. Please wait.
                 </template>
                 <Column selectionMode="multiple"></Column>
-                <Column field="name" header="Direct Permissions">
+                <Column field="ability.title" header="Direct Permissions">
                     <template #filter="{ filterModel, filterCallback }">
                         <InputText
                             v-model="filterModel.value"
@@ -157,16 +175,28 @@ onMounted(() => {
                         />
                     </template>
                 </Column>
+                <Column field="ability_type" header="Type">
+                    <template #filter="{ filterModel, filterCallback }">
+                        <InputText
+                            v-model="filterModel.value"
+                            class="w-full"
+                            placeholder="Search by type"
+                            @input="filterCallback()"
+                        />
+                    </template>
+                </Column>
             </DataTable>
         </div>
     </div>
     <div class="flex w-full mt-2.5 justify-center">
-        <Button
+        <UButton
             v-if="showDeleted"
-            severity="danger"
+            size="xl"
+            color="error"
             label="Delete"
+            class="m-2"
             @click="postDeleteRolemanData()"
         />
-        <Button label="Submit" @click="postRolemanData" />
+        <UButton size="xl" class="m-2" label="Submit" @click="postRolemanData" />
     </div>
 </template>

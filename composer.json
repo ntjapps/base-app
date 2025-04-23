@@ -1,5 +1,5 @@
 {
-    "name": "ntj125app/base-app",
+    "name": "ntjapps/base-app",
     "type": "project",
     "description": "Template for Web Apps with PHP, Laravel and Vue",
     "version": "1.0.0",

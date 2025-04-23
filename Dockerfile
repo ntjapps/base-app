@@ -1,5 +1,5 @@
 # First, run compose install
-FROM ghcr.io/ntj125app/composer-custom:latest AS composer
+FROM ghcr.io/ntjapps/composer-custom:latest AS composer
 
 ARG ENV_KEY
 ARG APP_VERSION_HASH
@@ -16,7 +16,7 @@ RUN echo "APP_VERSION_HASH=${APP_VERSION_HASH}" >> .constants && \
     ls -lah .env*
 
 # Second, run PNPM install
-FROM ghcr.io/ntj125app/npm-custom:latest-ns AS pnpm
+FROM ghcr.io/ntjapps/npm-custom:latest-ns AS pnpm
 
 COPY --from=composer /app /app
 
@@ -26,7 +26,7 @@ RUN pnpm install --prod && \
     pnpm dlx vite build
 
 # Third, run Laravel install
-FROM ghcr.io/ntj125app/frankenphp:latest AS laravel
+FROM ghcr.io/ntjapps/frankenphp:latest AS laravel
 
 COPY --from=pnpm /app /app
 
@@ -35,7 +35,7 @@ WORKDIR /app
 RUN rm -rf rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs *.config.mjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs Jenkinsfile*
 
 # Final build images
-FROM ghcr.io/ntj125app/frankenphp:latest
+FROM ghcr.io/ntjapps/frankenphp:latest
 
 COPY --from=laravel /app /app
 

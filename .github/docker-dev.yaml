@@ -24,7 +24,7 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d
 
   base_ols:
-    image: ghcr.io/ntj125app/frankenphp:latest
+    image: ghcr.io/ntjapps/frankenphp:latest
     hostname: base_ols
     ports:
       - target: 80
@@ -37,7 +37,7 @@ services:
       - ../public:/app/public
 
   base_worker:
-    image: ghcr.io/ntj125app/frankenphp:latest
+    image: ghcr.io/ntjapps/frankenphp:latest
     command: ["/usr/local/bin/php", "/app/artisan", "horizon"]
     environment:
       - TZ=Asia/Jakarta
@@ -46,7 +46,7 @@ services:
       - ../public:/app/public
 
   base_scheduler:
-    image: ghcr.io/ntj125app/frankenphp:latest
+    image: ghcr.io/ntjapps/frankenphp:latest
     command:
       [
         "/bin/sh",
@@ -81,7 +81,7 @@ services:
       - ../storage/redis:/data
 
   base_reverb:
-    image: ghcr.io/ntj125app/frankenphp:latest
+    image: ghcr.io/ntjapps/frankenphp:latest
     command:
       [
         "/bin/sh",
@@ -106,7 +106,7 @@ services:
       - ../public:/app/public
 
   base_vite:
-    image: ghcr.io/ntj125app/npm-custom
+    image: ghcr.io/ntjapps/npm-custom
     command: ["pnpm", "run", "dev"]
     working_dir: /app
     ports:

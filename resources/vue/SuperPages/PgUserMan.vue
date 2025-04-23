@@ -77,11 +77,6 @@ const openEditUserDialog = (data: UserDataInterface | null) => {
     }
 };
 
-const closeEditUserDialog = () => {
-    dialogOpen.value = false;
-    dialogData.value = null;
-};
-
 onMounted(() => {
     getUserListData();
     main.updateExpandedKeysMenu(props.expandedKeysProps);
@@ -97,7 +92,7 @@ onMounted(() => {
                 v-model:dialogOpen="dialogOpen"
                 :dialogData="dialogData"
                 :dialogTypeCreate="dialogData === null ? true : false"
-                @closeDialog="closeEditUserDialog"
+                @closeDialog="getUserListData()"
             />
         </Dialog>
         <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
@@ -115,7 +110,7 @@ onMounted(() => {
         </div>
         <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
             <DataTable
-                v-model:filters="filters"
+                v-model::filters="filters"
                 class="p-datatable-sm editable-cells-table"
                 :value="userListData"
                 showGridlines

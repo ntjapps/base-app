@@ -17,16 +17,20 @@ const props = defineProps<{
     dialogData: UserDataInterface | null;
     dialogTypeCreate: boolean;
 }>();
-const emit = defineEmits(['update:dialogOpen']);
+const emit = defineEmits(['update:dialogOpen', 'closeDialog']);
 const api = useApiStore();
 const toastchild = ref<typeof CmpToast>();
 watch(
     () => props.dialogOpen,
     (newValue) => {
+        if (!newValue) {
+            emit('closeDialog');
+        }
         emit('update:dialogOpen', newValue);
     },
 );
-const closeDialog = () => {
+const closeDialogFunction = () => {
+    emit('closeDialog');
     emit('update:dialogOpen', false);
 };
 
@@ -99,7 +103,7 @@ const postUserManData = () => {
             }),
         })
         .then((response) => {
-            closeDialog();
+            closeDialogFunction();
             toastchild.value?.toastDisplay({
                 severity: 'success',
                 summary: response.data.title,
@@ -122,7 +126,7 @@ const postDeleteUserManData = () => {
             id: usermanData?.id,
         })
         .then((response) => {
-            closeDialog();
+            closeDialogFunction();
             toastchild.value?.toastDisplay({
                 severity: 'success',
                 summary: response.data.title,
@@ -145,7 +149,7 @@ const postResetPasswordUserMandata = () => {
             id: usermanData?.id,
         })
         .then((response) => {
-            closeDialog();
+            closeDialogFunction();
             toastchild.value?.toastDisplay({
                 severity: 'success',
                 summary: response.data.title,
@@ -189,8 +193,8 @@ onMounted(() => {
         <div class="flex w-full justify-evenly mt-2.5">
             <div class="mx-2.5">
                 <DataTable
-                    :filters="filters_role"
-                    :selection="selectedRoleListData"
+                    v-model::filters="filters_role"
+                    v-model:selection="selectedRoleListData"
                     class="p-datatable-sm"
                     :value="roleListData"
                     showGridlines
@@ -232,8 +236,8 @@ onMounted(() => {
             </div>
             <div class="mx-2.5">
                 <DataTable
-                    :filters="filters_perm"
-                    :selection="selectedPermListData"
+                    v-model::filters="filters_perm"
+                    v-model:selection="selectedPermListData"
                     class="p-datatable-sm"
                     :value="permListData"
                     showGridlines

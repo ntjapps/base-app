@@ -46,7 +46,7 @@ const theme = ref<DialogPassThroughOptions>({
     headerActions: `flex items-center gap-2`,
     content: `overflow-y-auto pt-0 px-5 pb-5 p-maximized:grow`,
     footer: `shrink-0 pt-0 px-5 pb-5 flex justify-end gap-2`,
-    mask: `p-modal:bg-black/50 p-modal:fixed p-modal:top-0 p-modal:start-0 p-modal:w-full p-modal:h-full`,
+    mask: `bg-black/50 fixed top-0 start-0 w-full h-full`,
     transition: {
         enterFromClass: 'opacity-0 scale-75',
         enterActiveClass: 'transition-all duration-150 ease-[cubic-bezier(0,0,0.2,1)]',

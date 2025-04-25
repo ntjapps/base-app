@@ -2,7 +2,7 @@
     "customizations": {
         "codespaces": {
             "repositories": {
-                "ntjapps/stack-config": {
+                "nathanaelytj/stack-config": {
                     "permissions": "read-all"
                 }
             }

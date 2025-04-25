@@ -13,7 +13,7 @@ importers:
         version: 9.25.1
       '@nuxt/ui':
         specifier: ^3.0.2
-        version: 3.0.2(@babel/parser@7.27.0)(axios@1.8.4)(embla-carousel@8.6.0)(typescript@5.8.3)(vite@6.3.2(@types/node@22.10.1)(jiti@2.4.2)(lightningcss@1.29.2)(sass@1.87.0)(terser@5.36.0)(yaml@2.7.0))
+        version: 3.0.2(@babel/parser@7.27.0)(axios@1.9.0)(embla-carousel@8.6.0)(typescript@5.8.3)(vite@6.3.2(@types/node@22.10.1)(jiti@2.4.2)(lightningcss@1.29.2)(sass@1.87.0)(terser@5.36.0)(yaml@2.7.0))
       '@primevue/core':
         specifier: ^4.3.3
         version: 4.3.3(vue@3.5.13(typescript@5.8.3))
@@ -36,8 +36,8 @@ importers:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.3)
       axios:
-        specifier: ^1.8.4
-        version: 1.8.4
+        specifier: ^1.9.0
+        version: 1.9.0
       concurrently:
         specifier: ^9.1.2
         version: 9.1.2
@@ -1090,8 +1090,8 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
 
-  axios@1.8.4:
-    resolution: {integrity: sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==}
+  axios@1.9.0:
+    resolution: {integrity: sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -3000,7 +3000,7 @@ snapshots:
       pathe: 2.0.3
       std-env: 3.9.0
 
-  '@nuxt/ui@3.0.2(@babel/parser@7.27.0)(axios@1.8.4)(embla-carousel@8.6.0)(typescript@5.8.3)(vite@6.3.2(@types/node@22.10.1)(jiti@2.4.2)(lightningcss@1.29.2)(sass@1.87.0)(terser@5.36.0)(yaml@2.7.0))':
+  '@nuxt/ui@3.0.2(@babel/parser@7.27.0)(axios@1.9.0)(embla-carousel@8.6.0)(typescript@5.8.3)(vite@6.3.2(@types/node@22.10.1)(jiti@2.4.2)(lightningcss@1.29.2)(sass@1.87.0)(terser@5.36.0)(yaml@2.7.0))':
     dependencies:
       '@iconify/vue': 4.3.0(vue@3.5.13(typescript@5.8.3))
       '@internationalized/date': 3.8.0
@@ -3016,7 +3016,7 @@ snapshots:
       '@tanstack/vue-table': 8.21.3(vue@3.5.13(typescript@5.8.3))
       '@unhead/vue': 2.0.8(vue@3.5.13(typescript@5.8.3))
       '@vueuse/core': 13.1.0(vue@3.5.13(typescript@5.8.3))
-      '@vueuse/integrations': 13.1.0(axios@1.8.4)(fuse.js@7.1.0)(vue@3.5.13(typescript@5.8.3))
+      '@vueuse/integrations': 13.1.0(axios@1.9.0)(fuse.js@7.1.0)(vue@3.5.13(typescript@5.8.3))
       colortranslator: 4.1.0
       consola: 3.4.2
       defu: 6.1.4
@@ -3580,13 +3580,13 @@ snapshots:
       '@vueuse/shared': 13.1.0(vue@3.5.13(typescript@5.8.3))
       vue: 3.5.13(typescript@5.8.3)
 
-  '@vueuse/integrations@13.1.0(axios@1.8.4)(fuse.js@7.1.0)(vue@3.5.13(typescript@5.8.3))':
+  '@vueuse/integrations@13.1.0(axios@1.9.0)(fuse.js@7.1.0)(vue@3.5.13(typescript@5.8.3))':
     dependencies:
       '@vueuse/core': 13.1.0(vue@3.5.13(typescript@5.8.3))
       '@vueuse/shared': 13.1.0(vue@3.5.13(typescript@5.8.3))
       vue: 3.5.13(typescript@5.8.3)
     optionalDependencies:
-      axios: 1.8.4
+      axios: 1.9.0
       fuse.js: 7.1.0
 
   '@vueuse/metadata@10.11.1': {}
@@ -3656,7 +3656,7 @@ snapshots:
       postcss: 8.5.3
       postcss-value-parser: 4.2.0
 
-  axios@1.8.4:
+  axios@1.9.0:
     dependencies:
       follow-redirects: 1.15.9
       form-data: 4.0.2

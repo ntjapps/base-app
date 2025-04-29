@@ -7,7 +7,7 @@ import CmpMobileMenu from '../Components/CmpMobileMenu.vue';
 
 <template>
     <div class="flex flex-row w-full min-h-screen">
-        <div class="md:flex hidden flex-grow-0 min-h-full w-1/6 bg-surface-200">
+        <div class="md:flex hidden flex-grow-0 min-h-full w-fit bg-surface-200">
             <CmpMenu />
         </div>
         <div class="flex md:hidden">

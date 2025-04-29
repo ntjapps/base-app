@@ -120,7 +120,9 @@ class AppServiceProvider extends ServiceProvider
 
         /** Registering Rate Limits */
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(600)->by($request->user()?->id ?: $request->ip());
+            return $request->user()?->id !== null
+                ? Limit::perMinute(1200)->by($request->ip())
+                : Limit::perMinute(600)->by($request->ip());
         });
     }
 }

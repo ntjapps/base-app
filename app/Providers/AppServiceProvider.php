@@ -107,6 +107,10 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MigrationsEnded::class, MigrationEventListener::class);
         Event::listen(MigrationEnded::class, MigrationEventListener::class);
 
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('laravelpassport', \SocialiteProviders\LaravelPassport\Provider::class);
+        });
+
         /** Registering Observers */
         PermissionPrivilege::observe(PermissionPrivilegeObserver::class);
         PermissionMenu::observe(PermissionMenuObserver::class);

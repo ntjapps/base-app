@@ -28,7 +28,7 @@ class AuthController extends Controller
     public function loginPage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('Computer access login page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('Computer access login page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         return view('base-components.base', [
             'pageTitle' => 'Login',
@@ -42,7 +42,7 @@ class AuthController extends Controller
     public function postLogout(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('User logging out', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Call common logout function */
         $this->checkAuthLogout($request);
@@ -61,7 +61,7 @@ class AuthController extends Controller
     public function getLogout(Request $request): RedirectResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('Computer Access Logout Request', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('Computer Access Logout Request', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Call common logout function */
         $this->checkAuthLogout($request);
@@ -76,7 +76,7 @@ class AuthController extends Controller
     public function postLogin(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('Computer access post login', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('Computer access post login', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Validate request */
         $validate = Validator::make($request->all(), [
@@ -92,23 +92,23 @@ class AuthController extends Controller
         $validatedLog = $validated;
         unset($validatedLog['password']);
         unset($validatedLog['token']);
-        Log::info('Username logging in validation', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
+        Log::info('Username logging in validation', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** If user not found or password false return failed */
         if (is_null($user = $this->checkAuthUser($validated))) {
-            Log::warning('Username failed to login', ['username' => $validated['username'], 'route' => $request->route()->getName()]);
+            Log::warning('Username failed to login', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
             throw ValidationException::withMessages([
                 'username' => 'Username or password is incorrect',
             ]);
         }
 
-        Log::info('Username logging in', ['username' => $validated['username'], 'route' => $request->route()->getName()]);
+        Log::info('Username logging in', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Now login with custom auth */
         Auth::login($user);
         $request->session()->regenerate();
 
-        Log::notice('User logged in', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::notice('User logged in', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Send user to dashboard */
         (string) $title = __('app.login.title');
@@ -124,7 +124,7 @@ class AuthController extends Controller
     public function postToken(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('Computer access post token', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('Computer access post token', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Validate request */
         $validate = Validator::make($request->all(), [
@@ -143,23 +143,23 @@ class AuthController extends Controller
 
         $validatedLog = $validated;
         unset($validatedLog['password']);
-        Log::info('Username getting token validation', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
+        Log::info('Username getting token validation', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         /** If user not found or password false return failed */
         if (is_null($user = $this->checkAuthUser($validated))) {
-            Log::warning('Username failed to login', ['username' => $validated['username'], 'route' => $request->route()->getName()]);
+            Log::warning('Username failed to login', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
             throw ValidationException::withMessages([
                 'username' => 'Username or password is incorrect',
             ]);
         }
 
-        Log::info('Username getting token', ['username' => $validated['username'], 'route' => $request->route()->getName()]);
+        Log::info('Username getting token', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Generate user API Token */
         (string) $token = $user->createToken($validated['device_name'])->accessToken;
         (string) $expire = InterfaceClass::getPassportTokenLifetime()->toDateTimeString();
 
-        Log::notice('Username got token', ['username' => $validated['username'], 'route' => $request->route()->getName()]);
+        Log::notice('Username got token', ['username' => $validated['username'], 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         return response()->json([
             'status' => 'success',
@@ -177,12 +177,12 @@ class AuthController extends Controller
     public function postTokenRevoke(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::info('Username revoking token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'route' => $request->route()->getName()]);
+        Log::info('Username revoking token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Match bearer token with access token */
         $request->user()->token()->revoke();
 
-        Log::notice('Username revoked token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'route' => $request->route()->getName()]);
+        Log::notice('Username revoked token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         return response()->json([
             'status' => 'success',

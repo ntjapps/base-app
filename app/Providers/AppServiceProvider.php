@@ -18,15 +18,18 @@ use App\Observers\PermissionMenuObserver;
 use App\Observers\PermissionPrivilegeObserver;
 use App\Policies\UserPolicy;
 use Carbon\Carbon;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\MigrationEnded;
 use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Database\Events\MigrationStarted;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use Laravel\Telescope\Telescope;
@@ -116,5 +119,8 @@ class AppServiceProvider extends ServiceProvider
         PermissionMenu::observe(PermissionMenuObserver::class);
 
         /** Registering Rate Limits */
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(600)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

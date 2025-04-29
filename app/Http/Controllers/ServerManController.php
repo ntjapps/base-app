@@ -27,7 +27,7 @@ class ServerManController extends Controller
     public function serverLogs(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         return view('base-components.base', [
             'pageTitle' => 'Server Logs',
@@ -76,7 +76,7 @@ class ServerManController extends Controller
     public function postClearAppCache(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User clear app cache', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('User clear app cache', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Clear Cache */
         Cache::flush();

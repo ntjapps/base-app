@@ -24,7 +24,7 @@ class ProfileController extends Controller
     public function profilePage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         return view('base-components.base', [
             'pageTitle' => 'Profile',
@@ -38,7 +38,7 @@ class ProfileController extends Controller
     public function updateProfile(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User updating profile', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::debug('User updating profile', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string'],
@@ -53,7 +53,7 @@ class ProfileController extends Controller
         $validatedLog = $validated;
         unset($validatedLog['password']);
         unset($validatedLog['password_confirmation']);
-        Log::info('User updating profile validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
+        Log::info('User updating profile validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'validated' => json_encode($validatedLog)]);
 
         $user->name = $validated['name'];
         if (isset($validated['password'])) {
@@ -63,7 +63,7 @@ class ProfileController extends Controller
         /** @disregard P1013 Auth facade fetch user model */
         $user->save();
 
-        Log::notice('User updated profile', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName()]);
+        Log::notice('User updated profile', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Successful Update Profile */
         (string) $title = __('app.profile.update.title');

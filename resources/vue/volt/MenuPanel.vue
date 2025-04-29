@@ -1,5 +1,5 @@
 <template>
-    <div :class="theme.root + ' ' + theme.transition">
+    <div :class="theme.root">
         <Accordion :value="expandedKeysValue">
             <div v-for="(item, index) in model" :key="index">
                 <transition
@@ -9,7 +9,7 @@
                     :leave-active-class="theme.transition.leaveActiveClass"
                     :leave-to-class="theme.transition.leaveToClass"
                 >
-                    <AccordionPanel :value="item.key ?? index">
+                    <AccordionPanel :value="item.key ?? index" class="pb-2.5">
                         <AccordionHeader>{{ item.label }}</AccordionHeader>
                         <AccordionContent
                             v-for="(subItem, subIndex) in item.items"

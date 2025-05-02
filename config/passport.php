@@ -32,16 +32,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Client UUIDs
+    | Passport Database Connection
     |--------------------------------------------------------------------------
     |
-    | By default, Passport uses auto-incrementing primary keys when assigning
-    | IDs to clients. However, if Passport is installed using the provided
-    | --uuids switch, this will be set to "true" and UUIDs will be used.
+    | By default, Passport's models will utilize your application's default
+    | database connection. If you wish to use a different connection you
+    | may specify the configured name of the database connection here.
     |
     */
 
-    'client_uuids' => true,
+    'connection' => env('PASSPORT_CONNECTION'),
 
     /*
     |--------------------------------------------------------------------------

@@ -5,11 +5,6 @@ namespace App\Providers;
 use App\Interfaces\InterfaceClass;
 use App\Listeners\MigrationEventListener;
 use App\Listeners\MigrationStartListener;
-use App\Models\PassportAuthCode;
-use App\Models\PassportClient;
-use App\Models\PassportPersonalAccessClient;
-use App\Models\PassportRefreshToken;
-use App\Models\PassportToken;
 use App\Models\Permission;
 use App\Models\PermissionMenu;
 use App\Models\PermissionPrivilege;
@@ -86,16 +81,11 @@ class AppServiceProvider extends ServiceProvider
          * Passport Configuration
          */
         Passport::cookie('api_token_cookie');
-        Passport::hashClientSecrets();
         Passport::tokensExpireIn(InterfaceClass::getPassportAuthTokenLifetime());
         Passport::refreshTokensExpireIn(InterfaceClass::getPassportRefreshTokenLifetime());
         Passport::personalAccessTokensExpireIn(InterfaceClass::getPassportTokenLifetime());
 
-        Passport::useTokenModel(PassportToken::class);
-        Passport::useRefreshTokenModel(PassportRefreshToken::class);
-        Passport::useAuthCodeModel(PassportAuthCode::class);
-        Passport::useClientModel(PassportClient::class);
-        Passport::usePersonalAccessClientModel(PassportPersonalAccessClient::class);
+        Passport::useClientModel(\App\Models\Passport\Client::class);
 
         Passport::tokensCan([
             'rabbitmq' => 'Rabbitmq Access API for Queue Callbacks',

@@ -66,8 +66,10 @@ class AppServiceProvider extends ServiceProvider
          * This works in the app by using gate-related functions like auth()->user->can() and @can()
          **/
         Gate::after(function (User $user) {
-            $permission = Cache::remember(Permission::class.'-ability-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
-                return Permission::where('name', InterfaceClass::SUPER)->first();
+            $permission = Cache::remember(Permission::class.'-abilityType-'.PermissionPrivilege::class.'-ability-'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
+                return Permission::whereHas('ability', function ($query) {
+                    $query->where('title', InterfaceClass::SUPER);
+                })->where('ability_type', (string) PermissionPrivilege::class)->first();
             });
 
             $hasPermissionToCache = Cache::remember(Permission::class.'-hasPermissionTo-'.$permission->id.'-user-'.$user->id, Carbon::now()->addYear(), function () use ($user, $permission) {

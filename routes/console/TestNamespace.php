@@ -65,3 +65,11 @@ Artisan::command('test:notification {username}', function () {
 
     Log::alert('Console test:notification executed', ['username' => $this->argument('username')]);
 })->purpose('Test Notification');
+
+Artisan::command('test:log', function () {
+    Log::channel('database')->alert('Console test:log executed', ['appName' => config('app.name')]);
+    Log::alert('Console test:log executed', ['appName' => config('app.name')]);
+
+    $this->info('Log test executed');
+    $this->info('Log test executed in database channel');
+})->purpose('Test Log');

@@ -1566,16 +1566,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.14.1",
+            "version": "v12.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "84b142958d1638a7e89de94ce75c2821c601d3d7"
+                "reference": "2ef7fb183f18e547af4eb9f5a55b2ac1011f0b77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/84b142958d1638a7e89de94ce75c2821c601d3d7",
-                "reference": "84b142958d1638a7e89de94ce75c2821c601d3d7",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/2ef7fb183f18e547af4eb9f5a55b2ac1011f0b77",
+                "reference": "2ef7fb183f18e547af4eb9f5a55b2ac1011f0b77",
                 "shasum": ""
             },
             "require": {
@@ -1777,20 +1777,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-05-13T17:50:51+00:00"
+            "time": "2025-05-20T15:10:44+00:00"
         },
         {
             "name": "laravel/octane",
-            "version": "v2.9.2",
+            "version": "v2.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/octane.git",
-                "reference": "c9ea063a705411019f67501655c0f82960bd6822"
+                "reference": "8278bdb3ae7a9a7380841e18e9cf52d909502647"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/octane/zipball/c9ea063a705411019f67501655c0f82960bd6822",
-                "reference": "c9ea063a705411019f67501655c0f82960bd6822",
+                "url": "https://api.github.com/repos/laravel/octane/zipball/8278bdb3ae7a9a7380841e18e9cf52d909502647",
+                "reference": "8278bdb3ae7a9a7380841e18e9cf52d909502647",
                 "shasum": ""
             },
             "require": {
@@ -1867,7 +1867,7 @@
                 "issues": "https://github.com/laravel/octane/issues",
                 "source": "https://github.com/laravel/octane"
             },
-            "time": "2025-05-05T01:48:18+00:00"
+            "time": "2025-05-14T14:05:50+00:00"
         },
         {
             "name": "laravel/passport",
@@ -6424,16 +6424,16 @@
         },
         {
             "name": "spatie/laravel-health",
-            "version": "1.34.1",
+            "version": "1.34.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-health.git",
-                "reference": "283d7d5dffeeff6452c9a182f466c327fec6db3b"
+                "reference": "e7d9d6e0807a9de46f544c76d54badc19af36ddc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-health/zipball/283d7d5dffeeff6452c9a182f466c327fec6db3b",
-                "reference": "283d7d5dffeeff6452c9a182f466c327fec6db3b",
+                "url": "https://api.github.com/repos/spatie/laravel-health/zipball/e7d9d6e0807a9de46f544c76d54badc19af36ddc",
+                "reference": "e7d9d6e0807a9de46f544c76d54badc19af36ddc",
                 "shasum": ""
             },
             "require": {
@@ -6505,7 +6505,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-health/tree/1.34.1"
+                "source": "https://github.com/spatie/laravel-health/tree/1.34.2"
             },
             "funding": [
                 {
@@ -6513,7 +6513,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-17T06:34:01+00:00"
+            "time": "2025-05-20T08:31:02+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
@@ -6578,16 +6578,16 @@
         },
         {
             "name": "spatie/laravel-permission",
-            "version": "6.17.0",
+            "version": "6.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-permission.git",
-                "reference": "02ada8f638b643713fa2fb543384738e27346ddb"
+                "reference": "3c05f04d12275dfbe462c8b4aae3290e586c2dde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/02ada8f638b643713fa2fb543384738e27346ddb",
-                "reference": "02ada8f638b643713fa2fb543384738e27346ddb",
+                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/3c05f04d12275dfbe462c8b4aae3290e586c2dde",
+                "reference": "3c05f04d12275dfbe462c8b4aae3290e586c2dde",
                 "shasum": ""
             },
             "require": {
@@ -6649,7 +6649,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-permission/issues",
-                "source": "https://github.com/spatie/laravel-permission/tree/6.17.0"
+                "source": "https://github.com/spatie/laravel-permission/tree/6.18.0"
             },
             "funding": [
                 {
@@ -6657,7 +6657,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-08T15:06:14+00:00"
+            "time": "2025-05-14T03:32:23+00:00"
         },
         {
             "name": "spatie/regex",

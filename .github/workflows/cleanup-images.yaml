@@ -17,7 +17,7 @@ jobs:
       packages: write
     steps:
       - name: Set IMAGE_NAME variable
-        run: echo "IMAGE_NAME=${{ github.repository }}" >> $GITHUB_ENV
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
 
       - name: Delete untagged container images (keep last 20)
         uses: actions/delete-package-versions@v5

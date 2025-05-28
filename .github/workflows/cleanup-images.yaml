@@ -1,6 +1,11 @@
 name: Clean up containers and images
 
 on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '**'
   workflow_dispatch:
 
 jobs:
@@ -10,12 +15,26 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     steps:
-      - name: Delete all containers from package without tags
+      - name: Set IMAGE_NAME variable
+        run: echo "IMAGE_NAME=${{ github.repository }}" >> $GITHUB_ENV
+
+      - name: Delete untagged container images (keep last 20)
         uses: actions/delete-package-versions@v5
         with:
-          package-name: ${{ vars.IMAGE_NAME }}
+          package-name: ${{ env.IMAGE_NAME }}
           package-type: container
           min-versions-to-keep: 20
           delete-only-untagged-versions: true
+
+      - name: Delete old tagged container images (keep last 50)
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ env.IMAGE_NAME }}
+          package-type: container
+          min-versions-to-keep: 50
+          delete-only-untagged-versions: false
+          ignore-versions: |
+            latest
+            staging
+            production

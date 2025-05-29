@@ -17,7 +17,7 @@
         "@primevue/core": "^4.3.4",
         "@primevue/icons": "^4.3.4",
         "@sentry/vue": "^9.22.0",
-        "@tailwindcss/vite": "^4.1.7",
+        "@tailwindcss/vite": "^4.1.8",
         "@unhead/vue": "^2.0.10",
         "@vitejs/plugin-vue": "^5.2.4",
         "autoprefixer": "^10.4.21",

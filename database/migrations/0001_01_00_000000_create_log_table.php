@@ -19,8 +19,8 @@ return new class extends Migration
                 $table->unsignedSmallInteger('level')->default(0);
                 $table->string('level_name', 20);
                 $table->string('datetime');
-                $table->json('context');
-                $table->json('extra');
+                $table->text('context');
+                $table->text('extra');
                 $table->timestamps();
             });
         }

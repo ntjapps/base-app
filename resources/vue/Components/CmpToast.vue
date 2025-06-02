@@ -14,6 +14,7 @@ type toastData = {
     detail: string | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     response?: AxiosResponse<any, any> | any;
+    icon?: string | undefined;
 };
 
 const toastDisplay = (detailData: toastData) => {
@@ -25,6 +26,7 @@ const toastDisplay = (detailData: toastData) => {
                 color: 'error',
                 title: 'Unknown Error',
                 description: 'Please contact the administrator',
+                icon: 'i-lucide-ban',
             });
         } else {
             if (error.response.status === 500) {
@@ -32,24 +34,28 @@ const toastDisplay = (detailData: toastData) => {
                     color: 'error',
                     title: 'Server Error',
                     description: 'Please contact the administrator',
+                    icon: 'i-lucide-ban',
                 });
             } else if (error.response.status === 401) {
                 toast.add({
                     color: 'error',
                     title: 'Unauthorized',
                     description: 'Action not authorized.',
+                    icon: 'i-lucide-ban',
                 });
             } else if (error.response.status === 403) {
                 toast.add({
                     color: 'error',
                     title: 'Forbidden',
                     description: 'Access denied.',
+                    icon: 'i-lucide-ban',
                 });
             } else if (error.response.status === 404) {
                 toast.add({
                     color: 'error',
                     title: 'Not Found',
                     description: 'Resource not found.',
+                    icon: 'i-lucide-ban',
                 });
             } else if (error.response.data.errors === undefined) {
                 toast.add({
@@ -57,6 +63,7 @@ const toastDisplay = (detailData: toastData) => {
                     title: 'Unknown Error',
                     description:
                         'Please contact the administrator, status code: ' + error.response.status,
+                    icon: 'i-lucide-ban',
                 });
             } else {
                 Object.values(error.response.data.errors).forEach((value) => {
@@ -65,6 +72,7 @@ const toastDisplay = (detailData: toastData) => {
                         color: 'error',
                         title: error.response.data.message,
                         description: objVal.toString(),
+                        icon: 'i-lucide-ban',
                     });
                 });
             }
@@ -74,6 +82,7 @@ const toastDisplay = (detailData: toastData) => {
             color: detailData.severity,
             title: detailData.title,
             description: detailData.detail,
+            icon: 'i-lucide-bell-ring'
         });
     }
 };

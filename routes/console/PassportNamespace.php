@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\PassportClient;
-use App\Models\PassportPersonalAccessClient;
+use App\Models\Passport\Client;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -9,13 +8,14 @@ use Illuminate\Support\Str;
 use Laravel\Passport\ClientRepository;
 
 Artisan::command('passport:client:list', function () {
-    $clients = PassportClient::all();
-    $this->table(['ID', 'Name', 'Redirect', 'Personal Access Client', 'Password Client', 'Revoked', 'Created At', 'Updated At'], $clients->map(function ($client) {
+    $clients = Client::all();
+    $this->table([
+        'ID', 'Name', 'Redirect', 'Password Client', 'Revoked', 'Created At', 'Updated At'
+    ], $clients->map(function ($client) {
         return [
             $client->id,
             $client->name,
             $client->redirect,
-            PassportPersonalAccessClient::where('client_id', $client->id)->exists() ? 'Yes' : 'No',
             $client->password_client ? 'Yes' : 'No',
             $client->revoked ? 'Yes' : 'No',
             $client->created_at,
@@ -26,7 +26,7 @@ Artisan::command('passport:client:list', function () {
 })->purpose('List passport clients');
 
 Artisan::command('passport:client:revoke {id}', function () {
-    $client = PassportClient::where('id', $this->argument('id'))->first();
+    $client = Client::where('id', $this->argument('id'))->first();
     if ($client !== null) {
         $client->revoked = true;
         $client->save();
@@ -38,7 +38,7 @@ Artisan::command('passport:client:revoke {id}', function () {
 })->purpose('Revoke passport client');
 
 Artisan::command('passport:client:unrevoke {id}', function () {
-    $client = PassportClient::where('id', $this->argument('id'))->first();
+    $client = Client::where('id', $this->argument('id'))->first();
     if ($client !== null) {
         $client->revoked = false;
         $client->save();
@@ -50,7 +50,7 @@ Artisan::command('passport:client:unrevoke {id}', function () {
 })->purpose('Unrevoke passport client');
 
 Artisan::command('passport:client:delete {id}', function () {
-    $client = PassportClient::where('id', $this->argument('id'))->first();
+    $client = Client::where('id', $this->argument('id'))->first();
     if ($client !== null) {
         $client->delete();
         $this->info('Client deleted');
@@ -63,30 +63,21 @@ Artisan::command('passport:client:delete {id}', function () {
 Artisan::command('passport:client:env', function () {
     if (config('passport.personal_access_client.id') === null) {
         $this->error('Please set PASSPORT_PERSONAL_ACCESS_CLIENT_ID in .env');
-
         return;
     }
 
-    $passportClient = PassportClient::where('name', 'Personal Access Client Env')->first();
-    if (! is_null($passportClient)) {
-        PassportPersonalAccessClient::where('client_id', $passportClient->id)->delete();
-        $passportClient->delete();
+    $Client = Client::where('name', 'Personal Access Client Env')->first();
+    if (! is_null($Client)) {
+        $Client->delete();
     }
 
     $client = collect();
 
     DB::transaction(function () use (&$client) {
-        $client = (new ClientRepository)->createPersonalAccessClient(null, 'Personal Access Client Env', 'http://localhost');
-
-        PassportPersonalAccessClient::where('client_id', $client->id)->delete();
-
+        $client = (new ClientRepository)->createPersonalAccessGrantClient('Personal Access Client Env');
         $client->id = config('passport.personal_access_client.id');
         $client->secret = config('passport.personal_access_client.secret', Str::random(40));
         $client->save();
-
-        PassportPersonalAccessClient::create([
-            'client_id' => $client->id,
-        ]);
     });
 
     $this->info('Client id: '.$client?->id);
@@ -99,21 +90,18 @@ Artisan::command('passport:client:env', function () {
 Artisan::command('passport:client:grant:env', function () {
     if (config('passport.client_credentials_grant_client.id') === null) {
         $this->error('Please set PASSPORT_CLIENT_CREDENTIALS_GRANT_CLIENT_ID in .env');
-
         return;
     }
 
-    $passportClient = PassportClient::where('name', 'Client Credentials Client Env')->first();
-    if (! is_null($passportClient)) {
-        PassportPersonalAccessClient::where('client_id', $passportClient->id)->delete();
-        $passportClient->delete();
+    $Client = Client::where('name', 'Client Credentials Client Env')->first();
+    if (! is_null($Client)) {
+        $Client->delete();
     }
 
     $client = collect();
 
     DB::transaction(function () use (&$client) {
-        $client = (new ClientRepository)->create(null, 'Client Credentials Client Env', '');
-
+        $client = (new ClientRepository)->createClientCredentialsGrantClient('Client Credentials Client Env');
         $client->id = config('passport.client_credentials_grant_client.id');
         $client->secret = config('passport.client_credentials_grant_client.secret', Str::random(40));
         $client->save();
@@ -129,21 +117,18 @@ Artisan::command('passport:client:grant:env', function () {
 Artisan::command('passport:client:rabbitmq:env', function () {
     if (config('passport.client_credentials_rabbitmq_client.id') === null) {
         $this->error('Please set RABBITMQ_CLIENT_CREDENTIALS_CLIENT_ID in .env');
-
         return;
     }
 
-    $passportClient = PassportClient::where('name', 'Rabbitmq Client Env')->first();
-    if (! is_null($passportClient)) {
-        PassportPersonalAccessClient::where('client_id', $passportClient->id)->delete();
-        $passportClient->delete();
+    $Client = Client::where('name', 'Rabbitmq Client Env')->first();
+    if (! is_null($Client)) {
+        $Client->delete();
     }
 
     $client = collect();
 
     DB::transaction(function () use (&$client) {
-        $client = (new ClientRepository)->create(null, 'Rabbitmq Client Env', '');
-
+        $client = (new ClientRepository)->createClientCredentialsGrantClient('Rabbitmq Client Env');
         $client->id = config('passport.client_credentials_rabbitmq_client.id');
         $client->secret = config('passport.client_credentials_rabbitmq_client.secret', Str::random(40));
         $client->save();

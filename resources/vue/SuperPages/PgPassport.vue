@@ -165,37 +165,16 @@ onMounted(() => {
                         />
                     </template>
                 </Column>
-                <Column field="redirect" header="Redirect URL" class="text-sm text-left" />
-                <Column
-                    field="personal_access_client"
-                    header="Personal Access Client"
-                    class="text-sm"
-                >
-                    <template #body="slotProps">
-                        <div class="text-center">
-                            <UButton
-                                v-if="slotProps.data.personal_access_client"
-                                size="xl"
-                                color="success"
-                                label="Yes"
-                            />
-                            <UButton v-else size="xl" color="error" label="No" />
-                        </div>
-                    </template>
-                </Column>
-                <Column field="redirect" header="Client Grant" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">
-                            <UButton
-                                v-if="checkClientGrant(slotProps.data.redirect)"
-                                size="xl"
-                                color="success"
-                                label="Yes"
-                            />
-                            <UButton v-else size="xl" color="error" label="No" />
-                        </div>
-                    </template>
-                </Column>
+                    <Column field="redirect" header="Redirect URL" class="text-sm text-left" />
+                    <Column field="grant_types" header="Grant Types" class="text-sm">
+                        <template #body="slotProps">
+                            <div class="flex flex-wrap gap-1 justify-center">
+                                <span v-for="type in slotProps.data.grant_types" :key="type" class="px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs">
+                                    {{ type }}
+                                </span>
+                            </div>
+                        </template>
+                    </Column>
                 <Column field="revoked" header="Revoked" class="text-sm">
                     <template #body="slotProps">
                         <div class="text-center">

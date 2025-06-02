@@ -4,9 +4,6 @@
 
 /** PrimeVue */
 @import 'primeicons/primeicons.css';
-@plugin "daisyui" {
-    themes: false;
-}
 @plugin "tailwindcss-primeui";
 
 /* Primary and Surface Palettes */

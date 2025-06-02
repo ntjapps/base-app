@@ -10,6 +10,7 @@ import CmpToast from '../Components/CmpToast.vue';
 
 import InputText from '../volt/InputText.vue';
 import Password from '../volt/Password.vue';
+import LoginSpinner from '../volt/LoginSpinner.vue';
 
 const web = useWebStore();
 const webapi = useWebApiStore();
@@ -115,7 +116,7 @@ onBeforeUpdate(() => {
                 <div v-show="loading" class="bg-surface-200 rounded-lg drop-shadow-lg">
                     <div class="m-auto p-5">
                         <div class="text-center font-bold my-2.5">
-                            <span class="loading loading-bars loading-xl" />
+                            <LoginSpinner />
                         </div>
                         <div class="text-center font-bold my-2.5">Loading</div>
                     </div>

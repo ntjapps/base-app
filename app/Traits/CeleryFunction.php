@@ -96,14 +96,6 @@ trait CeleryFunction
 
         /** Send to RabbitMQ */
         $channel->basic_publish($message, 'celery', $queue);
-
-        Log::info('Celery task sent', [
-            'task' => $task,
-            'args' => $args,
-            'queue' => $queue,
-            'id' => $id,
-        ]);
-
         $channel->close();
         $connection->close();
 

@@ -82,7 +82,7 @@ const toastDisplay = (detailData: toastData) => {
             color: detailData.severity,
             title: detailData.title,
             description: detailData.detail,
-            icon: 'i-lucide-bell-ring'
+            icon: 'i-lucide-bell-ring',
         });
     }
 };

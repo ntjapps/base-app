@@ -10,7 +10,7 @@ use Laravel\Passport\ClientRepository;
 Artisan::command('passport:client:list', function () {
     $clients = Client::all();
     $this->table([
-        'ID', 'Name', 'Redirect', 'Password Client', 'Revoked', 'Created At', 'Updated At'
+        'ID', 'Name', 'Redirect', 'Password Client', 'Revoked', 'Created At', 'Updated At',
     ], $clients->map(function ($client) {
         return [
             $client->id,
@@ -63,6 +63,7 @@ Artisan::command('passport:client:delete {id}', function () {
 Artisan::command('passport:client:env', function () {
     if (config('passport.personal_access_client.id') === null) {
         $this->error('Please set PASSPORT_PERSONAL_ACCESS_CLIENT_ID in .env');
+
         return;
     }
 
@@ -90,6 +91,7 @@ Artisan::command('passport:client:env', function () {
 Artisan::command('passport:client:grant:env', function () {
     if (config('passport.client_credentials_grant_client.id') === null) {
         $this->error('Please set PASSPORT_CLIENT_CREDENTIALS_GRANT_CLIENT_ID in .env');
+
         return;
     }
 
@@ -117,6 +119,7 @@ Artisan::command('passport:client:grant:env', function () {
 Artisan::command('passport:client:rabbitmq:env', function () {
     if (config('passport.client_credentials_rabbitmq_client.id') === null) {
         $this->error('Please set RABBITMQ_CLIENT_CREDENTIALS_CLIENT_ID in .env');
+
         return;
     }
 

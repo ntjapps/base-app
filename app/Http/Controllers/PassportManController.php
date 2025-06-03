@@ -46,7 +46,7 @@ class PassportManController extends Controller
             return collect($client)->merge([
                 'is_personal_access' => in_array('personal_access', $client->grant_types ?? []),
                 'is_client_credentials' => in_array('client_credentials', $client->grant_types ?? []),
-                'allowed_action' => !in_array($client->id, [config('passport.personal_access_client.id'), config('passport.client_credentials_grant_client.id')]),
+                'allowed_action' => ! in_array($client->id, [config('passport.personal_access_client.id'), config('passport.client_credentials_grant_client.id')]),
             ]);
         });
 
@@ -163,7 +163,7 @@ class PassportManController extends Controller
         Log::notice('User create passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         $client = null;
-        $repo = new ClientRepository();
+        $repo = new ClientRepository;
         $grantTypes = $validated['grant_types'];
         $redirects = isset($validated['redirect']) ? [$validated['redirect']] : [];
 

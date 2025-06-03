@@ -52,14 +52,6 @@ const getClientListData = () => {
         });
 };
 
-const checkClientGrant = (data: string | null | undefined): boolean => {
-    if (data === '' || data === null || data === undefined) {
-        return true;
-    } else {
-        return false;
-    }
-};
-
 const dialogOpen = ref<boolean>(false);
 const dialogData = ref<ClientListDataInterface | null>(null);
 const dialogHeader = ref<string>('Create Client');

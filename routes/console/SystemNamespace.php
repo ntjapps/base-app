@@ -14,7 +14,6 @@ Artisan::command('system:refresh', function () {
     $this->call('passport:client:rabbitmq:env');
     $this->info('Passport client generated');
 
-    Redis::connection('horizon')->flushdb(); /** Horizon Database */
     Redis::connection('cache')->flushdb(); /** Cache Database */
     Redis::connection('cachejob')->flushdb(); /** Job Database */
     Cache::flush(); /** Cache */
@@ -67,7 +66,6 @@ Artisan::command('system:start', function () {
 
     $this->call('storage:link');
 
-    Redis::connection('horizon')->flushdb(); /** Horizon Database */
     Redis::connection('cache')->flushdb(); /** Cache Database */
     Redis::connection('cachejob')->flushdb(); /** Job Database */
     Cache::flush(); /** Cache */

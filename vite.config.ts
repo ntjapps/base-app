@@ -44,7 +44,7 @@ export default defineConfig({
             output: {
                 compact: true,
                 manualChunks: {
-                    vendor: ['vue', 'vue-router', 'axios', 'pinia', 'pusher-js', 'daisyui'],
+                    vendor: ['vue', 'vue-router', 'axios', 'pinia', 'pusher-js'],
                 },
             },
             external: ['fsevents'],

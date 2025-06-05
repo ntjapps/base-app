@@ -10,7 +10,7 @@ use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
-use Laravel\Passport\Http\Middleware\CheckClientCredentials;
+use Laravel\Passport\Http\Middleware\EnsureClientIsResourceOwner;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,7 +68,7 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
         });
     });
 
-    Route::middleware([CheckClientCredentials::class.':rabbitmq'])->prefix('rabbitmq')->group(function () {
+    Route::middleware([EnsureClientIsResourceOwner::class.':rabbitmq'])->prefix('rabbitmq')->group(function () {
         Route::post('/test-rabbitmq', function () {
             if (! app()->environment('local')) {
                 return response()->json(['status' => 'error', 'message' => 'This feature is only available in local environment.'], 403);

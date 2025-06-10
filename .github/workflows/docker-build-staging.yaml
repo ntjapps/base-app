@@ -50,7 +50,9 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
           build-args: |
-            BASE64ENV=${{ env.BASE64ENV }}
+            ENV_KEY=${{ secrets.ENV_KEY }}
+            APP_VERSION_HASH=${{ github.sha }}
+            ENV_TYPE=dev
 
       - name: Upload Docker Build Logs
         if: failure()

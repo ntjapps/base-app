@@ -83,7 +83,7 @@ onMounted(() => {
                 @closeDialog="getClientListData()"
             />
         </Dialog>
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg">
             <div class="flex flex-row">
                 <div class="flex flex-col w-full my-auto">
                     <h2 class="title-font font-bold">
@@ -104,7 +104,7 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+        <div class="my-3 mx-5 p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg">
             <DataTable
                 v-model:filters="filters"
                 class="p-datatable-sm editable-cells-table"

@@ -17,7 +17,7 @@ const toggleMenu = () => {
 
 <template>
     <div class="header-container">
-        <div class="bg-surface-300 py-2 md:py-3 px-2 md:px-5 flex flex-row">
+        <div class="bg-surface-300 dark:bg-surface-700 py-2 md:py-3 px-2 md:px-5 flex flex-row">
             <div class="flex flex-row w-full">
                 <div class="flex lg:hidden">
                     <UButton size="lg" color="primary" @click="toggleMenu">

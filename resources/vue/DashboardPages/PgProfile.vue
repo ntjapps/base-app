@@ -62,7 +62,7 @@ onMounted(() => {
     <CmpLayout>
         <CmpToast ref="toastchild" />
         <div
-            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 rounded-lg drop-shadow-lg w-full max-w-xl"
+            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg w-full max-w-xl"
         >
             <h3 class="title-font">Update profile in {{ appName }}</h3>
             <div class="mt-6 md:mt-10 mb-3 md:mb-5">

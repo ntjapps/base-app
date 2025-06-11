@@ -7,13 +7,13 @@ import CmpMobileMenu from '../Components/CmpMobileMenu.vue';
 
 <template>
     <div class="flex flex-row w-full min-h-screen">
-        <div class="lg:flex hidden flex-grow-0 min-h-full w-fit bg-surface-200">
+        <div class="lg:flex hidden flex-grow-0 min-h-full w-fit bg-surface-200 dark:bg-surface-800">
             <CmpMenu />
         </div>
         <div class="flex lg:hidden">
             <CmpMobileMenu />
         </div>
-        <div class="flex flex-col bg-surface-100 w-full">
+        <div class="flex flex-col bg-surface-100 dark:bg-surface-900 w-full">
             <CmpHeader />
             <div class="overflow-auto">
                 <slot />

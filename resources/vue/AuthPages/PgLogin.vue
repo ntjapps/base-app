@@ -69,11 +69,11 @@ onBeforeUpdate(() => {
 <template>
     <div>
         <CmpToast ref="toastchild" />
-        <div class="flex justify-center w-full min-h-screen bg-surface-100">
+        <div class="flex justify-center w-full min-h-screen bg-surface-100 dark:bg-surface-900">
             <div
                 class="flex justify-center w-full max-w-sm sm:max-w-md md:max-w-lg h-fit m-auto px-2 sm:px-0"
             >
-                <div v-show="!loading" class="bg-surface-200 rounded-lg drop-shadow-lg w-full">
+                <div v-show="!loading" class="bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg w-full">
                     <div class="m-auto p-4 sm:p-5">
                         <div class="text-center font-bold my-2.5">
                             {{ appName }}
@@ -115,7 +115,7 @@ onBeforeUpdate(() => {
                         </div>
                     </div>
                 </div>
-                <div v-show="loading" class="bg-surface-200 rounded-lg drop-shadow-lg w-full">
+                <div v-show="loading" class="bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg w-full">
                     <div class="m-auto p-4 sm:p-5">
                         <div class="text-center font-bold my-2.5">
                             <LoginSpinner />

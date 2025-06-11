@@ -25,7 +25,7 @@ interface Props extends /* @vue-ignore */ ListboxProps {}
 defineProps<Props>();
 
 const theme = ref<ListboxPassThroughOptions>({
-    root: `group bg-surface-0 dark:bg-surface-950 text-surface-700 dark:text-surface-0
+    root: `group bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0
         border border-surface-300 dark:border-surface-700 rounded-md
         p-disabled:bg-surface-200 p-disabled:text-surface-500 dark:p-disabled:bg-surface-700 dark:p-disabled:text-surface-400 p-disabled:pointer-events-none
         p-invalid:border-red-400 dark:p-invalid:border-red-300
@@ -36,7 +36,7 @@ const theme = ref<ListboxPassThroughOptions>({
     },
     pcFilter: {
         root: `w-full appearance-none rounded-md outline-hidden
-            bg-surface-0 dark:bg-surface-950
+            bg-surface-0 dark:bg-surface-900
             text-surface-700 dark:text-surface-0
             placeholder:text-surface-500 dark:placeholder:text-surface-400
             border border-surface-300 dark:border-surface-700

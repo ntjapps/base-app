@@ -246,17 +246,17 @@ const allowEditName = computed(() => {
                 />
             </div>
         </div>
-        <div class="flex w-full mt-2.5 justify-center">
+        <div class="flex w-full mt-2 justify-center flex-wrap gap-2">
             <UButton
                 size="xl"
-                class="m-2"
+                class="m-1 md:m-2"
                 color="error"
                 label="Delete"
                 @click="deleteClient(clientId)"
             />
             <UButton
                 size="xl"
-                class="m-2"
+                class="m-1 md:m-2"
                 color="warning"
                 label="Reset Secret"
                 @click="resetClient(clientId)"
@@ -264,7 +264,7 @@ const allowEditName = computed(() => {
             <UButton
                 v-if="!typeCreate"
                 size="xl"
-                class="m-2"
+                class="m-1 md:m-2"
                 color="success"
                 label="Update Client"
                 @click="updateClient(clientId)"
@@ -272,7 +272,7 @@ const allowEditName = computed(() => {
             <UButton
                 v-if="showCreateClient"
                 size="xl"
-                class="m-2"
+                class="m-1 md:m-2"
                 color="success"
                 label="Create Client"
                 @click="createClient"
@@ -280,7 +280,7 @@ const allowEditName = computed(() => {
             <UButton
                 v-if="!showCreateClient && typeCreate"
                 size="xl"
-                class="m-2"
+                class="m-1 md:m-2"
                 color="success"
                 label="Close & Refresh"
                 @click="closeDialogFunction"

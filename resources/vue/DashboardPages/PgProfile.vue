@@ -61,9 +61,11 @@ onMounted(() => {
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+        <div
+            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 rounded-lg drop-shadow-lg w-full max-w-xl"
+        >
             <h3 class="title-font">Update profile in {{ appName }}</h3>
-            <div class="mt-10 mb-5">
+            <div class="mt-6 md:mt-10 mb-3 md:mb-5">
                 <label for="name">Name</label>
                 <InputText
                     id="name"
@@ -73,7 +75,7 @@ onMounted(() => {
                     @keyup.enter="postProfileData"
                 />
             </div>
-            <div class="mt-10 mb-5">
+            <div class="mt-6 md:mt-10 mb-3 md:mb-5">
                 <label class="w-full" for="newpas">New Password</label>
                 <Password
                     id="newpassword"
@@ -88,7 +90,7 @@ onMounted(() => {
                     password</Message
                 >
             </div>
-            <div class="mt-10 mb-5">
+            <div class="mt-6 md:mt-10 mb-3 md:mb-5">
                 <label class="w-full" for="confi"
                     >Confirm Password (Must be filled if changing password, leave empty if don't
                     want to change password)</label

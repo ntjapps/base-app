@@ -94,20 +94,22 @@ onMounted(() => {
                 @closeDialog="getUserListData()"
             />
         </Dialog>
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
-            <div class="flex flex-row">
+        <div class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+            <div class="flex flex-col md:flex-row gap-2 md:gap-0">
                 <div class="flex flex-col w-full my-auto">
                     <h2 class="title-font font-bold">
                         {{ timeGreet + greetings }}
                     </h2>
                     <h3 class="title-font">User Role Management</h3>
                 </div>
-                <div class="flex justify-end w-full my-auto">
+                <div class="flex justify-end w-full my-auto mt-2 md:mt-0">
                     <UButton size="xl" label="Create User" @click="openEditUserDialog(null)" />
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+        <div
+            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 rounded-lg drop-shadow-lg overflow-x-auto"
+        >
             <DataTable
                 v-model:filters="filters"
                 class="p-datatable-sm editable-cells-table"
@@ -122,7 +124,7 @@ onMounted(() => {
                 filterDisplay="menu"
             >
                 <template #header>
-                    <div class="flex justify-between">
+                    <div class="flex flex-col sm:flex-row gap-2 justify-between">
                         <div class="flex w-full">
                             <InputText
                                 v-model="filters['global'].value"

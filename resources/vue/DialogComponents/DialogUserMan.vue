@@ -177,24 +177,25 @@ onMounted(() => {
 <template>
     <div>
         <CmpToast ref="toastchild" />
-        <div class="flex w-full mt-1">
-            <div class="w-28 my-auto text-sm">
+        <div class="flex w-full mt-1 flex-col sm:flex-row gap-1">
+            <div class="w-28 my-auto text-sm min-w-[7rem]">
+                <!-- min-w for label alignment on mobile -->
                 <span>Name:<span class="text-red-500 font-bold">*</span></span>
             </div>
             <div class="flex w-full text-sm">
                 <InputText v-model="nameData" class="w-full text-sm" />
             </div>
         </div>
-        <div class="flex w-full mt-1">
-            <div class="w-28 my-auto text-sm">
+        <div class="flex w-full mt-1 flex-col sm:flex-row gap-1">
+            <div class="w-28 my-auto text-sm min-w-[7rem]">
                 <span>Username:<span class="text-red-500 font-bold">*</span></span>
             </div>
             <div class="flex w-full text-sm">
                 <InputText v-model="usernameData" class="w-full text-sm" />
             </div>
         </div>
-        <div class="flex w-full justify-evenly mt-2.5">
-            <div class="mx-2.5">
+        <div class="flex w-full justify-evenly mt-2.5 flex-col md:flex-row gap-2 overflow-x-auto">
+            <div class="mx-0 md:mx-2.5 min-w-[250px]">
                 <DataTable
                     v-model:filters="filters_role"
                     v-model:selection="selectedRoleListData"
@@ -237,7 +238,7 @@ onMounted(() => {
                     </Column>
                 </DataTable>
             </div>
-            <div class="mx-2.5">
+            <div class="mx-0 md:mx-2.5 min-w-[250px]">
                 <DataTable
                     v-model:filters="filters_perm"
                     v-model:selection="selectedPermListData"
@@ -281,23 +282,23 @@ onMounted(() => {
                 </DataTable>
             </div>
         </div>
-        <div class="flex w-full mt-2.5 justify-center">
+        <div class="flex w-full mt-2.5 justify-center flex-wrap gap-2">
             <UButton
                 v-if="showDeleted"
                 size="xl"
                 color="error"
                 label="Delete"
-                class="m-2"
+                class="m-1 md:m-2"
                 @click="postDeleteUserManData()"
             />
             <UButton
                 size="xl"
                 severity="warning"
                 label="Reset Password"
-                class="m-2"
+                class="m-1 md:m-2"
                 @click="postResetPasswordUserMandata()"
             />
-            <UButton size="xl" label="Submit" class="m-2" @click="postUserManData()" />
+            <UButton size="xl" label="Submit" class="m-1 md:m-2" @click="postUserManData()" />
         </div>
     </div>
 </template>

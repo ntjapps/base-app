@@ -8,7 +8,7 @@ import CmpClearCacheButton from './CmpClearCacheButton.vue';
 const main = useMainStore();
 const { browserSuppport, menuVisible } = storeToRefs(main);
 
-const openMenu = () => {
+const toggleMenu = () => {
     main.$patch({
         menuVisible: !menuVisible.value,
     });
@@ -17,10 +17,10 @@ const openMenu = () => {
 
 <template>
     <div class="header-container">
-        <div class="bg-surface-300 py-3 px-5 flex flex-row">
+        <div class="bg-surface-300 py-2 md:py-3 px-2 md:px-5 flex flex-row">
             <div class="flex flex-row w-full">
-                <div class="flex md:hidden">
-                    <UButton size="lg" color="primary" @click="openMenu">
+                <div class="flex lg:hidden">
+                    <UButton size="lg" color="primary" @click="toggleMenu">
                         <i class="pi pi-bars" />
                     </UButton>
                 </div>

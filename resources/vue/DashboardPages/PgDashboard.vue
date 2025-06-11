@@ -22,7 +22,9 @@ onMounted(() => {
 
 <template>
     <CmpLayout>
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+        <div
+            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 rounded-lg drop-shadow-lg w-full max-w-xl"
+        >
             <h2 class="title-font font-bold">
                 {{ timeGreet + userName }}
             </h2>

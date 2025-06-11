@@ -159,8 +159,8 @@ onMounted(() => {
 
 <template>
     <CmpLayout>
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
-            <div class="flex justify-between">
+        <div class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+            <div class="flex flex-col gap-2 md:gap-0 md:flex-row justify-between">
                 <div>
                     <h2 class="title-font font-bold">
                         {{ timeGreet + userName }}
@@ -169,22 +169,22 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
-            <div class="flex flex-row my-2">
+        <div class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+            <div class="flex flex-col md:flex-row my-2 gap-2">
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Date Start</div>
                     <div class="flex w-full text-sm m-auto">
                         <DatePicker v-model="dateStartData" dateFormat="dd/mm/yy" class="w-full" />
                     </div>
                 </div>
-                <div class="flex w-full px-1">
+                <div class="flex w-full px-1 mt-2 md:mt-0">
                     <div class="w-28 my-auto text-sm m-auto">Date End</div>
                     <div class="flex w-full text-sm m-auto">
                         <DatePicker v-model="dateEndData" dateFormat="dd/mm/yy" class="w-full" />
                     </div>
                 </div>
             </div>
-            <div class="flex flex-row my-2">
+            <div class="flex flex-col md:flex-row my-2 gap-2">
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Log Level Minimal</div>
                     <div class="flex w-full text-sm m-auto">
@@ -198,7 +198,7 @@ onMounted(() => {
                         />
                     </div>
                 </div>
-                <div class="flex w-full px-1">
+                <div class="flex w-full px-1 mt-2 md:mt-0">
                     <div class="w-28 my-auto text-sm m-auto">Log Message</div>
                     <div class="flex w-full text-sm m-auto">
                         <InputText
@@ -209,14 +209,14 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-            <div class="flex flex-row my-2">
+            <div class="flex flex-col md:flex-row my-2 gap-2">
                 <div class="flex w-full px-1">
                     <div class="w-28 my-auto text-sm m-auto">Log Extra</div>
                     <div class="flex w-full text-sm m-auto">
                         <InputText v-model="logExtraData" class="w-full" placeholder="Log Extra" />
                     </div>
                 </div>
-                <div class="flex w-full">
+                <div class="flex w-full mt-2 md:mt-0">
                     <div class="w-28 my-auto text-sm m-auto"></div>
                     <div class="flex w-full text-sm m-auto">
                         <UButton size="xl" :disabled="loadingstat" @click="getServerLogData"
@@ -226,7 +226,9 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <div class="my-3 mx-5 p-5 bg-surface-200 rounded-lg drop-shadow-lg">
+        <div
+            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 rounded-lg drop-shadow-lg overflow-x-auto"
+        >
             <DataTable
                 class="p-datatable-sm text-sm"
                 :value="serverLogData"

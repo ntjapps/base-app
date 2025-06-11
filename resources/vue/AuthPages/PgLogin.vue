@@ -69,10 +69,12 @@ onBeforeUpdate(() => {
 <template>
     <div>
         <CmpToast ref="toastchild" />
-        <div class="flex justify-center w-full h-dvh bg-surface-100">
-            <div class="flex justify-center w-fit h-fit m-auto">
-                <div v-show="!loading" class="bg-surface-200 rounded-lg drop-shadow-lg">
-                    <div class="m-auto p-5">
+        <div class="flex justify-center w-full min-h-screen bg-surface-100">
+            <div
+                class="flex justify-center w-full max-w-sm sm:max-w-md md:max-w-lg h-fit m-auto px-2 sm:px-0"
+            >
+                <div v-show="!loading" class="bg-surface-200 rounded-lg drop-shadow-lg w-full">
+                    <div class="m-auto p-4 sm:p-5">
                         <div class="text-center font-bold my-2.5">
                             {{ appName }}
                         </div>
@@ -82,7 +84,7 @@ onBeforeUpdate(() => {
                             >
                         </div>
                         <div class="text-center font-bold my-2.5">Login to your account</div>
-                        <div class="flex justify-center flex-col mt-8 my-2.5">
+                        <div class="flex justify-center flex-col mt-6 sm:mt-8 my-2.5">
                             <div class="relative w-full">
                                 <InputText
                                     id="username"
@@ -113,8 +115,8 @@ onBeforeUpdate(() => {
                         </div>
                     </div>
                 </div>
-                <div v-show="loading" class="bg-surface-200 rounded-lg drop-shadow-lg">
-                    <div class="m-auto p-5">
+                <div v-show="loading" class="bg-surface-200 rounded-lg drop-shadow-lg w-full">
+                    <div class="m-auto p-4 sm:p-5">
                         <div class="text-center font-bold my-2.5">
                             <LoginSpinner />
                         </div>

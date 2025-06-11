@@ -188,15 +188,15 @@ onMounted(() => {
             </DataTable>
         </div>
     </div>
-    <div class="flex w-full mt-2.5 justify-center">
+    <div class="flex w-full mt-2 justify-center flex-wrap gap-2">
         <UButton
             v-if="showDeleted"
             size="xl"
             color="error"
             label="Delete"
-            class="m-2"
+            class="m-1 md:m-2"
             @click="postDeleteRolemanData()"
         />
-        <UButton size="xl" class="m-2" label="Submit" @click="postRolemanData" />
+        <UButton size="xl" class="m-1 md:m-2" label="Submit" @click="postRolemanData" />
     </div>
 </template>

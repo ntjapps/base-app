@@ -11,7 +11,7 @@ const { menuItems, menuVisible, expandedKeysMenu } = storeToRefs(main);
 </script>
 
 <template>
-    <Drawer :visible="menuVisible" header="Menu">
-        <MenuPanel :expandedKeys="expandedKeysMenu" :model="menuItems" />
+    <Drawer v-model:visible="menuVisible" header="Menu">
+        <MenuPanel v-model:expandedKeys="expandedKeysMenu" :model="menuItems" />
     </Drawer>
 </template>

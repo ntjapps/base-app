@@ -33,11 +33,11 @@ const theme = ref<DrawerPassThroughOptions>({
         bg-surface-0 dark:bg-surface-900
         text-surface-700 dark:text-surface-0 
         shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]
-        w-80 h-full border-r`,
-    header: `flex items-center justify-between flex-shrink-0 p-5`,
-    title: `font-semibold text-2xl`,
-    content: `overflow-y-auto flex-grow pt-0 pb-5 px-5`,
-    footer: `p-5`,
+        w-4/5 max-w-xs md:w-80 h-full border-r`,
+    header: `flex items-center justify-between flex-shrink-0 p-4 md:p-5`,
+    title: `font-semibold text-xl md:text-2xl`,
+    content: `overflow-y-auto flex-grow pt-0 pb-4 md:pb-5 px-3 md:px-5`,
+    footer: `p-4 md:p-5`,
     mask: `p-modal:bg-black/50`,
     transition: {
         enterFromClass: `-translate-x-full`,

@@ -30,7 +30,7 @@ trait WaApi
                 ]);
             }
 
-            Log::debug('Sending WA', ['deviceId' => config('waapi.device_id')]);
+            Log::debug('Sending WA', ['deviceId' => config('waapi.device_id'), 'response' => $response->json()]);
 
             /** Fallback to second number on failure */
             if ($response['status'] != true) {
@@ -63,7 +63,7 @@ trait WaApi
                 ]);
             }
 
-            Log::debug('Sending WA', ['deviceId' => config('waapi.device_id_2')]);
+            Log::debug('Sending WA', ['deviceId' => config('waapi.device_id_2'), 'response' => $response->json()]);
 
             /** Log Failed attempt to send message */
             if ($response['status'] != true) {
@@ -87,7 +87,7 @@ trait WaApi
                 'schedule' => Carbon::now()->addMinutes(5)->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             ]);
 
-            Log::debug('Sending WA', ['deviceId' => config('waapi.device_id')]);
+            Log::debug('Sending WA', ['deviceId' => config('waapi.device_id'), 'response' => 'Scheduled message sent']);
         } catch (ConnectionException $error) {
             Log::channel('wamonitor')->error($error, ['app' => config('app.name')]);
         }

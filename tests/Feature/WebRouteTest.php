@@ -1,115 +1,106 @@
 <?php
 
-test('get landing page', function () {
-    $response = $this->get('/');
+use App\Models\User;
+use App\Interfaces\InterfaceClass;
 
-    $response->assertStatus(200);
-});
+$protectedRoutes = [
+    'get-logout', 'post-logout', 'profile', 'dashboard', 'user-man', 'role-man', 'server-logs', 'passport-man',
+];
+$superRoutes = ['user-man', 'role-man', 'server-logs', 'passport-man'];
 
-test('sanctum csrf cookie returns token', function () {
-    $response = $this->get('/sanctum/csrf-cookie');
-    $response->assertStatus(200);
-    $response->assertJsonStructure(['status', 'csrf_token']);
-});
-
-test('php ip detect returns success in local env', function () {
+it('loads landing page for guest', fn() => $this->get('/')->assertStatus(200));
+it('sanctum csrf cookie returns token', fn() => $this->get('/sanctum/csrf-cookie')->assertStatus(200)->assertJsonStructure(['status', 'csrf_token']));
+it('php ip detect returns success in local env', function () {
     $this->app->detectEnvironment(fn () => 'local');
-    $response = $this->get('/php-ip-detect');
-    $response->assertStatus(200);
-    $response->assertJsonStructure(['status', 'ip']);
+    $this->get('/php-ip-detect')->assertStatus(200)->assertJsonStructure(['status', 'ip']);
 });
-
-test('php ip detect returns error in non-local env', function () {
+it('php ip detect returns error in non-local env', function () {
     $this->app->detectEnvironment(fn () => 'production');
-    $response = $this->get('/php-ip-detect');
-    $response->assertStatus(403);
-    $response->assertJson(['status' => 'error']);
+    $this->get('/php-ip-detect')->assertStatus(403)->assertJson(['status' => 'error']);
 });
+it('login redirect route redirects to landing page', fn() => $this->get(route('login'))->assertRedirect(route('landing-page')));
+it('landing page loads for guest', fn() => $this->get(route('landing-page'))->assertStatus(200));
+it('post login route returns redirect or validation error', fn() => expect(in_array($this->post(route('post-login'), [])->status(), [302, 422]))->toBeTrue());
 
-test('login redirect route redirects to landing page', function () {
-    $response = $this->get(route('login'));
-    $response->assertRedirect(route('landing-page'));
-});
-
-test('landing page loads for guest', function () {
-    $response = $this->get(route('landing-page'));
-    $response->assertStatus(200);
-});
-
-test('post login route returns redirect or validation error', function () {
-    $response = $this->post(route('post-login'), []);
-    expect(in_array($response->status(), [302, 422]))->toBeTrue();
-});
-
-test('post logout as authenticated user', function () {
-    $user = App\Models\User::factory()->createOne();
+it('redirects authenticated user from guest routes', function () {
+    $user = User::factory()->createOne();
     $this->actingAs($user);
-    $response = $this->post(route('post-logout'));
-    $response->assertJson([
-        'status' => 'success',
-    ]);
-    $response->assertJsonStructure(['status', 'title', 'message']);
+    $this->get(route('landing-page'))->assertRedirect(route('dashboard'));
+    expect(in_array($this->post(route('post-login'), [])->status(), [302, 200, 422]))->toBeTrue();
 });
 
-test('get logout as authenticated user', function () {
-    $user = App\Models\User::factory()->createOne();
+it('redirects guest from protected routes', function () use ($protectedRoutes) {
+    foreach ($protectedRoutes as $routeName) {
+        $method = $routeName === 'post-logout' ? 'post' : 'get';
+        $this->{$method}(route($routeName))->assertRedirect(route('login'));
+    }
+});
+it('allows authenticated user to get-logout', function () {
+    $user = User::factory()->createOne();
     $this->actingAs($user);
-    $response = $this->get(route('get-logout'));
-    $response->assertRedirect(route('landing-page'));
+    $this->get(route('get-logout'))->assertRedirect(route('landing-page'));
 });
-
-test('profile as authenticated user', function () {
-    $user = App\Models\User::factory()->createOne();
+it('allows authenticated user to post-logout', function () {
+    $user = User::factory()->createOne();
     $this->actingAs($user);
-    $response = $this->get(route('profile'));
-    $response->assertStatus(200);
-    $response->assertViewIs('base-components.base');
+    $this->post(route('post-logout'))->assertJson(['status' => 'success']);
 });
-
-test('dashboard as authenticated user', function () {
-    $user = App\Models\User::factory()->createOne();
+it('allows authenticated user to profile', function () {
+    $user = User::factory()->createOne();
     $this->actingAs($user);
-    $response = $this->get(route('dashboard'));
-    $response->assertStatus(200);
-    $response->assertViewIs('base-components.base');
+    $this->get(route('profile'))->assertStatus(200);
+});
+it('allows authenticated user to dashboard', function () {
+    $user = User::factory()->createOne();
+    $this->actingAs($user);
+    $this->get(route('dashboard'))->assertStatus(200);
 });
 
-test('get logout requires auth', function () {
-    $response = $this->get(route('get-logout'));
-    $response->assertRedirect(route('login'));
+it('redirects to profile if dashboard user name is empty', function () {
+    $user = User::factory()->createOne(['name' => null]);
+    $this->actingAs($user);
+    $this->get(route('dashboard'))->assertRedirect(route('profile'));
+});
+it('dashboard as authenticated user with name does not redirect to profile', function () {
+    $user = User::factory()->createOne(['name' => 'Test User']);
+    $this->actingAs($user);
+    $this->get(route('dashboard'))->assertStatus(200)->assertViewIs('base-components.base');
 });
 
-test('post logout requires auth', function () {
-    $response = $this->post(route('post-logout'));
-    $response->assertRedirect(route('login'));
+it('forbids normal user from super routes', function () use ($superRoutes) {
+    $user = User::factory()->createOne();
+    $this->actingAs($user);
+    foreach ($superRoutes as $routeName) {
+        $this->get(route($routeName))->assertForbidden();
+    }
+});
+it('allows super user to super routes', function () use ($superRoutes) {
+    $user = User::factory()->createOne();
+    $user->syncRoles([InterfaceClass::SUPERROLE]);
+    $this->actingAs($user);
+    foreach ($superRoutes as $routeName) {
+        $this->get(route($routeName))->assertStatus(200);
+    }
 });
 
-test('profile requires auth', function () {
-    $response = $this->get(route('profile'));
-    $response->assertRedirect(route('login'));
+it('profile as authenticated user returns base view', function () {
+    $user = User::factory()->createOne();
+    $this->actingAs($user);
+    $this->get(route('profile'))->assertStatus(200)->assertViewIs('base-components.base');
+});
+it('dashboard as authenticated user returns base view', function () {
+    $user = User::factory()->createOne();
+    $this->actingAs($user);
+    $this->get(route('dashboard'))->assertStatus(200)->assertViewIs('base-components.base');
 });
 
-test('dashboard requires auth', function () {
-    $response = $this->get(route('dashboard'));
-    $response->assertRedirect(route('login'));
+it('post logout as authenticated user returns json', function () {
+    $user = User::factory()->createOne();
+    $this->actingAs($user);
+    $this->post(route('post-logout'))->assertJson(['status' => 'success'])->assertJsonStructure(['status', 'title', 'message']);
 });
-
-test('user man requires auth', function () {
-    $response = $this->get(route('user-man'));
-    $response->assertRedirect(route('login'));
-});
-
-test('role man requires auth', function () {
-    $response = $this->get(route('role-man'));
-    $response->assertRedirect(route('login'));
-});
-
-test('server logs requires auth', function () {
-    $response = $this->get(route('server-logs'));
-    $response->assertRedirect(route('login'));
-});
-
-test('passport man requires auth', function () {
-    $response = $this->get(route('passport-man'));
-    $response->assertRedirect(route('login'));
+it('get logout as authenticated user redirects to landing page', function () {
+    $user = User::factory()->createOne();
+    $this->actingAs($user);
+    $this->get(route('get-logout'))->assertRedirect(route('landing-page'));
 });

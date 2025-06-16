@@ -51,4 +51,9 @@ return [
         'vhost' => env('RABBITMQ_VHOST', 'queuevhost'),
         'timeout' => env('RABBITMQ_TIMEOUT_SECONDS', 60),
     ],
+
+    'waha' => [
+        'base_url' => env('WAHA_API_BASE_URL', 'http://localhost:3000'),
+        'session' => env('WAHA_API_SESSION', 'default'),
+    ],
 ];

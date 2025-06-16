@@ -17,11 +17,6 @@ if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
     Schedule::command('telescope:prune')->everyFifteenMinutes();
 }
 
-if (class_exists(\Laravel\Pulse\PulseServiceProvider::class)) {
-    Schedule::command('pulse:work')->everyFifteenMinutes()->withoutOverlapping();
-    Schedule::command('pulse:clear', ['--type=cpu,memory,system'])->everyFifteenMinutes();
-}
-
 if (config('cache.default') === 'redis') {
     Schedule::command('cache:prune-stale-tags')->everyMinute();
 }

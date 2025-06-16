@@ -14,7 +14,6 @@
         "laravel/octane": "^2.5",
         "laravel/passport": "^13.0",
         "laravel/pennant": "^1.7",
-        "laravel/pulse": "^1.2",
         "laravel/reverb": "^1.2.0",
         "laravel/socialite": "^5.20",
         "laravel/tinker": "^2.10.1",

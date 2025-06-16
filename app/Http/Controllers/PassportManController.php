@@ -135,7 +135,7 @@ class PassportManController extends Controller
             throw ValidationException::withMessages(['id' => 'Cannot update this client']);
         }
         $client->name = $validated['name'];
-        $client->redirect = $validated['redirect'] ?? '';
+        $client->redirect_uris = $validated['redirect'] ?? '';
         $client->save();
 
         return $this->jsonSuccess(__('app.passport.update.title'), __('app.passport.update.message'));

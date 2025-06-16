@@ -6,7 +6,6 @@ use App\Jobs\RolePermissionSyncJob;
 use App\Models\Role;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -27,8 +26,12 @@ abstract class TestCase extends BaseTestCase
         }
 
         // Call the Role Seeder if Role model does not exist
-        if (!Role::exists()) {
+        if (! Role::exists()) {
             RolePermissionSyncJob::dispatchSync(true);
         }
+
+        // Setup passport client
+        $this->artisan('passport:client:env');
+        $this->artisan('passport:client:rabbitmq:env');
     }
 }

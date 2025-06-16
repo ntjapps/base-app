@@ -180,7 +180,10 @@ class AuthController extends Controller
         Log::info('Username revoking token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Match bearer token with access token */
-        $request->user()->token()->revoke();
+        $token = $request->user()->token();
+        if (! is_null($token)) {
+            $token->revoke();
+        }
 
         Log::notice('Username revoked token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 

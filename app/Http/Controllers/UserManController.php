@@ -153,8 +153,13 @@ class UserManController extends Controller
                 $user->save();
             }
 
-            $user->syncRoles($validated['roles']);
-            $user->syncPermissions($validated['permissions']);
+            if (isset($validated['roles'])) {
+                $user->syncRoles($validated['roles']);
+            }
+
+            if (isset($validated['permissions'])) {
+                $user->syncPermissions($validated['permissions']);
+            }
 
             DB::commit();
 

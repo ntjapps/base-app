@@ -110,26 +110,10 @@ trait WahaApi
      */
     protected function wahaSendMessageWithHumanBehavior(string $phone, string $text): void
     {
-        $contact = $this->wahaCheckContactExists($phone);
-        if (! $contact || empty($contact['numberExists']) || empty($contact['chatId'])) {
-            Log::warning('WahaApi: Contact does not exist or chatId missing', ['phone' => $phone, 'contact' => $contact]);
-
-            return;
-        }
         $chatId = $contact['chatId'];
         $this->wahaSendSeen($chatId);
 
-        // Calculate typing duration: assume 8-12 chars/sec, add random pause (0.5-1.5s)
-        $charCount = mb_strlen($text);
-        $typingSpeed = rand(8, 12); // chars per second (faster, still human-like)
-        $typingDuration = $charCount / $typingSpeed;
-        $randomPause = rand(500, 1500) / 1000; // seconds
-        $totalTyping = $typingDuration + $randomPause;
-
-        // Start typing
         $this->wahaStartTyping($chatId);
-        usleep((int) ($totalTyping * 1000000)); // sleep in microseconds
-        // Stop typing
         $this->wahaStopTyping($chatId);
 
         // Simulate human pause before sending (0.3-0.8s)

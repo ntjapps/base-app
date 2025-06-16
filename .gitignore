@@ -21,7 +21,6 @@ public_html/hot
 
 storage/*.key
 .env
-.env.testing
 .env.local
 .env.dev
 .env.prod
@@ -32,7 +31,6 @@ Homestead.json
 .phpactor.json
 .phpunit.result.cache
 .phpunit.cache
-phpunit.xml
 
 # Ignore Laravel Mix output
 public/mix-js

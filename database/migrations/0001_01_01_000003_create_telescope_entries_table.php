@@ -30,16 +30,8 @@ return new class extends Migration
      */
     public function shouldRun(): bool
     {
-        if (in_array($this->driver(), ['mysql', 'pgsql'])) {
+        if (in_array($this->driver(), ['mysql', 'pgsql']) && ! App::environment('testing')) {
             return true;
-        }
-
-        if (! App::environment('testing')) {
-            throw new RuntimeException("Telescope does not support the [{$this->driver()}] database driver.");
-        }
-
-        if (Config::get('telescope.enabled')) {
-            throw new RuntimeException("Telescope does not support the [{$this->driver()}] database driver. You can disable Telescope in your testsuite by adding `<env name=\"TELESCOPE_ENABLED\" value=\"false\"/>` to your project's `phpunit.xml` file.");
         }
 
         return false;

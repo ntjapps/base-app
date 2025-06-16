@@ -2,46 +2,30 @@
 
 namespace Tests;
 
-use Database\Seeders\RolesPermissionSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Routing\Middleware\ThrottleRequestsWithRedis;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
+use Mockery;
 
 abstract class TestCase extends BaseTestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->withoutVite();
-
-        $this->withoutMiddleware([
-            ThrottleRequestsWithRedis::class,
-        ]);
-    }
-
-    /**
-     * The test seed.
-     */
-    protected function test_seed(): array
-    {
-        return [
-            RolesPermissionSeeder::class,
-        ];
-    }
-
-    /**
-     * Common API test.
-     */
-    protected function CommonPreparePat(): void
-    {
-        Config::set('passport.personal_access_client.id', (string) Str::orderedUuid());
-        Artisan::call('passport:keys');
-        Artisan::call('passport:client:env');
+        // Prevent Redis connection
+        if (class_exists('Illuminate\Support\Facades\Redis')) {
+            Redis::shouldReceive('connection')->andReturnSelf();
+            Redis::shouldReceive('get')->andReturn(null);
+            Redis::shouldReceive('set')->andReturn(true);
+            Redis::shouldReceive('del')->andReturn(true);
+        }
+        // Prevent RabbitMQ or AMQP connection
+        if (! class_exists('PhpAmqpLib\\Connection\\AMQPStreamConnection')) {
+            Mockery::mock('overload:PhpAmqpLib\\Connection\\AMQPStreamConnection')
+                ->shouldReceive('channel')->andReturnSelf();
+        }
+        if (class_exists('Illuminate\Support\Facades\Http')) {
+            Http::fake();
+        }
     }
 }

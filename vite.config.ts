@@ -51,4 +51,7 @@ export default defineConfig({
         },
         manifest: 'manifest.json',
     },
+    test: {
+        environment: 'jsdom',
+    },
 });

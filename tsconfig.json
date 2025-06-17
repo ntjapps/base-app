@@ -12,7 +12,7 @@
         "noEmit": true,
         "allowImportingTsExtensions": true,
         "sourceMap": true,
-        "types": ["vite/client"],
+        "types": ["vite/client", "vitest/globals"],
         "useDefineForClassFields": true,
         "resolveJsonModule": true,
         "isolatedModules": true,

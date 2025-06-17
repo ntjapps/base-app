@@ -1,13 +1,13 @@
 <?php
 
 use App\Interfaces\InterfaceClass;
-use App\Models\Passport\Client;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\TestNotification;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Laravel\Passport\ClientRepository;
 
 describe('API v1 Routes', function () {
     it('sanitizes input via XSS middleware', function () {
@@ -160,17 +160,6 @@ describe('API v1 Routes', function () {
             $this->user = User::factory()->create();
             $this->user->syncRoles([InterfaceClass::SUPERROLE]);
             $this->actingAs($this->user, 'api');
-            $this->client = Client::create([
-                'id' => Str::uuid(),
-                'name' => 'Test Client',
-                'secret' => Str::random(40),
-                'provider' => null,
-                'redirect_uris' => ['http://localhost'],
-                'grant_types' => ['password'],
-                'revoked' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
         });
 
         it('gets user list', function () {
@@ -228,22 +217,137 @@ describe('API v1 Routes', function () {
             $response->assertStatus(200);
         });
         it('resets passport client secret', function () {
-            $response = $this->postJson(route('passport.clients.reset-secret'), ['id' => $this->client->id]);
+            $client = (new ClientRepository)->createPersonalAccessGrantClient(Str::random(5));
+            $client->id = Str::uuid()->toString();
+            $client->secret = Str::random(40);
+            $client->save();
+            $response = $this->postJson(route('passport.clients.reset-secret'), ['id' => $client->id]);
             $response->assertStatus(200);
         });
         it('deletes passport client', function () {
-            $response = $this->postJson(route('passport.clients.destroy'), ['id' => $this->client->id]);
+            $client = (new ClientRepository)->createPersonalAccessGrantClient(Str::random(5));
+            $client->id = Str::uuid()->toString();
+            $client->secret = Str::random(40);
+            $client->save();
+            $response = $this->postJson(route('passport.clients.destroy'), ['id' => $client->id]);
             $response->assertStatus(200);
         });
         it('updates passport client', function () {
-            $response = $this->postJson(route('passport.clients.update'), ['id' => $this->client->id, 'name' => 'Updated Client']);
+            $client = (new ClientRepository)->createPersonalAccessGrantClient(Str::random(5));
+            $client->id = Str::uuid()->toString();
+            $client->secret = Str::random(40);
+            $client->save();
+            $response = $this->postJson(route('passport.clients.update'), ['id' => $client->id, 'name' => 'Updated Client']);
             $response->assertStatus(200);
         });
         it('creates passport client', function () {
             $response = $this->postJson(route('passport.clients.store'), [
                 'name' => 'New Client',
-                'grant_types' => ['password'],
+                'grant_types' => ['personal_access'],
             ]);
+            $response->assertStatus(200);
+        });
+    });
+
+    describe('RabbitMQ API Endpoints', function () {
+        it('returns error for test-rabbitmq in non-local env', function () {
+            $this->app->detectEnvironment(fn () => 'production');
+            $response = $this->postJson(route('rabbitmq-test-rabbitmq'));
+            $response->assertStatus(401);
+
+            $response = $this->postJson('/oauth/token', [
+                'grant_type' => 'client_credentials',
+                'client_id' => config('passport.client_credentials_rabbitmq_client.id'),
+                'client_secret' => config('passport.client_credentials_rabbitmq_client.secret', Str::random(40)),
+                'scope' => 'rabbitmq',
+            ]);
+            $response->assertStatus(200);
+            $accessToken = $response->json('access_token');
+
+            $response = $this->withHeader('Authorization', 'Bearer '.$accessToken)
+                ->postJson(route('rabbitmq-test-rabbitmq'));
+            $response->assertStatus(403);
+            $response->assertJson(['status' => 'error']);
+        });
+        it('returns success for test-rabbitmq in local env', function () {
+            $this->app->detectEnvironment(fn () => 'local');
+
+            $response = $this->postJson('/oauth/token', [
+                'grant_type' => 'client_credentials',
+                'client_id' => config('passport.client_credentials_rabbitmq_client.id'),
+                'client_secret' => config('passport.client_credentials_rabbitmq_client.secret', Str::random(40)),
+                'scope' => 'rabbitmq',
+            ]);
+            $response->assertStatus(200);
+            $accessToken = $response->json('access_token');
+
+            $response = $this->withHeader('Authorization', 'Bearer '.$accessToken)
+                ->postJson(route('rabbitmq-test-rabbitmq'));
+            $response->assertStatus(200);
+            $response->assertJson(['status' => 'success']);
+        });
+        it('send-notification endpoint requires EnsureClientIsResourceOwner', function () {
+            $response = $this->postJson(route('rabbitmq-send-notification'), []);
+            $response->assertStatus(401);
+        });
+        it('send-log endpoint requires EnsureClientIsResourceOwner', function () {
+            $response = $this->postJson(route('rabbitmq-send-log'), []);
+            $response->assertStatus(401);
+        });
+        it('send-callbacks endpoint requires EnsureClientIsResourceOwner', function () {
+            $response = $this->postJson(route('rabbitmq-send-callbacks'), []);
+            $response->assertStatus(401);
+        });
+        it('send-notification endpoint allows authorized client with rabbitmq scope', function () {
+            $response = $this->postJson('/oauth/token', [
+                'grant_type' => 'client_credentials',
+                'client_id' => config('passport.client_credentials_rabbitmq_client.id'),
+                'client_secret' => config('passport.client_credentials_rabbitmq_client.secret', Str::random(40)),
+                'scope' => 'rabbitmq',
+            ]);
+            $response->assertStatus(200);
+            $accessToken = $response->json('access_token');
+
+            $user = User::factory()->create();
+            $response = $this->withHeader('Authorization', 'Bearer '.$accessToken)
+                ->postJson(route('rabbitmq-send-notification'), [
+                    'user_id' => $user->id,
+                    'message' => 'Test notification',
+                ]);
+            $response->assertStatus(200);
+        });
+        it('send-log endpoint allows authorized client with rabbitmq scope', function () {
+            $response = $this->postJson('/oauth/token', [
+                'grant_type' => 'client_credentials',
+                'client_id' => config('passport.client_credentials_rabbitmq_client.id'),
+                'client_secret' => config('passport.client_credentials_rabbitmq_client.secret', Str::random(40)),
+                'scope' => 'rabbitmq',
+            ]);
+            $response->assertStatus(200);
+            $accessToken = $response->json('access_token');
+
+            $response = $this->withHeader('Authorization', 'Bearer '.$accessToken)
+                ->postJson(route('rabbitmq-send-log'), [
+                    'message' => 'Test log message',
+                    'level' => 'info',
+                ]);
+            $response->assertStatus(200);
+        });
+        it('send-callbacks endpoint allows authorized client with rabbitmq scope', function () {
+            $response = $this->postJson('/oauth/token', [
+                'grant_type' => 'client_credentials',
+                'client_id' => config('passport.client_credentials_rabbitmq_client.id'),
+                'client_secret' => config('passport.client_credentials_rabbitmq_client.secret', Str::random(40)),
+                'scope' => 'rabbitmq',
+            ]);
+            $response->assertStatus(200);
+            $accessToken = $response->json('access_token');
+
+            $response = $this->withHeader('Authorization', 'Bearer '.$accessToken)
+                ->postJson(route('rabbitmq-send-callbacks'), [
+                    'callbacks_code' => 'test_callback',
+                    'callbacks_payload' => json_encode(['key' => 'value']),
+                ]);
             $response->assertStatus(200);
         });
     });

@@ -75,10 +75,10 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
             } else {
                 return response()->json(['status' => 'success']);
             }
-        });
+        })->name('rabbitmq-test-rabbitmq');
 
-        Route::post('/send-notification', [CeleryQueueController::class, 'sendNotification']);
-        Route::post('/send-log', [CeleryQueueController::class, 'sendLog']);
-        Route::post('/send-callbacks', [CeleryQueueController::class, 'sendCallbacks']);
+        Route::post('/send-notification', [CeleryQueueController::class, 'sendNotification'])->name('rabbitmq-send-notification');
+        Route::post('/send-log', [CeleryQueueController::class, 'sendLog'])->name('rabbitmq-send-log');
+        Route::post('/send-callbacks', [CeleryQueueController::class, 'sendCallbacks'])->name('rabbitmq-send-callbacks');
     });
 });

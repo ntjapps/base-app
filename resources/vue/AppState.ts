@@ -102,7 +102,9 @@ export const useMainStore = defineStore('main', {
              */
             if (!supportedBrowsers.test(navigator.userAgent)) {
                 this.$patch({ browserSuppport: false });
-                axios.post(api.logAgent);
+                axios.post(api.logAgent).catch((error) => {
+                    console.error(error.response);
+                });
             } else {
                 this.$patch({ browserSuppport: true });
             }
@@ -112,9 +114,14 @@ export const useMainStore = defineStore('main', {
             /**
              * Get new CSRF Token set everytime app is created
              */
-            axios.get('/sanctum/csrf-cookie').then(() => {
-                console.log('csrf cookie init');
-            });
+            axios
+                .get('/sanctum/csrf-cookie')
+                .then(() => {
+                    console.log('csrf cookie init');
+                })
+                .catch((error) => {
+                    console.error('Error setting CSRF cookie:', error.response);
+                });
         },
 
         async getNotificationList() {

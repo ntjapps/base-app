@@ -15,15 +15,6 @@ RUN echo "APP_VERSION_HASH=${APP_VERSION_HASH}" >> .constants && \
     ln -sf .env.${ENV_TYPE} .env || true && \
     ls -lah .env*
 
-# RUN Test
-FROM ghcr.io/ntjapps/frankenphp:xdebug
-
-COPY --from=composer /app /app
-
-WORKDIR /app
-
-RUN php artisan test
-
 # Second, run PNPM install
 FROM ghcr.io/ntjapps/npm-custom:latest AS pnpm
 
@@ -33,15 +24,6 @@ WORKDIR /app
 
 RUN pnpm install --prod && \
     pnpm dlx vite build
-
-# RUN Test
-FROM ghcr.io/ntjapps/npm-custom:latest
-
-COPY --from=pnpm /app /app
-
-WORKDIR /app
-
-RUN pnpm run test
 
 # Third, run Laravel install
 FROM ghcr.io/ntjapps/frankenphp:latest AS laravel

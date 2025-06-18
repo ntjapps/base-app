@@ -18,7 +18,7 @@ type toastData = {
 };
 
 const toastDisplay = (detailData: toastData) => {
-    if (detailData.severity === 'error') {
+    if (detailData.severity === 'error' && detailData.response) {
         const error = detailData.response;
 
         if (typeof error.response === 'undefined') {

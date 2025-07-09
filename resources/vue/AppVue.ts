@@ -26,7 +26,7 @@ Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN ?? '',
 
     integrations: [Sentry.browserTracingIntegration({ router })],
-    tracesSampleRate: 0.1,
+    tracesSampleRate: 0.0,
     debug: import.meta.env.DEV,
 });
 

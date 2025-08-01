@@ -26,36 +26,48 @@ use Laravel\Passport\Http\Middleware\EnsureClientIsResourceOwner;
 /** All API Route should be sanitized with XSS Middleware */
 Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
     /** Get Constant */
-    Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
-    Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');
-    Route::post('/post-get-current-app-version', [AppConstController::class, 'getCurrentAppVersion'])->name('post-get-current-app-version');
-    Route::post('/get-notification-list', [AppConstController::class, 'getNotificationList'])->name('get-notification-list');
+    Route::prefix('const')->group(function () {
+        Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
+        Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');
+        Route::post('/post-get-current-app-version', [AppConstController::class, 'getCurrentAppVersion'])->name('post-get-current-app-version');
+    });
 
     /** Login Routes need rate limit to prevent attacks */
-    Route::post('/post-token', [AuthController::class, 'postToken'])->name('post-token');
+    Route::prefix('auth')->middleware(['throttle:10,1'])->group(function () {
+        Route::post('/post-token', [AuthController::class, 'postToken'])->name('post-token');
+        Route::post('/post-token-revoke', [AuthController::class, 'postTokenRevoke'])->name('post-token-revoke')->middleware((['auth:api']));
+    });
 
     /** Routes that need authentication first */
     Route::middleware(['auth:api'])->group(function () {
-        Route::post('/post-token-revoke', [AuthController::class, 'postTokenRevoke'])->name('post-token-revoke');
-        Route::post('/post-notification-as-read', [AppConstController::class, 'postNotificationAsRead'])->name('post-notification-as-read');
-        Route::post('/post-notification-clear-all', [AppConstController::class, 'postNotificationClearAll'])->name('post-notification-clear-all');
-        Route::post('/post-update-profile', [ProfileController::class, 'updateProfile'])->name('post-update-profile');
+        Route::prefix('profile')->group(function () {
+            Route::post('/get-notification-list', [AppConstController::class, 'getNotificationList'])->name('get-notification-list');
+            Route::post('/post-notification-as-read', [AppConstController::class, 'postNotificationAsRead'])->name('post-notification-as-read');
+            Route::post('/post-notification-clear-all', [AppConstController::class, 'postNotificationClearAll'])->name('post-notification-clear-all');
+            Route::post('/post-update-profile', [ProfileController::class, 'updateProfile'])->name('post-update-profile');
+        });
 
         Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {
             /** User Management API */
-            Route::post('/get-user-list', [UserManController::class, 'getUserList'])->name('get-user-list');
-            Route::post('/get-user-role-perm', [UserManController::class, 'getUserRolePerm'])->name('get-user-role-perm');
-            Route::post('/post-user-man-submit', [UserManController::class, 'postUserManSubmit'])->name('post-user-man-submit');
-            Route::post('/post-delete-user-man-submit', [UserManController::class, 'postDeleteUserManSubmit'])->name('post-delete-user-man-submit');
-            Route::post('/post-reset-password-user-man-submit', [UserManController::class, 'postResetPasswordUserManSubmit'])->name('post-reset-password-user-man-submit');
+            Route::prefix('user-man')->group(function () {
+                Route::post('/get-user-list', [UserManController::class, 'getUserList'])->name('get-user-list');
+                Route::post('/get-user-role-perm', [UserManController::class, 'getUserRolePerm'])->name('get-user-role-perm');
+                Route::post('/post-user-man-submit', [UserManController::class, 'postUserManSubmit'])->name('post-user-man-submit');
+                Route::post('/post-delete-user-man-submit', [UserManController::class, 'postDeleteUserManSubmit'])->name('post-delete-user-man-submit');
+                Route::post('/post-reset-password-user-man-submit', [UserManController::class, 'postResetPasswordUserManSubmit'])->name('post-reset-password-user-man-submit');
+            });
 
             /** Role Management API */
-            Route::post('/get-role-list', [RoleManController::class, 'getRoleList'])->name('get-role-list');
-            Route::post('/post-role-submit', [RoleManController::class, 'postRoleSubmit'])->name('post-role-submit');
-            Route::post('/post-delete-role-submit', [RoleManController::class, 'postDeleteRoleSubmit'])->name('post-delete-role-submit');
+            Route::prefix('role-man')->group(function () {
+                Route::post('/get-role-list', [RoleManController::class, 'getRoleList'])->name('get-role-list');
+                Route::post('/post-role-submit', [RoleManController::class, 'postRoleSubmit'])->name('post-role-submit');
+                Route::post('/post-delete-role-submit', [RoleManController::class, 'postDeleteRoleSubmit'])->name('post-delete-role-submit');
+            });
 
-            Route::post('/get-server-logs', [ServerManController::class, 'getServerLogs'])->name('get-server-logs');
-            Route::post('/post-clear-app-cache', [ServerManController::class, 'postClearAppCache'])->name('post-clear-app-cache');
+            Route::prefix('server-man')->group(function () {
+                Route::post('/get-server-logs', [ServerManController::class, 'getServerLogs'])->name('get-server-logs');
+                Route::post('/post-clear-app-cache', [ServerManController::class, 'postClearAppCache'])->name('post-clear-app-cache');
+            });
 
             Route::prefix('oauth')->group(function () {
                 /** Passport Client Management */

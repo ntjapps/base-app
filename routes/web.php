@@ -36,20 +36,25 @@ Route::get('/php-ip-detect', function () {
 
 /** Route for login redirect */
 Route::get('/login-redirect', function () {
-    return redirect(route('landing-page'));
+    return redirect(route('login-page'));
 })->name('login');
 
 Route::middleware(['guest'])->group(function () {
-    Route::get('/', [AuthController::class, 'loginPage'])->name('landing-page');
+    Route::get('/', function () {
+        return redirect(route('login-page'));
+    })->name('landing-page');
 
-    Route::post('/post-login', [AuthController::class, 'postLogin'])->name('post-login');
+    Route::get('/login', [AuthController::class, 'loginPage'])->name('login-page');
+    Route::post('/post-login', [AuthController::class, 'postLogin'])->name('post-login')->middleware(['throttle:10,1']);
 });
 
 /** Routes that need authentication first */
 Route::middleware(['auth'])->group(function () {
-    Route::post('/post-logout', [AuthController::class, 'postLogout'])->name('post-logout');
+    Route::prefix('auth')->middleware(['throttle:10,1'])->group(function () {
+        Route::post('/post-logout', [AuthController::class, 'postLogout'])->name('post-logout');
+        Route::get('/get-logout', [AuthController::class, 'getLogout'])->name('get-logout');
+    });
 
-    Route::get('/get-logout', [AuthController::class, 'getLogout'])->name('get-logout');
     Route::get('/profile', [ProfileController::class, 'profilePage'])->name('profile');
     /** Check if profile fillled if not, force go to profile page */
     Route::middleware([ProfileFillIfEmpty::class])->group(function () {

@@ -9,7 +9,7 @@ $protectedRoutes = [
 $superRoutes = ['user-man', 'role-man', 'server-logs', 'passport-man'];
 
 describe('Public and Guest Routes', function () {
-    it('loads landing page for guest', fn () => $this->get('/')->assertStatus(200));
+    it('loads landing page for guest', fn () => $this->get('/')->assertRedirect(route('login-page')));
     it('sanctum csrf cookie returns token', fn () => $this->get('/sanctum/csrf-cookie')->assertStatus(200)->assertJsonStructure(['status', 'csrf_token']));
     it('php ip detect returns success in local env', function () {
         $this->app->detectEnvironment(fn () => 'local');
@@ -19,8 +19,8 @@ describe('Public and Guest Routes', function () {
         $this->app->detectEnvironment(fn () => 'production');
         $this->get('/php-ip-detect')->assertStatus(403)->assertJson(['status' => 'error']);
     });
-    it('login redirect route redirects to landing page', fn () => $this->get(route('login'))->assertRedirect(route('landing-page')));
-    it('landing page loads for guest', fn () => $this->get(route('landing-page'))->assertStatus(200));
+    it('login redirect route redirects to login page', fn () => $this->get(route('login'))->assertRedirect(route('login-page')));
+    it('landing page redirects to login page for guest', fn () => $this->get(route('landing-page'))->assertRedirect(route('login-page')));
     it('post login route returns redirect or validation error', fn () => expect(in_array($this->post(route('post-login'), [])->status(), [302, 422]))->toBeTrue());
 
     it('redirects authenticated user from guest routes', function () {

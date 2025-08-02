@@ -30,9 +30,6 @@ class MenuItemClass
             case 'server-logs':
                 $expandedKeys = '9999';
                 break;
-            case 'pulse':
-                $expandedKeys = '9999';
-                break;
             default:
                 $expandedKeys = null;
                 break;
@@ -88,12 +85,6 @@ class MenuItemClass
                 'label' => 'Passport Management',
                 'icon' => 'pi pi-key',
                 'url' => parse_url(route('passport-man'), PHP_URL_PATH),
-            ]);
-
-            array_push($childMenu, [
-                'label' => 'Server Monitor - Pulse',
-                'icon' => 'pi pi-bolt',
-                'url' => parse_url(route('pulse'), PHP_URL_PATH),
             ]);
 
             array_push($childMenu, [

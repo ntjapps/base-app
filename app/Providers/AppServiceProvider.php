@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
-use Laravel\Telescope\Telescope;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,12 +36,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        /** Register Telescope */
+        /** Register Telescope only in local environment */
         if ($this->app->environment('local')) {
-            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
-            $this->app->register(TelescopeServiceProvider::class);
+            if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+                $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+                $this->app->register(TelescopeServiceProvider::class);
 
-            Telescope::night();
+                Laravel\Telescope\Telescopenight();
+            }
         }
     }
 

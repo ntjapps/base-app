@@ -13,7 +13,7 @@ if (class_exists(\Laravel\Passport\PassportServiceProvider::class)) {
     Schedule::command('passport:purge')->everyMinute();
 }
 
-if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+if (app()->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
     Schedule::command('telescope:prune')->everyFifteenMinutes();
 }
 

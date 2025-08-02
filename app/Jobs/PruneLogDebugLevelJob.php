@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Laravel\Telescope\Telescope;
+
 use Monolog\Logger;
 
 class PruneLogDebugLevelJob implements ShouldQueue
@@ -91,7 +91,7 @@ class PruneLogDebugLevelJob implements ShouldQueue
 
             /** Memory Leak mitigation */
             if (App::environment('local')) {
-                Telescope::stopRecording();
+                Laravel\Telescope\TelescopestopRecording();
             }
 
             /** Delete Server Logs */
@@ -113,14 +113,14 @@ class PruneLogDebugLevelJob implements ShouldQueue
 
             /** Memory Leak mitigation */
             if (App::environment('local')) {
-                Telescope::startRecording();
+                Laravel\Telescope\TelescopestartRecording();
             }
 
             Log::debug('Job Finished', ['jobName' => 'PruneLogDebugLevelJob']);
         } catch (\Throwable $e) {
             /** Memory Leak mitigation */
             if (App::environment('local')) {
-                Telescope::startRecording();
+                Laravel\Telescope\TelescopestartRecording();
             }
 
             Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);

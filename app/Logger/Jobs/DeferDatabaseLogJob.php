@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
-use Laravel\Telescope\Telescope;
+
 use Monolog\LogRecord;
 
 class DeferDatabaseLogJob implements ShouldQueue
@@ -82,7 +82,7 @@ class DeferDatabaseLogJob implements ShouldQueue
     {
         /** Memory Leak mitigation */
         if (App::environment('local')) {
-            Telescope::stopRecording();
+            Laravel\Telescope\TelescopestopRecording();
         }
 
         if (config('services.rabbitmq.enabled')) {
@@ -109,7 +109,7 @@ class DeferDatabaseLogJob implements ShouldQueue
 
         /** Memory Leak mitigation */
         if (App::environment('local')) {
-            Telescope::startRecording();
+            Laravel\Telescope\TelescopestartRecording();
         }
     }
 }

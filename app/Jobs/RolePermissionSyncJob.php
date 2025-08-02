@@ -13,7 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Laravel\Telescope\Telescope;
+
 
 class RolePermissionSyncJob implements ShouldQueue
 {
@@ -87,7 +87,7 @@ class RolePermissionSyncJob implements ShouldQueue
 
             /** Memory Leak mitigation */
             if (App::environment('local')) {
-                Telescope::stopRecording();
+                Laravel\Telescope\TelescopestopRecording();
             }
 
             /** Reset cached roles and permissions */
@@ -115,14 +115,14 @@ class RolePermissionSyncJob implements ShouldQueue
 
             /** Memory Leak mitigation */
             if (App::environment('local')) {
-                Telescope::startRecording();
+                Laravel\Telescope\TelescopestartRecording();
             }
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {
             /** Memory Leak mitigation */
             if (App::environment('local')) {
-                Telescope::startRecording();
+                Laravel\Telescope\TelescopestartRecording();
             }
 
             Log::error('Job Failed', ['jobName' => 'RolePermissionSyncJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);

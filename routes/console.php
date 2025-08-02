@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
-use Laravel\Telescope\Telescope;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +19,7 @@ use Laravel\Telescope\Telescope;
 Artisan::command('patch:deploy', function () {
     /** Memory Leak mitigation */
     if (App::environment('local')) {
-        Telescope::stopRecording();
+        Laravel\Telescope\TelescopestopRecording();
     }
 
     /** PATCH DO HERE */

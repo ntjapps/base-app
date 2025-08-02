@@ -16,7 +16,7 @@ onMounted(() => {
     axios
         .post(api.postTokenLogout)
         .then(() => {
-            router.push(web.landingPage);
+            router.push(web.loginPage);
         })
         .catch((error) => {
             toastchild.value?.toastDisplay({

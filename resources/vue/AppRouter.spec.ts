@@ -12,7 +12,7 @@ vi.mock('vue-router', async (importOriginal) => {
 describe('AppRouter', () => {
     it('should have expected named routes', () => {
         const names = router.getRoutes().map((r) => r.name);
-        expect(names).toContain('landingPage');
+        expect(names).toContain('loginPage');
         expect(names).toContain('dashboard');
         expect(names).toContain('profile');
         expect(names).toContain('serverLogs');

@@ -1,4 +1,4 @@
-const landingPage = '/';
+const loginPage = '/login';
 const dashboard = '/dashboard';
 const profile = '/profile';
 const serverHorizon = '/horizon';
@@ -13,8 +13,8 @@ import { defineStore } from 'pinia';
 
 const routes: Array<RouteRecordRaw> = [
     {
-        path: landingPage,
-        name: 'landingPage',
+        path: loginPage,
+        name: 'loginPage',
         component: () => import('./AuthPages/PgLogin.vue'),
     },
     {
@@ -65,7 +65,7 @@ export const useWebStore = defineStore('web', {
     state: () => ({
         /** Define route here because if not defined and get from XHR it will be race condition */
         /** WEB requests */
-        landingPage: landingPage,
+        loginPage: loginPage,
         dashboard: dashboard,
         profile: profile,
         serverHorizon: serverHorizon,

@@ -80,7 +80,7 @@ class DeferDatabaseLogJob implements ShouldQueue
     public function handle(): void
     {
         /** Memory Leak mitigation */
-        if (App::environment('local')) {
+        if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
             \Laravel\Telescope\Telescope::stopRecording();
         }
 
@@ -107,7 +107,7 @@ class DeferDatabaseLogJob implements ShouldQueue
         }
 
         /** Memory Leak mitigation */
-        if (App::environment('local')) {
+        if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
             \Laravel\Telescope\Telescope::startRecording();
         }
     }

@@ -10,7 +10,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 
-
 class DeferTelegramLogJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TelegramApi;
@@ -80,14 +79,14 @@ class DeferTelegramLogJob implements ShouldQueue
     {
         /** Memory Leak mitigation */
         if (App::environment('local')) {
-            Laravel\Telescope\TelescopestopRecording();
+            \Laravel\Telescope\Telescope::stopRecording();
         }
 
         $this->sendTelegramMessage($this->data, $this->chatId);
 
         /** Memory Leak mitigation */
         if (App::environment('local')) {
-            Laravel\Telescope\TelescopestartRecording();
+            \Laravel\Telescope\Telescope::startRecording();
         }
     }
 }

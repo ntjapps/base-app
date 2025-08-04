@@ -83,22 +83,22 @@ class {{ class }} implements ShouldQueue
             Log::debug('Job Executed', ['jobName' => '{{ class }}']);
 
             /** Memory Leak mitigation */
-            if (App::environment('local')) {
-                Laravel\Telescope\TelescopestopRecording();
+            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
+                \Laravel\Telescope\Telescope::stopRecording();
             }
 
             // Do something here
 
             /** Memory Leak mitigation */
-            if (App::environment('local')) {
-                Laravel\Telescope\TelescopestartRecording();
+            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
+                \Laravel\Telescope\Telescope::startRecording();
             }
 
             Log::debug('Job Finished', ['jobName' => '{{ class }}']);
         } catch (\Throwable $e) {
             /** Memory Leak mitigation */
-            if (App::environment('local')) {
-                Laravel\Telescope\TelescopestartRecording();
+            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
+                \Laravel\Telescope\Telescope::startRecording();
             }
 
             Log::error('Job Failed', ['jobName' => '{{ class }}', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);

@@ -28,7 +28,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -42,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
                 $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
                 $this->app->register(TelescopeServiceProvider::class);
 
-                Laravel\Telescope\Telescopenight();
+                \Laravel\Telescope\Telescope::night();
             }
         }
     }

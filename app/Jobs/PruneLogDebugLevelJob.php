@@ -12,7 +12,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 use Monolog\Logger;
 
 class PruneLogDebugLevelJob implements ShouldQueue
@@ -90,8 +89,8 @@ class PruneLogDebugLevelJob implements ShouldQueue
             Log::debug('Job Executed', ['jobName' => 'PruneLogDebugLevelJob']);
 
             /** Memory Leak mitigation */
-            if (App::environment('local')) {
-                Laravel\Telescope\TelescopestopRecording();
+            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
+                \Laravel\Telescope\Telescope::stopRecording();
             }
 
             /** Delete Server Logs */
@@ -111,16 +110,27 @@ class PruneLogDebugLevelJob implements ShouldQueue
                 Log::warning('Notification Prune Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             }
 
+            /** Delete Celery Tables */
+            DB::beginTransaction();
+            try {
+                DB::table('celery_taskmeta')->where('date_done', '<=', now()->subDays(3))->delete();
+                DB::table('celery_tasksetmeta')->where('date_done', '<=', now()->subDays(3))->delete();
+                DB::commit();
+            } catch (QueryException $e) {
+                DB::rollBack();
+                Log::warning('Celery Prune Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
+            }
+
             /** Memory Leak mitigation */
-            if (App::environment('local')) {
-                Laravel\Telescope\TelescopestartRecording();
+            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
+                \Laravel\Telescope\Telescope::startRecording();
             }
 
             Log::debug('Job Finished', ['jobName' => 'PruneLogDebugLevelJob']);
         } catch (\Throwable $e) {
             /** Memory Leak mitigation */
-            if (App::environment('local')) {
-                Laravel\Telescope\TelescopestartRecording();
+            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
+                \Laravel\Telescope\Telescope::startRecording();
             }
 
             Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);

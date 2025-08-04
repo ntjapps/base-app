@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
-
 /*
 |--------------------------------------------------------------------------
 | Console Routes
@@ -19,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 Artisan::command('patch:deploy', function () {
     /** Memory Leak mitigation */
     if (App::environment('local')) {
-        Laravel\Telescope\TelescopestopRecording();
+        \Laravel\Telescope\Telescope::stopRecording();
     }
 
     /** PATCH DO HERE */

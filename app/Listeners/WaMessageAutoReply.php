@@ -40,10 +40,10 @@ class WaMessageAutoReply implements ShouldQueue
             return;
         }
 
-        // Check if we've already sent an auto-reply to this number in the last 6 hours
-        $sixHoursAgo = Carbon::now()->subHours(6);
+        // Check if we've already sent an auto-reply to this number in the last 1 hour
+        $oneHourAgo = Carbon::now()->subHours(1);
         $recentAutoReply = WaMessageSentLog::where('recipient_number', $phoneNumber)
-            ->where('created_at', '>=', $sixHoursAgo)
+            ->where('created_at', '>=', $oneHourAgo)
             ->first();
 
         if ($recentAutoReply) {

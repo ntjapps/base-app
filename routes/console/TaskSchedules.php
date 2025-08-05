@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\PruneLogDebugLevelJob;
+use App\Jobs\WaApiCleanOrphanedThreadLog;
 use Illuminate\Support\Facades\Schedule;
 
 /** Packages Cron */
@@ -23,3 +24,6 @@ if (config('cache.default') === 'redis') {
 
 /** Custom Jobs Cron */
 Schedule::job(new PruneLogDebugLevelJob)->hourly();
+
+// Clean up orphaned WhatsApp message threads every day
+Schedule::job(new WaApiCleanOrphanedThreadLog)->hourly();

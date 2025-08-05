@@ -9,8 +9,12 @@ use App\Models\Permission;
 use App\Models\PermissionMenu;
 use App\Models\PermissionPrivilege;
 use App\Models\User;
+use App\Models\WaApiMeta\WaMessageSentLog;
+use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Observers\PermissionMenuObserver;
 use App\Observers\PermissionPrivilegeObserver;
+use App\Observers\WaMessageSentLogObserver;
+use App\Observers\WaMessageWebhookLogObserver;
 use App\Policies\UserPolicy;
 use Carbon\Carbon;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -110,6 +114,8 @@ class AppServiceProvider extends ServiceProvider
         /** Registering Observers */
         PermissionPrivilege::observe(PermissionPrivilegeObserver::class);
         PermissionMenu::observe(PermissionMenuObserver::class);
+        WaMessageSentLog::observe(WaMessageSentLogObserver::class);
+        WaMessageWebhookLog::observe(WaMessageWebhookLogObserver::class);
 
         /** Registering Rate Limits */
         RateLimiter::for('api', function (Request $request) {

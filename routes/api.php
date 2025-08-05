@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleManController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
+use App\Http\Controllers\WaApiController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Middleware\EnsureClientIsResourceOwner;
@@ -30,6 +31,12 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
         Route::post('/post-app-const', [AppConstController::class, 'mainConst'])->name('app-const');
         Route::post('/post-log-agent', [AppConstController::class, 'logAgent'])->name('log-agent');
         Route::post('/post-get-current-app-version', [AppConstController::class, 'getCurrentAppVersion'])->name('post-get-current-app-version');
+    });
+
+    /** WA Api Webhook */
+    Route::prefix('whatsapp')->group(function () {
+        Route::get('/webhook/{veriId}', [WaApiController::class, 'whatsappWebhookGet'])->name('whatsapp-webhook-get');
+        Route::post('/webhook/{veriId}', [WaApiController::class, 'whatsappWebhookPost'])->name('whatsapp-webhook-post');
     });
 
     /** Login Routes need rate limit to prevent attacks */

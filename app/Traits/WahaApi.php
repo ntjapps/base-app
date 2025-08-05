@@ -104,21 +104,4 @@ trait WahaApi
             'response' => $response->json(),
         ]);
     }
-
-    /**
-     * Entrypoint: Send a WhatsApp message with human-like behavior (check, seen, typing, pause, send).
-     */
-    protected function wahaSendMessageWithHumanBehavior(string $phone, string $text): void
-    {
-        $chatId = $contact['chatId'];
-        $this->wahaSendSeen($chatId);
-
-        $this->wahaStartTyping($chatId);
-        $this->wahaStopTyping($chatId);
-
-        // Simulate human pause before sending (0.3-0.8s)
-        usleep(rand(300, 800) * 1000);
-
-        $this->wahaSendText($chatId, $text);
-    }
 }

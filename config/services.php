@@ -56,4 +56,14 @@ return [
         'base_url' => env('WAHA_API_BASE_URL', 'http://localhost:3000'),
         'session' => env('WAHA_API_SESSION', 'default'),
     ],
+
+    'whatsapp' => [
+        'enabled' => (bool) env('WHATSAPP_ENABLED', false),
+        'verify_token' => env('WHATSAPP_VERIFY_TOKEN', 'your_default_verify_token'),
+        'endpoint' => env('WHATSAPP_API_ENDPOINT', 'https://graph.facebook.com/v23.0/'),
+        'business_id' => env('WHATSAPP_BUSINESS_ID'),
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'veriId' => env('WHATSAPP_VERIFICATION_ID', 'your_default_verification_id'),
+    ],
 ];

@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\WaMessageInboundEvent;
 use App\Interfaces\InterfaceClass;
 use App\Listeners\MigrationEventListener;
 use App\Listeners\MigrationStartListener;
+use App\Listeners\WaMessageAutoReply;
 use App\Models\Permission;
 use App\Models\PermissionMenu;
 use App\Models\PermissionPrivilege;
@@ -110,6 +112,8 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('laravelpassport', \SocialiteProviders\LaravelPassport\Provider::class);
         });
+
+        Event::listen(WaMessageInboundEvent::class, WaMessageAutoReply::class);
 
         /** Registering Observers */
         PermissionPrivilege::observe(PermissionPrivilegeObserver::class);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\WaMessageInboundEvent;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Traits\JsonResponse;
 use Carbon\Carbon;
@@ -78,7 +79,7 @@ class WaApiController extends Controller
                 // Extract message data
                 $message = $value['messages'][0] ?? null;
                 if ($message) {
-                    WaMessageWebhookLog::create([
+                    $webhookLog = WaMessageWebhookLog::create([
                         'phone_number_id' => $phoneNumberId,
                         'display_phone_number' => $displayPhoneNumber,
                         'contact_wa_id' => $contactWaId,
@@ -95,6 +96,9 @@ class WaApiController extends Controller
                         'message_id' => $message['id'] ?? null,
                         'from' => $message['from'] ?? null,
                     ]);
+
+                    // Dispatch the event for further processing
+                    event(new WaMessageInboundEvent($webhookLog));
                 }
             }
         } catch (\Exception $e) {

@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\WaApiMeta\WaApiMessageThreads;
 use App\Models\WaApiMeta\WaMessageSentLog;
+use Carbon\Carbon;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
 class WaMessageSentLogObserver implements ShouldHandleEventsAfterCommit
@@ -18,7 +19,7 @@ class WaMessageSentLogObserver implements ShouldHandleEventsAfterCommit
                 'phone_number' => $waMessageSentLog->recipient_number,
                 'messageable_id' => $waMessageSentLog->id,
                 'messageable_type' => get_class($waMessageSentLog),
-                'last_message_at' => now(),
+                'last_message_at' => Carbon::now(),
             ]);
         }
     }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\WaMessageInboundEvent;
+use App\Jobs\InboundMessage\WaMessageInboundJob;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Traits\JsonResponse;
 use Carbon\Carbon;
@@ -61,10 +61,19 @@ class WaApiController extends Controller
         Log::info("Webhook received {$timestamp}", ['data' => json_encode($requestData, JSON_PRETTY_PRINT)]);
 
         try {
-            // Process webhook data if it contains messages
+            // Only process INCOMING messages (should have 'messages' and NOT 'statuses')
             $entry = $requestData['entry'][0] ?? null;
             if ($entry && isset($entry['changes'][0]['field']) && $entry['changes'][0]['field'] === 'messages') {
                 $value = $entry['changes'][0]['value'];
+
+                // Ignore if this is an outgoing message status update (has 'statuses' key)
+                if (isset($value['statuses'])) {
+                    Log::info('Webhook received outgoing message status update, ignoring.', [
+                        'statuses' => $value['statuses'],
+                    ]);
+
+                    return $this->jsonSuccess('Webhook Received', 'Outgoing message status update ignored');
+                }
 
                 // Extract metadata
                 $metadata = $value['metadata'] ?? [];
@@ -79,7 +88,7 @@ class WaApiController extends Controller
                 // Extract message data
                 $message = $value['messages'][0] ?? null;
                 if ($message) {
-                    $webhookLog = WaMessageWebhookLog::create([
+                    $waMessageWebhookLog = WaMessageWebhookLog::create([
                         'phone_number_id' => $phoneNumberId,
                         'display_phone_number' => $displayPhoneNumber,
                         'contact_wa_id' => $contactWaId,
@@ -97,8 +106,9 @@ class WaApiController extends Controller
                         'from' => $message['from'] ?? null,
                     ]);
 
-                    // Dispatch the event for further processing
-                    event(new WaMessageInboundEvent($webhookLog));
+                    dispatch(new WaMessageInboundJob($waMessageWebhookLog));
+                } else {
+                    Log::warning('No message data found in webhook entry', ['entry' => $entry]);
                 }
             }
         } catch (\Exception $e) {

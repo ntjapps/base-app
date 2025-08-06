@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\WaApiMeta\WaApiMessageThreads;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
+use Carbon\Carbon;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
 class WaMessageWebhookLogObserver implements ShouldHandleEventsAfterCommit
@@ -18,7 +19,7 @@ class WaMessageWebhookLogObserver implements ShouldHandleEventsAfterCommit
                 'phone_number' => $waMessageWebhookLog->message_from,
                 'messageable_id' => $waMessageWebhookLog->id,
                 'messageable_type' => get_class($waMessageWebhookLog),
-                'last_message_at' => now(),
+                'last_message_at' => Carbon::now(),
             ]);
         }
     }

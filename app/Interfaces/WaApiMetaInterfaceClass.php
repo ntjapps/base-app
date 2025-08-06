@@ -4,7 +4,7 @@ namespace App\Interfaces;
 
 use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Traits\WaApiMeta;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 
 class WaApiMetaInterfaceClass
 {

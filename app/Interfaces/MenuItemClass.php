@@ -29,6 +29,7 @@ class MenuItemClass
                 break;
             case 'whatsapp-man':
                 $expandedKeys = '9999';
+                break;
             case 'server-logs':
                 $expandedKeys = '9999';
                 break;

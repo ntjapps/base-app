@@ -2,6 +2,7 @@
 
 namespace App\Jobs\InboundMessage;
 
+use App\Interfaces\GeminiAiInterfaceClass;
 use App\Interfaces\WaApiMetaInterfaceClass;
 use App\Models\WaApiMeta\WaMessageSentLog;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
@@ -12,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class WaMessageAutoReplyJob implements ShouldQueue
@@ -92,26 +94,63 @@ class WaMessageAutoReplyJob implements ShouldQueue
             // Get the phone number from the webhook log
             $phoneNumber = $this->webhookLog->message_from;
 
-            // Check if we've already sent an auto-reply to this number in the last 1 hour
-            $oneHourAgo = Carbon::now()->subHours(1);
-            $recentAutoReply = WaMessageSentLog::where('recipient_number', $phoneNumber)
-                ->where('created_at', '>=', $oneHourAgo)
-                ->first();
+            // Reply using Gemini AI if it's enabled but fallback on exception
+            // to auto-reply if Gemini AI is not available or enabled
+            // This is to ensure that auto-reply works even if Gemini AI is not configured or
+            // if there are issues with the Gemini AI service.
+            $message = "Hai! Terima kasih sudah menghubungi Template.\n\n"
+                     ."Pesan ini adalah balasan otomatis. Saat ini kami tidak dapat membalas pesan Anda secara langsung, silahkan hubungi kami kembali di lain waktu.\n\n";
 
-            if ($recentAutoReply) {
-                Log::info('Skipping auto-reply: Already sent within the last 1 hours', [
+            $isAiReply = false;
+            try {
+                if (config('services.geminiai.enabled')) {
+                    $ai = new GeminiAiInterfaceClass;
+                    $cacheKey = 'wa_gemini_conversation_'.$phoneNumber;
+                    $conversation = Cache::get($cacheKey, []);
+
+                    $prompt = $this->webhookLog->message_body;
+                    if (is_null($prompt)) {
+                        Log::warning('Gemini AI prompt is null, using default auto-reply.', [
+                            'to' => $phoneNumber,
+                        ]);
+                    } else {
+                        $aiReply = $ai->sendPrompt($prompt, $conversation);
+                    }
+
+                    if (! empty($aiReply)) {
+                        $message = $aiReply;
+                        $isAiReply = true;
+                        Log::debug('Gemini AI auto-reply generated', [
+                            'to' => $phoneNumber,
+                            'reply' => $aiReply,
+                        ]);
+
+                        // Add last user message to conversation
+                        $conversation[] = [
+                            'role' => 'user',
+                            'text' => $this->webhookLog->message_body,
+                        ];
+
+                        // Add model reply to conversation and cache it
+                        $conversation[] = [
+                            'role' => 'model',
+                            'text' => $aiReply,
+                        ];
+                        Cache::put($cacheKey, $conversation, now()->addHours(1));
+                    } else {
+                        Log::warning('Gemini AI returned empty response, using default auto-reply.', [
+                            'to' => $phoneNumber,
+                        ]);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Gemini AI auto-reply failed, using default auto-reply.', [
                     'to' => $phoneNumber,
-                    'last_sent' => $recentAutoReply->created_at->diffForHumans(),
+                    'error' => $e->getMessage(),
                 ]);
-
-                return;
             }
 
             $whatsApp = new WaApiMetaInterfaceClass;
-
-            // Prepare the auto-reply message
-            $message = "Hai! Terima kasih sudah menghubungi NTJ Application studio.\n\n"
-                     ."Pesan ini adalah balasan otomatis. Saat ini kami tidak dapat membalas pesan Anda secara langsung, silahkan hubungi kami kembali di lain waktu.\n\n";
 
             try {
                 // Send the auto-reply message

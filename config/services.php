@@ -66,4 +66,11 @@ return [
         'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
         'veriId' => env('WHATSAPP_VERIFICATION_ID', 'your_default_verification_id'),
     ],
+
+    'geminiai' => [
+        'enabled' => (bool) env('GEMINIAI_ENABLED', false),
+        'api_key' => env('GEMINIAI_API_KEY', 'your_default_api_key'),
+        'base_url' => env('GEMINIAI_API_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta/'),
+        'selected_model' => env('GEMINIAI_MODELS', 'gemini-2.5-flash-lite'),
+    ],
 ];

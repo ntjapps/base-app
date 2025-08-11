@@ -5,6 +5,8 @@ namespace App\Interfaces;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Traits\WaApiMeta;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class WaApiMetaInterfaceClass
 {
@@ -20,7 +22,13 @@ class WaApiMetaInterfaceClass
      */
     public function sendMessage(string $to, string $message, bool $previewUrl = false): ?array
     {
-        // Call the protected trait method
+        /** Check if this phone number is in AI Exception */
+        if (Cache::has("ai_exception_reply:{$to}")) {
+            Log::info('Phone number is in AI exception reply', ['phone_number' => $to]);
+
+            return null;
+        }
+
         return $this->sendWhatsAppMessage($to, $message, $previewUrl);
     }
 

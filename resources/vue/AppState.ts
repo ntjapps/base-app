@@ -38,6 +38,9 @@ export const useApiStore = defineStore('api', {
         postDeleteOauthClient: '/api/v1/oauth/post-delete-oauth-client',
         postUpdateOauthClient: '/api/v1/oauth/post-update-oauth-client',
         postCreateOauthClient: '/api/v1/oauth/post-create-oauth-client',
+        getWaThreadsList: '/api/v1/whatsapp/get-whatsapp-messages-list',
+        getWaThreadDetail: '/api/v1/whatsapp/get-whatsapp-messages-detail',
+        postReplyWhatsappMessage: '/api/v1/whatsapp/post-reply-whatsapp-message',
     }),
 });
 

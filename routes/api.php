@@ -9,6 +9,7 @@ use App\Http\Controllers\RoleManController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Controllers\WaApiController;
+use App\Http\Controllers\WhatsappManController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Middleware\EnsureClientIsResourceOwner;
@@ -83,6 +84,13 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::post('/post-delete-oauth-client', [PassportManController::class, 'deletePassportClient'])->name('passport.clients.destroy');
                 Route::post('/post-update-oauth-client', [PassportManController::class, 'updatePassportClient'])->name('passport.clients.update');
                 Route::post('/post-create-oauth-client', [PassportManController::class, 'createPassportClient'])->name('passport.clients.store');
+            });
+
+            Route::prefix('whatsapp')->group(function () {
+                /** Whatsapp Management */
+                Route::post('/get-whatsapp-messages-list', [WhatsappManController::class, 'getWhatsappMessagesList'])->name('whatsapp-messages-list');
+                Route::post('/get-whatsapp-messages-detail', [WhatsappManController::class, 'getWhatsappMessagesDetail'])->name('whatsapp-messages-detail');
+                Route::post('/post-reply-whatsapp-message', [WhatsappManController::class, 'postReplyWhatsappMessage'])->name('whatsapp-messages-reply');
             });
         });
     });

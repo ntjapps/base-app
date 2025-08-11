@@ -27,6 +27,8 @@ class MenuItemClass
             case 'passport-man':
                 $expandedKeys = '9999';
                 break;
+            case 'whatsapp-man':
+                $expandedKeys = '9999';
             case 'server-logs':
                 $expandedKeys = '9999';
                 break;
@@ -85,6 +87,12 @@ class MenuItemClass
                 'label' => 'Passport Management',
                 'icon' => 'pi pi-key',
                 'url' => parse_url(route('passport-man'), PHP_URL_PATH),
+            ]);
+
+            array_push($childMenu, [
+                'label' => 'WhatsApp Management',
+                'icon' => 'pi pi-whatsapp',
+                'url' => parse_url(route('whatsapp-man'), PHP_URL_PATH),
             ]);
 
             array_push($childMenu, [

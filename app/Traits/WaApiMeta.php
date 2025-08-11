@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\WaApiMeta\WaMessageSentLog;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -114,5 +115,16 @@ trait WaApiMeta
 
             return null;
         }
+    }
+
+    /**
+     * Add phone number to AI exception reply
+     * For now set to 30 minutes
+     */
+    public function addToAIExceptionReply(string $phoneNumber): void
+    {
+        Cache::add("ai_exception_reply:{$phoneNumber}", true, 1800);
+
+        Log::debug('Added phone number to AI exception reply', ['phone_number' => $phoneNumber]);
     }
 }

@@ -23,10 +23,10 @@ Artisan::command('ai:check-instruction', function () {
     $path = storage_path('model_instruction.txt');
     if (file_exists($path)) {
         $content = file_get_contents($path);
-        $this->info('model_instruction.txt exists at: ' . $path);
+        $this->info('model_instruction.txt exists at: '.$path);
         $this->line('--- File Content ---');
         $this->line($content);
     } else {
-        $this->warn('model_instruction.txt does NOT exist at: ' . $path);
+        $this->warn('model_instruction.txt does NOT exist at: '.$path);
     }
 })->purpose('Check if Gemini AI instruction file exists and show its content');

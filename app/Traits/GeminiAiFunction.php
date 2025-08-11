@@ -5,7 +5,6 @@ namespace App\Traits;
 use ErrorException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 trait GeminiAiFunction
 {

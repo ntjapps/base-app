@@ -4,9 +4,7 @@ namespace App\Jobs\InboundMessage;
 
 use App\Interfaces\GeminiAiInterfaceClass;
 use App\Interfaces\WaApiMetaInterfaceClass;
-use App\Models\WaApiMeta\WaMessageSentLog;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

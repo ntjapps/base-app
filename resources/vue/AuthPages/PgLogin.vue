@@ -50,8 +50,8 @@ const postLoginData = () => {
                 detail: error.response.data.message,
                 response: error,
             });
+            turnchild.value?.resetTurnstile();
         });
-    turnchild.value?.resetTurnstile();
 };
 
 const clearData = () => {

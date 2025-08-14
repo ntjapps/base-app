@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { timeGreetings, RoleListDataInterface } from '../AppCommon';
 import { useMainStore } from '../AppState';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
 
@@ -35,7 +35,7 @@ const filters = ref({
 const getRoleListData = async () => {
     try {
         loading.value = true;
-        const response = await AppAxios.getRoleList();
+    const response = await api.getRoleList();
         roleListData.value = response.data;
     } catch (error) {
         toastchild.value?.toastDisplay(error);

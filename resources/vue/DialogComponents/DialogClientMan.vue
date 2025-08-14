@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import useClipboard from 'vue-clipboard3';
 import { ClientListDataInterface } from '../AppCommon';
 import CmpToast from '../Components/CmpToast.vue';
@@ -75,7 +75,7 @@ const copySecretToClipboard = () => {
 
 const deleteClient = async (id: string) => {
     try {
-        const response = await AppAxios.postDeleteOauthClient({
+    const response = await api.postDeleteOauthClient({
             id: id,
         });
         toastchild.value?.toastDisplay({
@@ -91,7 +91,7 @@ const deleteClient = async (id: string) => {
 
 const resetClient = async (id: string) => {
     try {
-        const response = await AppAxios.postResetOauthSecret({
+    const response = await api.postResetOauthSecret({
             id: id,
             old_secret: oldClientSecret.value,
         });
@@ -108,7 +108,7 @@ const resetClient = async (id: string) => {
 
 const updateClient = async (id: string) => {
     try {
-        const response = await AppAxios.postUpdateOauthClient({
+    const response = await api.postUpdateOauthClient({
             id: id,
             name: clientName.value,
             redirect: clientRedirect.value,
@@ -126,7 +126,7 @@ const updateClient = async (id: string) => {
 
 const createClient = async () => {
     try {
-        const response = await AppAxios.postCreateOauthClient({
+    const response = await api.postCreateOauthClient({
             name: clientName.value,
             redirect: clientRedirect.value,
         });

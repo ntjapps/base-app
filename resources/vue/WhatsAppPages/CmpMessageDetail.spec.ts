@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import CmpMessageDetail from './CmpMessageDetail.vue';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import PrimeVue from 'primevue/config';
 
 vi.mock('../AppAxios', () => ({
-    AppAxios: {
+    api: {
         getWhatsappMessagesDetail: vi.fn(),
-        getWaThreadDetail: vi.fn(),
         postReplyWhatsappMessage: vi.fn(),
     },
 }));
@@ -21,7 +20,7 @@ describe('CmpMessageDetail', () => {
         const mockPhone = '1234567890';
     const mockResponse = { data: [] };
 
-    (AppAxios.getWaThreadDetail as any).mockResolvedValueOnce(mockResponse);
+    (api.getWhatsappMessagesDetail as any).mockResolvedValueOnce(mockResponse);
 
         const wrapper = mount(CmpMessageDetail, {
             props: {
@@ -40,8 +39,8 @@ describe('CmpMessageDetail', () => {
             }
         });
 
-        await wrapper.vm.$nextTick();
-        expect(AppAxios.getWaThreadDetail).toHaveBeenCalledWith({
+    await wrapper.vm.$nextTick();
+    expect(api.getWhatsappMessagesDetail).toHaveBeenCalledWith({
             phone_number: mockPhone,
         });
     });
@@ -50,8 +49,8 @@ describe('CmpMessageDetail', () => {
         const mockPhone = '1234567890';
     const mockResponse = { data: { title: 'Success', message: 'Message sent' } };
 
-    (AppAxios.postReplyWhatsappMessage as any).mockResolvedValueOnce(mockResponse);
-    (AppAxios.getWaThreadDetail as any).mockResolvedValueOnce({ data: [] });
+    (api.postReplyWhatsappMessage as any).mockResolvedValueOnce(mockResponse);
+    (api.getWhatsappMessagesDetail as any).mockResolvedValueOnce({ data: [] });
 
         const wrapper = mount(CmpMessageDetail, {
             props: {
@@ -77,7 +76,7 @@ describe('CmpMessageDetail', () => {
     // call method directly to avoid UI coupling
     await (wrapper.vm as any).sendReply();
 
-    expect(AppAxios.postReplyWhatsappMessage).toHaveBeenCalledWith({
+    expect(api.postReplyWhatsappMessage).toHaveBeenCalledWith({
             phone_number: mockPhone,
             message: 'Hello',
         });
@@ -85,7 +84,7 @@ describe('CmpMessageDetail', () => {
 
     it('should not send when message is empty', async () => {
         const mockPhone = '1234567890';
-        (AppAxios.postReplyWhatsappMessage as any).mockResolvedValueOnce({ data: {} });
+    (api.postReplyWhatsappMessage as any).mockResolvedValueOnce({ data: {} });
 
         const wrapper = mount(CmpMessageDetail, {
             props: {
@@ -108,6 +107,6 @@ describe('CmpMessageDetail', () => {
         (wrapper.vm as any).replyMessage = '';
         await (wrapper.vm as any).sendReply();
 
-        expect(AppAxios.postReplyWhatsappMessage).not.toHaveBeenCalled();
+    expect(api.postReplyWhatsappMessage).not.toHaveBeenCalled();
     });
 });

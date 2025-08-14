@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMainStore } from '../AppState';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import CmpLayout from '../Components/CmpLayout.vue';
 import CmpToast from '../Components/CmpToast.vue';
 
@@ -24,7 +24,7 @@ const confirmPassword = ref<string | null>('');
 
 const postProfileData = async () => {
     try {
-        await AppAxios.postUpdateProfile({
+    await api.postUpdateProfile({
             name: userName.value,
             password: newPassword.value,
             password_confirmation: confirmPassword.value,

@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { timeGreetings } from '../AppCommon';
 import { useMainStore } from '../AppState';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import CmpLayout from '../Components/CmpLayout.vue';
 
 import DataTable from '../volt/DataTable.vue';
@@ -91,7 +91,7 @@ const pageDropdownCustomOptions = computed(() => {
 const getServerLogData = async () => {
     try {
         loadingstat.value = true;
-        const response = await AppAxios.getServerLogs();
+    const response = await api.getServerLogs();
         serverLogResponse.value = response.data.data;
         pageDropdownCustom.value = response.data.data.current_page;
     } catch (error) {
@@ -104,7 +104,7 @@ const getServerLogData = async () => {
 const nextPageCustomCallback = async () => {
     if (serverLogResponse.value?.next_page_url !== null) {
         try {
-            const response = await AppAxios.post(serverLogResponse.value?.next_page_url ?? '');
+            const response = await api.requestPost(serverLogResponse.value?.next_page_url ?? '');
             serverLogResponse.value = response.data;
             pageDropdownCustom.value = response.data.current_page;
         } catch (error) {
@@ -116,7 +116,7 @@ const nextPageCustomCallback = async () => {
 const prevPageCustomCallback = async () => {
     if (serverLogResponse.value?.prev_page_url !== null) {
         try {
-            const response = await AppAxios.post(serverLogResponse.value?.prev_page_url ?? '');
+            const response = await api.requestPost(serverLogResponse.value?.prev_page_url ?? '');
             serverLogResponse.value = response.data;
             pageDropdownCustom.value = response.data.current_page;
         } catch (error) {
@@ -127,7 +127,7 @@ const prevPageCustomCallback = async () => {
 
 const changePageCustomCallback = async (page: number) => {
     try {
-        const response = await AppAxios.post(serverLogResponse.value?.path ?? '', { page });
+    const response = await api.requestPost(serverLogResponse.value?.path ?? '', { page });
         serverLogResponse.value = response.data;
         pageDropdownCustom.value = response.data.current_page;
     } catch (error) {

@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { timeGreetings, UserDataInterface } from '../AppCommon';
 import { useMainStore } from '../AppState';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
 
@@ -37,7 +37,7 @@ const filters = ref({
 const getUserListData = async () => {
     try {
         loading.value = true;
-        const response = await AppAxios.getUserList();
+    const response = await api.getUserList();
         userListData.value = response.data;
     } catch (error) {
         toastchild.value?.toastDisplay(error);

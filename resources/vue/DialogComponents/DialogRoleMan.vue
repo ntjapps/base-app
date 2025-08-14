@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import { PermissionDataInterface, RoleListDataInterface } from '../AppCommon';
 import CmpToast from '../Components/CmpToast.vue';
 
@@ -49,7 +49,7 @@ const showDeleted = computed(() => {
 
 const getRoleListData = async () => {
     try {
-        const response = await AppAxios.getUserRolePerm();
+    const response = await api.getUserRolePerm();
         permListData.value = response.data.permissions;
         selectedPermListData.value = response.data.permissions.filter(
             (perm: PermissionDataInterface) => {
@@ -67,7 +67,7 @@ const getRoleListData = async () => {
 
 const postRolemanData = async () => {
     try {
-        const response = await AppAxios.postRoleSubmit({
+    const response = await api.postRoleSubmit({
             type_create: typeCreate.value ? 1 : 0,
             role_name: typeCreate.value ? nameData.value : null,
             role_id: typeCreate.value ? null : rolemanData?.id,
@@ -89,7 +89,7 @@ const postRolemanData = async () => {
 
 const postDeleteRolemanData = async () => {
     try {
-        const response = await AppAxios.postDeleteRoleSubmit({
+    const response = await api.postDeleteRoleSubmit({
             id: rolemanData?.id,
         });
         closeDialogFunction();

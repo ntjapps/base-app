@@ -2,14 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import PgWhatsApp from './PgWhatsApp.vue';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import PrimeVue from 'primevue/config';
 import Echo from 'laravel-echo';
 
 vi.mock('../AppAxios', () => ({
-    AppAxios: {
+    api: {
         getWhatsappMessagesList: vi.fn(),
-        getWaThreadsList: vi.fn(),
     },
 }));
 
@@ -25,7 +24,7 @@ describe('PgWhatsApp', () => {
     it('should fetch thread list when mounted', async () => {
     const mockResponse = { data: [] };
 
-    (AppAxios.getWaThreadsList as any).mockResolvedValueOnce(mockResponse);
+    (api.getWhatsappMessagesList as any).mockResolvedValueOnce(mockResponse);
 
         const wrapper = mount(PgWhatsApp, {
             props: {
@@ -54,7 +53,7 @@ describe('PgWhatsApp', () => {
 
         await wrapper.vm.$nextTick();
 
-    expect(AppAxios.getWaThreadsList).toHaveBeenCalled();
+    expect(api.getWhatsappMessagesList).toHaveBeenCalled();
     });
 
     it('should update thread list data after fetch', async () => {
@@ -69,7 +68,7 @@ describe('PgWhatsApp', () => {
 
     const mockResponse = { data: mockThreads };
 
-    (AppAxios.getWaThreadsList as any).mockResolvedValueOnce(mockResponse);
+    (api.getWhatsappMessagesList as any).mockResolvedValueOnce(mockResponse);
 
         const wrapper = mount(PgWhatsApp, {
             props: {

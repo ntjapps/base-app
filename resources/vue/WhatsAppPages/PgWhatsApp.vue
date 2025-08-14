@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useMainStore } from '../AppState';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
 import CmpMessageDetail from './CmpMessageDetail.vue';
@@ -41,7 +41,7 @@ const filters = ref({
 const getThreadListData = async () => {
     try {
         loading.value = true;
-        const response = await AppAxios.getWaThreadsList();
+    const response = await api.getWhatsappMessagesList();
         threadListData.value = response.data;
     } catch (error) {
         toastchild.value?.toastDisplay(error);

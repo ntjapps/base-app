@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { AppAxios } from '../AppAxios';
+import { api } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import Textarea from '../volt/Textarea.vue';
 
@@ -109,7 +109,7 @@ const closeDialogFunction = () => {
 
 const getMessageDetails = async () => {
     try {
-        const response = await AppAxios.getWaThreadDetail({
+    const response = await api.getWhatsappMessagesDetail({
             phone_number: props.dialogData?.phone_number,
         });
         messageDetail.value = response.data;
@@ -123,7 +123,7 @@ const sendReply = async () => {
 
     isSubmitting.value = true;
     try {
-        const response = await AppAxios.postReplyWhatsappMessage({
+    const response = await api.postReplyWhatsappMessage({
             phone_number: props.dialogData?.phone_number,
             message: replyMessage.value,
         });

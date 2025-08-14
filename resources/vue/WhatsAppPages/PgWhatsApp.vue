@@ -41,7 +41,7 @@ const filters = ref({
 const getThreadListData = async () => {
     try {
         loading.value = true;
-    const response = await api.getWhatsappMessagesList();
+        const response = await api.getWhatsappMessagesList();
         threadListData.value = response.data;
     } catch (error) {
         toastchild.value?.toastDisplay(error);

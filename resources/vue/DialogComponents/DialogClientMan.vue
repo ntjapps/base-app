@@ -75,7 +75,7 @@ const copySecretToClipboard = () => {
 
 const deleteClient = async (id: string) => {
     try {
-    const response = await api.postDeleteOauthClient({
+        const response = await api.postDeleteOauthClient({
             id: id,
         });
         toastchild.value?.toastDisplay({
@@ -91,7 +91,7 @@ const deleteClient = async (id: string) => {
 
 const resetClient = async (id: string) => {
     try {
-    const response = await api.postResetOauthSecret({
+        const response = await api.postResetOauthSecret({
             id: id,
             old_secret: oldClientSecret.value,
         });
@@ -108,7 +108,7 @@ const resetClient = async (id: string) => {
 
 const updateClient = async (id: string) => {
     try {
-    const response = await api.postUpdateOauthClient({
+        const response = await api.postUpdateOauthClient({
             id: id,
             name: clientName.value,
             redirect: clientRedirect.value,
@@ -126,7 +126,7 @@ const updateClient = async (id: string) => {
 
 const createClient = async () => {
     try {
-    const response = await api.postCreateOauthClient({
+        const response = await api.postCreateOauthClient({
             name: clientName.value,
             redirect: clientRedirect.value,
         });

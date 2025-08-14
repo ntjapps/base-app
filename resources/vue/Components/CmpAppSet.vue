@@ -48,7 +48,6 @@ const registerNotification = () => {
 onMounted(() => {
     registerNotification();
     main.spaCsrfToken();
-    main.getNotificationList();
     main.init();
     main.browserSuppportCheck();
 });

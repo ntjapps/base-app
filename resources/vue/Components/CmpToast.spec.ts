@@ -6,7 +6,7 @@ describe('CmpToast.vue', () => {
     it('mounts and exposes toastDisplay', () => {
         const wrapper = mount(CmpToast);
         expect(wrapper.exists()).toBe(true);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         expect(typeof (wrapper.vm as any).toastDisplay).toBe('function');
     });
 });

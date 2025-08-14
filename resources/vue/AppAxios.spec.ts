@@ -130,7 +130,9 @@ describe('ApiClient', () => {
 
         it('should update profile successfully', async () => {
             const axiosInstance = axios.create();
-            vi.spyOn((globalThis as any).__axiosMock, 'post').mockResolvedValueOnce(successResponse);
+            vi.spyOn((globalThis as any).__axiosMock, 'post').mockResolvedValueOnce(
+                successResponse,
+            );
 
             await api.postUpdateProfile(profileData);
 

@@ -13,13 +13,12 @@ vi.mock('../AppAxios', () => {
     return {
         api: {
             postGetCurrentAppVersion: vi.fn(rejected),
-            getLogout: vi.fn(rejected)
-        }
+            getLogout: vi.fn(rejected),
+        },
     };
 });
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     var __originalConsoleError: ((msg?: any, ...args: any[]) => void) | undefined;
 }
 
@@ -28,7 +27,7 @@ beforeAll(() => {
         if (typeof msg === 'string' && msg.includes('AggregateError')) return;
         return undefined;
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (globalThis as any).Pusher = vi.fn();
     vi.spyOn(Echo.prototype as any, 'connect').mockImplementation(() => undefined);
 });

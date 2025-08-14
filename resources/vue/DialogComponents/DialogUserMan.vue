@@ -56,7 +56,7 @@ const showDeleted = computed(() => {
 
 const getUserRoleListData = async () => {
     try {
-    const response = await api.getUserRolePerm();
+        const response = await api.getUserRolePerm();
         roleListData.value = response.data.roles;
         permListData.value = response.data.permissions;
         selectedRoleListData.value = response.data.roles.filter((role: RoleDataInterface) => {
@@ -82,7 +82,7 @@ const getUserRoleListData = async () => {
 
 const postUserManData = async () => {
     try {
-    const response = await api.postUserManSubmit({
+        const response = await api.postUserManSubmit({
             type_create: typeCreate.value ? 1 : 0,
             id: usermanData?.id,
             name: nameData.value,
@@ -107,7 +107,7 @@ const postUserManData = async () => {
 
 const postDeleteUserManData = async () => {
     try {
-    const response = await api.postDeleteUserManSubmit({
+        const response = await api.postDeleteUserManSubmit({
             id: usermanData?.id,
         });
         closeDialogFunction();
@@ -123,7 +123,7 @@ const postDeleteUserManData = async () => {
 
 const postResetPasswordUserMandata = async () => {
     try {
-    const response = await api.postResetPasswordUserManSubmit({
+        const response = await api.postResetPasswordUserManSubmit({
             id: usermanData?.id,
         });
         closeDialogFunction();

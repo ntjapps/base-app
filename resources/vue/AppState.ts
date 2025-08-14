@@ -3,14 +3,13 @@ import { defineStore } from 'pinia';
 import { supportedBrowsers } from '../ts/browser';
 import { MenuItem } from 'primevue/menuitem';
 import { api } from './AppAxios';
-import type { AxiosError } from 'axios';
 
 interface Notification {
     id: string;
     type: string;
     notifiable_type: string;
     notifiable_id: number;
-    data: Record<string, unknown>;
+    data: Partial<Record<string, unknown>>;
     read_at: string | null;
     created_at: string;
     updated_at: string;
@@ -33,17 +32,19 @@ interface MenuItemExtended extends MenuItem {
     items?: Array<MenuItemExtended>;
 }
 
+// removed unused DeepPartial type
+
 export const useMainStore = defineStore('main', {
     state: () => ({
         /** Additional data */
-        appName: import.meta.env.APP_NAME,
+        notificationList: [] as Notification[],
+        appName: '',
         appVersion: '',
         userName: '',
         userId: '',
-        notificationList: [] as Notification[],
-        browserSuppport: true,
-        menuItems: Array<MenuItemExtended>(),
-        expandedKeysMenu: {},
+        browserSuppport: true as boolean,
+        menuItems: [] as MenuItemExtended[],
+        expandedKeysMenu: {} as Record<string, boolean>,
         turnstileToken: '',
         menuVisible: false,
     }),
@@ -53,17 +54,20 @@ export const useMainStore = defineStore('main', {
             /** Get Constant */
             try {
                 const response = await api.postAppConst();
-                const data = response.data.data as AppConstResponse;
+                const data = response.data as unknown as AppConstResponse;
                 // Update each field individually to avoid typing issues
-                this.$patch((state) => {
-                    state.appName = data.appName;
-                    state.appVersion = data.appVersion;
-                    state.userName = data.userName;
-                    state.userId = data.userId;
-                    state.menuItems = Object.values(data.menuItems);
+                this.$patch({
+                    appName: data.appName,
+                    appVersion: data.appVersion,
+                    userName: data.userName,
+                    userId: data.userId,
+                    menuItems: Object.values(data.menuItems),
                 });
+
+                // Fetch notifications only when userId is available
+                await this.getNotificationList();
             } catch (error) {
-                console.error((error as AxiosError).response?.data);
+                console.error(error);
             }
         },
 
@@ -76,7 +80,7 @@ export const useMainStore = defineStore('main', {
                 try {
                     await api.postLogAgent();
                 } catch (error) {
-                    console.error((error as AxiosError).response?.data);
+                    console.error(error);
                 }
             } else {
                 this.$patch({ browserSuppport: true });
@@ -90,7 +94,7 @@ export const useMainStore = defineStore('main', {
             try {
                 await fetch('/sanctum/csrf-cookie', {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include',
                 });
                 console.log('csrf cookie init');
             } catch (error) {
@@ -103,18 +107,20 @@ export const useMainStore = defineStore('main', {
              * Get notification list
              */
             try {
+                if (!this.userId) return;
                 const response = await api.getNotificationList();
                 this.$patch((state) => {
                     state.notificationList = (response.data.data as Notification[]) || [];
                 });
             } catch (error) {
-                console.error((error as AxiosError).response?.data);
+                console.error(error);
             }
         },
 
         updateExpandedKeysMenu(expandedKeys: string) {
             this.$patch({
                 expandedKeysMenu: {
+                    ...(this.expandedKeysMenu ?? {}),
                     [expandedKeys]: true,
                 },
             });

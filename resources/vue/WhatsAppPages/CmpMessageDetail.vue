@@ -109,7 +109,7 @@ const closeDialogFunction = () => {
 
 const getMessageDetails = async () => {
     try {
-    const response = await api.getWhatsappMessagesDetail({
+        const response = await api.getWhatsappMessagesDetail({
             phone_number: props.dialogData?.phone_number,
         });
         messageDetail.value = response.data;
@@ -123,7 +123,7 @@ const sendReply = async () => {
 
     isSubmitting.value = true;
     try {
-    const response = await api.postReplyWhatsappMessage({
+        const response = await api.postReplyWhatsappMessage({
             phone_number: props.dialogData?.phone_number,
             message: replyMessage.value,
         });

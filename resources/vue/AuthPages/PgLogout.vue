@@ -11,7 +11,7 @@ const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
 onMounted(async () => {
     try {
-    await api.postTokenRevoke();
+        await api.postTokenRevoke();
         router.push(web.loginPage);
     } catch (error) {
         toastchild.value?.toastDisplay(error);

@@ -36,6 +36,18 @@ export default [
             '@typescript-eslint/no-explicit-any': 'warn',
         },
     },
+    // tests (spec files): allow any and unused vars in tests/mocks
+    {
+        files: [
+            'resources/ts/**/*.spec.ts',
+            'resources/vue/**/*.spec.ts',
+            'resources/vue/**/__tests__/**/*.ts',
+        ],
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-vars': 'off',
+        },
+    },
 
     // vue
     ...vue.configs['flat/recommended'],

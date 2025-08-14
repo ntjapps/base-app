@@ -15,22 +15,22 @@ vi.mock('../AppAxios', () => ({
 beforeEach(() => {
     setActivePinia(createPinia());
     // Neutralize Echo/Pusher used by stores on mount
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (globalThis as any).Pusher = vi.fn();
     vi.spyOn(Echo.prototype as any, 'connect').mockImplementation(() => undefined);
 });
 
 describe('PgWhatsApp', () => {
     it('should fetch thread list when mounted', async () => {
-    const mockResponse = { data: [] };
+        const mockResponse = { data: [] };
 
-    (api.getWhatsappMessagesList as any).mockResolvedValueOnce(mockResponse);
+        (api.getWhatsappMessagesList as any).mockResolvedValueOnce(mockResponse);
 
         const wrapper = mount(PgWhatsApp, {
             props: {
                 appName: 'Test App',
                 greetings: 'Hello',
-                expandedKeysProps: ''
+                expandedKeysProps: '',
             },
             global: {
                 plugins: [PrimeVue],
@@ -48,12 +48,12 @@ describe('PgWhatsApp', () => {
                     $route: {},
                     $router: { push: vi.fn() },
                 },
-            }
+            },
         });
 
         await wrapper.vm.$nextTick();
 
-    expect(api.getWhatsappMessagesList).toHaveBeenCalled();
+        expect(api.getWhatsappMessagesList).toHaveBeenCalled();
     });
 
     it('should update thread list data after fetch', async () => {
@@ -62,19 +62,19 @@ describe('PgWhatsApp', () => {
                 id: '1',
                 phone_number: '1234567890',
                 last_message_at: '2023-01-01',
-                message_preview: 'Test message'
-            }
+                message_preview: 'Test message',
+            },
         ];
 
-    const mockResponse = { data: mockThreads };
+        const mockResponse = { data: mockThreads };
 
-    (api.getWhatsappMessagesList as any).mockResolvedValueOnce(mockResponse);
+        (api.getWhatsappMessagesList as any).mockResolvedValueOnce(mockResponse);
 
         const wrapper = mount(PgWhatsApp, {
             props: {
                 appName: 'Test App',
                 greetings: 'Hello',
-                expandedKeysProps: ''
+                expandedKeysProps: '',
             },
             global: {
                 plugins: [PrimeVue],
@@ -92,13 +92,13 @@ describe('PgWhatsApp', () => {
                     $route: {},
                     $router: { push: vi.fn() },
                 },
-            }
+            },
         });
 
         await wrapper.vm.$nextTick();
 
-    // Since the component uses DataTable with :value binding, validate reactive data
-    // by checking internal state via vm
-    expect((wrapper.vm as any).threadListData).toEqual(mockThreads);
+        // Since the component uses DataTable with :value binding, validate reactive data
+        // by checking internal state via vm
+        expect((wrapper.vm as any).threadListData).toEqual(mockThreads);
     });
 });

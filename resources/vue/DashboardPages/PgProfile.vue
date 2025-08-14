@@ -24,7 +24,7 @@ const confirmPassword = ref<string | null>('');
 
 const postProfileData = async () => {
     try {
-    await api.postUpdateProfile({
+        await api.postUpdateProfile({
             name: userName.value,
             password: newPassword.value,
             password_confirmation: confirmPassword.value,

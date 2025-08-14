@@ -34,7 +34,7 @@ const filters = ref({
 const getClientListData = async () => {
     try {
         loading.value = true;
-    const response = await api.postGetOauthClient();
+        const response = await api.postGetOauthClient();
         clientListData.value = response.data;
     } catch (error) {
         toastchild.value?.toastDisplay(error);

@@ -4,7 +4,6 @@ import { createPinia } from 'pinia';
 import CmpPusherState from './CmpPusherState.vue';
 
 beforeAll(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).Pusher = vi.fn();
 });
 

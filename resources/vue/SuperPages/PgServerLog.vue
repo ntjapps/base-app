@@ -91,7 +91,7 @@ const pageDropdownCustomOptions = computed(() => {
 const getServerLogData = async () => {
     try {
         loadingstat.value = true;
-    const response = await api.getServerLogs();
+        const response = await api.getServerLogs();
         serverLogResponse.value = response.data.data;
         pageDropdownCustom.value = response.data.data.current_page;
     } catch (error) {
@@ -127,7 +127,7 @@ const prevPageCustomCallback = async () => {
 
 const changePageCustomCallback = async (page: number) => {
     try {
-    const response = await api.requestPost(serverLogResponse.value?.path ?? '', { page });
+        const response = await api.requestPost(serverLogResponse.value?.path ?? '', { page });
         serverLogResponse.value = response.data;
         pageDropdownCustom.value = response.data.current_page;
     } catch (error) {

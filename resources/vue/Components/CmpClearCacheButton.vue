@@ -7,7 +7,7 @@ const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
 const postClearCache = async () => {
     try {
-    await api.postClearAppCache();
+        await api.postClearAppCache();
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     }

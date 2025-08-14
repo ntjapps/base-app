@@ -35,7 +35,7 @@ const filters = ref({
 const getRoleListData = async () => {
     try {
         loading.value = true;
-    const response = await api.getRoleList();
+        const response = await api.getRoleList();
         roleListData.value = response.data;
     } catch (error) {
         toastchild.value?.toastDisplay(error);

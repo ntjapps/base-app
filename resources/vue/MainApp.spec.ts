@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils';
 import MainApp from './MainApp.vue';
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     var __originalConsoleError: ((msg?: any, ...args: any[]) => void) | undefined;
 }
 

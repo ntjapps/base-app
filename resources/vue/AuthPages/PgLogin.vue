@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import axios from 'axios';
-import { ref, onBeforeUpdate } from 'vue';
+import { ref, onBeforeUpdate, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useMainStore, useWebApiStore } from '../AppState';
+import { useMainStore } from '../AppState';
 import { useWebStore } from '../AppRouter';
+import { api } from '../AppAxios';
 
 import CmpTurnstile from '../Components/CmpTurnstile.vue';
 import CmpToast from '../Components/CmpToast.vue';
@@ -13,50 +13,44 @@ import Password from '../volt/Password.vue';
 import LoginSpinner from '../volt/LoginSpinner.vue';
 
 const web = useWebStore();
-const webapi = useWebApiStore();
 const main = useMainStore();
 const { appName, turnstileToken, browserSuppport, userName } = storeToRefs(main);
 
 const username = ref('');
 const password = ref('');
 const loading = ref(false);
-const turnchild = ref<typeof CmpTurnstile>();
-const toastchild = ref<typeof CmpToast>();
+const turnchild = ref<InstanceType<typeof CmpTurnstile> | null>(null);
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
-const postLoginData = () => {
-    loading.value = true;
-    axios
-        .post(webapi.postLogin, {
-            username: username.value,
-            password: password.value,
-            token: turnstileToken.value,
-        })
-        .then((response) => {
-            clearData();
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .then(() => {
-            window.location.href = web.dashboard;
-        })
-        .catch((error) => {
-            loading.value = false;
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
-            turnchild.value?.resetTurnstile();
-        });
-};
+onMounted(() => {
+    if (toastchild.value?.toastDisplay) {
+        api.setToastDisplay(toastchild.value.toastDisplay);
+    }
+    if (turnchild.value?.resetTurnstile) {
+        api.setTurnstileReset(turnchild.value.resetTurnstile);
+    }
+});
 
 const clearData = () => {
     username.value = '';
     password.value = '';
+};
+
+const postLoginData = async () => {
+    if (!username.value || !password.value || !turnstileToken.value) return;
+
+    try {
+        loading.value = true;
+        await api.postLogin({
+            username: username.value,
+            password: password.value,
+            token: turnstileToken.value,
+        });
+        clearData();
+        window.location.href = web.dashboard;
+    } finally {
+        loading.value = false;
+    }
 };
 
 onBeforeUpdate(() => {

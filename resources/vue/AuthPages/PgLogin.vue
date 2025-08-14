@@ -23,9 +23,6 @@ const turnchild = ref<InstanceType<typeof CmpTurnstile> | null>(null);
 const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
 onMounted(() => {
-    if (toastchild.value?.toastDisplay) {
-        api.setToastDisplay(toastchild.value.toastDisplay);
-    }
     if (turnchild.value?.resetTurnstile) {
         api.setTurnstileReset(turnchild.value.resetTurnstile);
     }

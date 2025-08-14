@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMainStore, useEchoStore } from '../AppState';
+import { api } from '../AppAxios';
+import CmpToast from './CmpToast.vue';
 
 const main = useMainStore();
 const echo = useEchoStore();
@@ -10,6 +12,7 @@ const { laravelEcho } = storeToRefs(echo);
 // eslint-disable-next-line no-undef
 const toast = useToast();
 const prevId = ref<string | null>(null);
+const toastRef = ref<InstanceType<typeof CmpToast> | null>(null);
 
 const registerNotification = () => {
     main.$subscribe((mutation) => {
@@ -46,6 +49,11 @@ const registerNotification = () => {
 };
 
 onMounted(() => {
+    // Register global API toast handler once
+    if (toastRef.value?.toastDisplay) {
+        api.setToastDisplay(toastRef.value.toastDisplay);
+    }
+
     registerNotification();
     main.spaCsrfToken();
     main.init();
@@ -54,5 +62,6 @@ onMounted(() => {
 </script>
 
 <template>
+    <CmpToast ref="toastRef" />
     <slot />
 </template>

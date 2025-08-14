@@ -65,6 +65,18 @@ export class ApiClient {
         }
     }
 
+    // Helper method to display success toast when API returns standard shape
+    private showToastIfPresent<T>(response: AxiosResponse<T>) {
+        const data = response?.data as unknown as { title?: string; message?: string } | undefined;
+        if (data && typeof data === 'object' && data.title && data.message) {
+            this.showToast({
+                severity: 'success',
+                summary: String(data.title),
+                detail: String(data.message),
+            });
+        }
+    }
+
     // Helper method to handle API errors
     private handleError(error: AxiosError<ApiError>) {
         const errorData = error.response?.data;
@@ -86,7 +98,9 @@ export class ApiClient {
     // Generic request methods with error handling
     private async get<T>(url: string, config = {}): Promise<AxiosResponse<T>> {
         try {
-            return await this.axios.get<T>(url, config);
+            const response = await this.axios.get<T>(url, config);
+            this.showToastIfPresent(response);
+            return response;
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
         }
@@ -94,7 +108,9 @@ export class ApiClient {
 
     private async post<T>(url: string, data = {}, config = {}): Promise<AxiosResponse<T>> {
         try {
-            return await this.axios.post<T>(url, data, config);
+            const response = await this.axios.post<T>(url, data, config);
+            this.showToastIfPresent(response);
+            return response;
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
         }
@@ -107,7 +123,9 @@ export class ApiClient {
 
     private async put<T>(url: string, data = {}, config = {}): Promise<AxiosResponse<T>> {
         try {
-            return await this.axios.put<T>(url, data, config);
+            const response = await this.axios.put<T>(url, data, config);
+            this.showToastIfPresent(response);
+            return response;
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
         }
@@ -115,7 +133,9 @@ export class ApiClient {
 
     private async delete<T>(url: string, config = {}): Promise<AxiosResponse<T>> {
         try {
-            return await this.axios.delete<T>(url, config);
+            const response = await this.axios.delete<T>(url, config);
+            this.showToastIfPresent(response);
+            return response;
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
         }
@@ -137,13 +157,7 @@ export class ApiClient {
     // Auth APIs
     // Web auth routes
     async postLogin(data: LoginRequest): Promise<AxiosResponse<LoginResponse>> {
-        const response = await this.post<LoginResponse>('/post-login', data);
-        this.showToast({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-        return response;
+        return this.post<LoginResponse>('/post-login', data);
     }
 
     async postLogout(): Promise<AxiosResponse<ApiResponse>> {
@@ -156,13 +170,7 @@ export class ApiClient {
 
     // API auth routes
     async postToken(data: LoginRequest): Promise<AxiosResponse<LoginResponse>> {
-        const response = await this.post<LoginResponse>('/api/v1/auth/post-token', data);
-        this.showToast({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-        return response;
+        return this.post<LoginResponse>('/api/v1/auth/post-token', data);
     }
 
     async postTokenRevoke(): Promise<AxiosResponse<ApiResponse>> {
@@ -185,7 +193,7 @@ export class ApiClient {
     }
 
     async postUpdateProfile(data: Record<string, unknown>): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/profile/post-update-profile', data);
+        return this.post<ApiResponse>('/api/v1/profile/post-update-profile', data);
     }
 
     // User Management APIs

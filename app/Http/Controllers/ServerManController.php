@@ -47,6 +47,8 @@ class ServerManController extends Controller
             'log_level' => ['nullable', 'string'],
             'log_message' => ['nullable', 'string'],
             'log_extra' => ['nullable', 'string'],
+            'page' => ['nullable', 'integer'],
+            'per_page' => ['nullable', 'integer'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -65,7 +67,7 @@ class ServerManController extends Controller
             return $query->where('message', 'ilike', '%'.$log_message.'%');
         })->when($validated['log_extra'] ?? null, function ($query, $log_extra) {
             return $query->where('context', 'ilike', '%'.$log_extra.'%');
-        })->orderBy('id', 'desc')->paginate();
+        })->orderBy('id', 'desc')->paginate($validated['per_page'] ?? 20, ['*'], 'page', $validated['page'] ?? 1);
 
         return response()->json($data);
     }

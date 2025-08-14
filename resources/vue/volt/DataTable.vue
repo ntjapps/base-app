@@ -21,53 +21,67 @@
         >
             <div class="w-full flex justify-center">
                 <div class="max-w-full overflow-x-auto">
-                    <div class="inline-flex items-center gap-2 justify-center min-w-max px-1 py-0.5">
-                    <SecondaryButton text rounded @click="firstPageCallback" :disabled="page === 0">
-                        <AngleDoubleLeftIcon />
-                    </SecondaryButton>
-                    <SecondaryButton text rounded @click="prevPageCallback" :disabled="page === 0">
-                        <AngleLeftIcon />
-                    </SecondaryButton>
-                    <div class="items-center justify-center gap-2 hidden sm:flex">
+                    <div
+                        class="inline-flex items-center gap-2 justify-center min-w-max px-1 py-0.5"
+                    >
                         <SecondaryButton
-                            v-for="pageLink of pageLinks"
-                            :key="pageLink"
-                            :text="page + 1 !== pageLink"
+                            text
                             rounded
-                            @click="() => changePageCallback(pageLink - 1)"
-                            :class="[
-                                'shrink-0 min-w-10 h-10',
-                                { 'bg-highlight!': page + 1 === pageLink },
-                            ]"
-                            >{{ pageLink }}
+                            @click="firstPageCallback"
+                            :disabled="page === 0"
+                        >
+                            <AngleDoubleLeftIcon />
                         </SecondaryButton>
-                    </div>
-                    <div class="flex items-center gap-2 mx-2 text-sm">
-                        <span>Page</span>
-                        <Select
-                            :modelValue="page + 1"
-                            :options="Array.from({ length: pageCount ?? 1 }, (_, i) => i + 1)"
-                            class="min-w-20"
-                            @update:modelValue="(val) => changePageCallback((val as number) - 1)"
-                        />
-                        <span>of {{ pageCount }}</span>
-                    </div>
-                    <SecondaryButton
-                        text
-                        rounded
-                        @click="nextPageCallback"
-                        :disabled="page === pageCount! - 1"
-                    >
-                        <AngleRightIcon />
-                    </SecondaryButton>
-                    <SecondaryButton
-                        text
-                        rounded
-                        @click="lastPageCallback"
-                        :disabled="page === pageCount! - 1"
-                    >
-                        <AngleDoubleRightIcon />
-                    </SecondaryButton>
+                        <SecondaryButton
+                            text
+                            rounded
+                            @click="prevPageCallback"
+                            :disabled="page === 0"
+                        >
+                            <AngleLeftIcon />
+                        </SecondaryButton>
+                        <div class="items-center justify-center gap-2 hidden sm:flex">
+                            <SecondaryButton
+                                v-for="pageLink of pageLinks"
+                                :key="pageLink"
+                                :text="page + 1 !== pageLink"
+                                rounded
+                                @click="() => changePageCallback(pageLink - 1)"
+                                :class="[
+                                    'shrink-0 min-w-10 h-10',
+                                    { 'bg-highlight!': page + 1 === pageLink },
+                                ]"
+                                >{{ pageLink }}
+                            </SecondaryButton>
+                        </div>
+                        <div class="flex items-center gap-2 mx-2 text-sm">
+                            <span>Page</span>
+                            <Select
+                                :modelValue="page + 1"
+                                :options="Array.from({ length: pageCount ?? 1 }, (_, i) => i + 1)"
+                                class="min-w-20"
+                                @update:modelValue="
+                                    (val) => changePageCallback((val as number) - 1)
+                                "
+                            />
+                            <span>of {{ pageCount }}</span>
+                        </div>
+                        <SecondaryButton
+                            text
+                            rounded
+                            @click="nextPageCallback"
+                            :disabled="page === pageCount! - 1"
+                        >
+                            <AngleRightIcon />
+                        </SecondaryButton>
+                        <SecondaryButton
+                            text
+                            rounded
+                            @click="lastPageCallback"
+                            :disabled="page === pageCount! - 1"
+                        >
+                            <AngleDoubleRightIcon />
+                        </SecondaryButton>
                     </div>
                 </div>
             </div>

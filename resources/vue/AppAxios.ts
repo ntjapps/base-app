@@ -235,8 +235,8 @@ export class ApiClient {
     }
 
     // Server Management APIs
-    async getServerLogs(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/server-man/get-server-logs');
+    async getServerLogs(data: Record<string, unknown> = {}): Promise<AxiosResponse<unknown>> {
+        return this.post('/api/v1/server-man/get-server-logs', data);
     }
 
     async postClearAppCache(): Promise<AxiosResponse<ApiResponse>> {

@@ -63,8 +63,13 @@ type LogLevelSelectType = Array<{
 
 const loadingstat = ref<boolean>(true);
 const serverLogResponse = ref<ServerLogResponseType | null>(null);
-const serverLogData = computed(() => {
-    return serverLogResponse.value?.data ?? [];
+const serverLogData = computed(() => serverLogResponse.value?.data ?? []);
+const totalRecords = computed(() => serverLogResponse.value?.total ?? 0);
+const rowsPerPage = computed(() => serverLogResponse.value?.per_page ?? 20);
+const first = computed(() => {
+    const resp = serverLogResponse.value;
+    if (!resp) return 0;
+    return ((resp.current_page ?? 1) - 1) * (resp.per_page ?? 20);
 });
 const dateStartData = ref<Date>(new Date());
 const dateEndData = ref<Date>(new Date());
@@ -83,17 +88,23 @@ const logLevelData = ref<string>('all');
 const logMessageData = ref<string>('');
 const logExtraData = ref<string>('');
 
-const pageDropdownCustom = ref<number>(0);
-const pageDropdownCustomOptions = computed(() => {
-    return Array.from({ length: serverLogResponse.value?.last_page ?? 1 }, (_, i) => i + 1);
+// helper to build payload for API
+const buildPayload = (page?: number, per_page?: number) => ({
+    date_start: dateStartData.value,
+    date_end: dateEndData.value,
+    log_level: logLevelData.value,
+    log_message: logMessageData.value,
+    log_extra: logExtraData.value,
+    ...(page ? { page } : {}),
+    ...(per_page ? { per_page } : {}),
 });
 
-const getServerLogData = async () => {
+const getServerLogData = async (page?: number, per_page?: number) => {
     try {
         loadingstat.value = true;
-        const response = await api.getServerLogs();
-        serverLogResponse.value = response.data.data;
-        pageDropdownCustom.value = response.data.data.current_page;
+        const payload = buildPayload(page, per_page);
+        const response = await api.getServerLogs(payload);
+        serverLogResponse.value = response.data.data ?? response.data;
     } catch (error) {
         console.error('Failed to fetch server logs:', error);
     } finally {
@@ -101,42 +112,15 @@ const getServerLogData = async () => {
     }
 };
 
-const nextPageCustomCallback = async () => {
-    if (serverLogResponse.value?.next_page_url !== null) {
-        try {
-            const response = await api.requestPost(serverLogResponse.value?.next_page_url ?? '');
-            serverLogResponse.value = response.data;
-            pageDropdownCustom.value = response.data.current_page;
-        } catch (error) {
-            console.error('Failed to fetch next page:', error);
-        }
-    }
-};
-
-const prevPageCustomCallback = async () => {
-    if (serverLogResponse.value?.prev_page_url !== null) {
-        try {
-            const response = await api.requestPost(serverLogResponse.value?.prev_page_url ?? '');
-            serverLogResponse.value = response.data;
-            pageDropdownCustom.value = response.data.current_page;
-        } catch (error) {
-            console.error('Failed to fetch previous page:', error);
-        }
-    }
-};
-
-const changePageCustomCallback = async (page: number) => {
-    try {
-        const response = await api.requestPost(serverLogResponse.value?.path ?? '', { page });
-        serverLogResponse.value = response.data;
-        pageDropdownCustom.value = response.data.current_page;
-    } catch (error) {
-        console.error('Failed to change page:', error);
-    }
+const onPage = async (event: { first: number; rows: number; page: number }) => {
+    // PrimeVue page is 0-based; Laravel expects 1-based
+    const page = (event.page ?? 0) + 1;
+    const perPage = event.rows;
+    await getServerLogData(page, perPage);
 };
 
 onMounted(() => {
-    getServerLogData();
+    getServerLogData(1, 20);
     main.updateExpandedKeysMenu(props.expandedKeysProps);
 });
 </script>
@@ -222,9 +206,12 @@ onMounted(() => {
                 :value="serverLogData"
                 showGridlines
                 paginator
-                :rows="20"
-                :rowsPerPageOptions="[10, 20, 50, 100]"
+                lazy
+                :totalRecords="totalRecords"
+                :rows="rowsPerPage"
+                :first="first"
                 :loading="loadingstat"
+                @page="onPage"
             >
                 <template #empty>
                     <div class="flex justify-center">No data found</div>
@@ -232,42 +219,7 @@ onMounted(() => {
                 <template #loading>
                     <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data. Please wait.
                 </template>
-                <template #paginatorcontainer>
-                    <div
-                        class="flex items-center gap-4 border border-primary bg-transparent rounded-full w-full py-1 px-2 justify-between"
-                    >
-                        <UButton
-                            size="xl"
-                            :disabled="serverLogResponse?.prev_page_url === null"
-                            class="rounded-full"
-                            @click="prevPageCustomCallback"
-                            ><i class="pi pi-chevron-left"
-                        /></UButton>
-                        <div class="text-color font-medium">
-                            <span
-                                >Showing {{ serverLogResponse?.from }} to
-                                {{ serverLogResponse?.to }} of {{ serverLogResponse?.total }}</span
-                            >
-                            <span class="mx-2" />
-                            <span
-                                >Page
-                                <Select
-                                    v-model="pageDropdownCustom"
-                                    :options="pageDropdownCustomOptions"
-                                    @change="changePageCustomCallback(pageDropdownCustom)"
-                                />
-                                of {{ serverLogResponse?.last_page }}</span
-                            >
-                        </div>
-                        <UButton
-                            size="xl"
-                            :disabled="serverLogResponse?.next_page_url === null"
-                            class="rounded-full"
-                            @click="nextPageCustomCallback"
-                            ><i class="pi pi-chevron-right"
-                        /></UButton>
-                    </div>
-                </template>
+
                 <Column field="created_at" header="Log Date">
                     <template #body="slotProps">
                         {{ new Date(slotProps.data.created_at).toLocaleString('en-UK') }}

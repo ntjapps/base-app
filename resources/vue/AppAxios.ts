@@ -42,7 +42,7 @@ const axiosInstance: AxiosInstance = axios.create({
 // Type for toast display function
 type ToastDisplayFn = (message: ToastMessage) => void;
 
-class ApiClient {
+export class ApiClient {
     private toast: ToastDisplayFn | null = null;
     private turnstileReset: (() => void) | null = null;
 
@@ -98,6 +98,11 @@ class ApiClient {
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
         }
+    }
+
+    // Public wrapper to allow arbitrary POST usage from legacy callers
+    public async requestPost<T>(url: string, data = {}, config = {}): Promise<AxiosResponse<T>> {
+        return this.post<T>(url, data, config);
     }
 
     private async put<T>(url: string, data = {}, config = {}): Promise<AxiosResponse<T>> {
@@ -280,3 +285,51 @@ export const api = new ApiClient(axiosInstance);
 
 // Export type for use in components
 export type { ApiResponse, LoginRequest, LoginResponse, ToastMessage };
+
+// Backwards compatibility adapter for legacy imports (AppAxios)
+export const AppAxios = {
+    // auth
+    postLogin: (data: LoginRequest) => api.postLogin(data),
+    postLogout: () => api.postLogout(),
+    getLogout: () => api.getLogout(),
+    postToken: (data: LoginRequest) => api.postToken(data),
+    postTokenRevoke: () => api.postTokenRevoke(),
+    // const
+    postAppConst: () => api.postAppConst(),
+    postLogAgent: () => api.postLogAgent(),
+    postGetCurrentAppVersion: () => api.postGetCurrentAppVersion(),
+    // profile
+    getNotificationList: () => api.getNotificationList(),
+    postNotificationAsRead: (data: Record<string, unknown>) => api.postNotificationAsRead(data),
+    postNotificationClearAll: () => api.postNotificationClearAll(),
+    postUpdateProfile: (data: Record<string, unknown>) => api.postUpdateProfile(data),
+    // user man
+    getUserList: () => api.getUserList(),
+    getUserRolePerm: () => api.getUserRolePerm(),
+    postUserManSubmit: (data: Record<string, unknown>) => api.postUserManSubmit(data),
+    postDeleteUserManSubmit: (data: Record<string, unknown>) => api.postDeleteUserManSubmit(data),
+    postResetPasswordUserManSubmit: (data: Record<string, unknown>) =>
+        api.postResetPasswordUserManSubmit(data),
+    // role man
+    getRoleList: () => api.getRoleList(),
+    postRoleSubmit: (data: Record<string, unknown>) => api.postRoleSubmit(data),
+    postDeleteRoleSubmit: (data: Record<string, unknown>) => api.postDeleteRoleSubmit(data),
+    // server
+    getServerLogs: () => api.getServerLogs(),
+    // oauth
+    postGetOauthClient: () => api.postGetOauthClient(),
+    postResetOauthSecret: (data: Record<string, unknown>) => api.postResetOauthSecret(data),
+    postDeleteOauthClient: (data: Record<string, unknown>) => api.postDeleteOauthClient(data),
+    postUpdateOauthClient: (data: Record<string, unknown>) => api.postUpdateOauthClient(data),
+    postCreateOauthClient: (data: Record<string, unknown>) => api.postCreateOauthClient(data),
+    // whatsapp
+    getWhatsappMessagesList: () => api.getWhatsappMessagesList(),
+    getWaThreadsList: () => api.getWhatsappMessagesList(), // alias
+    getWhatsappMessagesDetail: (data: Record<string, unknown>) =>
+        api.getWhatsappMessagesDetail(data),
+    getWaThreadDetail: (data: Record<string, unknown>) => api.getWhatsappMessagesDetail(data), // alias
+    postReplyWhatsappMessage: (data: Record<string, unknown>) =>
+        api.postReplyWhatsappMessage(data),
+    // generic
+    post: (url: string, data = {}, config = {}) => api.requestPost(url, data, config),
+};

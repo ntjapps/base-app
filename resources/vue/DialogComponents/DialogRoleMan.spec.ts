@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
 import DialogRoleMan from './DialogRoleMan.vue';
-import { vi } from 'vitest';
+import { api } from '../AppAxios';
 
-vi.mock('axios', () => ({
-    default: {
-        post: vi.fn(() =>
+vi.mock('../AppAxios', () => ({
+    api: {
+        postRoleSubmit: vi.fn(() =>
             Promise.reject({ response: { data: { title: 'Error', message: 'Message' } } }),
         ),
     },

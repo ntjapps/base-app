@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useMainStore } from './AppState';
 import { setActivePinia, createPinia } from 'pinia';
-import axios from 'axios';
+import { api } from './AppAxios';
 
 describe('AppState (Pinia stores)', () => {
     beforeEach(() => {
@@ -10,15 +10,23 @@ describe('AppState (Pinia stores)', () => {
 
     it('main store initializes and patches state from API', async () => {
         const store = useMainStore();
-        vi.spyOn(axios, 'post').mockResolvedValueOnce({
+        vi.spyOn(api, 'postAppConst').mockResolvedValueOnce({
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config: {},
             data: {
-                appName: 'TestApp',
-                appVersion: '1.0.0',
-                userName: 'User',
-                userId: '1',
-                menuItems: { a: { label: 'A' }, b: { label: 'B' } },
+                title: 'Success',
+                message: 'App constants loaded',
+                data: {
+                    appName: 'TestApp',
+                    appVersion: '1.0.0',
+                    userName: 'User',
+                    userId: '1',
+                    menuItems: { a: { label: 'A' }, b: { label: 'B' } },
+                },
             },
-        });
+        } as any);
         await store.init();
         expect(store.appName).toBe('TestApp');
         expect(store.appVersion).toBe('1.0.0');

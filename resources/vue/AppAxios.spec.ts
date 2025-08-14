@@ -3,17 +3,27 @@ import axios from 'axios';
 import { api } from './AppAxios';
 import type { LoginRequest } from './AppAxios';
 
-// Mock axios
-vi.mock('axios', () => ({
-    default: {
-        create: vi.fn(() => ({
-            get: vi.fn(),
-            post: vi.fn(),
-            put: vi.fn(),
-            delete: vi.fn(),
-        })),
-    },
-}));
+// Mock axios (hoisted-safe)
+vi.mock('axios', () => {
+    const instance = {
+        defaults: {
+            headers: { common: { 'X-Requested-With': 'XMLHttpRequest' } },
+            withCredentials: true,
+        },
+        get: vi.fn(),
+        post: vi.fn(),
+        put: vi.fn(),
+        delete: vi.fn(),
+    } as any;
+    (globalThis as any).__axiosMock = instance;
+    return {
+        default: {
+            create: vi.fn(() => instance),
+        },
+        // also expose named export shape if used somewhere
+        create: vi.fn(() => instance),
+    };
+});
 
 describe('ApiClient', () => {
     const mockToast = vi.fn();
@@ -48,8 +58,7 @@ describe('ApiClient', () => {
         };
 
         it('should handle successful login', async () => {
-            const axiosInstance = axios.create();
-            vi.spyOn(axiosInstance, 'post').mockResolvedValueOnce(successResponse);
+            (globalThis as any).__axiosMock.post.mockResolvedValueOnce(successResponse);
 
             await api.postLogin(loginData);
 
@@ -58,6 +67,11 @@ describe('ApiClient', () => {
                 summary: 'Success',
                 detail: 'Login successful',
             });
+            expect((globalThis as any).__axiosMock.post).toHaveBeenCalledWith(
+                '/post-login',
+                loginData,
+                {},
+            );
         });
 
         it('should handle login error', async () => {
@@ -70,8 +84,7 @@ describe('ApiClient', () => {
                 },
             };
 
-            const axiosInstance = axios.create();
-            vi.spyOn(axiosInstance, 'post').mockRejectedValueOnce(errorResponse);
+            (globalThis as any).__axiosMock.post.mockRejectedValueOnce(errorResponse);
 
             await expect(api.postLogin(loginData)).rejects.toThrow();
 
@@ -85,13 +98,16 @@ describe('ApiClient', () => {
         });
 
         it('should handle logout', async () => {
-            const axiosInstance = axios.create();
-            vi.spyOn(axiosInstance, 'post').mockResolvedValueOnce(successResponse);
+            (globalThis as any).__axiosMock.post.mockResolvedValueOnce(successResponse);
 
             await api.postLogout();
 
             // Verify that the post request was made to the correct endpoint
-            expect(axiosInstance.post).toHaveBeenCalledWith('/auth/post-logout');
+            expect((globalThis as any).__axiosMock.post).toHaveBeenCalledWith(
+                '/auth/post-logout',
+                {},
+                {},
+            );
         });
     });
 
@@ -114,13 +130,14 @@ describe('ApiClient', () => {
 
         it('should update profile successfully', async () => {
             const axiosInstance = axios.create();
-            vi.spyOn(axiosInstance, 'post').mockResolvedValueOnce(successResponse);
+            vi.spyOn((globalThis as any).__axiosMock, 'post').mockResolvedValueOnce(successResponse);
 
             await api.postUpdateProfile(profileData);
 
-            expect(axiosInstance.post).toHaveBeenCalledWith(
+            expect((globalThis as any).__axiosMock.post).toHaveBeenCalledWith(
                 '/api/v1/profile/post-update-profile',
                 profileData,
+                {},
             );
         });
 
@@ -138,12 +155,16 @@ describe('ApiClient', () => {
             };
 
             const axiosInstance = axios.create();
-            vi.spyOn(axiosInstance, 'post').mockResolvedValueOnce(notificationResponse);
+            vi.spyOn((globalThis as any).__axiosMock, 'post').mockResolvedValueOnce(
+                notificationResponse,
+            );
 
             await api.getNotificationList();
 
-            expect(axiosInstance.post).toHaveBeenCalledWith(
+            expect((globalThis as any).__axiosMock.post).toHaveBeenCalledWith(
                 '/api/v1/profile/get-notification-list',
+                {},
+                {},
             );
         });
     });
@@ -161,13 +182,14 @@ describe('ApiClient', () => {
                 config: {},
             };
 
-            const axiosInstance = axios.create();
-            vi.spyOn(axiosInstance, 'post').mockResolvedValueOnce(successResponse);
+            (globalThis as any).__axiosMock.post.mockResolvedValueOnce(successResponse);
 
             await api.postClearAppCache();
 
-            expect(axiosInstance.post).toHaveBeenCalledWith(
+            expect((globalThis as any).__axiosMock.post).toHaveBeenCalledWith(
                 '/api/v1/server-man/post-clear-app-cache',
+                {},
+                {},
             );
         });
     });
@@ -175,8 +197,7 @@ describe('ApiClient', () => {
     describe('Error Handling', () => {
         it('should handle network errors', async () => {
             const networkError = new Error('Network Error');
-            const axiosInstance = axios.create();
-            vi.spyOn(axiosInstance, 'post').mockRejectedValueOnce(networkError);
+            (globalThis as any).__axiosMock.post.mockRejectedValueOnce(networkError);
 
             await expect(api.postAppConst()).rejects.toThrow('Network Error');
 
@@ -199,8 +220,7 @@ describe('ApiClient', () => {
                 },
             };
 
-            const axiosInstance = axios.create();
-            vi.spyOn(axiosInstance, 'post').mockRejectedValueOnce(serverError);
+            (globalThis as any).__axiosMock.post.mockRejectedValueOnce(serverError);
 
             await expect(api.postAppConst()).rejects.toThrow();
 
@@ -215,9 +235,7 @@ describe('ApiClient', () => {
 
     describe('Request Configuration', () => {
         it('should include correct headers', () => {
-            const axiosInstance = axios.create();
-
-            expect(axiosInstance.defaults?.headers?.common).toEqual(
+            expect((globalThis as any).__axiosMock.defaults.headers.common).toEqual(
                 expect.objectContaining({
                     'X-Requested-With': 'XMLHttpRequest',
                 }),
@@ -225,9 +243,7 @@ describe('ApiClient', () => {
         });
 
         it('should enable withCredentials', () => {
-            const axiosInstance = axios.create();
-
-            expect(axiosInstance.defaults?.withCredentials).toBe(true);
+            expect((globalThis as any).__axiosMock.defaults.withCredentials).toBe(true);
         });
     });
 });

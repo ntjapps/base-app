@@ -51,7 +51,7 @@ describe('API v1 Routes', function () {
 
     it('requires auth for get-notification-list', function () {
         $response = $this->postJson(route('get-notification-list'), []);
-        $response->assertStatus(200);
+        $response->assertStatus(401);
     });
     it('gets notification list as authenticated user', function () {
         $user = User::factory()->create();

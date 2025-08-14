@@ -1,48 +1,28 @@
-import axios from 'axios';
 import Echo from 'laravel-echo';
 import { defineStore } from 'pinia';
 import { supportedBrowsers } from '../ts/browser';
 import { MenuItem } from 'primevue/menuitem';
+import { api } from './AppAxios';
+import type { AxiosError } from 'axios';
 
-export const useWebApiStore = defineStore('webapi', {
-    state: () => ({
-        /** WEB for API requests */
-        postLogin: '/post-login',
-        postLogout: '/post-logout',
-    }),
-});
+interface Notification {
+    id: string;
+    type: string;
+    notifiable_type: string;
+    notifiable_id: number;
+    data: Record<string, unknown>;
+    read_at: string | null;
+    created_at: string;
+    updated_at: string;
+}
 
-export const useApiStore = defineStore('api', {
-    state: () => ({
-        /** API request */
-        postTokenLogout: '/api/v1/auth/post-token-revoke',
-        postProfile: '/api/v1/profile/post-update-profile',
-        appConst: '/api/v1/const/post-app-const',
-        getAllUserPermission: '/api/v1/get-all-user-permission',
-        logAgent: '/api/v1/const/post-log-agent',
-        getNotificationList: '/api/v1/profile/get-notification-list',
-        postNotificationAsRead: '/api/v1/profile/post-notification-as-read',
-        postNotificationClearAll: '/api/v1/profile/post-notification-clear-all',
-        getServerLogs: '/api/v1/server-man/get-server-logs',
-        postClearAppCache: '/api/v1/server-man/post-clear-app-cache',
-        getUserList: '/api/v1/user-man/get-user-list',
-        getUserRolePerm: '/api/v1/user-man/get-user-role-perm',
-        postUserManSubmit: '/api/v1/user-man/post-user-man-submit',
-        postDeleteUserManSubmit: '/api/v1/user-man/post-delete-user-man-submit',
-        postResetPasswordUserManSubmit: '/api/v1/user-man/post-reset-password-user-man-submit',
-        getRoleList: '/api/v1/role-man/get-role-list',
-        postRoleSubmit: '/api/v1/role-man/post-role-submit',
-        postDeleteRoleSubmit: '/api/v1/role-man/post-delete-role-submit',
-        postGetOauthClient: '/api/v1/oauth/post-get-oauth-client',
-        postResetOauthSecret: '/api/v1/oauth/post-reset-oauth-secret',
-        postDeleteOauthClient: '/api/v1/oauth/post-delete-oauth-client',
-        postUpdateOauthClient: '/api/v1/oauth/post-update-oauth-client',
-        postCreateOauthClient: '/api/v1/oauth/post-create-oauth-client',
-        getWaThreadsList: '/api/v1/whatsapp/get-whatsapp-messages-list',
-        getWaThreadDetail: '/api/v1/whatsapp/get-whatsapp-messages-detail',
-        postReplyWhatsappMessage: '/api/v1/whatsapp/post-reply-whatsapp-message',
-    }),
-});
+interface AppConstResponse {
+    appName: string;
+    appVersion: string;
+    userName: string;
+    userId: string;
+    menuItems: Record<string, MenuItemExtended>;
+}
 
 interface MenuItemExtended extends MenuItem {
     key: string;
@@ -60,7 +40,7 @@ export const useMainStore = defineStore('main', {
         appVersion: '',
         userName: '',
         userId: '',
-        notificationList: [],
+        notificationList: [] as Notification[],
         browserSuppport: true,
         menuItems: Array<MenuItemExtended>(),
         expandedKeysMenu: {},
@@ -69,44 +49,35 @@ export const useMainStore = defineStore('main', {
     }),
 
     actions: {
-        init() {
-            const api = useApiStore();
-
+        async init() {
             /** Get Constant */
-            axios
-                .post(api.appConst)
-                .then((response) => {
-                    this.$patch({
-                        appName: response.data.appName,
-                    });
-                    this.$patch({
-                        appVersion: response.data.appVersion,
-                    });
-                    this.$patch({
-                        userName: response.data.userName,
-                    });
-                    this.$patch({
-                        userId: response.data.userId,
-                    });
-                    this.$patch({
-                        menuItems: Object.values(response.data.menuItems),
-                    });
-                })
-                .catch((error) => {
-                    console.error(error.response.data);
+            try {
+                const response = await api.postAppConst();
+                const data = response.data.data as AppConstResponse;
+                // Update each field individually to avoid typing issues
+                this.$patch((state) => {
+                    state.appName = data.appName;
+                    state.appVersion = data.appVersion;
+                    state.userName = data.userName;
+                    state.userId = data.userId;
+                    state.menuItems = Object.values(data.menuItems);
                 });
+            } catch (error) {
+                console.error((error as AxiosError).response?.data);
+            }
         },
 
-        browserSuppportCheck() {
-            const api = useApiStore();
+        async browserSuppportCheck() {
             /**
              * Test if browser is compatible
              */
             if (!supportedBrowsers.test(navigator.userAgent)) {
                 this.$patch({ browserSuppport: false });
-                axios.post(api.logAgent).catch((error) => {
-                    console.error(error.response);
-                });
+                try {
+                    await api.postLogAgent();
+                } catch (error) {
+                    console.error((error as AxiosError).response?.data);
+                }
             } else {
                 this.$patch({ browserSuppport: true });
             }
@@ -116,29 +87,29 @@ export const useMainStore = defineStore('main', {
             /**
              * Get new CSRF Token set everytime app is created
              */
-            axios
-                .get('/sanctum/csrf-cookie')
-                .then(() => {
-                    console.log('csrf cookie init');
-                })
-                .catch((error) => {
-                    console.error('Error setting CSRF cookie:', error.response);
+            try {
+                await fetch('/sanctum/csrf-cookie', {
+                    method: 'GET',
+                    credentials: 'include'
                 });
+                console.log('csrf cookie init');
+            } catch (error) {
+                console.error('Error setting CSRF cookie:', (error as Error).message);
+            }
         },
 
         async getNotificationList() {
             /**
              * Get notification list
              */
-            const api = useApiStore();
-            axios
-                .post(api.getNotificationList)
-                .then((response) => {
-                    this.$patch({ notificationList: response.data });
-                })
-                .catch((error) => {
-                    console.error(error.response.data);
+            try {
+                const response = await api.getNotificationList();
+                this.$patch((state) => {
+                    state.notificationList = (response.data.data as Notification[]) || [];
                 });
+            } catch (error) {
+                console.error((error as AxiosError).response?.data);
+            }
         },
 
         updateExpandedKeysMenu(expandedKeys: string) {

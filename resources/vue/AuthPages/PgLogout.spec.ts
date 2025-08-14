@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
 import PgLogout from './PgLogout.vue';
-import { vi } from 'vitest';
+import { api } from '../AppAxios';
 
 describe('PgLogout.vue', () => {
     it('mounts and renders toast', () => {
-        vi.mock('axios', () => ({
-            default: {
-                post: vi.fn(() =>
+        vi.mock('../AppAxios', () => ({
+            api: {
+                postLogout: vi.fn(() =>
                     Promise.reject({
                         response: { data: { title: 'Error', message: 'Message' } },
                     }),

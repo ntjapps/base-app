@@ -54,14 +54,26 @@ export const useMainStore = defineStore('main', {
             /** Get Constant */
             try {
                 const response = await api.postAppConst();
-                const data = response.data as unknown as AppConstResponse;
+                // Some endpoints return { title, message, data: {...} }
+                type AppConstOuter = AppConstResponse | { data?: Partial<AppConstResponse> };
+                const outer = response.data as unknown as AppConstOuter;
+                const hasDataKey = (o: AppConstOuter): o is { data: Partial<AppConstResponse> } =>
+                    typeof o === 'object' && o !== null && 'data' in o && !!o.data;
+                const payload: Partial<AppConstResponse> = hasDataKey(outer)
+                    ? outer.data
+                    : (outer as Partial<AppConstResponse>);
+                const menu = payload.menuItems
+                    ? Array.isArray(payload.menuItems)
+                        ? (payload.menuItems as unknown as MenuItemExtended[])
+                        : Object.values(payload.menuItems as Record<string, MenuItemExtended>)
+                    : [];
                 // Update each field individually to avoid typing issues
                 this.$patch({
-                    appName: data.appName,
-                    appVersion: data.appVersion,
-                    userName: data.userName,
-                    userId: data.userId,
-                    menuItems: Object.values(data.menuItems),
+                    appName: payload.appName ?? '',
+                    appVersion: payload.appVersion ?? '',
+                    userName: payload.userName ?? '',
+                    userId: payload.userId ?? '',
+                    menuItems: menu,
                 });
 
                 // Fetch notifications only when userId is available

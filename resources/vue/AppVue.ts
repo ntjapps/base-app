@@ -27,7 +27,6 @@ Sentry.init({
 
     integrations: [Sentry.browserTracingIntegration({ router })],
     tracesSampleRate: 0.0,
-    debug: import.meta.env.DEV,
 });
 
 router.isReady().then(() => {

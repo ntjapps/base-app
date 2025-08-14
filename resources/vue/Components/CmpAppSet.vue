@@ -50,7 +50,16 @@ const registerNotification = () => {
 
 onMounted(() => {
     // Register global API toast handler once
-    if (toastRef.value?.toastDisplay) {
+    type ToastSetter = { setToastDisplay?: (fn: (data: unknown) => void) => void };
+    const hasSetter = (obj: unknown): obj is ToastSetter =>
+        typeof obj === 'object' &&
+        obj !== null &&
+        'setToastDisplay' in (obj as Record<string, unknown>);
+    if (
+        toastRef.value?.toastDisplay &&
+        hasSetter(api) &&
+        typeof api.setToastDisplay === 'function'
+    ) {
         api.setToastDisplay(toastRef.value.toastDisplay);
     }
 

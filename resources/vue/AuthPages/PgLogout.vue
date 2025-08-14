@@ -1,31 +1,21 @@
 <script setup lang="ts">
-import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWebStore } from '../AppRouter';
-import { useApiStore } from '../AppState';
-
+import { AppAxios } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 
 const web = useWebStore();
-const api = useApiStore();
 const router = useRouter();
-const toastchild = ref<typeof CmpToast>();
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
-onMounted(() => {
-    axios
-        .post(api.postTokenLogout)
-        .then(() => {
-            router.push(web.loginPage);
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
-        });
+onMounted(async () => {
+    try {
+        await AppAxios.postTokenRevoke();
+        router.push(web.loginPage);
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 });
 </script>
 

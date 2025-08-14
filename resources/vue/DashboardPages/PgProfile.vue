@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useApiStore, useMainStore } from '../AppState';
-
+import { useMainStore } from '../AppState';
+import { AppAxios } from '../AppAxios';
 import CmpLayout from '../Components/CmpLayout.vue';
 import CmpToast from '../Components/CmpToast.vue';
 
@@ -16,41 +15,27 @@ const props = defineProps<{
     greetings: string;
     expandedKeysProps: string;
 }>();
-const api = useApiStore();
 const main = useMainStore();
 const { userName } = storeToRefs(main);
 
-const toastchild = ref<typeof CmpToast>();
-
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 const newPassword = ref<string | null>('');
 const confirmPassword = ref<string | null>('');
 
-const postProfileData = () => {
-    const redirect = '';
-    axios
-        .post(api.postProfile, {
+const postProfileData = async () => {
+    try {
+        await AppAxios.postUpdateProfile({
             name: userName.value,
             password: newPassword.value,
             password_confirmation: confirmPassword.value,
-        })
-        .then((response) => {
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .then(() => {
-            window.location.href = redirect;
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
         });
+
+        // Clear password fields after successful update
+        newPassword.value = '';
+        confirmPassword.value = '';
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
 onMounted(() => {

@@ -2,10 +2,8 @@
 import { ref, onMounted, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { timeGreetings } from '../AppCommon';
-import { useApiStore, useMainStore } from '../AppState';
-
-import axios from 'axios';
-
+import { useMainStore } from '../AppState';
+import { AppAxios } from '../AppAxios';
 import CmpLayout from '../Components/CmpLayout.vue';
 
 import DataTable from '../volt/DataTable.vue';
@@ -20,7 +18,6 @@ const props = defineProps<{
     expandedKeysProps: string;
 }>();
 const timeGreet = timeGreetings();
-const api = useApiStore();
 const main = useMainStore();
 const { userName } = storeToRefs(main);
 
@@ -91,64 +88,51 @@ const pageDropdownCustomOptions = computed(() => {
     return Array.from({ length: serverLogResponse.value?.last_page ?? 1 }, (_, i) => i + 1);
 });
 
-const getServerLogData = () => {
-    loadingstat.value = true;
-    axios
-        .post(api.getServerLogs, {
-            date_start: dateStartData.value,
-            date_end: dateEndData.value,
-            log_level: logLevelData.value,
-            log_message: logMessageData.value,
-            log_extra: logExtraData.value,
-        })
-        .then((response) => {
-            serverLogResponse.value = response.data;
-            loadingstat.value = false;
-            pageDropdownCustom.value = response.data.current_page;
-        })
-        .catch((error) => {
-            console.error(error.response.data);
-        });
+const getServerLogData = async () => {
+    try {
+        loadingstat.value = true;
+        const response = await AppAxios.getServerLogs();
+        serverLogResponse.value = response.data.data;
+        pageDropdownCustom.value = response.data.data.current_page;
+    } catch (error) {
+        console.error('Failed to fetch server logs:', error);
+    } finally {
+        loadingstat.value = false;
+    }
 };
 
-const nextPageCustomCallback = () => {
+const nextPageCustomCallback = async () => {
     if (serverLogResponse.value?.next_page_url !== null) {
-        axios
-            .post(serverLogResponse.value?.next_page_url ?? '')
-            .then((response) => {
-                serverLogResponse.value = response.data;
-                pageDropdownCustom.value = response.data.current_page;
-            })
-            .catch((error) => {
-                console.error(error.response.data);
-            });
-    }
-};
-
-const prevPageCustomCallback = () => {
-    if (serverLogResponse.value?.prev_page_url !== null) {
-        axios
-            .post(serverLogResponse.value?.prev_page_url ?? '')
-            .then((response) => {
-                serverLogResponse.value = response.data;
-                pageDropdownCustom.value = response.data.current_page;
-            })
-            .catch((error) => {
-                console.error(error.response.data);
-            });
-    }
-};
-
-const changePageCustomCallback = (page: number) => {
-    axios
-        .post(serverLogResponse.value?.path ?? '', { page: page })
-        .then((response) => {
+        try {
+            const response = await AppAxios.post(serverLogResponse.value?.next_page_url ?? '');
             serverLogResponse.value = response.data;
             pageDropdownCustom.value = response.data.current_page;
-        })
-        .catch((error) => {
-            console.error(error.response.data);
-        });
+        } catch (error) {
+            console.error('Failed to fetch next page:', error);
+        }
+    }
+};
+
+const prevPageCustomCallback = async () => {
+    if (serverLogResponse.value?.prev_page_url !== null) {
+        try {
+            const response = await AppAxios.post(serverLogResponse.value?.prev_page_url ?? '');
+            serverLogResponse.value = response.data;
+            pageDropdownCustom.value = response.data.current_page;
+        } catch (error) {
+            console.error('Failed to fetch previous page:', error);
+        }
+    }
+};
+
+const changePageCustomCallback = async (page: number) => {
+    try {
+        const response = await AppAxios.post(serverLogResponse.value?.path ?? '', { page });
+        serverLogResponse.value = response.data;
+        pageDropdownCustom.value = response.data.current_page;
+    } catch (error) {
+        console.error('Failed to change page:', error);
+    }
 };
 
 onMounted(() => {

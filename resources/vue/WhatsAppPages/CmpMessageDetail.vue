@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
-import { useApiStore } from '../AppState';
+import { AppAxios } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import Textarea from '../volt/Textarea.vue';
 
@@ -88,9 +87,7 @@ const emit = defineEmits<{
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
 
-const api = useApiStore();
-const toastchild = ref<typeof CmpToast>();
-
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 const messageDetail = ref<MessageDetail[]>([]);
 const replyMessage = ref('');
 const isSubmitting = ref(false);
@@ -110,52 +107,38 @@ const closeDialogFunction = () => {
     emit('update:dialogOpen', false);
 };
 
-const getMessageDetails = () => {
-    axios
-        .post(api.getWaThreadDetail, {
+const getMessageDetails = async () => {
+    try {
+        const response = await AppAxios.getWaThreadDetail({
             phone_number: props.dialogData?.phone_number,
-        })
-        .then((response) => {
-            messageDetail.value = response.data;
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response?.data?.title || 'Error',
-                detail: error.response?.data?.message || error.message,
-                response: error,
-            });
         });
+        messageDetail.value = response.data;
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
-const sendReply = () => {
+const sendReply = async () => {
     if (!replyMessage.value.trim() || isSubmitting.value) return;
 
     isSubmitting.value = true;
-    axios
-        .post(api.postReplyWhatsappMessage, {
+    try {
+        const response = await AppAxios.postReplyWhatsappMessage({
             phone_number: props.dialogData?.phone_number,
             message: replyMessage.value,
-        })
-        .then((response) => {
-            isSubmitting.value = false;
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: 'Success',
-                detail: response.data.message,
-            });
-            replyMessage.value = '';
-            getMessageDetails(); // Refresh the thread after successful reply
-        })
-        .catch((error) => {
-            isSubmitting.value = false;
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response?.data?.title || 'Error',
-                detail: error.response?.data?.message || error.message,
-                response: error,
-            });
         });
+        toastchild.value?.toastDisplay({
+            severity: 'success',
+            summary: 'Success',
+            detail: response.data.message,
+        });
+        replyMessage.value = '';
+        await getMessageDetails(); // Refresh the thread after successful reply
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    } finally {
+        isSubmitting.value = false;
+    }
 };
 
 onMounted(() => {

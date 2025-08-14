@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import axios from 'axios';
-
 import { ref, computed, watch } from 'vue';
-import { useApiStore } from '../AppState';
+import { AppAxios } from '../AppAxios';
 import useClipboard from 'vue-clipboard3';
 import { ClientListDataInterface } from '../AppCommon';
-
 import CmpToast from '../Components/CmpToast.vue';
 
 import InputText from '../volt/InputText.vue';
@@ -19,8 +16,7 @@ const emit = defineEmits<{
     (e: 'closeDialog'): void;
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
-const api = useApiStore();
-const toastchild = ref<typeof CmpToast>();
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 const { toClipboard } = useClipboard();
 
 watch(
@@ -77,105 +73,73 @@ const copySecretToClipboard = () => {
     });
 };
 
-const deleteClient = (id: string) => {
-    axios
-        .post(api.postDeleteOauthClient, {
+const deleteClient = async (id: string) => {
+    try {
+        const response = await AppAxios.postDeleteOauthClient({
             id: id,
-        })
-        .then((response) => {
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .then(() => {
-            closeDialogFunction();
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
         });
+        toastchild.value?.toastDisplay({
+            severity: 'success',
+            summary: response.data.title,
+            detail: response.data.message,
+        });
+        closeDialogFunction();
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
-const resetClient = (id: string) => {
-    axios
-        .post(api.postResetOauthSecret, {
+const resetClient = async (id: string) => {
+    try {
+        const response = await AppAxios.postResetOauthSecret({
             id: id,
             old_secret: oldClientSecret.value,
-        })
-        .then((response) => {
-            newClientSecret.value = response.data.data.secret;
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
         });
+        newClientSecret.value = response.data.data.secret;
+        toastchild.value?.toastDisplay({
+            severity: 'success',
+            summary: response.data.title,
+            detail: response.data.message,
+        });
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
-const updateClient = (id: string) => {
-    axios
-        .post(api.postUpdateOauthClient, {
+const updateClient = async (id: string) => {
+    try {
+        const response = await AppAxios.postUpdateOauthClient({
             id: id,
             name: clientName.value,
             redirect: clientRedirect.value,
-        })
-        .then((response) => {
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .then(() => {
-            closeDialogFunction();
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
         });
+        toastchild.value?.toastDisplay({
+            severity: 'success',
+            summary: response.data.title,
+            detail: response.data.message,
+        });
+        closeDialogFunction();
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
-const createClient = () => {
-    axios
-        .post(api.postCreateOauthClient, {
+const createClient = async () => {
+    try {
+        const response = await AppAxios.postCreateOauthClient({
             name: clientName.value,
             redirect: clientRedirect.value,
-        })
-        .then((response) => {
-            clientId.value = response.data.data.id;
-            newClientSecret.value = response.data.data.secret;
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
         });
+        clientId.value = response.data.data.id;
+        newClientSecret.value = response.data.data.secret;
+        toastchild.value?.toastDisplay({
+            severity: 'success',
+            summary: response.data.title,
+            detail: response.data.message,
+        });
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
 const showCreateClient = computed(() => {

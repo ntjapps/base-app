@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import axios from 'axios';
 import { api } from './AppAxios';
-import type { LoginRequest, ApiResponse, ToastMessage } from './AppAxios';
+import type { LoginRequest } from './AppAxios';
 
 // Mock axios
 vi.mock('axios', () => ({

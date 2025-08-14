@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import axios from 'axios';
-
 import { ref, computed, watch, onMounted } from 'vue';
-import { useApiStore } from '../AppState';
+import { AppAxios } from '../AppAxios';
 import { RoleDataInterface, PermissionDataInterface, UserDataInterface } from '../AppCommon';
-
 import CmpToast from '../Components/CmpToast.vue';
 
 import DataTable from '../volt/DataTable.vue';
@@ -21,8 +18,7 @@ const emit = defineEmits<{
     (e: 'closeDialog'): void;
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
-const api = useApiStore();
-const toastchild = ref<typeof CmpToast>();
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 watch(
     () => props.dialogOpen,
     (newValue) => {
@@ -58,42 +54,35 @@ const showDeleted = computed(() => {
     return !typeCreate.value;
 });
 
-const getUserRoleListData = () => {
-    axios
-        .post(api.getUserRolePerm)
-        .then((response) => {
-            roleListData.value = response.data.roles;
-            permListData.value = response.data.permissions;
-            selectedRoleListData.value = response.data.roles.filter((role: RoleDataInterface) => {
+const getUserRoleListData = async () => {
+    try {
+        const response = await AppAxios.getUserRolePerm();
+        roleListData.value = response.data.roles;
+        permListData.value = response.data.permissions;
+        selectedRoleListData.value = response.data.roles.filter((role: RoleDataInterface) => {
+            return (
+                usermanData?.roles?.findIndex((userRole: RoleDataInterface) => {
+                    return userRole.id === role.id;
+                }) !== -1
+            );
+        });
+        selectedPermListData.value = response.data.permissions.filter(
+            (perm: PermissionDataInterface) => {
                 return (
-                    usermanData?.roles?.findIndex((userRole: RoleDataInterface) => {
-                        return userRole.id === role.id;
+                    usermanData?.permissions?.findIndex((userPerm: PermissionDataInterface) => {
+                        return userPerm.id === perm.id;
                     }) !== -1
                 );
-            });
-            selectedPermListData.value = response.data.permissions.filter(
-                (perm: PermissionDataInterface) => {
-                    return (
-                        usermanData?.permissions?.findIndex((userPerm: PermissionDataInterface) => {
-                            return userPerm.id === perm.id;
-                        }) !== -1
-                    );
-                },
-            );
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
-        });
+            },
+        );
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
-const postUserManData = () => {
-    axios
-        .post(api.postUserManSubmit, {
+const postUserManData = async () => {
+    try {
+        const response = await AppAxios.postUserManSubmit({
             type_create: typeCreate.value ? 1 : 0,
             id: usermanData?.id,
             name: nameData.value,
@@ -104,69 +93,48 @@ const postUserManData = () => {
             permissions: selectedPermListData.value?.map((perm: PermissionDataInterface) => {
                 return perm.id;
             }),
-        })
-        .then((response) => {
-            closeDialogFunction();
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
         });
+        closeDialogFunction();
+        toastchild.value?.toastDisplay({
+            severity: 'success',
+            summary: response.data.title,
+            detail: response.data.message,
+        });
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
-const postDeleteUserManData = () => {
-    axios
-        .post(api.postDeleteUserManSubmit, {
+const postDeleteUserManData = async () => {
+    try {
+        const response = await AppAxios.postDeleteUserManSubmit({
             id: usermanData?.id,
-        })
-        .then((response) => {
-            closeDialogFunction();
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
         });
+        closeDialogFunction();
+        toastchild.value?.toastDisplay({
+            severity: 'success',
+            summary: response.data.title,
+            detail: response.data.message,
+        });
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
-const postResetPasswordUserMandata = () => {
-    axios
-        .post(api.postResetPasswordUserManSubmit, {
+const postResetPasswordUserMandata = async () => {
+    try {
+        const response = await AppAxios.postResetPasswordUserManSubmit({
             id: usermanData?.id,
-        })
-        .then((response) => {
-            closeDialogFunction();
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
         });
+        closeDialogFunction();
+        toastchild.value?.toastDisplay({
+            severity: 'success',
+            summary: response.data.title,
+            detail: response.data.message,
+        });
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 
 onMounted(() => {

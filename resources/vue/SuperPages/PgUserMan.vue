@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { timeGreetings, UserDataInterface } from '../AppCommon';
-import { useApiStore, useMainStore } from '../AppState';
-
+import { useMainStore } from '../AppState';
+import { AppAxios } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
 
@@ -20,10 +19,9 @@ const props = defineProps<{
     greetings: string;
     expandedKeysProps: string;
 }>();
-const api = useApiStore();
 const main = useMainStore();
 const timeGreet = timeGreetings();
-const toastchild = ref<typeof CmpToast>();
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
 const userListData = ref(Array<UserDataInterface>());
 const loading = ref<boolean>(false);
@@ -36,23 +34,16 @@ const filters = ref({
     permissions_array: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const getUserListData = () => {
-    loading.value = true;
-    axios
-        .post(api.getUserList)
-        .then((response) => {
-            userListData.value = response.data;
-            loading.value = false;
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
-            loading.value = false;
-        });
+const getUserListData = async () => {
+    try {
+        loading.value = true;
+        const response = await AppAxios.getUserList();
+        userListData.value = response.data;
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    } finally {
+        loading.value = false;
+    }
 };
 
 const showViewButton = (data: string | null | undefined): boolean => {

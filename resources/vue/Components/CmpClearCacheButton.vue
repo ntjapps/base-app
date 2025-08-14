@@ -1,31 +1,16 @@
 <script setup lang="ts">
-import axios from 'axios';
 import { ref } from 'vue';
-import { useApiStore } from '../AppState';
-
+import { AppAxios } from '../AppAxios';
 import CmpToast from './CmpToast.vue';
 
-const api = useApiStore();
-const toastchild = ref<typeof CmpToast>();
+const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
-const postClearCache = () => {
-    axios
-        .post(api.postClearAppCache)
-        .then((response) => {
-            toastchild.value?.toastDisplay({
-                severity: 'success',
-                summary: response.data.title,
-                detail: response.data.message,
-            });
-        })
-        .catch((error) => {
-            toastchild.value?.toastDisplay({
-                severity: 'error',
-                summary: error.response.data.title,
-                detail: error.response.data.message,
-                response: error,
-            });
-        });
+const postClearCache = async () => {
+    try {
+        await AppAxios.postClearAppCache();
+    } catch (error) {
+        toastchild.value?.toastDisplay(error);
+    }
 };
 </script>
 

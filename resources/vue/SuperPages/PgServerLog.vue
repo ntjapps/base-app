@@ -104,7 +104,7 @@ const getServerLogData = async (page?: number, per_page?: number) => {
         loadingstat.value = true;
         const payload = buildPayload(page, per_page);
         const response = await api.getServerLogs(payload);
-        serverLogResponse.value = response.data.data ?? response.data;
+        serverLogResponse.value = response.data;
     } catch (error) {
         console.error('Failed to fetch server logs:', error);
     } finally {

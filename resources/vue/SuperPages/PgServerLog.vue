@@ -95,8 +95,8 @@ const buildPayload = (page?: number, per_page?: number) => ({
     log_level: logLevelData.value,
     log_message: logMessageData.value,
     log_extra: logExtraData.value,
-    ...(page ? { page } : {}),
-    ...(per_page ? { per_page } : {}),
+    ...(typeof page === 'number' ? { page } : {}),
+    ...(typeof per_page === 'number' ? { per_page } : {}),
 });
 
 const getServerLogData = async (page?: number, per_page?: number) => {
@@ -104,7 +104,7 @@ const getServerLogData = async (page?: number, per_page?: number) => {
         loadingstat.value = true;
         const payload = buildPayload(page, per_page);
         const response = await api.getServerLogs(payload);
-        serverLogResponse.value = response.data;
+        serverLogResponse.value = response.data as ServerLogResponseType;
     } catch (error) {
         console.error('Failed to fetch server logs:', error);
     } finally {
@@ -123,6 +123,11 @@ onMounted(() => {
     getServerLogData(1, 20);
     main.updateExpandedKeysMenu(props.expandedKeysProps);
 });
+
+const onSearch = () => {
+    const rows = typeof rowsPerPage.value === 'number' ? rowsPerPage.value : 20;
+    getServerLogData(1, rows);
+};
 </script>
 
 <template>
@@ -191,7 +196,7 @@ onMounted(() => {
                 <div class="flex w-full mt-2 md:mt-0">
                     <div class="w-28 my-auto text-sm m-auto"></div>
                     <div class="flex w-full text-sm m-auto">
-                        <UButton size="xl" :disabled="loadingstat" @click="getServerLogData"
+                        <UButton size="xl" :disabled="loadingstat" @click="onSearch"
                             ><i class="pi pi-search" />Search</UButton
                         >
                     </div>

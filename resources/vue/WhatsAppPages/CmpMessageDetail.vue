@@ -112,7 +112,7 @@ const getMessageDetails = async () => {
         const response = await api.getWhatsappMessagesDetail({
             phone_number: props.dialogData?.phone_number,
         });
-        messageDetail.value = response.data;
+        messageDetail.value = response.data as unknown as MessageDetail[];
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     }

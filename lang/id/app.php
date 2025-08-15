@@ -35,6 +35,7 @@ return [
     ],
 
     'passport' => [
+        'title' => 'Manajemen Passport',
         'reset' => [
             'title' => 'Reset rahasia klien',
             'message' => 'Reset rahasia klien berhasil.',

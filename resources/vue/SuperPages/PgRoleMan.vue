@@ -36,7 +36,7 @@ const getRoleListData = async () => {
     try {
         loading.value = true;
         const response = await api.getRoleList();
-        roleListData.value = response.data;
+        roleListData.value = response.data as unknown as RoleListDataInterface[];
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     } finally {

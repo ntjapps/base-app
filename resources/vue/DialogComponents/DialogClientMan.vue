@@ -95,7 +95,8 @@ const resetClient = async (id: string) => {
             id: id,
             old_secret: oldClientSecret.value,
         });
-        newClientSecret.value = response.data.data.secret;
+        const responseData = response.data.data as { secret: string };
+        newClientSecret.value = responseData.secret;
         toastchild.value?.toastDisplay({
             severity: 'success',
             summary: response.data.title,
@@ -130,8 +131,9 @@ const createClient = async () => {
             name: clientName.value,
             redirect: clientRedirect.value,
         });
-        clientId.value = response.data.data.id;
-        newClientSecret.value = response.data.data.secret;
+        const responseData = response.data.data as { id: string; secret: string };
+        clientId.value = responseData.id;
+        newClientSecret.value = responseData.secret;
         toastchild.value?.toastDisplay({
             severity: 'success',
             summary: response.data.title,

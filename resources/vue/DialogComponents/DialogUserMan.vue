@@ -37,9 +37,9 @@ const usermanData = props.dialogData;
 const typeCreate = ref<boolean>(props.dialogTypeCreate);
 const nameData = ref<string>(usermanData?.name ?? '');
 const usernameData = ref<string>(usermanData?.username ?? '');
-const roleListData = ref<Array<string>>();
+const roleListData = ref<Array<RoleDataInterface>>();
 const selectedRoleListData = ref<Array<RoleDataInterface>>();
-const permListData = ref<Array<string>>();
+const permListData = ref<Array<PermissionDataInterface>>();
 const selectedPermListData = ref<Array<PermissionDataInterface>>();
 
 const filters_role = ref({
@@ -57,24 +57,32 @@ const showDeleted = computed(() => {
 const getUserRoleListData = async () => {
     try {
         const response = await api.getUserRolePerm();
-        roleListData.value = response.data.roles;
-        permListData.value = response.data.permissions;
-        selectedRoleListData.value = response.data.roles.filter((role: RoleDataInterface) => {
+        const data = response.data as unknown as {
+            roles: Array<RoleDataInterface>;
+            permissions: Array<PermissionDataInterface>;
+        };
+        if (!data.roles || !data.permissions) {
+            throw new Error('Invalid response structure');
+        }
+        roleListData.value = data.roles;
+        permListData.value = data.permissions;
+        selectedRoleListData.value = data.roles.filter((role: RoleDataInterface) => {
             return (
                 usermanData?.roles?.findIndex((userRole: RoleDataInterface) => {
                     return userRole.id === role.id;
                 }) !== -1
             );
         });
-        selectedPermListData.value = response.data.permissions.filter(
-            (perm: PermissionDataInterface) => {
-                return (
-                    usermanData?.permissions?.findIndex((userPerm: PermissionDataInterface) => {
-                        return userPerm.id === perm.id;
-                    }) !== -1
-                );
-            },
-        );
+        const permissions = (
+            response.data as unknown as { permissions: Array<PermissionDataInterface> }
+        ).permissions;
+        selectedPermListData.value = permissions.filter((perm: PermissionDataInterface) => {
+            return (
+                usermanData?.permissions?.findIndex((userPerm: PermissionDataInterface) => {
+                    return userPerm.id === perm.id;
+                }) !== -1
+            );
+        });
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     }

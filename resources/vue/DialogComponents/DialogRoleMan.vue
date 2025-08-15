@@ -36,7 +36,7 @@ const closeDialogFunction = () => {
 const rolemanData = props.dialogData;
 const typeCreate = ref<boolean>(props.dialogTypeCreate);
 const nameData = ref<string>(rolemanData?.name ?? '');
-const permListData = ref<Array<string>>();
+const permListData = ref<Array<PermissionDataInterface>>();
 const selectedPermListData = ref<Array<PermissionDataInterface>>();
 
 const filters_perm = ref({
@@ -49,7 +49,9 @@ const showDeleted = computed(() => {
 
 const getRoleListData = async () => {
     try {
-        const response = await api.getUserRolePerm();
+        const response = (await api.getUserRolePerm()) as unknown as {
+            data: { permissions: PermissionDataInterface[] };
+        };
         permListData.value = response.data.permissions;
         selectedPermListData.value = response.data.permissions.filter(
             (perm: PermissionDataInterface) => {

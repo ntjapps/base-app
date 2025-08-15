@@ -38,7 +38,7 @@ const getUserListData = async () => {
     try {
         loading.value = true;
         const response = await api.getUserList();
-        userListData.value = response.data;
+        userListData.value = (response.data as unknown as UserDataInterface[]);
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     } finally {
@@ -128,7 +128,7 @@ onMounted(() => {
                     </div>
                 </template>
                 <template #footer>
-                    <div class="flex text-sm">Total records: {{ userListData.length }}</div>
+                    <div class="flex text-sm">Total records: {{ userListData?.length }}</div>
                 </template>
                 <template #empty>
                     <div class="flex justify-center">No data found</div>

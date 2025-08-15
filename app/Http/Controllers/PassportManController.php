@@ -29,7 +29,7 @@ class PassportManController extends Controller
         Log::debug('User open passport management page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         return view('base-components.base', [
-            'pageTitle' => __('app.page.passport'),
+            'pageTitle' => __('app.passport.title'),
             'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
         ]);
     }
@@ -46,7 +46,7 @@ class PassportManController extends Controller
             return collect($client)->merge([
                 'is_personal_access' => in_array('personal_access', $client->grant_types ?? []),
                 'is_client_credentials' => in_array('client_credentials', $client->grant_types ?? []),
-                'allowed_action' => ! in_array($client->id, [config('passport.personal_access_client.id'), config('passport.client_credentials_grant_client.id')]),
+                'allowed_action' => ! in_array($client->id, [config('passport.personal_access_client.id'), config('passport.client_credentials_grant_client.id'), config('passport.client_credentials_rabbitmq_client.id')]),
             ]);
         });
 

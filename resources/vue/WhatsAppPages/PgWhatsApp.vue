@@ -42,7 +42,7 @@ const getThreadListData = async () => {
     try {
         loading.value = true;
         const response = await api.getWhatsappMessagesList();
-        threadListData.value = response.data;
+        threadListData.value = Array.isArray(response.data) ? (response.data as WaThread[]) : [];
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     } finally {

@@ -35,7 +35,7 @@ const getClientListData = async () => {
     try {
         loading.value = true;
         const response = await api.postGetOauthClient();
-        clientListData.value = response.data;
+        clientListData.value = response.data as unknown as ClientListDataInterface[];
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     } finally {

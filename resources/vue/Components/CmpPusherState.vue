@@ -13,14 +13,18 @@ const echoStore = useEchoStore();
 const { laravelEcho } = storeToRefs(echoStore);
 const echo = laravelEcho.value;
 
+const isRecord = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object';
+
 const showConnected = () => {
     connected.value = true;
     connecting.value = false;
     unavailable.value = false;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    echo.private('all').error((error: any) => {
-        if (error.status >= 400 && error.status < 500) {
-            console.error('Pusher error', error);
+    echo.private('all').error((error: unknown) => {
+        if (isRecord(error)) {
+            const status = error.status;
+            if (typeof status === 'number' && status >= 400 && status < 500) {
+                console.error('Pusher error', error);
+            }
         }
     });
 };
@@ -38,11 +42,20 @@ const showUnavailable = () => {
 };
 
 onMounted(() => {
-    //echo.connector.options.auth.headers["Authorization"] =
-    //"Bearer " + secure.apiToken;
     /** Ticking status for pusher */
     setInterval(() => {
-        pusherState.value = echo.connector.pusher.connection.state;
+        const connectorUnknown: unknown = (echo as unknown as { connector?: unknown }).connector;
+        if (
+            isRecord(connectorUnknown) &&
+            isRecord(connectorUnknown.pusher) &&
+            isRecord(connectorUnknown.pusher.connection) &&
+            typeof connectorUnknown.pusher.connection.state === 'string'
+        ) {
+            pusherState.value = connectorUnknown.pusher.connection.state;
+        } else {
+            console.warn('Pusher is not available on the current connector.');
+            pusherState.value = 'unavailable';
+        }
         switch (pusherState.value) {
             case 'connecting':
                 showConnecting();

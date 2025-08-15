@@ -35,6 +35,7 @@ return [
     ],
 
     'passport' => [
+        'title' => 'Passport Management',
         'reset' => [
             'title' => 'Client secret reset',
             'message' => 'Client secret reset successfully.',

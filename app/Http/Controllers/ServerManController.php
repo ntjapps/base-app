@@ -60,7 +60,7 @@ class ServerManController extends Controller
         })->when($validated['date_end'] ?? null, function ($query, $date_end) {
             return $query->where('created_at', '<=', Carbon::parse($date_end, 'Asia/Jakarta')->endOfDay());
         })->when($validated['log_level'] ?? null, function ($query, $log_level) {
-            $log_level === 'all' ? $log_level = 'debug' : $log_level = $log_level;
+            $log_level === 'all' ? $log_level = 'debug' : $log_level;
 
             return $query->where('level', '>=', Logger::toMonologLevel($log_level));
         })->when($validated['log_message'] ?? null, function ($query, $log_message) {

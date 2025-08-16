@@ -47,8 +47,8 @@ class ServerManController extends Controller
             'log_level' => ['nullable', 'string'],
             'log_message' => ['nullable', 'string'],
             'log_extra' => ['nullable', 'string'],
-            'page' => ['nullable','integer','min:1'],
-            'per_page' => ['nullable','integer','in:10,20,50,100']
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'in:10,20,50,100'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);

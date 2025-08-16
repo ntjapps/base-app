@@ -2,7 +2,6 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { api } from '../AppAxios';
 import { RoleDataInterface, PermissionDataInterface, UserDataInterface } from '../AppCommon';
-import CmpToast from '../Components/CmpToast.vue';
 
 import DataTable from '../volt/DataTable.vue';
 import Column from 'primevue/column';
@@ -18,7 +17,6 @@ const emit = defineEmits<{
     (e: 'closeDialog'): void;
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
-const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 watch(
     () => props.dialogOpen,
     (newValue) => {
@@ -83,14 +81,14 @@ const getUserRoleListData = async () => {
                 }) !== -1
             );
         });
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
 const postUserManData = async () => {
     try {
-        const response = await api.postUserManSubmit({
+        await api.postUserManSubmit({
             type_create: typeCreate.value ? 1 : 0,
             id: usermanData?.id,
             name: nameData.value,
@@ -103,45 +101,29 @@ const postUserManData = async () => {
             }),
         });
         closeDialogFunction();
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
 const postDeleteUserManData = async () => {
     try {
-        const response = await api.postDeleteUserManSubmit({
-            id: usermanData?.id,
-        });
+        const id = usermanData?.id as string | number;
+        await api.postDeleteUserManSubmit(id);
         closeDialogFunction();
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
 const postResetPasswordUserMandata = async () => {
     try {
-        const response = await api.postResetPasswordUserManSubmit({
+        await api.postResetPasswordUserManSubmit({
             id: usermanData?.id,
         });
         closeDialogFunction();
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
@@ -152,7 +134,6 @@ onMounted(() => {
 
 <template>
     <div>
-        <CmpToast ref="toastchild" />
         <div class="flex w-full mt-1 flex-col sm:flex-row gap-1">
             <div class="w-28 my-auto text-sm min-w-[7rem]">
                 <!-- min-w for label alignment on mobile -->

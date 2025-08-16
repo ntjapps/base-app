@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import type { AxiosInstance, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios';
 
 // Types
 interface ApiError {
@@ -31,6 +31,18 @@ interface ToastMessage {
     response?: unknown;
 }
 
+// Common ID helpers
+type IdLike = string | number;
+type UserIdPayload = { id?: IdLike; user?: IdLike } & Record<string, unknown>;
+type ClientIdPayload = { id?: IdLike; client?: IdLike } & Record<string, unknown>;
+type MessageIdPayload = { id?: IdLike; message?: IdLike } & Record<string, unknown>;
+
+// Request options with toast control and typed params
+type RequestOptions = Omit<AxiosRequestConfig, 'params'> & {
+    noToast?: boolean;
+    params?: Record<string, unknown>;
+};
+
 // Create axios instance with default config
 const axiosInstance: AxiosInstance = axios.create({
     headers: {
@@ -45,6 +57,18 @@ type ToastDisplayFn = (message: ToastMessage) => void;
 export class ApiClient {
     private toast: ToastDisplayFn | null = null;
     private turnstileReset: (() => void) | null = null;
+    // simple toast dedupe to avoid duplicate messages
+    private lastToastSignature: string | null = null;
+    private lastToastAt: number | null = null;
+
+    // merge helper for params without losing caller-provided params
+    private mergeOptions(
+        options?: RequestOptions,
+        params?: Record<string, unknown>,
+    ): RequestOptions {
+        const mergedParams = { ...(options?.params ?? {}), ...(params ?? {}) };
+        return { ...(options ?? {}), params: mergedParams };
+    }
 
     constructor(private readonly axios: AxiosInstance) {}
 
@@ -60,9 +84,21 @@ export class ApiClient {
 
     // Helper method to display toast
     private showToast(message: ToastMessage) {
-        if (this.toast) {
-            this.toast(message);
+        if (!this.toast) return;
+
+        // compute a simple signature for this message
+        const sig = `${message.severity}::${message.summary}::${message.detail}`;
+        const now = Date.now();
+
+        // if same signature was shown recently (2 seconds), skip to prevent duplicates
+        if (this.lastToastSignature === sig && this.lastToastAt && now - this.lastToastAt < 2000) {
+            return;
         }
+
+        this.lastToastSignature = sig;
+        this.lastToastAt = now;
+
+        this.toast(message);
     }
 
     // Helper method to display success toast when API returns standard shape
@@ -78,14 +114,20 @@ export class ApiClient {
     }
 
     // Helper method to handle API errors
+    // Helper method to handle API errors
     private handleError(error: AxiosError<ApiError>) {
         const errorData = error.response?.data;
-        this.showToast({
-            severity: 'error',
-            summary: errorData?.title || 'Error',
-            detail: errorData?.message || 'An unexpected error occurred',
-            response: error,
-        });
+
+        // if request config requested no toast, skip showing error toast
+        const reqConfig = (error.config || {}) as AxiosRequestConfig & { noToast?: boolean };
+        if (!reqConfig.noToast) {
+            this.showToast({
+                severity: 'error',
+                summary: errorData?.title || 'Error',
+                detail: errorData?.message || 'An unexpected error occurred',
+                response: error,
+            });
+        }
 
         // Reset turnstile if needed
         if (this.turnstileReset) {
@@ -96,20 +138,27 @@ export class ApiClient {
     }
 
     // Generic request methods with error handling
-    private async get<T>(url: string, config = {}): Promise<AxiosResponse<T>> {
+    private async get<T>(
+        url: string,
+        config: AxiosRequestConfig & { noToast?: boolean } = {},
+    ): Promise<AxiosResponse<T>> {
         try {
             const response = await this.axios.get<T>(url, config);
-            this.showToastIfPresent(response);
+            if (!config.noToast) this.showToastIfPresent(response);
             return response;
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
         }
     }
 
-    private async post<T>(url: string, data = {}, config = {}): Promise<AxiosResponse<T>> {
+    private async post<T>(
+        url: string,
+        data = {},
+        config: AxiosRequestConfig & { noToast?: boolean } = {},
+    ): Promise<AxiosResponse<T>> {
         try {
             const response = await this.axios.post<T>(url, data, config);
-            this.showToastIfPresent(response);
+            if (!config.noToast) this.showToastIfPresent(response);
             return response;
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
@@ -121,20 +170,41 @@ export class ApiClient {
         return this.post<T>(url, data, config);
     }
 
-    private async put<T>(url: string, data = {}, config = {}): Promise<AxiosResponse<T>> {
+    private async put<T>(
+        url: string,
+        data = {},
+        config: AxiosRequestConfig & { noToast?: boolean } = {},
+    ): Promise<AxiosResponse<T>> {
         try {
             const response = await this.axios.put<T>(url, data, config);
-            this.showToastIfPresent(response);
+            if (!config.noToast) this.showToastIfPresent(response);
             return response;
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
         }
     }
 
-    private async delete<T>(url: string, config = {}): Promise<AxiosResponse<T>> {
+    private async patch<T>(
+        url: string,
+        data = {},
+        config: AxiosRequestConfig & { noToast?: boolean } = {},
+    ): Promise<AxiosResponse<T>> {
+        try {
+            const response = await this.axios.patch<T>(url, data, config);
+            if (!config.noToast) this.showToastIfPresent(response);
+            return response;
+        } catch (error) {
+            throw this.handleError(error as AxiosError<ApiError>);
+        }
+    }
+
+    private async delete<T>(
+        url: string,
+        config: AxiosRequestConfig & { noToast?: boolean } = {},
+    ): Promise<AxiosResponse<T>> {
         try {
             const response = await this.axios.delete<T>(url, config);
-            this.showToastIfPresent(response);
+            if (!config.noToast) this.showToastIfPresent(response);
             return response;
         } catch (error) {
             throw this.handleError(error as AxiosError<ApiError>);
@@ -142,149 +212,201 @@ export class ApiClient {
     }
 
     // Constant APIs
-    async postAppConst(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/const/post-app-const');
+    async postAppConst(
+        params: Record<string, unknown> = {},
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/const/app', this.mergeOptions(options, params));
     }
 
-    async postLogAgent(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/const/post-log-agent');
+    async postLogAgent(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/const/logs/agent', {}, options);
     }
 
-    async postGetCurrentAppVersion(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/const/post-get-current-app-version');
+    async postGetCurrentAppVersion(
+        params: Record<string, unknown> = {},
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/const/app/version', this.mergeOptions(options, params));
     }
 
     // Auth APIs
     // Web auth routes
-    async postLogin(data: LoginRequest): Promise<AxiosResponse<LoginResponse>> {
-        return this.post<LoginResponse>('/post-login', data);
+    async postLogin(
+        data: LoginRequest,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<LoginResponse>> {
+        return this.post<LoginResponse>('/post-login', data, options);
     }
 
-    async postLogout(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/auth/post-logout');
+    async postLogout(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/auth/post-logout', {}, options);
     }
 
-    async getLogout(): Promise<AxiosResponse<ApiResponse>> {
-        return this.get('/auth/get-logout');
+    async getLogout(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/auth/get-logout', options);
     }
 
     // API auth routes
-    async postToken(data: LoginRequest): Promise<AxiosResponse<LoginResponse>> {
-        return this.post<LoginResponse>('/api/v1/auth/post-token', data);
+    async postToken(
+        data: LoginRequest,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<LoginResponse>> {
+        return this.post<LoginResponse>('/api/v1/auth/token', data, options);
     }
 
-    async postTokenRevoke(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/auth/post-token-revoke');
+    async postTokenRevoke(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.delete('/api/v1/auth/token', options);
     }
 
     // Profile APIs
-    async getNotificationList(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/profile/get-notification-list');
+    async getNotificationList(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/profile/notifications', options);
     }
 
     async postNotificationAsRead(
         data: Record<string, unknown>,
+        options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/profile/post-notification-as-read', data);
+        return this.patch('/api/v1/profile/notifications/read', data, options);
     }
 
-    async postNotificationClearAll(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/profile/post-notification-clear-all');
+    async postNotificationClearAll(
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.delete('/api/v1/profile/notifications', options);
     }
 
-    async postUpdateProfile(data: Record<string, unknown>): Promise<AxiosResponse<ApiResponse>> {
-        return this.post<ApiResponse>('/api/v1/profile/post-update-profile', data);
+    async postUpdateProfile(
+        data: Record<string, unknown>,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.patch<ApiResponse>('/api/v1/profile', data, options);
     }
 
     // User Management APIs
-    async getUserList(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/user-man/get-user-list');
+    async getUserList(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/user-man/users', options);
     }
 
-    async getUserRolePerm(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/user-man/get-user-role-perm');
+    async getUserRolePerm(
+        params: Record<string, unknown> = {},
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/user-man/users/role-perm', this.mergeOptions(options, params));
     }
 
-    async postUserManSubmit(data: Record<string, unknown>): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/user-man/post-user-man-submit', data);
+    async postUserManSubmit(
+        data: Record<string, unknown>,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/user-man/users', data, options);
     }
 
     async postDeleteUserManSubmit(
-        data: Record<string, unknown>,
+        userId: string | number,
+        options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/user-man/post-delete-user-man-submit', data);
+        return this.delete(`/api/v1/user-man/users/${userId}`, options);
     }
 
     async postResetPasswordUserManSubmit(
-        data: Record<string, unknown>,
+        data: UserIdPayload,
+        options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/user-man/post-reset-password-user-man-submit', data);
+        const id = data?.id ?? data?.user;
+        return this.patch(`/api/v1/user-man/users/${id}/password`, data, options);
     }
 
     // Role Management APIs
-    async getRoleList(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/role-man/get-role-list');
+    async getRoleList(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/role-man/roles', options);
     }
 
-    async postRoleSubmit(data: Record<string, unknown>): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/role-man/post-role-submit', data);
+    async postRoleSubmit(
+        data: Record<string, unknown>,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/role-man/roles', data, options);
     }
 
-    async postDeleteRoleSubmit(data: Record<string, unknown>): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/role-man/post-delete-role-submit', data);
+    async postDeleteRoleSubmit(
+        roleId: string | number,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.delete(`/api/v1/role-man/roles/${roleId}`, options);
     }
 
     // Server Management APIs
-    async getServerLogs(data: Record<string, unknown> = {}): Promise<AxiosResponse<unknown>> {
-        return this.post('/api/v1/server-man/get-server-logs', data);
+    async getServerLogs(
+        params: Record<string, unknown> = {},
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<unknown>> {
+        return this.get('/api/v1/server-man/logs', this.mergeOptions(options, params));
     }
 
-    async postClearAppCache(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/server-man/post-clear-app-cache');
+    async postClearAppCache(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.delete('/api/v1/server-man/cache', options);
     }
 
     // OAuth Management APIs
-    async postGetOauthClient(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/oauth/post-get-oauth-client');
+    async postGetOauthClient(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/oauth/clients', options);
     }
 
-    async postResetOauthSecret(data: Record<string, unknown>): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/oauth/post-reset-oauth-secret', data);
+    async postResetOauthSecret(
+        data: ClientIdPayload,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        const id = data?.id ?? data?.client;
+        return this.patch(`/api/v1/oauth/clients/${id}/secret`, data, options);
     }
 
     async postDeleteOauthClient(
-        data: Record<string, unknown>,
+        clientId: string | number,
+        options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/oauth/post-delete-oauth-client', data);
+        return this.delete(`/api/v1/oauth/clients/${clientId}`, options);
     }
 
     async postUpdateOauthClient(
-        data: Record<string, unknown>,
+        data: ClientIdPayload,
+        options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/oauth/post-update-oauth-client', data);
+        const id = data?.id ?? data?.client;
+        return this.patch(`/api/v1/oauth/clients/${id}`, data, options);
     }
 
     async postCreateOauthClient(
         data: Record<string, unknown>,
+        options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/oauth/post-create-oauth-client', data);
+        return this.post('/api/v1/oauth/clients', data, options);
     }
 
     // WhatsApp Management APIs
-    async getWhatsappMessagesList(): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/whatsapp/get-whatsapp-messages-list');
+    async getWhatsappMessagesList(
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/whatsapp/messages', options);
     }
 
     async getWhatsappMessagesDetail(
-        data: Record<string, unknown>,
+        data: MessageIdPayload,
+        options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/whatsapp/get-whatsapp-messages-detail', data);
+        const { id, message, ...rest } = data || {};
+        const messageId = message ?? id;
+        return this.get(`/api/v1/whatsapp/messages/${messageId}`, this.mergeOptions(options, rest));
     }
 
     async postReplyWhatsappMessage(
-        data: Record<string, unknown>,
+        data: MessageIdPayload,
+        options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        return this.post('/api/v1/whatsapp/post-reply-whatsapp-message', data);
+        const { id, message, ...rest } = data || {};
+        const messageId = message ?? id;
+        return this.post(`/api/v1/whatsapp/messages/${messageId}/reply`, rest, options);
     }
 }
 

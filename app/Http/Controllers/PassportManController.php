@@ -84,24 +84,12 @@ class PassportManController extends Controller
     /**
      * POST delete passport client
      */
-    public function deletePassportClient(Request $request): HttpJsonResponse
+    public function deletePassportClient(Request $request, Client $client): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User delete passport client', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
-        $validate = Validator::make($request->all(), [
-            'id' => ['required', 'string', 'uuid', 'exists:oauth_clients,id'],
-        ]);
-        if ($validate->fails()) {
-            throw new ValidationException($validate);
-        }
-        $validated = $validate->validated();
-
-        $validatedLog = $validated;
-        Log::notice('User delete passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
-
-        $client = Passport::client()->where('id', $validated['id'])->first();
-        if (in_array($client->id, [config('passport.personal_access_client.id'), config('passport.client_credentials_grant_client.id')])) {
+        if (in_array($client->id, [config('passport.personal_access_client.id'), config('passport.client_credentials_grant_client.id'), config('passport.client_credentials_rabbitmq_client.id')])) {
             throw ValidationException::withMessages(['id' => 'Cannot delete this client']);
         }
         $client->delete();
@@ -135,7 +123,7 @@ class PassportManController extends Controller
             throw ValidationException::withMessages(['id' => 'Cannot update this client']);
         }
         $client->name = $validated['name'];
-        $client->redirect_uris = $validated['redirect'] ?? '';
+        $client->redirect_uris = $validated['redirect'] ?? [];
         $client->save();
 
         return $this->jsonSuccess(__('app.passport.update.title'), __('app.passport.update.message'));
@@ -152,7 +140,7 @@ class PassportManController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255', 'unique:oauth_clients,name'],
             'redirect' => ['nullable', 'string', 'url'],
-            'grant_types' => ['required', 'array'],
+            'grant_types' => ['nullable', 'array'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
@@ -164,8 +152,8 @@ class PassportManController extends Controller
 
         $client = null;
         $repo = new ClientRepository;
-        $grantTypes = $validated['grant_types'];
-        $redirects = isset($validated['redirect']) ? [$validated['redirect']] : [];
+        $grantTypes = $validated['grant_types'] ?? [];
+        $redirects = isset($validated['redirect']) ? [$validated['redirect']] : ['http://localhost'];
 
         if (in_array('personal_access', $grantTypes)) {
             $client = $repo->createPersonalAccessGrantClient($validated['name']);

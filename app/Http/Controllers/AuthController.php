@@ -180,8 +180,16 @@ class AuthController extends Controller
         Log::info('Username revoking token', ['userId' => $user?->id, 'userName' => $user?->name, 'username' => $user?->username, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         /** Match bearer token with access token */
-        $token = $request->user()->token();
-        if (! is_null($token)) {
+        $token = null;
+        $user = $request->user();
+
+        // Only call token() if the user object provides it (Passport adds token() to the user instance)
+        if (is_object($user) && method_exists($user, 'token')) {
+            $token = $user->token();
+        }
+
+        // Only call revoke() if the returned token object supports it
+        if (! is_null($token) && is_object($token) && method_exists($token, 'revoke')) {
             $token->revoke();
         }
 

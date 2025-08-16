@@ -2,7 +2,6 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { api } from '../AppAxios';
 import { PermissionDataInterface, RoleListDataInterface } from '../AppCommon';
-import CmpToast from '../Components/CmpToast.vue';
 
 import DataTable from '../volt/DataTable.vue';
 import Column from 'primevue/column';
@@ -18,7 +17,6 @@ const emit = defineEmits<{
     (e: 'closeDialog'): void;
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
-const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 watch(
     () => props.dialogOpen,
     (newValue) => {
@@ -62,14 +60,14 @@ const getRoleListData = async () => {
                 );
             },
         );
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
 const postRolemanData = async () => {
     try {
-        const response = await api.postRoleSubmit({
+        await api.postRoleSubmit({
             type_create: typeCreate.value ? 1 : 0,
             role_name: typeCreate.value ? nameData.value : null,
             role_id: typeCreate.value ? null : rolemanData?.id,
@@ -79,29 +77,17 @@ const postRolemanData = async () => {
             }),
         });
         closeDialogFunction();
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
 const postDeleteRolemanData = async () => {
     try {
-        const response = await api.postDeleteRoleSubmit({
-            id: rolemanData?.id,
-        });
+        await api.postDeleteRoleSubmit(rolemanData?.id as string | number);
         closeDialogFunction();
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
@@ -111,7 +97,6 @@ onMounted(() => {
 </script>
 
 <template>
-    <CmpToast ref="toastchild" />
     <div class="flex w-full mt-1">
         <div class="w-28 my-auto text-sm">
             <span>Name:<span class="text-red-500 font-bold">*</span></span>

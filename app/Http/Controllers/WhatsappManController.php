@@ -119,7 +119,7 @@ class WhatsappManController extends Controller
     /**
      * POST request to get WhatsApp message thread details
      */
-    public function getWhatsappMessagesDetail(Request $request): HttpJsonResponse
+    public function getWhatsappMessagesDetail(Request $request, WaApiMessageThreads $phone): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting WhatsApp message thread details', [
@@ -129,27 +129,14 @@ class WhatsappManController extends Controller
             'ip' => $request->ip(),
         ]);
 
-        $validate = Validator::make($request->all(), [
-            'phone_number' => ['required', 'string', 'max:20'],
-        ]);
-        if ($validate->fails()) {
-            throw new ValidationException($validate);
-        }
-        (array) $validated = $validate->validated();
-
-        $validateLog = $validated;
-        Log::info('Validated request data', [
-            'phone_number' => $validateLog['phone_number'],
-        ]);
-
         /** Fetch Thread Details */
         $threadDetail = WaApiMessageThreads::with(['messageable'])
-            ->where('phone_number', $validated['phone_number'])
+            ->where('phone_number', $phone->phone_number)
             ->get();
 
         if ($threadDetail->isEmpty()) {
             Log::warning('No message thread found for phone number', [
-                'phone_number' => $validated['phone_number'],
+                'phone_number' => $phone->phone_number,
             ]);
 
             throw ValidationException::withMessages([
@@ -165,7 +152,7 @@ class WhatsappManController extends Controller
      * Replying must be on service window, that is 24 hour since last customer received message
      * For safety application must deny message if not in service window, but service windows in application is reduced by 5 minutes.
      */
-    public function postReplyWhatsappMessage(Request $request): HttpJsonResponse
+    public function postReplyWhatsappMessage(Request $request, WaApiMessageThreads $phone): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is replying to WhatsApp message', [
@@ -176,7 +163,6 @@ class WhatsappManController extends Controller
         ]);
 
         $validate = Validator::make($request->all(), [
-            'phone_number' => ['required', 'string', 'max:20'],
             'message' => ['required', 'string', 'max:4096'],
         ]);
         if ($validate->fails()) {
@@ -186,12 +172,12 @@ class WhatsappManController extends Controller
 
         $validateLog = $validated;
         Log::info('Validated request data for reply', [
-            'phone_number' => $validateLog['phone_number'],
+            'phone_number' => $phone->phone_number,
             'message_length' => strlen($validateLog['message']),
         ]);
 
         /** Check Service Message Window */
-        $latestMessage = WaMessageWebhookLog::where('contact_wa_id', $validated['phone_number'])
+        $latestMessage = WaMessageWebhookLog::where('contact_wa_id', $phone->phone_number)
             ->orderBy('created_at', 'desc')
             ->first();
 
@@ -202,7 +188,7 @@ class WhatsappManController extends Controller
 
             if ($currentTime->greaterThan($latestTimeToReplyWindow)) {
                 Log::warning('User is trying to reply outside service window', [
-                    'phone_number' => $validated['phone_number'],
+                    'phone_number' => $phone->phone_number,
                     'message' => Str::limit($validated['message'], 50),
                 ]);
 
@@ -212,12 +198,12 @@ class WhatsappManController extends Controller
             }
 
             Log::debug('User is replying within service window', [
-                'phone_number' => $validated['phone_number'],
+                'phone_number' => $phone->phone_number,
                 'message' => Str::limit($validated['message'], 50),
             ]);
         } else {
             Log::warning('No previous messages found for this phone number', [
-                'phone_number' => $validated['phone_number'],
+                'phone_number' => $phone->phone_number,
             ]);
 
             throw ValidationException::withMessages([
@@ -226,23 +212,23 @@ class WhatsappManController extends Controller
         }
 
         Log::info('Replying to WhatsApp message', [
-            'phone_number' => $validated['phone_number'],
+            'phone_number' => $phone->phone_number,
             'message' => Str::limit($validated['message'], 50),
         ]);
 
         try {
-            $this->sendWhatsAppMessage($validated['phone_number'], $validated['message']);
+            $this->sendWhatsAppMessage($phone->phone_number, $validated['message']);
 
             /** Add number to exception from AI Reply */
-            $this->addToAIExceptionReply($validated['phone_number']);
+            $this->addToAIExceptionReply($phone->phone_number);
 
             Log::notice('WhatsApp message sent successfully', [
-                'phone_number' => $validated['phone_number'],
+                'phone_number' => $phone->phone_number,
                 'message' => Str::limit($validated['message'], 50),
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send WhatsApp message', [
-                'phone_number' => $validated['phone_number'],
+                'phone_number' => $phone->phone_number,
                 'message' => Str::limit($validated['message'], 50),
                 'error' => $e->getMessage(),
             ]);

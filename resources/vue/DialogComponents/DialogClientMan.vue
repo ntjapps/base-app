@@ -3,7 +3,6 @@ import { ref, computed, watch } from 'vue';
 import { api } from '../AppAxios';
 import useClipboard from 'vue-clipboard3';
 import { ClientListDataInterface } from '../AppCommon';
-import CmpToast from '../Components/CmpToast.vue';
 
 import InputText from '../volt/InputText.vue';
 
@@ -16,7 +15,6 @@ const emit = defineEmits<{
     (e: 'closeDialog'): void;
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
-const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 const { toClipboard } = useClipboard();
 
 watch(
@@ -51,10 +49,7 @@ const computedClientId = computed(() => {
 
 const copyIdToClipboard = () => {
     toClipboard(clientId.value);
-    toastchild.value?.toastDisplay({
-        severity: 'success',
-        summary: 'Success Copy ID',
-    });
+    // optional: rely on OS clipboard notification or add global toast
 };
 
 const showClientSecret = computed(() => {
@@ -67,25 +62,15 @@ const computedClientSecret = computed(() => {
 
 const copySecretToClipboard = () => {
     toClipboard(newClientSecret.value);
-    toastchild.value?.toastDisplay({
-        severity: 'success',
-        detail: 'Success Copy Secret',
-    });
+    // optional: rely on OS clipboard notification or add global toast
 };
 
 const deleteClient = async (id: string) => {
     try {
-        const response = await api.postDeleteOauthClient({
-            id: id,
-        });
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
+        await api.postDeleteOauthClient(id);
         closeDialogFunction();
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
@@ -97,31 +82,21 @@ const resetClient = async (id: string) => {
         });
         const responseData = response.data.data as { secret: string };
         newClientSecret.value = responseData.secret;
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
 const updateClient = async (id: string) => {
     try {
-        const response = await api.postUpdateOauthClient({
+        await api.postUpdateOauthClient({
             id: id,
             name: clientName.value,
             redirect: clientRedirect.value,
         });
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
         closeDialogFunction();
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
@@ -134,13 +109,8 @@ const createClient = async () => {
         const responseData = response.data.data as { id: string; secret: string };
         clientId.value = responseData.id;
         newClientSecret.value = responseData.secret;
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: response.data.title,
-            detail: response.data.message,
-        });
-    } catch (error) {
-        toastchild.value?.toastDisplay(error);
+    } catch {
+        // Toast handled globally by ApiClient
     }
 };
 
@@ -155,7 +125,6 @@ const allowEditName = computed(() => {
 
 <template>
     <div>
-        <CmpToast ref="toastchild" />
         <div v-if="showClientId" class="flex w-full mt-1">
             <div class="w-28 my-auto text-sm">
                 <span>ID:</span>

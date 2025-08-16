@@ -12,17 +12,17 @@ use Laravel\Passport\ClientRepository;
 describe('API v1 Routes', function () {
     it('sanitizes input via XSS middleware', function () {
         $payload = ['test' => '<script>alert(1)</script>'];
-        $response = $this->postJson(route('app-const'), $payload);
+        $response = $this->getJson(route('app-const', $payload));
         $response->assertStatus(200);
         $this->assertStringNotContainsString('<script>', json_encode($response->json()));
     });
 
     it('returns app constants successfully', function () {
-        $response = $this->postJson(route('app-const'), ['app_version' => '1.0.0', 'device_id' => 'dev1', 'device_platform' => 'android']);
+        $response = $this->getJson(route('app-const', ['app_version' => '1.0.0', 'device_id' => 'dev1', 'device_platform' => 'android']));
         $response->assertStatus(200);
     });
     it('validates post-app-const payload', function () {
-        $response = $this->postJson(route('app-const'), []);
+        $response = $this->getJson(route('app-const'));
         $response->assertStatus(200);
     });
 
@@ -36,27 +36,27 @@ describe('API v1 Routes', function () {
     });
 
     it('gets current app version', function () {
-        $response = $this->postJson(route('post-get-current-app-version'), [
+        $response = $this->getJson(route('post-get-current-app-version', [
             'app_version' => '1.0.0',
             'device_id' => 'dev1',
             'device_platform' => 'android',
-        ]);
+        ]));
         $response->assertStatus(200);
     });
     it('validates post-get-current-app-version payload', function () {
-        $response = $this->postJson(route('post-get-current-app-version'), []);
+        $response = $this->getJson(route('post-get-current-app-version'));
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['app_version', 'device_id', 'device_platform']);
     });
 
     it('requires auth for get-notification-list', function () {
-        $response = $this->postJson(route('get-notification-list'), []);
+        $response = $this->getJson(route('get-notification-list'));
         $response->assertStatus(401);
     });
     it('gets notification list as authenticated user', function () {
         $user = User::factory()->create();
         $this->actingAs($user, 'api');
-        $response = $this->postJson(route('get-notification-list'), []);
+        $response = $this->getJson(route('get-notification-list'));
         $response->assertStatus(200);
     });
 
@@ -126,7 +126,7 @@ describe('API v1 Routes', function () {
             $loginResponse->assertStatus(200);
             $accessToken = $loginResponse->json('access_token');
             $this->withHeader('Authorization', 'Bearer '.$accessToken);
-            $response = $this->postJson(route('post-token-revoke'), []);
+            $response = $this->deleteJson(route('post-token-revoke'));
             $response->assertStatus(200);
             $response->assertJsonStructure([
                 'status',
@@ -138,19 +138,19 @@ describe('API v1 Routes', function () {
             $user = $this->user;
             $user->notify(new TestNotification);
             $notification = $user->notifications()->latest()->first();
-            $response = $this->postJson(route('post-notification-as-read'), ['notification_id' => $notification->id]);
+            $response = $this->patchJson(route('post-notification-as-read'), ['notification_id' => $notification->id]);
             $response->assertStatus(200);
         });
         it('clears all notifications', function () {
-            $response = $this->postJson(route('post-notification-clear-all'), []);
+            $response = $this->deleteJson(route('post-notification-clear-all'));
             $response->assertStatus(200);
         });
         it('updates profile', function () {
-            $response = $this->postJson(route('post-update-profile'), ['name' => 'New Name']);
+            $response = $this->patchJson(route('post-update-profile'), ['name' => 'New Name']);
             $response->assertStatus(200);
         });
         it('validates update profile', function () {
-            $response = $this->postJson(route('post-update-profile'), ['name' => '']);
+            $response = $this->patchJson(route('post-update-profile'), ['name' => '']);
             $response->assertStatus(422);
         });
     });
@@ -163,11 +163,11 @@ describe('API v1 Routes', function () {
         });
 
         it('gets user list', function () {
-            $response = $this->postJson(route('get-user-list'), []);
+            $response = $this->getJson(route('get-user-list'));
             $response->assertStatus(200);
         });
         it('gets user role perm', function () {
-            $response = $this->postJson(route('get-user-role-perm'), ['user_id' => $this->user->id]);
+            $response = $this->getJson(route('get-user-role-perm', ['user_id' => $this->user->id]));
             $response->assertStatus(200);
         });
         it('submits user management', function () {
@@ -180,15 +180,15 @@ describe('API v1 Routes', function () {
             $response->assertStatus(200);
         });
         it('deletes user management', function () {
-            $response = $this->postJson(route('post-delete-user-man-submit'), ['id' => $this->user->id]);
+            $response = $this->deleteJson(route('post-delete-user-man-submit', ['user' => $this->user->id]), ['id' => $this->user->id]);
             $response->assertStatus(200);
         });
         it('resets user password', function () {
-            $response = $this->postJson(route('post-reset-password-user-man-submit'), ['id' => $this->user->id]);
+            $response = $this->patchJson(route('post-reset-password-user-man-submit', ['user' => $this->user->id]), ['id' => $this->user->id]);
             $response->assertStatus(200);
         });
         it('gets role list', function () {
-            $response = $this->postJson(route('get-role-list'), []);
+            $response = $this->getJson(route('get-role-list'));
             $response->assertStatus(200);
         });
         it('submits role', function () {
@@ -201,19 +201,19 @@ describe('API v1 Routes', function () {
         });
         it('deletes role', function () {
             $role = Role::factory()->create();
-            $response = $this->postJson(route('post-delete-role-submit'), ['id' => $role->id]);
+            $response = $this->deleteJson(route('post-delete-role-submit', ['role' => $role->id]), ['id' => $role->id]);
             $response->assertStatus(200);
         });
         it('gets server logs', function () {
-            $response = $this->postJson(route('get-server-logs'), []);
+            $response = $this->getJson(route('get-server-logs'));
             $response->assertStatus(200);
         });
         it('clears app cache', function () {
-            $response = $this->postJson(route('post-clear-app-cache'), []);
+            $response = $this->deleteJson(route('post-clear-app-cache'));
             $response->assertStatus(200);
         });
         it('lists passport clients', function () {
-            $response = $this->postJson(route('passport.clients.index'), []);
+            $response = $this->getJson(route('passport.clients.index'));
             $response->assertStatus(200);
         });
         it('resets passport client secret', function () {
@@ -221,7 +221,7 @@ describe('API v1 Routes', function () {
             $client->id = Str::uuid()->toString();
             $client->secret = Str::random(40);
             $client->save();
-            $response = $this->postJson(route('passport.clients.reset-secret'), ['id' => $client->id]);
+            $response = $this->patchJson(route('passport.clients.reset-secret', ['client' => $client->id]), ['id' => $client->id]);
             $response->assertStatus(200);
         });
         it('deletes passport client', function () {
@@ -229,7 +229,7 @@ describe('API v1 Routes', function () {
             $client->id = Str::uuid()->toString();
             $client->secret = Str::random(40);
             $client->save();
-            $response = $this->postJson(route('passport.clients.destroy'), ['id' => $client->id]);
+            $response = $this->deleteJson(route('passport.clients.destroy', ['client' => $client->id]), ['id' => $client->id]);
             $response->assertStatus(200);
         });
         it('updates passport client', function () {
@@ -237,7 +237,7 @@ describe('API v1 Routes', function () {
             $client->id = Str::uuid()->toString();
             $client->secret = Str::random(40);
             $client->save();
-            $response = $this->postJson(route('passport.clients.update'), ['id' => $client->id, 'name' => 'Updated Client']);
+            $response = $this->putJson(route('passport.clients.update', ['client' => $client->id]), ['id' => $client->id, 'name' => 'Updated Client']);
             $response->assertStatus(200);
         });
         it('creates passport client', function () {
@@ -252,7 +252,7 @@ describe('API v1 Routes', function () {
     describe('RabbitMQ API Endpoints', function () {
         it('returns error for test-rabbitmq in non-local env', function () {
             $this->app->detectEnvironment(fn () => 'production');
-            $response = $this->postJson(route('rabbitmq-test-rabbitmq'));
+            $response = $this->getJson(route('rabbitmq-test-rabbitmq'));
             $response->assertStatus(401);
 
             $response = $this->postJson('/oauth/token', [
@@ -265,7 +265,7 @@ describe('API v1 Routes', function () {
             $accessToken = $response->json('access_token');
 
             $response = $this->withHeader('Authorization', 'Bearer '.$accessToken)
-                ->postJson(route('rabbitmq-test-rabbitmq'));
+                ->getJson(route('rabbitmq-test-rabbitmq'));
             $response->assertStatus(403);
             $response->assertJson(['status' => 'error']);
         });
@@ -282,7 +282,7 @@ describe('API v1 Routes', function () {
             $accessToken = $response->json('access_token');
 
             $response = $this->withHeader('Authorization', 'Bearer '.$accessToken)
-                ->postJson(route('rabbitmq-test-rabbitmq'));
+                ->getJson(route('rabbitmq-test-rabbitmq'));
             $response->assertStatus(200);
             $response->assertJson(['status' => 'success']);
         });

@@ -180,27 +180,14 @@ class UserManController extends Controller
     /**
      * POST request delete user man submit
      */
-    public function postDeleteUserManSubmit(Request $request): HttpJsonResponse
+    public function postDeleteUserManSubmit(Request $request, User $user): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting delete user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        $userAuth = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting delete user for User Role Management', ['userId' => $userAuth?->id, 'userName' => $userAuth?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
-        /** Validate Request */
-        $validate = Validator::make($request->all(), [
-            'id' => ['required', 'string', 'exists:App\Models\User,id'],
-        ]);
-        if ($validate->fails()) {
-            throw new ValidationException($validate);
-        }
-        (array) $validated = $validate->validated();
-
-        $validatedLog = $validated;
-        Log::info('User delete user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'validated' => json_encode($validatedLog)]);
-
-        $user = User::where('id', $validated['id'])->first();
         $user->delete();
 
-        Log::warning('User successfully delete user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::warning('User successfully delete user for User Role Management', ['userId' => $userAuth?->id, 'userName' => $userAuth?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         return $this->jsonSuccess('User deleted successfully', 'User deleted successfully');
     }
@@ -208,28 +195,15 @@ class UserManController extends Controller
     /**
      * POST request reset password user man submit
      */
-    public function postResetPasswordUserManSubmit(Request $request): HttpJsonResponse
+    public function postResetPasswordUserManSubmit(Request $request, User $user): HttpJsonResponse
     {
-        $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting reset password user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        $userAuth = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User is requesting reset password user for User Role Management', ['userId' => $userAuth?->id, 'userName' => $userAuth?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
-        /** Validate Request */
-        $validate = Validator::make($request->all(), [
-            'id' => ['required', 'string', 'exists:App\Models\User,id'],
-        ]);
-        if ($validate->fails()) {
-            throw new ValidationException($validate);
-        }
-        (array) $validated = $validate->validated();
-
-        $validatedLog = $validated;
-        Log::info('User reset password user for User Role Management validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'validated' => json_encode($validatedLog)]);
-
-        $user = User::where('id', $validated['id'])->first();
         $user->password = Hash::make(config('auth.defaults.reset_password_data'));
         $user->save();
 
-        Log::warning('User successfully reset password user for User Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::warning('User successfully reset password user for User Role Management', ['userId' => $userAuth?->id, 'userName' => $userAuth?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         return $this->jsonSuccess('User password reset successfully', 'User password reset successfully');
     }

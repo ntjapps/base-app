@@ -38,7 +38,7 @@ const getUserListData = async () => {
     try {
         loading.value = true;
         const response = await api.getUserList();
-        userListData.value = (response.data as unknown as UserDataInterface[]);
+        userListData.value = response.data as unknown as UserDataInterface[];
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     } finally {

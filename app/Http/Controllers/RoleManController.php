@@ -151,24 +151,10 @@ class RoleManController extends Controller
     /**
      * POST request to delete role
      */
-    public function postDeleteRoleSubmit(Request $request): HttpJsonResponse
+    public function postDeleteRoleSubmit(Request $request, Role $role): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting delete role for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
-
-        /** Validate Request */
-        $validate = Validator::make($request->all(), [
-            'id' => ['required', 'string', 'exists:App\Models\Role,id'],
-        ]);
-        if ($validate->fails()) {
-            throw new ValidationException($validate);
-        }
-        (array) $validated = $validate->validated();
-
-        $validateLog = $validated;
-        Log::info('User is submitting delete role for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'validated' => json_encode($validateLog)]);
-
-        $role = Role::where('id', $validated['id'])->first();
 
         /** Check if Role Renamed is in Const list */
         if (in_array($role->name, InterfaceClass::ALLROLE)) {
@@ -176,6 +162,8 @@ class RoleManController extends Controller
         }
 
         $role->delete();
+
+        InterfaceClass::flushRolePermissionCache();
 
         Log::warning('User successfully delete role for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 

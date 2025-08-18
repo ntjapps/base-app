@@ -237,7 +237,7 @@ describe('API v1 Routes', function () {
             $client->id = Str::uuid()->toString();
             $client->secret = Str::random(40);
             $client->save();
-            $response = $this->putJson(route('passport.clients.update', ['client' => $client->id]), ['id' => $client->id, 'name' => 'Updated Client']);
+            $response = $this->patchJson(route('passport.clients.update', ['client' => $client->id]), ['id' => $client->id, 'name' => 'Updated Client']);
             $response->assertStatus(200);
         });
         it('creates passport client', function () {

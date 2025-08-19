@@ -71,6 +71,7 @@ return [
         'enabled' => (bool) env('GEMINIAI_ENABLED', false),
         'api_key' => env('GEMINIAI_API_KEY', 'your_default_api_key'),
         'base_url' => env('GEMINIAI_API_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta/'),
+        'file_upload_base_url' => env('GEMINIAI_FILE_UPLOAD_BASE_URL', 'https://generativelanguage.googleapis.com/upload/v1beta/files'),
         'selected_model' => env('GEMINIAI_MODELS', 'gemini-2.5-flash-lite'),
     ],
 ];

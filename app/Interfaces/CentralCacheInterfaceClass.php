@@ -162,7 +162,7 @@ class CentralCacheInterfaceClass
     /*
      * Centralized cache key helpers to avoid collisions and provide a single source of truth
      */
-    public static function keyPermissionMenuItems(int $userId): string
+    public static function keyPermissionMenuItems(int|string $userId): string
     {
         return 'permission:menu:items:'.$userId;
     }

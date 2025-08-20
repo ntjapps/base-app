@@ -24,7 +24,7 @@ class CentralCacheInterfaceClass
      */
     public static function mainMenuCache(User $user): array
     {
-        return Cache::remember('permission:menu:items:'.$user->id, Carbon::now()->addYear(), function () {
+    return Cache::remember(self::keyPermissionMenuItems($user->id), Carbon::now()->addYear(), function () {
             $menuArray = []; /** Menu Array */
 
             /** Top Order Menu */
@@ -53,7 +53,7 @@ class CentralCacheInterfaceClass
      */
     public static function rememberRoleCache(string $role): Role
     {
-        return Cache::remember('role:name:'.$role, Carbon::now()->addYear(), function () use ($role) {
+        return Cache::remember(self::keyRoleName($role), Carbon::now()->addYear(), function () use ($role) {
             return Role::where('name', $role)->first();
         });
     }
@@ -67,7 +67,7 @@ class CentralCacheInterfaceClass
      */
     public static function forgetRoleCache(string $role): void
     {
-        Cache::forget('role:name:'.$role);
+    Cache::forget(self::keyRoleName($role));
     }
 
     /**
@@ -99,7 +99,7 @@ class CentralCacheInterfaceClass
      */
     public static function rememberRoleOrderByName(): EloquentCollection
     {
-        return Cache::remember('role:orderBy:name', Carbon::now()->addYear(), function () {
+        return Cache::remember(self::keyRoleOrderByName(), Carbon::now()->addYear(), function () {
             return Role::orderBy('role_types')->orderBy('name')->get();
         });
     }
@@ -115,7 +115,7 @@ class CentralCacheInterfaceClass
      */
     public static function rememberPermissionOrderByName(): EloquentCollection
     {
-        return Cache::remember('permission:orderBy:name', Carbon::now()->addYear(), function () {
+        return Cache::remember(self::keyPermissionOrderByName(), Carbon::now()->addYear(), function () {
             return Permission::with(['ability' => function ($query) {
                 return $query->orderBy('title');
             }])->orderBy('ability_type')->get();
@@ -134,7 +134,7 @@ class CentralCacheInterfaceClass
      */
     public static function rememberPermissionConstOrderByName(): EloquentCollection
     {
-        return Cache::remember('permission:const:orderBy:name', Carbon::now()->addYear(), function () {
+        return Cache::remember(self::keyPermissionConstOrderByName(), Carbon::now()->addYear(), function () {
             return Permission::with(['ability' => function ($query) {
                 return $query->orderBy('title');
             }])->orderBy('ability_type')->get();
@@ -152,10 +152,88 @@ class CentralCacheInterfaceClass
      */
     public static function rememberPermissionMenuOrderByName(): EloquentCollection
     {
-        return Cache::remember('permission:menu:orderBy:name', Carbon::now()->addYear(), function () {
+        return Cache::remember(self::keyPermissionMenuOrderByName(), Carbon::now()->addYear(), function () {
             return Permission::where('ability_type', (string) PermissionMenu::class)->with(['ability' => function ($query) {
                 return $query->orderBy('title');
             }])->orderBy('ability_type')->get();
         });
+    }
+
+    /*
+     * Centralized cache key helpers to avoid collisions and provide a single source of truth
+     */
+    public static function keyPermissionMenuItems(int $userId): string
+    {
+        return 'permission:menu:items:'.$userId;
+    }
+
+    public static function keyRoleName(string $role): string
+    {
+        return 'role:name:'.$role;
+    }
+
+    public static function keyRoleOrderByName(): string
+    {
+        return 'role:orderBy:name';
+    }
+
+    public static function keyPermissionOrderByName(): string
+    {
+        return 'permission:orderBy:name';
+    }
+
+    public static function keyPermissionConstOrderByName(): string
+    {
+        return 'permission:const:orderBy:name';
+    }
+
+    public static function keyPermissionMenuOrderByName(): string
+    {
+        return 'permission:menu:orderBy:name';
+    }
+
+    public static function keyPermissionGetPermissionsByRole(int|string $roleId): string
+    {
+        return 'permission:getPermissionsByRole:'.$roleId;
+    }
+
+    public static function keyRoleGetRoles(int|string $userId): string
+    {
+        return 'role:getRoles:'.$userId;
+    }
+
+    public static function keyPermissionGetPermissions(int|string $userId): string
+    {
+        return 'permission:getPermissions:'.$userId;
+    }
+
+    public static function keyRoleSuperRoleId(): string
+    {
+        return 'role:superRoleId';
+    }
+
+    public static function keyPermissionSuperPermissionId(): string
+    {
+        return 'permission:superPermissionId';
+    }
+
+    public static function keyPermissionAbility(string $ability): string
+    {
+        return 'permission:ability:'.$ability;
+    }
+
+    public static function keyPermissionHasPermissionTo(int|string $permissionId, int|string $userId): string
+    {
+        return 'permission:hasPermissionTo:'.$permissionId.':user:'.$userId;
+    }
+
+    public static function keyPermissionName(string $name): string
+    {
+        return 'permission:name:'.$name;
+    }
+
+    public static function keyRabbitmqLock(string $taskName): string
+    {
+        return $taskName.'.rabbitmq.lock';
     }
 }

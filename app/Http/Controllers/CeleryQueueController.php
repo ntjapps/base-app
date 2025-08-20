@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Notifications\MessageNotification;
 use App\Traits\JsonResponse;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
@@ -35,7 +36,7 @@ class CeleryQueueController extends Controller
         $user->notify(new MessageNotification('Notification', $validated['message']));
 
         if ($validated['lock_id'] ?? null !== null) {
-            Cache::forget($validated['lock_id'].'.rabbitmq.lock');
+            Cache::forget(CentralCacheInterfaceClass::keyRabbitmqLock($validated['lock_id']));
         }
 
         return $this->jsonSuccess('success', 'Notification sent successfully');
@@ -75,7 +76,7 @@ class CeleryQueueController extends Controller
         }
 
         if ($validated['task_name'] ?? null !== null) {
-            Cache::forget($validated['task_name'].'.rabbitmq.lock');
+            Cache::forget(CentralCacheInterfaceClass::keyRabbitmqLock($validated['task_name']));
         }
 
         return $this->jsonSuccess('success', 'Log sent successfully');
@@ -103,7 +104,7 @@ class CeleryQueueController extends Controller
         }
 
         if ($validated['task_name'] ?? null !== null) {
-            Cache::forget($validated['task_name'].'.rabbitmq.lock');
+            Cache::forget(CentralCacheInterfaceClass::keyRabbitmqLock($validated['task_name']));
         }
 
         return $this->jsonSuccess('success', 'Callbacks sent successfully');

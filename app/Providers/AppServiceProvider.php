@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Interfaces\InterfaceClass;
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Listeners\MigrationEventListener;
 use App\Listeners\MigrationStartListener;
 use App\Models\Permission;
@@ -71,13 +72,13 @@ class AppServiceProvider extends ServiceProvider
          * This works in the app by using gate-related functions like auth()->user->can() and @can()
          **/
         Gate::after(function (User $user) {
-            $permission = Cache::remember('permission:ability:'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
+            $permission = Cache::remember(CentralCacheInterfaceClass::keyPermissionAbility(InterfaceClass::SUPER), Carbon::now()->addYear(), function () {
                 return Permission::whereHas('ability', function ($query) {
                     $query->where('title', InterfaceClass::SUPER);
                 })->where('ability_type', (string) PermissionPrivilege::class)->first();
             });
 
-            $hasPermissionToCache = Cache::remember('permission:hasPermissionTo:'.$permission->id.':user:'.$user->id, Carbon::now()->addYear(), function () use ($user, $permission) {
+            $hasPermissionToCache = Cache::remember(CentralCacheInterfaceClass::keyPermissionHasPermissionTo($permission->id, $user->id), Carbon::now()->addYear(), function () use ($user, $permission) {
                 return $user->hasPermissionTo($permission);
             });
 

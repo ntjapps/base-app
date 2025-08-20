@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\InterfaceClass;
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\Permission;
 use App\Models\Role;
@@ -52,7 +53,7 @@ class RoleManController extends Controller
             return $query->orderBy('name');
         }])->orderBy('name')->get()->map(function (Role $role) {
             return collect($role)->merge([
-                'permissions_array' => Cache::remember('permission:getPermissionsByRole:'.$role->id, Carbon::now()->addYear(), function () use ($role) {
+                'permissions_array' => Cache::remember(CentralCacheInterfaceClass::keyPermissionGetPermissionsByRole($role->id), Carbon::now()->addYear(), function () use ($role) {
                     return Permission::with('ability')->whereIn('id', $role->getAllPermissions()->pluck('id'))->orderBy('ability_type')->get()->pluck('ability')->pluck('title');
                 }),
             ]);
@@ -89,7 +90,7 @@ class RoleManController extends Controller
         $roleId = $validated['role_id'] ?? null;
 
         /** Cannot Create or Modify Super Role and Admin Role */
-        $rolesSuper = Cache::remember('role:name:'.InterfaceClass::SUPERROLE, Carbon::now()->addYear(), function () {
+    $rolesSuper = Cache::remember(CentralCacheInterfaceClass::keyRoleName(InterfaceClass::SUPERROLE), Carbon::now()->addYear(), function () {
             return Role::where('name', InterfaceClass::SUPERROLE)->first();
         });
         if ($roleId === $rolesSuper->id) {
@@ -100,7 +101,7 @@ class RoleManController extends Controller
         }
 
         /** Cannot Add Admin or Super Permission */
-        $superPermissionId = Cache::remember('permission:name:'.InterfaceClass::SUPER, Carbon::now()->addYear(), function () {
+    $superPermissionId = Cache::remember(CentralCacheInterfaceClass::keyPermissionName(InterfaceClass::SUPER), Carbon::now()->addYear(), function () {
             return Permission::whereHas('ability', function ($query) {
                 return $query->where('title', InterfaceClass::SUPER);
             })->first()->id;

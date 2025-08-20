@@ -395,8 +395,8 @@ export class ApiClient {
         data: MessageIdPayload,
         options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        const { id, message, ...rest } = data || {};
-        const messageId = message ?? id;
+        const { id, phone_number, ...rest } = data || {};
+        const messageId = phone_number ?? id;
         return this.get(`/api/v1/whatsapp/messages/${messageId}`, this.mergeOptions(options, rest));
     }
 
@@ -404,8 +404,8 @@ export class ApiClient {
         data: MessageIdPayload,
         options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        const { id, message, ...rest } = data || {};
-        const messageId = message ?? id;
+        const { id, phone_number, ...rest } = data || {};
+        const messageId = phone_number ?? id;
         return this.post(`/api/v1/whatsapp/messages/${messageId}/reply`, rest, options);
     }
 }

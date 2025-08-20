@@ -103,7 +103,7 @@ class WaMessageAutoReplyJob implements ShouldQueue
             try {
                 if (config('services.geminiai.enabled')) {
                     $ai = new GeminiAiInterfaceClass;
-                    $cacheKey = 'wa_gemini_conversation_'.$phoneNumber;
+                    $cacheKey = 'wa:ai:conversation:'.$phoneNumber;
                     $conversation = Cache::get($cacheKey, []);
 
                     $prompt = $this->webhookLog->message_body;

@@ -24,7 +24,7 @@ class CentralCacheInterfaceClass
      */
     public static function mainMenuCache(User $user): array
     {
-        return Cache::remember(Permission::class.'-menu-items-'.$user->id, Carbon::now()->addYear(), function () {
+        return Cache::remember('permission:menu:items:'.$user->id, Carbon::now()->addYear(), function () {
             $menuArray = []; /** Menu Array */
 
             /** Top Order Menu */
@@ -53,7 +53,7 @@ class CentralCacheInterfaceClass
      */
     public static function rememberRoleCache(string $role): Role
     {
-        return Cache::remember(Role::class.'-name-'.$role, Carbon::now()->addYear(), function () use ($role) {
+        return Cache::remember('role:name:'.$role, Carbon::now()->addYear(), function () use ($role) {
             return Role::where('name', $role)->first();
         });
     }
@@ -67,7 +67,7 @@ class CentralCacheInterfaceClass
      */
     public static function forgetRoleCache(string $role): void
     {
-        Cache::forget(Role::class.'-name-'.$role);
+        Cache::forget('role:name:'.$role);
     }
 
     /**
@@ -99,7 +99,7 @@ class CentralCacheInterfaceClass
      */
     public static function rememberRoleOrderByName(): EloquentCollection
     {
-        return Cache::remember(Role::class.'-orderBy-name', Carbon::now()->addYear(), function () {
+        return Cache::remember('role:orderBy:name', Carbon::now()->addYear(), function () {
             return Role::orderBy('role_types')->orderBy('name')->get();
         });
     }
@@ -115,7 +115,7 @@ class CentralCacheInterfaceClass
      */
     public static function rememberPermissionOrderByName(): EloquentCollection
     {
-        return Cache::remember(Permission::class.'-orderBy-name', Carbon::now()->addYear(), function () {
+        return Cache::remember('permission:orderBy:name', Carbon::now()->addYear(), function () {
             return Permission::with(['ability' => function ($query) {
                 return $query->orderBy('title');
             }])->orderBy('ability_type')->get();
@@ -134,7 +134,7 @@ class CentralCacheInterfaceClass
      */
     public static function rememberPermissionConstOrderByName(): EloquentCollection
     {
-        return Cache::remember(Permission::class.'-const-orderBy-name', Carbon::now()->addYear(), function () {
+        return Cache::remember('permission:const:orderBy:name', Carbon::now()->addYear(), function () {
             return Permission::with(['ability' => function ($query) {
                 return $query->orderBy('title');
             }])->orderBy('ability_type')->get();
@@ -152,68 +152,10 @@ class CentralCacheInterfaceClass
      */
     public static function rememberPermissionMenuOrderByName(): EloquentCollection
     {
-        return Cache::remember(Permission::class.'-menu-orderBy-name', Carbon::now()->addYear(), function () {
+        return Cache::remember('permission:menu:orderBy:name', Carbon::now()->addYear(), function () {
             return Permission::where('ability_type', (string) PermissionMenu::class)->with(['ability' => function ($query) {
                 return $query->orderBy('title');
             }])->orderBy('ability_type')->get();
         });
-    }
-
-    /**
-     * Check if user has EBS Auth in cache
-     */
-    public static function checkEbsAuthCache(?User $user): bool
-    {
-        return Cache::has($user?->id.'-ebs-auth');
-    }
-
-    /**
-     * Store EBS Auth information in cache.
-     *
-     * This function stores the specified EBS authentication information associated with the specified user in the cache.
-     * The cache will be deleted after the specified timeout.
-     *
-     * @param  User|null  $user  The user to associate the EBS authentication information with.
-     * @param  mixed  $value  The EBS authentication information to store.
-     * @param  Carbon  $timeout  The timeout for the cache.
-     */
-    public static function setEbsAuthCache(?User $user, mixed $value, Carbon $timeout): void
-    {
-        Cache::put($user?->id.'-ebs-auth', $value, $timeout);
-    }
-
-    /**
-     * Get EBS Auth from cache
-     */
-    public static function getEbsAuthCache(?User $user): Collection
-    {
-        return Cache::get($user?->id.'-ebs-auth');
-    }
-
-    /**
-     * Remove EBS Auth from cache
-     *
-     * This function deletes the EBS authentication information associated with the specified user from the cache.
-     */
-    public static function forgetEbsAuthCache(?User $user): void
-    {
-        Cache::forget($user?->id.'-ebs-auth');
-    }
-
-    public static function getIntendedUrlEbsUserCache(?User $user): string
-    {
-        return Cache::get('intended-url-ebs-user-'.$user?->id) ?? route('dashboard');
-    }
-
-    /**
-     * Remove intended URL for EBS user from cache.
-     *
-     * This function deletes the intended URL associated with the specified user for EBS from the cache.
-     *
-     * @param  User|null  $user  The user whose intended URL is to be removed from the cache.
-     */
-    public static function forgetIntendedUrlEbsUserCache(?User $user): void
-    {
-        Cache::forget('intended-url-ebs-user-'.$user?->id);
     }
 }

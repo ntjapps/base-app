@@ -54,10 +54,10 @@ class UserManController extends Controller
             return $query->orderBy('name');
         }])->orderBy('username')->get()->map(function (User $user) {
             return collect($user)->merge([
-                'roles_array' => Cache::remember(Role::class.'-getRoles-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                'roles_array' => Cache::remember('role:getRoles:'.$user->id, Carbon::now()->addYear(), function () use ($user) {
                     return $user->getRoleNames()->sortBy('name');
                 }),
-                'permissions_array' => Cache::remember(Permission::class.'-getPermissions-'.$user->id, Carbon::now()->addYear(), function () use ($user) {
+                'permissions_array' => Cache::remember('permission:getPermissions:'.$user->id, Carbon::now()->addYear(), function () use ($user) {
                     return Permission::with('ability')->whereIn('id', $user->getAllPermissions()->pluck('id'))->orderBy('ability_type')->get()->pluck('ability')->pluck('title');
                 }),
             ]);
@@ -111,13 +111,13 @@ class UserManController extends Controller
         (bool) $isRestored = false;
 
         /** Cannot assign Super Permission if not already have super role */
-        $superRoleId = Cache::remember(Role::class.'-superRoleId', Carbon::now()->addYear(), function () {
+        $superRoleId = Cache::remember('role:superRoleId', Carbon::now()->addYear(), function () {
             return Role::where('name', InterfaceClass::SUPERROLE)->first()->id;
         });
         if (in_array($superRoleId, $validated['roles'] ?? [])) {
             Gate::forUser($user)->authorize('hasSuperPermission', User::class);
         }
-        $superPermissionId = Cache::remember(Permission::class.'-superPermissionId', Carbon::now()->addYear(), function () {
+        $superPermissionId = Cache::remember('permission:superPermissionId', Carbon::now()->addYear(), function () {
             return Permission::whereHas('ability', function ($query) {
                 return $query->where('title', InterfaceClass::SUPER);
             })->first()->id;

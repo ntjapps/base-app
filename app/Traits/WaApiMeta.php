@@ -123,7 +123,7 @@ trait WaApiMeta
      */
     public function addToAIExceptionReply(string $phoneNumber): void
     {
-        Cache::add("ai_exception_reply:{$phoneNumber}", true, 1800);
+        Cache::add("ai:exception:reply:{$phoneNumber}", true, 1800);
 
         Log::debug('Added phone number to AI exception reply', ['phone_number' => $phoneNumber]);
     }

@@ -23,7 +23,7 @@ class WaApiMetaInterfaceClass
     public function sendMessage(string $to, string $message, bool $previewUrl = false): ?array
     {
         /** Check if this phone number is in AI Exception */
-        if (Cache::has("ai_exception_reply:{$to}")) {
+        if (Cache::has("ai:exception:reply:{$to}")) {
             Log::info('Phone number is in AI exception reply', ['phone_number' => $to]);
 
             return null;

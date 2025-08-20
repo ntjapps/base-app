@@ -56,13 +56,12 @@ class PassportManController extends Controller
     /**
      * POST reset client secret
      */
-    public function resetClientSecret(Request $request): HttpJsonResponse
+    public function resetClientSecret(Request $request, Client $client): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         $validate = Validator::make($request->all(), [
-            'id' => ['required', 'string', 'uuid', 'exists:oauth_clients,id'],
             'old_secret' => ['nullable', 'string', 'min:40', 'max:40'],
         ]);
         if ($validate->fails()) {
@@ -74,7 +73,6 @@ class PassportManController extends Controller
         Log::notice('User reset passport client secret', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
         $secret = $validated['old_secret'] ?? Str::random(40);
-        $client = Passport::client()->where('id', $validated['id'])->first();
         $client->secret = $secret;
         $client->save();
 
@@ -100,13 +98,12 @@ class PassportManController extends Controller
     /**
      * POST update passport client
      */
-    public function updatePassportClient(Request $request): HttpJsonResponse
+    public function updatePassportClient(Request $request, Client $client): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User update passport client', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
 
         $validate = Validator::make($request->all(), [
-            'id' => ['required', 'string', 'uuid', 'exists:oauth_clients,id'],
             'name' => ['required', 'string', 'max:255', 'unique:oauth_clients,name,'.$request->input('id')],
             'redirect' => ['nullable', 'string', 'url'],
         ]);
@@ -118,7 +115,6 @@ class PassportManController extends Controller
         $validatedLog = $validated;
         Log::notice('User update passport client validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'validated' => json_encode($validatedLog)]);
 
-        $client = Passport::client()->where('id', $validated['id'])->first();
         if (in_array($client->id, [config('passport.personal_access_client.id'), config('passport.client_credentials_grant_client.id')])) {
             throw ValidationException::withMessages(['id' => 'Cannot update this client']);
         }

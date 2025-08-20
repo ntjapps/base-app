@@ -34,7 +34,6 @@ interface ToastMessage {
 // Common ID helpers
 type IdLike = string | number;
 type UserIdPayload = { id?: IdLike; user?: IdLike } & Record<string, unknown>;
-type ClientIdPayload = { id?: IdLike; client?: IdLike } & Record<string, unknown>;
 type MessageIdPayload = { id?: IdLike; message?: IdLike } & Record<string, unknown>;
 
 // Request options with toast control and typed params
@@ -355,10 +354,10 @@ export class ApiClient {
     }
 
     async postResetOauthSecret(
-        data: ClientIdPayload,
+        data: { id: string; old_secret: string },
         options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        const id = data?.id ?? data?.client;
+        const id = data?.id;
         return this.patch(`/api/v1/oauth/clients/${id}/secret`, data, options);
     }
 
@@ -370,10 +369,10 @@ export class ApiClient {
     }
 
     async postUpdateOauthClient(
-        data: ClientIdPayload,
+        data: { id: string; name: string; redirect: string },
         options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
-        const id = data?.id ?? data?.client;
+        const id = data?.id;
         return this.patch(`/api/v1/oauth/clients/${id}`, data, options);
     }
 

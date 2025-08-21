@@ -69,10 +69,23 @@ trait GeminiAiFunction
             ];
         }
 
-        $response = Http::withHeaders([
-            'X-goog-api-key' => $apiKey,
-            'Accept' => 'application/json',
-        ])->post($url, $this->buildGeminiRequestBody($message, $conversation, $fileData));
+        // Increase PHP max execution time temporarily to avoid script fatal when Gemini
+        // request takes longer than the default (often 30s in containers).
+        $oldMax = ini_get('max_execution_time');
+        try {
+            ini_set('max_execution_time', '180');
+            $response = Http::withHeaders([
+                'X-goog-api-key' => $apiKey,
+                'Accept' => 'application/json',
+            ])->timeout(90)->post($url, $this->buildGeminiRequestBody($message, $conversation, $fileData));
+        } catch (\Throwable $e) {
+            throw $e;
+        } finally {
+            // restore original max_execution_time if possible
+            if ($oldMax !== false) {
+                ini_set('max_execution_time', (string) $oldMax);
+            }
+        }
 
         if ($response->successful()) {
             Log::debug('GeminiAI response: '.$response->body());

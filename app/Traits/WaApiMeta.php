@@ -118,6 +118,118 @@ trait WaApiMeta
     }
 
     /**
+     * Send a WhatsApp template message using the Meta Cloud API
+     *
+     * @param  string  $to  The recipient's phone number with country code (no + or spaces)
+     * @param  string  $templateName  The WhatsApp template name (as configured in Meta Business Manager)
+     * @param  array  $components  Template components (header/body/buttons etc.)
+     * @param  string  $languageCode  Language code for the template (default: 'id')
+     * @return array|null The API response or null on error
+     */
+    protected function sendWhatsAppMessageWithTemplate(string $to, string $templateName, array $components = [], string $languageCode = 'id'): ?array
+    {
+        // Create log entry data
+        $logData = [
+            'recipient_number' => $to,
+            'message_content' => 'Replied with template: '.$templateName,
+            'components' => $components,
+            'language_code' => $languageCode,
+            'preview_url' => false, // Template messages do not support preview URLs
+            'success' => false,
+        ];
+
+        if (! config('services.whatsapp.enabled')) {
+            Log::warning('WhatsApp API is disabled. Template message not sent.');
+
+            $logData['error_data'] = ['reason' => 'WhatsApp API is disabled'];
+            WaMessageSentLog::create($logData);
+
+            return null;
+        }
+
+        $endpoint = config('services.whatsapp.endpoint');
+        $phoneNumberId = config('services.whatsapp.phone_number_id');
+        $accessToken = config('services.whatsapp.access_token');
+
+        if (! $endpoint || ! $phoneNumberId || ! $accessToken) {
+            Log::error('WhatsApp API configuration missing. Check your .env file.');
+
+            $logData['error_data'] = ['reason' => 'WhatsApp API configuration missing'];
+            WaMessageSentLog::create($logData);
+
+            return null;
+        }
+
+        $url = "{$endpoint}{$phoneNumberId}/messages";
+
+        // Build payload
+        $payload = [
+            'messaging_product' => 'whatsapp',
+            'recipient_type' => 'individual',
+            'to' => $to,
+            'type' => 'template',
+            'template' => [
+                'name' => $templateName,
+                'language' => [
+                    'code' => $languageCode,
+                ],
+                'components' => $components,
+            ],
+        ];
+
+        try {
+            $response = Http::withToken($accessToken)
+                ->post($url, $payload);
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+                $messageId = $responseData['messages'][0]['id'] ?? null;
+
+                Log::info('WhatsApp template message sent successfully', [
+                    'to' => $to,
+                    'template' => $templateName,
+                    'message_id' => $messageId,
+                ]);
+
+                // Log success
+                $logData['message_id'] = $messageId;
+                $logData['success'] = true;
+                $logData['response_data'] = $responseData;
+                WaMessageSentLog::create($logData);
+
+                return $responseData;
+            } else {
+                $errorData = [
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ];
+
+                Log::error('WhatsApp Template API error', $errorData);
+
+                $logData['error_data'] = $errorData;
+                WaMessageSentLog::create($logData);
+
+                return null;
+            }
+        } catch (\Exception $e) {
+            $errorData = [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ];
+
+            Log::error('WhatsApp Template API exception: '.$e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $logData['error_data'] = $errorData;
+            WaMessageSentLog::create($logData);
+
+            return null;
+        }
+    }
+
+    /**
      * Add phone number to AI exception reply
      * For now set to 30 minutes
      */

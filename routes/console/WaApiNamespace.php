@@ -111,3 +111,29 @@ Artisan::command('whatsapp:send {phone_number} {message} {--template=} {--previe
         return 1;
     }
 })->purpose('Send a WhatsApp message (warning: may require pre-approved templates for new conversations)');
+
+Artisan::command('whatsapp:test {phone_number}', function () {
+    $phoneNumber = $this->argument('phone_number');
+
+    // Check if WhatsApp service is enabled
+    if (! config('services.whatsapp.enabled')) {
+        $this->error('WhatsApp service is disabled. Message not sent.');
+        Log::warning('Attempted to use WhatsApp API while disabled', ['command' => 'whatsapp:test']);
+
+        return 1;
+    }
+
+    // Validate phone number format (should be numbers only, no + or spaces)
+    if (! preg_match('/^\d+$/', $phoneNumber)) {
+        $this->error('Invalid phone number format. Use numbers only without + or spaces.');
+
+        return 1;
+    }
+
+    $this->info('Dispatching BookingReminderJob...');
+    dispatch(new BookingReminderJob($phoneNumber));
+
+    $this->info('Job dispatched successfully. Check the logs for details.');
+
+    return 0;
+})->purpose('Test WhatsApp API by dispatching a BookingReminderJob with the given phone number');

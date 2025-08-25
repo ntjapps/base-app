@@ -19,7 +19,7 @@
         "test:browser:debug": "vitest --reporter=html --coverage --browser --watch --debug"
     },
     "dependencies": {
-        "@eslint/js": "^9.33.0",
+        "@eslint/js": "^9.34.0",
         "@nuxt/ui": "^3.3.2",
         "@primevue/core": "^4.3.7",
         "@primevue/icons": "^4.3.7",

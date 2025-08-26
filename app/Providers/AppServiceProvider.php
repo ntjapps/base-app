@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Interfaces\InterfaceClass;
 use App\Interfaces\CentralCacheInterfaceClass;
+use App\Interfaces\InterfaceClass;
 use App\Listeners\MigrationEventListener;
 use App\Listeners\MigrationStartListener;
 use App\Models\Permission;

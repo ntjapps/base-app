@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Interfaces\InterfaceClass;
 use App\Interfaces\CentralCacheInterfaceClass;
+use App\Interfaces\InterfaceClass;
 use App\Models\Permission;
 use App\Models\User;
 use Carbon\Carbon;
@@ -16,13 +16,13 @@ trait BasePolicy
      */
     public function hasSuperPermission(User $user): ?bool
     {
-    $permission = Cache::remember(CentralCacheInterfaceClass::keyPermissionAbility(InterfaceClass::SUPER), Carbon::now()->addYear(), function () {
+        $permission = Cache::remember(CentralCacheInterfaceClass::keyPermissionAbility(InterfaceClass::SUPER), Carbon::now()->addYear(), function () {
             return Permission::whereHas('ability', function ($query) {
                 return $query->where('title', InterfaceClass::SUPER);
             })->first();
         });
 
-    $hasPermissionToCache = Cache::remember(CentralCacheInterfaceClass::keyPermissionHasPermissionTo($permission->id, $user->id), Carbon::now()->addYear(), function () use ($user, $permission) {
+        $hasPermissionToCache = Cache::remember(CentralCacheInterfaceClass::keyPermissionHasPermissionTo($permission->id, $user->id), Carbon::now()->addYear(), function () use ($user, $permission) {
             return $user->hasPermissionTo($permission);
         });
 

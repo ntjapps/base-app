@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Interfaces\CentralCacheInterfaceClass;
+use App\Models\User;
 use App\Notifications\MessageNotification;
 use App\Traits\JsonResponse;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;

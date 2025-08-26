@@ -111,13 +111,13 @@ class UserManController extends Controller
         (bool) $isRestored = false;
 
         /** Cannot assign Super Permission if not already have super role */
-    $superRoleId = Cache::remember(CentralCacheInterfaceClass::keyRoleSuperRoleId(), Carbon::now()->addYear(), function () {
+        $superRoleId = Cache::remember(CentralCacheInterfaceClass::keyRoleSuperRoleId(), Carbon::now()->addYear(), function () {
             return Role::where('name', InterfaceClass::SUPERROLE)->first()->id;
         });
         if (in_array($superRoleId, $validated['roles'] ?? [])) {
             Gate::forUser($user)->authorize('hasSuperPermission', User::class);
         }
-    $superPermissionId = Cache::remember(CentralCacheInterfaceClass::keyPermissionSuperPermissionId(), Carbon::now()->addYear(), function () {
+        $superPermissionId = Cache::remember(CentralCacheInterfaceClass::keyPermissionSuperPermissionId(), Carbon::now()->addYear(), function () {
             return Permission::whereHas('ability', function ($query) {
                 return $query->where('title', InterfaceClass::SUPER);
             })->first()->id;

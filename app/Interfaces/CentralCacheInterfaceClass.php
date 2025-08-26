@@ -24,7 +24,7 @@ class CentralCacheInterfaceClass
      */
     public static function mainMenuCache(User $user): array
     {
-    return Cache::remember(self::keyPermissionMenuItems($user->id), Carbon::now()->addYear(), function () {
+        return Cache::remember(self::keyPermissionMenuItems($user->id), Carbon::now()->addYear(), function () {
             $menuArray = []; /** Menu Array */
 
             /** Top Order Menu */
@@ -67,7 +67,7 @@ class CentralCacheInterfaceClass
      */
     public static function forgetRoleCache(string $role): void
     {
-    Cache::forget(self::keyRoleName($role));
+        Cache::forget(self::keyRoleName($role));
     }
 
     /**

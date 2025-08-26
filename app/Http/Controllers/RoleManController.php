@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\InterfaceClass;
 use App\Interfaces\CentralCacheInterfaceClass;
+use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Models\Permission;
 use App\Models\Role;
@@ -90,7 +90,7 @@ class RoleManController extends Controller
         $roleId = $validated['role_id'] ?? null;
 
         /** Cannot Create or Modify Super Role and Admin Role */
-    $rolesSuper = Cache::remember(CentralCacheInterfaceClass::keyRoleName(InterfaceClass::SUPERROLE), Carbon::now()->addYear(), function () {
+        $rolesSuper = Cache::remember(CentralCacheInterfaceClass::keyRoleName(InterfaceClass::SUPERROLE), Carbon::now()->addYear(), function () {
             return Role::where('name', InterfaceClass::SUPERROLE)->first();
         });
         if ($roleId === $rolesSuper->id) {
@@ -101,7 +101,7 @@ class RoleManController extends Controller
         }
 
         /** Cannot Add Admin or Super Permission */
-    $superPermissionId = Cache::remember(CentralCacheInterfaceClass::keyPermissionName(InterfaceClass::SUPER), Carbon::now()->addYear(), function () {
+        $superPermissionId = Cache::remember(CentralCacheInterfaceClass::keyPermissionName(InterfaceClass::SUPER), Carbon::now()->addYear(), function () {
             return Permission::whereHas('ability', function ($query) {
                 return $query->where('title', InterfaceClass::SUPER);
             })->first()->id;

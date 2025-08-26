@@ -3,9 +3,9 @@
 namespace App\Traits;
 
 use App\Exceptions\CommonCustomException;
+use App\Interfaces\CentralCacheInterfaceClass;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-use App\Interfaces\CentralCacheInterfaceClass;
 use Illuminate\Support\Str;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -43,8 +43,8 @@ trait CeleryFunction
             throw new CommonCustomException('Timeout must be an integer');
         }
 
-    /** Check task lock */
-    if (Cache::has(CentralCacheInterfaceClass::keyRabbitmqLock($task)) && $exclusive) {
+        /** Check task lock */
+        if (Cache::has(CentralCacheInterfaceClass::keyRabbitmqLock($task)) && $exclusive) {
             throw new CommonCustomException('Task already running');
         }
 

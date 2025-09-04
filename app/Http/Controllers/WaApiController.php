@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\InboundMessage\WaMessageInboundJob;
-use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Traits\JsonResponse;
+use App\Traits\WaApiMetaWebhook;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class WaApiController extends Controller
 {
-    use JsonResponse;
+    use JsonResponse, WaApiMetaWebhook;
 
     /**
      * Handle the GET request for WhatsApp webhook verification.
@@ -58,65 +57,13 @@ class WaApiController extends Controller
 
         $timestamp = Carbon::now()->format('Y-m-d H:i:s');
         $requestData = $request->all();
-        Log::info("Webhook received {$timestamp}", ['data' => json_encode($requestData, JSON_PRETTY_PRINT)]);
+        Log::debug("Webhook received {$timestamp}", ['data' => json_encode($requestData, JSON_PRETTY_PRINT)]);
 
-        try {
-            // Only process INCOMING messages (should have 'messages' and NOT 'statuses')
-            $entry = $requestData['entry'][0] ?? null;
-            if ($entry && isset($entry['changes'][0]['field']) && $entry['changes'][0]['field'] === 'messages') {
-                $value = $entry['changes'][0]['value'];
-
-                // Ignore if this is an outgoing message status update (has 'statuses' key)
-                if (isset($value['statuses'])) {
-                    Log::info('Webhook received outgoing message status update, ignoring.', [
-                        'statuses' => $value['statuses'],
-                    ]);
-
-                    return $this->jsonSuccess('Webhook Received', 'Outgoing message status update ignored');
-                }
-
-                // Extract metadata
-                $metadata = $value['metadata'] ?? [];
-                $phoneNumberId = $metadata['phone_number_id'] ?? null;
-                $displayPhoneNumber = $metadata['display_phone_number'] ?? null;
-
-                // Extract contact info
-                $contact = $value['contacts'][0] ?? [];
-                $contactWaId = $contact['wa_id'] ?? null;
-                $contactName = $contact['profile']['name'] ?? null;
-
-                // Extract message data
-                $message = $value['messages'][0] ?? null;
-                if ($message) {
-                    $waMessageWebhookLog = WaMessageWebhookLog::create([
-                        'phone_number_id' => $phoneNumberId,
-                        'display_phone_number' => $displayPhoneNumber,
-                        'contact_wa_id' => $contactWaId,
-                        'contact_name' => $contactName,
-                        'message_id' => $message['id'] ?? null,
-                        'message_from' => $message['from'] ?? null,
-                        'message_type' => $message['type'] ?? null,
-                        'message_body' => $message['type'] === 'text' ? ($message['text']['body'] ?? null) : null,
-                        'timestamp' => $message['timestamp'] ?? null,
-                        'raw_data' => $requestData,
-                    ]);
-
-                    Log::info('WhatsApp message saved to database', [
-                        'message_id' => $message['id'] ?? null,
-                        'from' => $message['from'] ?? null,
-                    ]);
-
-                    dispatch(new WaMessageInboundJob($waMessageWebhookLog));
-                } else {
-                    Log::warning('No message data found in webhook entry', ['entry' => $entry]);
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error('Error processing WhatsApp webhook: '.$e->getMessage(), [
-                'exception' => $e,
-            ]);
+        $response = $this->processWebhookMessages($requestData);
+        if ($response === true) {
+            return $this->jsonSuccess('Webhook Received', 'Webhook data processed successfully');
+        } else {
+            return $this->jsonFailed('Webhook Processing Failed', 'Failed to process webhook data');
         }
-
-        return $this->jsonSuccess('Webhook Received', 'Webhook data processed successfully');
     }
 }

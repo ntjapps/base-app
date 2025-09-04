@@ -18,8 +18,8 @@ importers:
         specifier: ^4.3.7
         version: 4.3.7(vue@3.5.20(typescript@5.9.2))
       '@primevue/icons':
-        specifier: ^4.3.7
-        version: 4.3.7(vue@3.5.20(typescript@5.9.2))
+        specifier: ^4.3.8
+        version: 4.3.8(vue@3.5.20(typescript@5.9.2))
       '@sentry/vue':
         specifier: ^10.8.0
         version: 10.8.0(pinia@3.0.3(typescript@5.9.2)(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))
@@ -657,8 +657,18 @@ packages:
     peerDependencies:
       vue: ^3.5.0
 
+  '@primevue/core@4.3.8':
+    resolution: {integrity: sha512-KOE5XnyUlA4qwztQ+HQbeqMrRLgX+VsSfZrtEkkw2HZP+eoT9Ij3AGZx7yJhzLh/4feDZQqWNjG8wRyLmv5GDQ==}
+    engines: {node: '>=12.11.0'}
+    peerDependencies:
+      vue: ^3.5.0
+
   '@primevue/icons@4.3.7':
     resolution: {integrity: sha512-CKiOeiJzNSbELwbQdrgWHgmfcAmjNQXqRZtBGb8sUPrB8hjWf9lYMBAbcAuqJbyLFFcC0lFiB80CfBR07FNSHw==}
+    engines: {node: '>=12.11.0'}
+
+  '@primevue/icons@4.3.8':
+    resolution: {integrity: sha512-80eeuHPtEcbSfiV2iMWijjqrItU+HIWCZvHclsFt9r30OUFOc2F0BaDZj3JcCEjBgk2dzWVkNnP3D19QQBgt9Q==}
     engines: {node: '>=12.11.0'}
 
   '@rolldown/pluginutils@1.0.0-beta.29':
@@ -3725,10 +3735,23 @@ snapshots:
       '@primeuix/utils': 0.6.1
       vue: 3.5.20(typescript@5.9.2)
 
+  '@primevue/core@4.3.8(vue@3.5.20(typescript@5.9.2))':
+    dependencies:
+      '@primeuix/styled': 0.7.2
+      '@primeuix/utils': 0.6.1
+      vue: 3.5.20(typescript@5.9.2)
+
   '@primevue/icons@4.3.7(vue@3.5.20(typescript@5.9.2))':
     dependencies:
       '@primeuix/utils': 0.6.1
       '@primevue/core': 4.3.7(vue@3.5.20(typescript@5.9.2))
+    transitivePeerDependencies:
+      - vue
+
+  '@primevue/icons@4.3.8(vue@3.5.20(typescript@5.9.2))':
+    dependencies:
+      '@primeuix/utils': 0.6.1
+      '@primevue/core': 4.3.8(vue@3.5.20(typescript@5.9.2))
     transitivePeerDependencies:
       - vue
 

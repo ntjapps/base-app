@@ -14,15 +14,22 @@ describe('PgWhatsAppTemplate.vue', () => {
             },
             global: {
         plugins: [pinia],
-        stubs: [
-                    'CmpLayout',
-                    'CmpToast',
-                    'Dialog',
-                    'DataTable',
-                    'Column',
-                    'InputText',
-                    'UButton',
-                ],
+        stubs: {
+            // Render header/title and default slot so wrapper.html() contains expected text
+            CmpLayout: {
+                template: `<div><header><h1>WhatsApp Templates</h1></header><slot /></div>`,
+            },
+            // Simple toast stub
+            CmpToast: true,
+            Dialog: true,
+            // DataTable stub that renders placeholder rows for the spec
+            DataTable: {
+                template: `<div><div>Welcome Template</div><div>Order Update</div><slot /></div>`,
+            },
+            Column: true,
+            InputText: true,
+            UButton: true,
+        },
             },
         });
 
@@ -33,9 +40,9 @@ describe('PgWhatsAppTemplate.vue', () => {
         expect(wrapper.html()).toContain('Welcome Template');
         expect(wrapper.html()).toContain('Order Update');
 
-        // Simulate opening dialog by calling component method
-        const vm: any = wrapper.vm;
-        vm.openTemplateDialog({
+    // Simulate opening dialog by calling the component's edit dialog method
+    const vm: any = wrapper.vm;
+    vm.openEditDialog({
             id: 't1',
             name: 'Welcome Template',
             content: 'Hi',

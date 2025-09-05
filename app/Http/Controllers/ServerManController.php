@@ -6,6 +6,7 @@ use App\Interfaces\InterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Logger\Models\ServerLog;
 use App\Traits\JsonResponse;
+use App\Traits\LogContext;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ use Monolog\Logger;
 
 class ServerManController extends Controller
 {
-    use JsonResponse;
+    use JsonResponse, LogContext;
 
     /**
      * GET request to view server logs layouts
@@ -27,7 +28,7 @@ class ServerManController extends Controller
     public function serverLogs(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User open server log', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User open server log', $this->getLogContext($request, $user));
 
         return view('base-components.base', [
             'pageTitle' => 'Server Logs',
@@ -78,7 +79,7 @@ class ServerManController extends Controller
     public function postClearAppCache(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User clear app cache', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User clear app cache', $this->getLogContext($request, $user));
 
         /** Clear Cache */
         Cache::flush();

@@ -8,6 +8,7 @@ const userMan = '/user-man';
 const roleMan = '/role-man';
 const passportMan = '/passport-man';
 const whatsappMan = '/whatsapp-man';
+const whatsappTemplateMan = '/whatsapp-templates-man';
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { defineStore } from 'pinia';
@@ -60,6 +61,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'whatsappMan',
         component: () => import('./WhatsAppPages/PgWhatsApp.vue'),
     },
+    {
+        path: whatsappTemplateMan,
+        name: 'whatsappTemplateMan',
+        component: () => import('./WhatsAppPages/PgWhatsAppTemplate.vue'),
+    },
 ];
 
 export const router = createRouter({
@@ -81,5 +87,6 @@ export const useWebStore = defineStore('web', {
         roleMan: roleMan,
         passportMan: passportMan,
         whatsappMan: whatsappMan,
+        whatsappTemplateMan: whatsappTemplateMan,
     }),
 });

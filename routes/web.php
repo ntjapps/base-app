@@ -8,6 +8,7 @@ use App\Http\Controllers\RoleManController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Controllers\WhatsappManController;
+use App\Http\Controllers\WhatsappTemplateManController;
 use App\Http\Middleware\ProfileFillIfEmpty;
 use Illuminate\Support\Facades\Route;
 
@@ -76,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
 
             /** Whatsapp Message Management Menu */
             Route::get('/whatsapp-man', [WhatsappManController::class, 'whatsappManPage'])->name('whatsapp-man');
+            Route::get('/whatsapp-templates-man', [WhatsappTemplateManController::class, 'templateManPage'])->name('whatsapp-templates-man');
         });
     });
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Traits\JsonResponse;
+use App\Traits\LogContext;
 use App\Traits\WaApiMetaWebhook;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class WaApiController extends Controller
 {
-    use JsonResponse, WaApiMetaWebhook;
+    use JsonResponse, LogContext, WaApiMetaWebhook;
 
     /**
      * Handle the GET request for WhatsApp webhook verification.
@@ -31,7 +32,7 @@ class WaApiController extends Controller
         $verifyToken = config('services.whatsapp.verify_token');
 
         if ($mode === 'subscribe' && $token === $verifyToken) {
-            Log::info('WEBHOOK VERIFIED');
+            Log::info('WEBHOOK VERIFIED', $this->getLogContext($request, null));
 
             return response($challenge, 200);
         } else {
@@ -57,7 +58,7 @@ class WaApiController extends Controller
 
         $timestamp = Carbon::now()->format('Y-m-d H:i:s');
         $requestData = $request->all();
-        Log::debug("Webhook received {$timestamp}", ['data' => json_encode($requestData, JSON_PRETTY_PRINT)]);
+        Log::debug("Webhook received {$timestamp}", $this->getLogContext($request, null, ['data' => json_encode($requestData, JSON_PRETTY_PRINT)]));
 
         $response = $this->processWebhookMessages($requestData);
         if ($response === true) {

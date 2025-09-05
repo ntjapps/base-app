@@ -9,6 +9,7 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Traits\JsonResponse;
+use App\Traits\LogContext;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
@@ -25,7 +26,7 @@ use Illuminate\View\View;
 
 class RoleManController extends Controller
 {
-    use JsonResponse;
+    use JsonResponse, LogContext;
 
     /**
      * GET role management page
@@ -33,7 +34,7 @@ class RoleManController extends Controller
     public function roleManPage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User open Role Management page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User open Role Management page', $this->getLogContext($request, $user));
 
         return view('base-components.base', [
             'pageTitle' => 'Role Management',
@@ -47,7 +48,7 @@ class RoleManController extends Controller
     public function getRoleList(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting get role list for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User is requesting get role list for Role Management', $this->getLogContext($request, $user));
 
         $data = Role::with(['permissions' => function ($query) {
             return $query->orderBy('name');
@@ -68,7 +69,7 @@ class RoleManController extends Controller
     public function postRoleSubmit(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is submitting role data for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User is submitting role data for Role Management', $this->getLogContext($request, $user));
 
         /** Validate Request */
         $validate = Validator::make($request->all(), [
@@ -84,7 +85,7 @@ class RoleManController extends Controller
         (array) $validated = $validate->validated();
 
         $validateLog = $validated;
-        Log::info('User is submitting role data for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'validated' => json_encode($validateLog)]);
+        Log::info('User is submitting role data for Role Management', $this->getLogContext($request, $user, ['validated' => json_encode($validateLog)]));
 
         $roleName = $validated['role_name'] ?? $validated['role_rename'] ?? null;
         $roleId = $validated['role_id'] ?? null;
@@ -139,10 +140,10 @@ class RoleManController extends Controller
 
             InterfaceClass::flushRolePermissionCache();
 
-            Log::notice('User successfully submitted role data for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+            Log::notice('User successfully submitted role data for Role Management', $this->getLogContext($request, $user));
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('User is submitting role data for Role Management failed', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'error' => $e->getMessage()]);
+            Log::error('User is submitting role data for Role Management failed', $this->getLogContext($request, $user, ['error' => $e->getMessage()]));
             throw $e;
         }
 
@@ -155,7 +156,7 @@ class RoleManController extends Controller
     public function postDeleteRoleSubmit(Request $request, Role $role): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting delete role for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User is requesting delete role for Role Management', $this->getLogContext($request, $user));
 
         /** Check if Role Renamed is in Const list */
         if (in_array($role->name, InterfaceClass::ALLROLE)) {
@@ -166,7 +167,7 @@ class RoleManController extends Controller
 
         InterfaceClass::flushRolePermissionCache();
 
-        Log::warning('User successfully delete role for Role Management', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::warning('User successfully delete role for Role Management', $this->getLogContext($request, $user));
 
         return $this->jsonSuccess('Role deleted successfully', 'Role deleted successfully');
     }

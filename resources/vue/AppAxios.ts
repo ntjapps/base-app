@@ -407,6 +407,36 @@ export class ApiClient {
         const messageId = phone_number ?? id;
         return this.post(`/api/v1/whatsapp/messages/${messageId}/reply`, rest, options);
     }
+
+    // WhatsApp Template Management APIs
+    async getWhatsappTemplatesList(
+        params: Record<string, unknown> = {},
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/whatsapp/templates', this.mergeOptions(options, params));
+    }
+
+    async postCreateWhatsappTemplate(
+        data: Record<string, unknown>,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/whatsapp/templates', data, options);
+    }
+
+    async postUpdateWhatsappTemplate(
+        templateId: string,
+        data: Record<string, unknown>,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.patch(`/api/v1/whatsapp/templates/${templateId}`, data, options);
+    }
+
+    async deleteWhatsappTemplate(
+        templateId: string,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.delete(`/api/v1/whatsapp/templates/${templateId}`, options);
+    }
 }
 
 // Create and export API client instance

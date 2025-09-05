@@ -104,6 +104,7 @@ export default [
                         'UTableRow',
                         'UTableCell',
                         'UTooltip',
+                        'UCheckbox',
                     ],
                 },
             ],

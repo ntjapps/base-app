@@ -7,6 +7,7 @@ use App\Interfaces\MenuItemClass;
 use App\Models\WaApiMeta\WaApiMessageThreads;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Traits\JsonResponse;
+use App\Traits\LogContext;
 use App\Traits\WaApiMeta;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
@@ -21,7 +22,7 @@ use Illuminate\View\View;
 
 class WhatsappManController extends Controller
 {
-    use JsonResponse, WaApiMeta;
+    use JsonResponse, LogContext, WaApiMeta;
 
     /**
      * GET whatsapp management page
@@ -29,7 +30,7 @@ class WhatsappManController extends Controller
     public function whatsappManPage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User accessed WhatsApp management page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User accessed WhatsApp management page', $this->getLogContext($request, $user));
 
         return view('base-components.base', [
             'pageTitle' => 'WhatsApp Management',
@@ -43,12 +44,7 @@ class WhatsappManController extends Controller
     public function getWhatsappMessagesList(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting WhatsApp message threads list', [
-            'userId' => $user?->id,
-            'userName' => $user?->name,
-            'route' => $request->route()->getName(),
-            'ip' => $request->ip(),
-        ]);
+        Log::debug('User is requesting WhatsApp message threads list', $this->getLogContext($request, $user));
 
         $table = (new WaApiMessageThreads)->getTable();
 
@@ -122,12 +118,7 @@ class WhatsappManController extends Controller
     public function getWhatsappMessagesDetail(Request $request, string $phone): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is requesting WhatsApp message thread details', [
-            'userId' => $user?->id,
-            'userName' => $user?->name,
-            'route' => $request->route()->getName(),
-            'ip' => $request->ip(),
-        ]);
+        Log::debug('User is requesting WhatsApp message thread details', $this->getLogContext($request, $user));
 
         /** Fetch Thread Details */
         $threadDetail = WaApiMessageThreads::with(['messageable'])
@@ -135,9 +126,7 @@ class WhatsappManController extends Controller
             ->get();
 
         if ($threadDetail->isEmpty()) {
-            Log::warning('No message thread found for phone number', [
-                'phone_number' => $phone,
-            ]);
+            Log::warning('No message thread found for phone number', $this->getLogContext($request, $user, ['phone_number' => $phone]));
 
             throw ValidationException::withMessages([
                 'phone_number' => ['No message thread found for this phone number.'],
@@ -155,12 +144,7 @@ class WhatsappManController extends Controller
     public function postReplyWhatsappMessage(Request $request, string $phone): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User is replying to WhatsApp message', [
-            'userId' => $user?->id,
-            'userName' => $user?->name,
-            'route' => $request->route()->getName(),
-            'ip' => $request->ip(),
-        ]);
+        Log::debug('User is replying to WhatsApp message', $this->getLogContext($request, $user));
 
         $validate = Validator::make($request->all(), [
             'message' => ['required', 'string', 'max:4096'],
@@ -171,10 +155,7 @@ class WhatsappManController extends Controller
         (array) $validated = $validate->validated();
 
         $validateLog = $validated;
-        Log::info('Validated request data for reply', [
-            'phone_number' => $phone,
-            'message_length' => strlen($validateLog['message']),
-        ]);
+        Log::info('Validated request data for reply', $this->getLogContext($request, $user, ['phone_number' => $phone, 'message_length' => strlen($validateLog['message'])]));
 
         /** Check Service Message Window */
         $latestMessage = WaMessageWebhookLog::where('contact_wa_id', $phone)
@@ -187,34 +168,23 @@ class WhatsappManController extends Controller
             $latestTimeToReplyWindow = $messageTime->addDays(1);
 
             if ($currentTime->greaterThan($latestTimeToReplyWindow)) {
-                Log::warning('User is trying to reply outside service window', [
-                    'phone_number' => $phone,
-                    'message' => Str::limit($validated['message'], 50),
-                ]);
+                Log::warning('User is trying to reply outside service window', $this->getLogContext($request, $user, ['phone_number' => $phone, 'message' => Str::limit($validated['message'], 50)]));
 
                 throw ValidationException::withMessages([
                     'phone_number' => ['You can only reply within 24 hours of the last message.'],
                 ]);
             }
 
-            Log::debug('User is replying within service window', [
-                'phone_number' => $phone,
-                'message' => Str::limit($validated['message'], 50),
-            ]);
+            Log::debug('User is replying within service window', $this->getLogContext($request, $user, ['phone_number' => $phone, 'message' => Str::limit($validated['message'], 50)]));
         } else {
-            Log::warning('No previous messages found for this phone number', [
-                'phone_number' => $phone,
-            ]);
+            Log::warning('No previous messages found for this phone number', $this->getLogContext($request, $user, ['phone_number' => $phone]));
 
             throw ValidationException::withMessages([
                 'phone_number' => ['No previous messages found for this phone number.'],
             ]);
         }
 
-        Log::info('Replying to WhatsApp message', [
-            'phone_number' => $phone,
-            'message' => Str::limit($validated['message'], 50),
-        ]);
+        Log::info('Replying to WhatsApp message', $this->getLogContext($request, $user, ['phone_number' => $phone, 'message' => Str::limit($validated['message'], 50)]));
 
         try {
             $this->sendWhatsAppMessage($phone, $validated['message']);
@@ -222,16 +192,9 @@ class WhatsappManController extends Controller
             /** Add number to exception from AI Reply */
             $this->addToAIExceptionReply($phone);
 
-            Log::notice('WhatsApp message sent successfully', [
-                'phone_number' => $phone,
-                'message' => Str::limit($validated['message'], 50),
-            ]);
+            Log::notice('WhatsApp message sent successfully', $this->getLogContext($request, $user, ['phone_number' => $phone, 'message' => Str::limit($validated['message'], 50)]));
         } catch (\Exception $e) {
-            Log::error('Failed to send WhatsApp message', [
-                'phone_number' => $phone,
-                'message' => Str::limit($validated['message'], 50),
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('Failed to send WhatsApp message', $this->getLogContext($request, $user, ['phone_number' => $phone, 'message' => Str::limit($validated['message'], 50), 'error' => $e->getMessage()]));
 
             throw new CommonCustomException('Failed to send WhatsApp message.', 422, $e);
         }

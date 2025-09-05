@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Interfaces\MenuItemClass;
 use App\Models\User;
 use App\Traits\JsonResponse;
+use App\Traits\LogContext;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    use JsonResponse;
+    use JsonResponse, LogContext;
 
     /**
      * GET edit profile page
@@ -24,7 +25,7 @@ class ProfileController extends Controller
     public function profilePage(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User accessed profile page', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User accessed profile page', $this->getLogContext($request, $user));
 
         return view('base-components.base', [
             'pageTitle' => 'Profile',
@@ -38,7 +39,7 @@ class ProfileController extends Controller
     public function updateProfile(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('User updating profile', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::debug('User updating profile', $this->getLogContext($request, $user));
 
         $validate = Validator::make($request->all(), [
             'name' => ['required', 'string'],
@@ -53,7 +54,7 @@ class ProfileController extends Controller
         $validatedLog = $validated;
         unset($validatedLog['password']);
         unset($validatedLog['password_confirmation']);
-        Log::info('User updating profile validation', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip(), 'validated' => json_encode($validatedLog)]);
+        Log::info('User updating profile validation', $this->getLogContext($request, $user, ['validated' => json_encode($validatedLog)]));
 
         $user->name = $validated['name'];
         if (isset($validated['password'])) {
@@ -63,7 +64,7 @@ class ProfileController extends Controller
         /** @disregard P1013 Auth facade fetch user model */
         $user->save();
 
-        Log::notice('User updated profile', ['userId' => $user?->id, 'userName' => $user?->name, 'route' => $request->route()->getName(), 'ip' => $request->ip()]);
+        Log::notice('User updated profile', $this->getLogContext($request, $user));
 
         /** Successful Update Profile */
         (string) $title = __('app.profile.update.title');

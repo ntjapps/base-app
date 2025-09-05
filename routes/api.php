@@ -10,6 +10,7 @@ use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Controllers\WaApiController;
 use App\Http\Controllers\WhatsappManController;
+use App\Http\Controllers\WhatsappTemplateManController;
 use App\Http\Middleware\XssProtection;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Middleware\EnsureClientIsResourceOwner;
@@ -91,6 +92,12 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
                 Route::get('/messages', [WhatsappManController::class, 'getWhatsappMessagesList'])->name('whatsapp-messages-list');
                 Route::get('/messages/{phone}', [WhatsappManController::class, 'getWhatsappMessagesDetail'])->name('whatsapp-messages-detail');
                 Route::post('/messages/{phone}/reply', [WhatsappManController::class, 'postReplyWhatsappMessage'])->name('whatsapp-messages-reply');
+
+                /** Whatsapp Template Management */
+                Route::get('/templates', [WhatsappTemplateManController::class, 'getTemplatesList'])->name('whatsapp-templates-list');
+                Route::post('/templates', [WhatsappTemplateManController::class, 'createTemplateAction'])->name('whatsapp-template-create');
+                Route::patch('/templates/{templateId}', [WhatsappTemplateManController::class, 'editTemplateAction'])->name('whatsapp-template-update');
+                Route::delete('/templates/{templateId}', [WhatsappTemplateManController::class, 'deleteTemplateAction'])->name('whatsapp-template-delete');
             });
         });
     });

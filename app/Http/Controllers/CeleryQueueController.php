@@ -6,6 +6,7 @@ use App\Interfaces\CentralCacheInterfaceClass;
 use App\Models\User;
 use App\Notifications\MessageNotification;
 use App\Traits\JsonResponse;
+use App\Traits\LogContext;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -15,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 
 class CeleryQueueController extends Controller
 {
-    use JsonResponse;
+    use JsonResponse, LogContext;
 
     /**
      * POST request to handle send notification to user
@@ -99,7 +100,7 @@ class CeleryQueueController extends Controller
 
         switch ($validated['callbacks_code']) {
             default:
-                Log::error('Unknown callback code', ['code' => $validated['callbacks_code']]);
+                Log::error('Unknown callback code', $this->getLogContext($request, null, ['code' => $validated['callbacks_code']]));
                 break;
         }
 

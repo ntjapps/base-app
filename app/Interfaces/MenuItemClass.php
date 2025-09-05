@@ -30,6 +30,9 @@ class MenuItemClass
             case 'whatsapp-man':
                 $expandedKeys = '9999';
                 break;
+            case 'whatsapp-templates-man':
+                $expandedKeys = '9999';
+                break;
             case 'server-logs':
                 $expandedKeys = '9999';
                 break;
@@ -94,6 +97,12 @@ class MenuItemClass
                 'label' => 'WhatsApp Management',
                 'icon' => 'pi pi-whatsapp',
                 'url' => parse_url(route('whatsapp-man'), PHP_URL_PATH),
+            ]);
+
+            array_push($childMenu, [
+                'label' => 'WhatsApp Template Management',
+                'icon' => 'pi pi-file',
+                'url' => parse_url(route('whatsapp-templates-man'), PHP_URL_PATH),
             ]);
 
             array_push($childMenu, [

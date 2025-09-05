@@ -74,19 +74,9 @@ const deleteTemplate = async (templateId: string) => {
     try {
         loading.value = true;
         await api.deleteWhatsappTemplate(templateId);
-        toastchild.value?.toastDisplay({
-            severity: 'success',
-            summary: 'Template Deleted',
-            detail: 'Template deleted successfully',
-        });
         await getTemplateListData();
     } catch (error) {
         console.error(error);
-        toastchild.value?.toastDisplay({
-            severity: 'error',
-            summary: 'Delete Failed',
-            detail: 'Failed to delete template',
-        });
     } finally {
         loading.value = false;
     }
@@ -144,11 +134,6 @@ const getTemplateListData = async () => {
         }));
     } catch (error) {
         console.error(error);
-        toastchild.value?.toastDisplay({
-            severity: 'error',
-            summary: 'Template Error',
-            detail: 'Failed to load templates',
-        });
     } finally {
         loading.value = false;
     }

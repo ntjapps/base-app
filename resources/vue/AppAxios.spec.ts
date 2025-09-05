@@ -10,10 +10,11 @@ vi.mock('axios', () => {
             headers: { common: { 'X-Requested-With': 'XMLHttpRequest' } },
             withCredentials: true,
         },
-        get: vi.fn(),
-        post: vi.fn(),
-        put: vi.fn(),
-        delete: vi.fn(),
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    patch: vi.fn(),
+    delete: vi.fn(),
     } as any;
     (globalThis as any).__axiosMock = instance;
     return {
@@ -130,14 +131,14 @@ describe('ApiClient', () => {
 
         it('should update profile successfully', async () => {
             const axiosInstance = axios.create();
-            vi.spyOn((globalThis as any).__axiosMock, 'post').mockResolvedValueOnce(
+            vi.spyOn((globalThis as any).__axiosMock, 'patch').mockResolvedValueOnce(
                 successResponse,
             );
 
             await api.postUpdateProfile(profileData);
 
-            expect((globalThis as any).__axiosMock.post).toHaveBeenCalledWith(
-                '/api/v1/profile/post-update-profile',
+            expect((globalThis as any).__axiosMock.patch).toHaveBeenCalledWith(
+                '/api/v1/profile',
                 profileData,
                 {},
             );
@@ -157,15 +158,14 @@ describe('ApiClient', () => {
             };
 
             const axiosInstance = axios.create();
-            vi.spyOn((globalThis as any).__axiosMock, 'post').mockResolvedValueOnce(
+            vi.spyOn((globalThis as any).__axiosMock, 'get').mockResolvedValueOnce(
                 notificationResponse,
             );
 
             await api.getNotificationList();
 
-            expect((globalThis as any).__axiosMock.post).toHaveBeenCalledWith(
-                '/api/v1/profile/get-notification-list',
-                {},
+            expect((globalThis as any).__axiosMock.get).toHaveBeenCalledWith(
+                '/api/v1/profile/notifications',
                 {},
             );
         });
@@ -184,13 +184,12 @@ describe('ApiClient', () => {
                 config: {},
             };
 
-            (globalThis as any).__axiosMock.post.mockResolvedValueOnce(successResponse);
+            (globalThis as any).__axiosMock.delete.mockResolvedValueOnce(successResponse);
 
             await api.postClearAppCache();
 
-            expect((globalThis as any).__axiosMock.post).toHaveBeenCalledWith(
-                '/api/v1/server-man/post-clear-app-cache',
-                {},
+            expect((globalThis as any).__axiosMock.delete).toHaveBeenCalledWith(
+                '/api/v1/server-man/cache',
                 {},
             );
         });
@@ -199,10 +198,9 @@ describe('ApiClient', () => {
     describe('Error Handling', () => {
         it('should handle network errors', async () => {
             const networkError = new Error('Network Error');
-            (globalThis as any).__axiosMock.post.mockRejectedValueOnce(networkError);
+            (globalThis as any).__axiosMock.get.mockRejectedValueOnce(networkError);
 
             await expect(api.postAppConst()).rejects.toThrow('Network Error');
-
             expect(mockToast).toHaveBeenCalledWith({
                 severity: 'error',
                 summary: 'Error',
@@ -222,10 +220,9 @@ describe('ApiClient', () => {
                 },
             };
 
-            (globalThis as any).__axiosMock.post.mockRejectedValueOnce(serverError);
+            (globalThis as any).__axiosMock.get.mockRejectedValueOnce(serverError);
 
             await expect(api.postAppConst()).rejects.toThrow();
-
             expect(mockToast).toHaveBeenCalledWith({
                 severity: 'error',
                 summary: 'Server Error',

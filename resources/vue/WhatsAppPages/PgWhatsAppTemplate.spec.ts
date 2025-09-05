@@ -1,17 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { createPinia } from 'pinia';
 import PgWhatsAppTemplate from './PgWhatsAppTemplate.vue';
 
 describe('PgWhatsAppTemplate.vue', () => {
     it('renders placeholder templates and opens dialog', async () => {
-        const wrapper = mount(PgWhatsAppTemplate, {
+    const pinia = createPinia();
+    const wrapper = mount(PgWhatsAppTemplate, {
             props: {
                 appName: 'Test App',
                 greetings: 'Hello',
                 expandedKeysProps: '',
             },
             global: {
-                stubs: [
+        plugins: [pinia],
+        stubs: [
                     'CmpLayout',
                     'CmpToast',
                     'Dialog',

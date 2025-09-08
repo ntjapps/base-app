@@ -21,7 +21,7 @@
     "dependencies": {
         "@eslint/js": "^9.34.0",
         "@nuxt/ui": "^3.3.3",
-        "@primevue/core": "^4.3.8",
+        "@primevue/core": "^4.3.9",
         "@primevue/icons": "^4.3.8",
         "@sentry/vue": "^10.10.0",
         "@tailwindcss/vite": "^4.1.13",

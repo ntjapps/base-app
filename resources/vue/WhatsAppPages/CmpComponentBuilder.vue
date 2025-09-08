@@ -212,7 +212,7 @@ const loadFromJson = () => {
         bodyExample.value = '';
         footerText.value = '';
         buttons.value = [];
-    emit('update:modelValue', jsonOutput.value);
+        emit('update:modelValue', jsonOutput.value);
     }
 };
 

@@ -10,11 +10,11 @@ vi.mock('axios', () => {
             headers: { common: { 'X-Requested-With': 'XMLHttpRequest' } },
             withCredentials: true,
         },
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    patch: vi.fn(),
-    delete: vi.fn(),
+        get: vi.fn(),
+        post: vi.fn(),
+        put: vi.fn(),
+        patch: vi.fn(),
+        delete: vi.fn(),
     } as any;
     (globalThis as any).__axiosMock = instance;
     return {

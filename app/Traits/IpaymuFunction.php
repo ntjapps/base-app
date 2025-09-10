@@ -169,4 +169,63 @@ trait IpaymuFunction
 
         return $result;
     }
+
+    /**
+     * Capture redirect URL query parameters from iPaymu (when buyer is redirected back).
+     * Example:
+     * https://example.com/return?return=true&sid=b59622de-467d-4ef5-adf8-e2bca3e11395&trx_id=177881&status=berhasil&tipe=cstore&payment_method=cstore&payment_channel=alfamart
+     *
+     * @param  mixed  $request
+     * @return array Normalized callback data
+     */
+    public function captureIpaymuRedirectData($request): array
+    {
+        if ($request instanceof \Illuminate\Http\Request) {
+            $params = $request->query();
+        } elseif (is_array($request)) {
+            $params = $request;
+        } else {
+            $params = method_exists($request, 'toArray') ? $request->toArray() : (array) $request;
+        }
+
+        return $this->normalizeIpaymuCallbackParams($params);
+    }
+
+    /**
+     * Normalize callback params for iPaymu redirect.
+     */
+    protected function normalizeIpaymuCallbackParams(array $params): array
+    {
+        $sid = $params['sid'] ?? null;
+        $trxId = $params['trx_id'] ?? null;
+        $referenceId = $params['reference_id'] ?? $params['referenceId'] ?? null;
+        $status = $params['status'] ?? null;
+        $type = $params['tipe'] ?? $params['type'] ?? null;
+        $paymentMethod = $params['payment_method'] ?? null;
+        $paymentChannel = $params['payment_channel'] ?? null;
+
+        $normalized = [
+            'sid' => $sid,
+            'trx_id' => $trxId,
+            'reference_id' => $referenceId,
+            'status' => $status,
+            'type' => $type,
+            'payment_method' => $paymentMethod,
+            'payment_channel' => $paymentChannel,
+            'raw' => $params,
+        ];
+
+        // Map status
+        if (in_array(strtolower((string) $status), ['berhasil', 'success'], true)) {
+            $normalized['status_short'] = 'paid';
+        } elseif (in_array(strtolower((string) $status), ['pending', 'menunggu'], true)) {
+            $normalized['status_short'] = 'pending';
+        } else {
+            $normalized['status_short'] = 'unknown';
+        }
+
+        Log::info('iPaymu redirect captured', ['reference_id' => $referenceId, 'status' => $normalized['status_short']]);
+
+        return $normalized;
+    }
 }

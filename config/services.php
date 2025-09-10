@@ -90,5 +90,8 @@ return [
         'production' => (bool) env('IPAYMU_PRODUCTION', false),
         'api_sandbox' => env('IPAYMU_API_SANDBOX', 'https://sandbox.ipaymu.com'),
         'api_prod' => env('IPAYMU_API_PROD', 'https://my.ipaymu.com'),
+        'return_url' => env('IPAYMU_RETURN_URL', 'https://yourdomain.com/ipaymu/return'),
+        'notify_url' => env('IPAYMU_NOTIFY_URL', 'https://yourdomain.com/ipaymu/notify'),
+        'cancel_url' => env('IPAYMU_CANCEL_URL', 'https://yourdomain.com/ipaymu/cancel'),
     ],
 ];

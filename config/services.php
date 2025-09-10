@@ -74,4 +74,21 @@ return [
         'file_upload_base_url' => env('GEMINIAI_FILE_UPLOAD_BASE_URL', 'https://generativelanguage.googleapis.com/upload/v1beta/files'),
         'selected_model' => env('GEMINIAI_MODELS', 'gemini-2.5-flash-lite'),
     ],
+
+    'midtrans' => [
+        'enabled' => (bool) env('MIDTRANS_ENABLED', false),
+        'server_key' => env('MIDTRANS_SERVER_KEY'),
+        'client_key' => env('MIDTRANS_CLIENT_KEY'),
+        'production' => (bool) env('MIDTRANS_PRODUCTION', false),
+        'api_sandbox' => env('MIDTRANS_API_SANDBOX', 'https://app.sandbox.midtrans.com/snap/v1/transactions'),
+        'api_prod' => env('MIDTRANS_API_PROD', 'https://app.midtrans.com/snap/v1/transactions'),
+    ],
+    'ipaymu' => [
+        'enabled' => (bool) env('IPAYMU_ENABLED', false),
+        'va' => env('IPAYMU_VA'),
+        'api_key' => env('IPAYMU_API_KEY'),
+        'production' => (bool) env('IPAYMU_PRODUCTION', false),
+        'api_sandbox' => env('IPAYMU_API_SANDBOX', 'https://sandbox.ipaymu.com'),
+        'api_prod' => env('IPAYMU_API_PROD', 'https://my.ipaymu.com'),
+    ],
 ];

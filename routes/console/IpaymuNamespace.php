@@ -16,9 +16,6 @@ Artisan::command('ipaymu:test', function () {
         'notifyUrl' => 'https://example.com/notify',
         'cancelUrl' => 'https://example.com/cancel',
         'referenceId' => $referenceId,
-        'buyerName' => 'Test Buyer',
-        'buyerEmail' => 'buyer@example.com',
-        'buyerPhone' => '081234567890',
     ];
 
     try {

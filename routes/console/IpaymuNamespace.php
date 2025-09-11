@@ -12,9 +12,9 @@ Artisan::command('ipaymu:test', function () {
         'qty' => ['1'],
         'price' => ['10000'],
         'description' => ['Test product'],
-        'returnUrl' => 'https://example.com/return',
-        'notifyUrl' => 'https://example.com/notify',
-        'cancelUrl' => 'https://example.com/cancel',
+        'returnUrl' => config('services.ipaymu.return_url') ?? config('app.url'),
+        'notifyUrl' => config('services.ipaymu.notify_url') ?? config('app.url'),
+        'cancelUrl' => config('services.ipaymu.cancel_url') ?? config('app.url'),
         'referenceId' => $referenceId,
     ];
 

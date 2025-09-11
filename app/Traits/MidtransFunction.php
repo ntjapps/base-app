@@ -56,10 +56,10 @@ trait MidtransFunction
             'item_details' => $items,
         ];
 
-        // Optional: default callbacks.finish from config if provided
-        if (! empty($cfg['callbacks']['finish']) && \filter_var($cfg['callbacks']['finish'], FILTER_VALIDATE_URL)) {
+        // Add callbacks.finish parameter if provided in config
+        if (! empty($cfg['finish_url'])) {
             $basePayload['callbacks'] = [
-                'finish' => $cfg['callbacks']['finish'],
+                'finish' => $cfg['finish_url'],
             ];
         }
 

@@ -82,6 +82,7 @@ return [
         'production' => (bool) env('MIDTRANS_PRODUCTION', false),
         'api_sandbox' => env('MIDTRANS_API_SANDBOX', 'https://app.sandbox.midtrans.com/snap/v1/transactions'),
         'api_prod' => env('MIDTRANS_API_PROD', 'https://app.midtrans.com/snap/v1/transactions'),
+        'finish_url' => env('MIDTRANS_FINISH_URL', 'https://yourdomain.com/midtrans/finish'),
     ],
     'ipaymu' => [
         'enabled' => (bool) env('IPAYMU_ENABLED', false),

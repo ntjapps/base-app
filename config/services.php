@@ -82,7 +82,7 @@ return [
         'production' => (bool) env('MIDTRANS_PRODUCTION', false),
         'api_sandbox' => env('MIDTRANS_API_SANDBOX', 'https://app.sandbox.midtrans.com/snap/v1/transactions'),
         'api_prod' => env('MIDTRANS_API_PROD', 'https://app.midtrans.com/snap/v1/transactions'),
-        'finish_url' => env('MIDTRANS_FINISH_URL', 'https://yourdomain.com/midtrans/finish'),
+        'finish_url' => env('MIDTRANS_FINISH_URL'),
     ],
     'ipaymu' => [
         'enabled' => (bool) env('IPAYMU_ENABLED', false),
@@ -91,8 +91,8 @@ return [
         'production' => (bool) env('IPAYMU_PRODUCTION', false),
         'api_sandbox' => env('IPAYMU_API_SANDBOX', 'https://sandbox.ipaymu.com'),
         'api_prod' => env('IPAYMU_API_PROD', 'https://my.ipaymu.com'),
-        'return_url' => env('IPAYMU_RETURN_URL', 'https://yourdomain.com/ipaymu/return'),
-        'notify_url' => env('IPAYMU_NOTIFY_URL', 'https://yourdomain.com/ipaymu/notify'),
-        'cancel_url' => env('IPAYMU_CANCEL_URL', 'https://yourdomain.com/ipaymu/cancel'),
+        'return_url' => env('IPAYMU_RETURN_URL'),
+        'notify_url' => env('IPAYMU_NOTIFY_URL'),
+        'cancel_url' => env('IPAYMU_CANCEL_URL'),
     ],
 ];

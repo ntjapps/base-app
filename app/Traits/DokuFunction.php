@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 /**
  * Trait DokuFunction
@@ -66,7 +67,7 @@ trait DokuFunction
         }
 
         $requestId = uniqid('req_', true);
-        $requestTimestamp = date('c'); // ISO8601
+        $requestTimestamp = Carbon::now('UTC')->toISOString(); // ISO8601 UTC+0
 
         $signature = $this->generateDokuSignature($body, $clientId, $requestId, $requestTimestamp, $secretKey);
 

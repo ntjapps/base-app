@@ -9,15 +9,11 @@ Artisan::command('doku:test', function () {
     $invoiceNumber = 'TEST-'.time();
     $body = [
         'order' => [
-            'invoice_number' => $invoiceNumber,
-            'amount' => 10000,
+            'amount' => 80000,
+            'invoice_number' => substr('INV'.time(), 0, 30),
         ],
         'payment' => [
-            'payment_due_date' => 60, // minutes from now
-        ],
-        'customer' => [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'payment_due_date' => 60,
         ],
     ];
 

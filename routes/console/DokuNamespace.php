@@ -9,8 +9,8 @@ Artisan::command('doku:test', function () {
     $invoiceNumber = 'TEST-'.time();
     $body = [
         'order' => [
-            'amount' => 80000,
-            'invoice_number' => substr('INV'.time(), 0, 30),
+            'amount' => 10000,
+            'invoice_number' => $invoiceNumber,
         ],
         'payment' => [
             'payment_due_date' => 60,
@@ -25,7 +25,7 @@ Artisan::command('doku:test', function () {
 
         $this->info("Creating Doku payment for invoice: {$invoiceNumber} amount: 10000");
 
-        $response = $client->createDokuPayment($body);
+        $response = $client->createDokuPayment($body, $invoiceNumber);
 
         if (is_null($response)) {
             $this->warn('Doku is disabled in configuration or not enabled via DOKU_ENABLED.');

@@ -49,7 +49,7 @@ trait DokuFunction
      * @param  array  $body  Request body array (order, payment, customer, etc.)
      * @return array|null
      */
-    public function createDokuPayment(array $body)
+    public function createDokuPayment(array $body, string $requestId)
     {
         $cfg = config('services.doku');
         if (! isset($cfg['enabled']) || ! $cfg['enabled']) {
@@ -73,8 +73,7 @@ trait DokuFunction
 
         Log::debug('Doku create payment request', ['url' => $url, 'body' => $jsonBody]);
 
-        $requestId = uniqid('req_', true);
-        $requestTimestamp = Carbon::now('UTC')->toISOString(); // ISO8601 UTC+0
+        $requestTimestamp = Carbon::now('UTC')->format('Y-m-d\TH:i:s\Z');
 
         $signature = $this->generateDokuSignature($jsonBody, $clientId, $requestId, $requestTimestamp, $secretKey, $requestTarget);
 
@@ -86,9 +85,6 @@ trait DokuFunction
             'Request-Timestamp' => $requestTimestamp,
             'Signature' => 'HMACSHA256='.$signature,
         ];
-
-        var_dump('Doku create payment headers', $headers);
-        var_dump('Doku create payment body', $jsonBody);
 
         // 2. Send the pre-encoded JSON string in the request body using withBody().
         $response = Http::withHeaders($headers)
@@ -234,6 +230,74 @@ trait DokuFunction
         }
 
         return $this->normalizeDokuCallbackParams($params);
+    }
+
+    /**
+     * Normalize Doku create-payment API response into a consistent structure.
+     *
+     * Accepts either a JSON string, an array, or an object (decoded JSON), and
+     * returns an associative array with common fields used by the application.
+     *
+     * Expected input shape (example):
+     * {
+     *   "message": ["SUCCESS"],
+     *   "response": {
+     *     "order": { "amount": "80000", "invoice_number": "INV...", "session_id": "..." },
+     *     "payment": { "url": "...", "token_id": "...", "expired_date": "...", "expired_datetime": "..." },
+     *     "headers": { "request_id": "...", "signature": "...", "date": "...", "client_id": "..." }
+     *   }
+     * }
+     *
+     * @param  mixed  $response  JSON string or decoded array/object
+     * @return array Normalized data
+     */
+    public function captureDokuCreateResponse($response): array
+    {
+        if (is_string($response)) {
+            $decoded = json_decode($response, true) ?: [];
+        } elseif (is_object($response)) {
+            $decoded = json_decode(json_encode($response), true) ?: [];
+        } elseif (is_array($response)) {
+            $decoded = $response;
+        } else {
+            $decoded = [];
+        }
+
+        $resp = $decoded['response'] ?? [];
+        $order = $resp['order'] ?? [];
+        $payment = $resp['payment'] ?? [];
+        $headers = $resp['headers'] ?? [];
+
+        $invoice = $order['invoice_number'] ?? null;
+        $amount = isset($order['amount']) ? (int) $order['amount'] : (isset($payment['amount']) ? (int) $payment['amount'] : null);
+        // payment url may be nested under payment.url
+        $paymentUrl = $payment['url'] ?? $resp['payment_url'] ?? null;
+        $tokenId = $payment['token_id'] ?? null;
+
+        $normalized = [
+            'invoice_number' => $invoice,
+            'amount' => $amount,
+            'payment_url' => $paymentUrl,
+            'token_id' => $tokenId,
+            'expired_date' => $payment['expired_date'] ?? null,
+            'expired_datetime' => $payment['expired_datetime'] ?? null,
+            'session_id' => $order['session_id'] ?? null,
+            'headers' => [
+                'request_id' => $headers['request_id'] ?? $decoded['response']['headers']['request_id'] ?? null,
+                'signature' => $headers['signature'] ?? $decoded['response']['headers']['signature'] ?? null,
+                'date' => $headers['date'] ?? $decoded['response']['headers']['date'] ?? null,
+                'client_id' => $headers['client_id'] ?? $decoded['response']['headers']['client_id'] ?? null,
+            ],
+            'raw' => $decoded,
+            'status' => (is_array($decoded['message'] ?? null) ? implode(',', $decoded['message']) : ($decoded['message'] ?? null)),
+        ];
+
+        Log::info('Doku create response captured', [
+            'invoice_number' => $normalized['invoice_number'],
+            'payment_url' => $normalized['payment_url'],
+        ]);
+
+        return $normalized;
     }
 
     protected function normalizeDokuCallbackParams(array $params): array

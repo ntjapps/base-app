@@ -23,7 +23,7 @@
         "@nuxt/ui": "4.0.0-alpha.1",
         "@primevue/core": "^4.3.9",
         "@primevue/icons": "^4.3.9",
-        "@sentry/vue": "^10.11.0",
+        "@sentry/vue": "^10.14.0",
         "@tailwindcss/vite": "^4.1.13",
         "@unhead/vue": "^2.0.14",
         "@vitejs/plugin-vue": "^6.0.1",

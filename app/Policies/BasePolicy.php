@@ -26,14 +26,14 @@ trait BasePolicy
             }
         );
 
-        if (!$permission) {
+        if (! $permission) {
             return false;
         }
 
         return Cache::remember(
             CentralCacheInterfaceClass::keyPermissionHasPermissionTo($permission->id, $user->id),
             Carbon::now()->addYear(),
-            fn() => $user->hasPermissionTo($permission)
+            fn () => $user->hasPermissionTo($permission)
         );
     }
 

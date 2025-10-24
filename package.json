@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@eslint/js": "^9.38.0",
-        "@nuxt/ui": "^4.0.1",
+        "@nuxt/ui": "^4.1.0",
         "@primevue/core": "^4.4.1",
         "@primevue/icons": "^4.4.1",
         "@sentry/vue": "^10.21.0",

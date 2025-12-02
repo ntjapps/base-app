@@ -18,17 +18,27 @@ class InterfaceClass
     }
 
     /**
-     * List of user Permission
+     * List of user Permission (backward compatibility)
+     *
+     * @deprecated Use PermissionConstants instead
      */
     public const ALLPERM = [
         self::SUPER,
     ];
 
+    /**
+     * @deprecated Use PermissionConstants::privileged() instead
+     */
     public const PRIVILEGEPERM = [
         self::SUPER,
     ];
 
-    public const SUPER = 'root';
+    /**
+     * Super admin permission (backward compatibility)
+     *
+     * @deprecated Use PermissionConstants::SUPER_ADMIN instead
+     */
+    public const SUPER = PermissionConstants::SUPER_ADMIN;
 
     /**
      * Reset password to this password
@@ -36,13 +46,20 @@ class InterfaceClass
     public const RESETPASSWORD = 'reset';
 
     /**
-     * List of user Roles
+     * List of user Roles (backward compatibility)
+     *
+     * @deprecated Use RoleConstants instead
      */
     public const ALLROLE = [
         self::SUPERROLE,
     ];
 
-    public const SUPERROLE = 'SU';
+    /**
+     * Super admin role (backward compatibility)
+     *
+     * @deprecated Use RoleConstants::SUPER_ADMIN instead
+     */
+    public const SUPERROLE = RoleConstants::SUPER_ADMIN;
 
     public static function readApplicationVersion(): string
     {

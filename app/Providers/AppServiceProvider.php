@@ -4,16 +4,12 @@ namespace App\Providers;
 
 use App\Interfaces\CentralCacheInterfaceClass;
 use App\Interfaces\InterfaceClass;
+use App\Interfaces\PermissionConstants;
 use App\Listeners\MigrationEventListener;
 use App\Listeners\MigrationStartListener;
-use App\Models\Permission;
-use App\Models\PermissionMenu;
-use App\Models\PermissionPrivilege;
 use App\Models\User;
 use App\Models\WaApiMeta\WaMessageSentLog;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
-use App\Observers\PermissionMenuObserver;
-use App\Observers\PermissionPrivilegeObserver;
 use App\Observers\WaMessageSentLogObserver;
 use App\Observers\WaMessageWebhookLogObserver;
 use App\Policies\UserPolicy;
@@ -54,24 +50,18 @@ class AppServiceProvider extends ServiceProvider
         /** Register Policies */
         Gate::policy(User::class, UserPolicy::class);
 
-        // Pulse (UI) removed — related gate removed
+        // Pulse removed: gate no longer defined
 
         /**
-         * Implicitly grant "Super User" role with some limitation to policy
+         * Implicitly grant "Super Admin" permission to bypass all gates
          * This works in the app by using gate-related functions like auth()->user->can() and @can()
          **/
         Gate::after(function (User $user) {
-            $permission = Cache::remember(CentralCacheInterfaceClass::keyPermissionAbility(InterfaceClass::SUPER), Carbon::now()->addYear(), function () {
-                return Permission::whereHas('ability', function ($query) {
-                    $query->where('title', InterfaceClass::SUPER);
-                })->where('ability_type', (string) PermissionPrivilege::class)->first();
-            });
-
-            $hasPermissionToCache = Cache::remember(CentralCacheInterfaceClass::keyPermissionHasPermissionTo($permission->id, $user->id), Carbon::now()->addYear(), function () use ($user, $permission) {
-                return $user->hasPermissionTo($permission);
-            });
-
-            return $hasPermissionToCache;
+            return Cache::remember(
+                CentralCacheInterfaceClass::keyPermissionHasPermissionTo(PermissionConstants::SUPER_ADMIN, $user->id),
+                Carbon::now()->addYear(),
+                fn () => $user->hasPermissionTo(PermissionConstants::SUPER_ADMIN)
+            );
         });
 
         /**
@@ -102,8 +92,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         /** Registering Observers */
-        PermissionPrivilege::observe(PermissionPrivilegeObserver::class);
-        PermissionMenu::observe(PermissionMenuObserver::class);
         WaMessageSentLog::observe(WaMessageSentLogObserver::class);
         WaMessageWebhookLog::observe(WaMessageWebhookLogObserver::class);
 

@@ -29,8 +29,6 @@ class Permission extends SpatiePermission
     protected $fillable = [
         'name',
         'guard_name',
-        'ability_type',
-        'ability_id',
     ];
 
     /**
@@ -53,12 +51,4 @@ class Permission extends SpatiePermission
      * @var array
      */
     protected $appends = [];
-
-    /**
-     * Model polymorphic relationship with abilities
-     */
-    public function ability(): MorphTo
-    {
-        return $this->morphTo();
-    }
 }

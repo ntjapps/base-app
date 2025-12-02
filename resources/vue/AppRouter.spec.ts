@@ -21,8 +21,5 @@ describe('AppRouter', () => {
         expect(names).toContain('passportMan');
     });
 
-    it('should redirect /serverHorizon to /horizon', () => {
-        const route = router.getRoutes().find((r) => r.name === 'serverHorizon');
-        expect(route?.redirect).toBe('/horizon');
-    });
+    // Horizon route removed; no redirect test required.
 });

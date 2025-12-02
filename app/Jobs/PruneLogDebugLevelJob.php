@@ -88,10 +88,7 @@ class PruneLogDebugLevelJob implements ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => 'PruneLogDebugLevelJob']);
 
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::stopRecording();
-            }
+            
 
             /** Delete Server Logs */
             ServerLog::where('level', Logger::toMonologLevel('debug'))->where('created_at', '<=', now()->subWeek())->delete();
@@ -121,17 +118,11 @@ class PruneLogDebugLevelJob implements ShouldQueue
                 Log::warning('Celery Prune Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             }
 
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::startRecording();
-            }
+            
 
             Log::debug('Job Finished', ['jobName' => 'PruneLogDebugLevelJob']);
         } catch (\Throwable $e) {
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::startRecording();
-            }
+            
 
             Log::error('Job Failed', ['jobName' => 'PruneLogDebugLevelJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;

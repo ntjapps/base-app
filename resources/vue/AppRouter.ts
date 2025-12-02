@@ -1,8 +1,7 @@
 const loginPage = '/login';
 const dashboard = '/dashboard';
 const profile = '/profile';
-const serverHorizon = '/horizon';
-const serverPulse = '/pulse';
+// Server monitoring (Horizon/Pulse) removed
 const serverLogs = '/server-logs';
 const userMan = '/user-man';
 const roleMan = '/role-man';
@@ -35,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'profile',
         component: () => import('./DashboardPages/PgProfile.vue'),
     },
-    { path: serverHorizon, name: 'serverHorizon', redirect: '/horizon' },
+    // horizon route removed
     {
         path: serverLogs,
         name: 'serverLogs',
@@ -80,8 +79,8 @@ export const useWebStore = defineStore('web', {
         loginPage: loginPage,
         dashboard: dashboard,
         profile: profile,
-        serverHorizon: serverHorizon,
-        serverPulse: serverPulse,
+        // serverHorizon: removed,
+        // serverPulse: removed,
         serverLogs: serverLogs,
         userMan: userMan,
         roleMan: roleMan,

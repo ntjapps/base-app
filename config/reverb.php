@@ -48,8 +48,9 @@ return [
                     'database' => env('REDIS_REVERB_DB', '5'),
                 ],
             ],
-            'pulse_ingest_interval' => env('REVERB_PULSE_INGEST_INTERVAL', 15),
-            'telescope_ingest_interval' => env('REVERB_TELESCOPE_INGEST_INTERVAL', 15),
+            // By default do not ingest to Pulse or Telescope; enable by overriding env values.
+            'pulse_ingest_interval' => env('REVERB_PULSE_INGEST_INTERVAL', 0),
+            'telescope_ingest_interval' => env('REVERB_TELESCOPE_INGEST_INTERVAL', 0),
         ],
 
     ],

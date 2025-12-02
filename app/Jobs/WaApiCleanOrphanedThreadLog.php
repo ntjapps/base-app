@@ -86,10 +86,7 @@ class WaApiCleanOrphanedThreadLog implements ShouldBeUnique, ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => 'WaApiCleanOrphanedThreadLog']);
 
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::stopRecording();
-            }
+            
 
             // Check if WhatsApp service is enabled
             if (! Config::get('services.whatsapp.enabled', false)) {
@@ -139,17 +136,11 @@ class WaApiCleanOrphanedThreadLog implements ShouldBeUnique, ShouldQueue
                 Log::info("Deleted {$invalidThreads} threads with invalid messageable types or IDs");
             }
 
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::startRecording();
-            }
+            
 
             Log::debug('Job Finished', ['jobName' => 'WaApiCleanOrphanedThreadLog']);
         } catch (\Throwable $e) {
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::startRecording();
-            }
+            
 
             Log::error('Job Failed', ['jobName' => 'WaApiCleanOrphanedThreadLog', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;

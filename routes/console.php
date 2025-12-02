@@ -16,10 +16,7 @@ use Illuminate\Support\Facades\Log;
 */
 
 Artisan::command('patch:deploy', function () {
-    /** Memory Leak mitigation */
-    if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-        \Laravel\Telescope\Telescope::stopRecording();
-    }
+    
 
     /** PATCH DO HERE */
     $patchId = 'NULL';

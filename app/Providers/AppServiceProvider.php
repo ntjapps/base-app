@@ -40,15 +40,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        /** Register Telescope only in local environment */
-        if ($this->app->environment('local')) {
-            if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
-                $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
-                $this->app->register(TelescopeServiceProvider::class);
-
-                \Laravel\Telescope\Telescope::night();
-            }
-        }
+        // Telescope removed: no registration here.
     }
 
     /**
@@ -62,10 +54,7 @@ class AppServiceProvider extends ServiceProvider
         /** Register Policies */
         Gate::policy(User::class, UserPolicy::class);
 
-        /** Pulse Gate */
-        Gate::define('viewPulse', function (User $user) {
-            return (config('app.debug') === true) ? true : Gate::forUser($user)->allows('hasSuperPermission', User::class);
-        });
+        // Pulse (UI) removed — related gate removed
 
         /**
          * Implicitly grant "Super User" role with some limitation to policy

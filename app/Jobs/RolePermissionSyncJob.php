@@ -84,10 +84,7 @@ class RolePermissionSyncJob implements ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => 'RolePermissionSyncJob']);
 
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::stopRecording();
-            }
+            
 
             /** Reset cached roles and permissions */
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
@@ -112,17 +109,11 @@ class RolePermissionSyncJob implements ShouldQueue
 
             InterfaceClass::flushRolePermissionCache();
 
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::startRecording();
-            }
+            
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::startRecording();
-            }
+            
 
             Log::error('Job Failed', ['jobName' => 'RolePermissionSyncJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;

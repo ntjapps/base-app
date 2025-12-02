@@ -24,10 +24,7 @@ Artisan::command('system:refresh', function () {
     Redis::connection('default')->flushdb(); /** Session Database */
     $this->info('All horizon cleared');
 
-    if (App::environment('local')) {
-        $this->call('telescope:prune', ['--hours' => 0]);
-        $this->info('Telescope pruned');
-    }
+    // Telescope removed
 
     $this->call('cache:clear');
     if (config('pennant.default') === 'database') {
@@ -49,10 +46,7 @@ Artisan::command('system:start', function () {
         $this->info('Migrated');
     }
 
-    if (App::environment('local')) {
-        $this->call('telescope:prune', ['--hours' => 0]);
-        $this->info('Telescope pruned');
-    }
+    // Telescope removed
 
     $this->call('passport:client:env');
     $this->call('passport:client:rabbitmq:env');

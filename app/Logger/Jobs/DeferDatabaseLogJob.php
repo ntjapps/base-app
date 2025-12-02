@@ -79,10 +79,7 @@ class DeferDatabaseLogJob implements ShouldQueue
      */
     public function handle(): void
     {
-        /** Memory Leak mitigation */
-        if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-            \Laravel\Telescope\Telescope::stopRecording();
-        }
+        /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
 
         if (config('services.rabbitmq.enabled')) {
             $this->sendTask('log_db_task', [json_encode([
@@ -106,9 +103,6 @@ class DeferDatabaseLogJob implements ShouldQueue
             ]);
         }
 
-        /** Memory Leak mitigation */
-        if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-            \Laravel\Telescope\Telescope::startRecording();
-        }
+        /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
     }
 }

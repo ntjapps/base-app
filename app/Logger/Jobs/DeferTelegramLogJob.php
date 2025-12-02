@@ -77,16 +77,10 @@ class DeferTelegramLogJob implements ShouldQueue
      */
     public function handle(): void
     {
-        /** Memory Leak mitigation */
-        if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-            \Laravel\Telescope\Telescope::stopRecording();
-        }
+        /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
 
         $this->sendTelegramMessage($this->data, $this->chatId);
 
-        /** Memory Leak mitigation */
-        if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-            \Laravel\Telescope\Telescope::startRecording();
-        }
+        /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
     }
 }

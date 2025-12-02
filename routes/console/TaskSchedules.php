@@ -14,9 +14,7 @@ if (class_exists(\Laravel\Passport\PassportServiceProvider::class)) {
     Schedule::command('passport:purge')->everyMinute();
 }
 
-if (app()->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
-    Schedule::command('telescope:prune')->everyFifteenMinutes();
-}
+// Telescope removed
 
 if (config('cache.default') === 'redis') {
     Schedule::command('cache:prune-stale-tags')->everyMinute();

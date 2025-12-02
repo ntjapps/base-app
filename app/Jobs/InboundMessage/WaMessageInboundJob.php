@@ -81,10 +81,7 @@ class WaMessageInboundJob implements ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => 'WaMessageInboundJob']);
 
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::stopRecording();
-            }
+            
 
             // Get the phone number from the webhook log
             $phoneNumber = $this->webhookLog->message_from;
@@ -99,17 +96,11 @@ class WaMessageInboundJob implements ShouldQueue
             $inboundMessage = $this->webhookLog->message_body ?? '';
             WaMessageAutoReplyJob::dispatch($this->webhookLog);
 
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::startRecording();
-            }
+            
 
             Log::debug('Job Finished', ['jobName' => 'WaMessageInboundJob']);
         } catch (\Throwable $e) {
-            /** Memory Leak mitigation */
-            if (App::environment('local') && class_exists(\Laravel\Telescope\Telescope::class)) {
-                \Laravel\Telescope\Telescope::startRecording();
-            }
+            
 
             Log::error('Job Failed', ['jobName' => 'WaMessageInboundJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;

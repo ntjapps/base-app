@@ -11,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 class RolePermissionSyncJob implements ShouldQueue
@@ -84,8 +83,6 @@ class RolePermissionSyncJob implements ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => 'RolePermissionSyncJob']);
 
-            
-
             /** Reset cached roles and permissions */
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
@@ -109,11 +106,8 @@ class RolePermissionSyncJob implements ShouldQueue
 
             InterfaceClass::flushRolePermissionCache();
 
-            
-
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {
-            
 
             Log::error('Job Failed', ['jobName' => 'RolePermissionSyncJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;

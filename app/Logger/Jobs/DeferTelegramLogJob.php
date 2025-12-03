@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
 
 class DeferTelegramLogJob implements ShouldQueue
 {
@@ -78,7 +77,6 @@ class DeferTelegramLogJob implements ShouldQueue
     public function handle(): void
     {
         /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
-
         $this->sendTelegramMessage($this->data, $this->chatId);
 
         /** Memory Leak mitigation: Telescope removed — no-op placeholder. */

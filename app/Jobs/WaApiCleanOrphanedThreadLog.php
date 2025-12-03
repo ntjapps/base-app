@@ -11,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -86,8 +85,6 @@ class WaApiCleanOrphanedThreadLog implements ShouldBeUnique, ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => 'WaApiCleanOrphanedThreadLog']);
 
-            
-
             // Check if WhatsApp service is enabled
             if (! Config::get('services.whatsapp.enabled', false)) {
                 Log::info('WhatsApp service is disabled. Skipping orphaned thread cleanup.');
@@ -136,11 +133,8 @@ class WaApiCleanOrphanedThreadLog implements ShouldBeUnique, ShouldQueue
                 Log::info("Deleted {$invalidThreads} threads with invalid messageable types or IDs");
             }
 
-            
-
             Log::debug('Job Finished', ['jobName' => 'WaApiCleanOrphanedThreadLog']);
         } catch (\Throwable $e) {
-            
 
             Log::error('Job Failed', ['jobName' => 'WaApiCleanOrphanedThreadLog', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;

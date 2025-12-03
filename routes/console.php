@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +15,6 @@ use Illuminate\Support\Facades\Log;
 */
 
 Artisan::command('patch:deploy', function () {
-    
 
     /** PATCH DO HERE */
     $patchId = 'NULL';

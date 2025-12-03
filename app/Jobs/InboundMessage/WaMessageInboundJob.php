@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 class WaMessageInboundJob implements ShouldQueue
@@ -81,8 +80,6 @@ class WaMessageInboundJob implements ShouldQueue
         try {
             Log::debug('Job Executed', ['jobName' => 'WaMessageInboundJob']);
 
-            
-
             // Get the phone number from the webhook log
             $phoneNumber = $this->webhookLog->message_from;
 
@@ -96,11 +93,8 @@ class WaMessageInboundJob implements ShouldQueue
             $inboundMessage = $this->webhookLog->message_body ?? '';
             WaMessageAutoReplyJob::dispatch($this->webhookLog);
 
-            
-
             Log::debug('Job Finished', ['jobName' => 'WaMessageInboundJob']);
         } catch (\Throwable $e) {
-            
 
             Log::error('Job Failed', ['jobName' => 'WaMessageInboundJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;

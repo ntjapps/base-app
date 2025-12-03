@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -83,8 +82,6 @@ class WaMessageAutoReplyJob implements ShouldQueue
     {
         try {
             Log::debug('Job Executed', ['jobName' => 'WaMessageAutoReplyJob']);
-
-            
 
             // Get the phone number from the webhook log
             $phoneNumber = $this->webhookLog->message_from;
@@ -167,11 +164,8 @@ class WaMessageAutoReplyJob implements ShouldQueue
                 ]);
             }
 
-            
-
             Log::debug('Job Finished', ['jobName' => 'WaMessageAutoReplyJob']);
         } catch (\Throwable $e) {
-            
 
             Log::error('Job Failed', ['jobName' => 'WaMessageAutoReplyJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;

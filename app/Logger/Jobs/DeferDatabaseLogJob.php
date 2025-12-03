@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
 use Monolog\LogRecord;
 
 class DeferDatabaseLogJob implements ShouldQueue
@@ -80,7 +79,6 @@ class DeferDatabaseLogJob implements ShouldQueue
     public function handle(): void
     {
         /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
-
         if (config('services.rabbitmq.enabled')) {
             $this->sendTask('log_db_task', [json_encode([
                 'message' => $this->record['message'],

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMainStore, useEchoStore } from '../AppState';
 import { api } from '../AppAxios';
@@ -7,12 +7,15 @@ import CmpToast from './CmpToast.vue';
 
 const main = useMainStore();
 const echo = useEchoStore();
-const { laravelEcho } = storeToRefs(echo);
+const { laravelEcho, workerBackend } = storeToRefs(echo);
 
 // eslint-disable-next-line no-undef
 const toast = useToast();
 const prevId = ref<string | null>(null);
 const toastRef = ref<InstanceType<typeof CmpToast> | null>(null);
+
+// Expose worker backend info for other components to use
+const workerBackendInfo = computed(() => main.workerBackend);
 
 const registerNotification = () => {
     main.$subscribe((mutation) => {
@@ -67,6 +70,11 @@ onMounted(() => {
     main.spaCsrfToken();
     main.init();
     main.browserSuppportCheck();
+});
+
+// Export worker backend info
+defineExpose({
+    workerBackendInfo,
 });
 </script>
 

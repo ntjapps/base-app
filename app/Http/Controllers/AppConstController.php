@@ -56,6 +56,12 @@ class AppConstController extends Controller
 
             /** Menu Items */
             'menuItems' => $menuItems ?? [],
+
+            /** Worker Backend Configuration */
+            'workerBackend' => [
+                'enabled' => config('services.rabbitmq.enabled', false),
+                'type' => config('services.rabbitmq.worker_backend', 'celery'),
+            ],
         ], 200);
     }
 

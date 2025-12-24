@@ -21,6 +21,10 @@ interface AppConstResponse {
     userName: string;
     userId: string;
     menuItems: Record<string, MenuItemExtended>;
+    workerBackend?: {
+        enabled: boolean;
+        type: string;
+    };
 }
 
 interface MenuItemExtended extends MenuItem {
@@ -47,6 +51,10 @@ export const useMainStore = defineStore('main', {
         expandedKeysMenu: {} as Record<string, boolean>,
         turnstileToken: '',
         menuVisible: false,
+        workerBackend: {
+            enabled: false,
+            type: 'celery',
+        },
     }),
 
     actions: {
@@ -74,6 +82,7 @@ export const useMainStore = defineStore('main', {
                     userName: payload.userName ?? '',
                     userId: payload.userId ?? '',
                     menuItems: menu,
+                    workerBackend: payload.workerBackend ?? { enabled: false, type: 'celery' },
                 });
 
                 // Fetch notifications only when userId is available

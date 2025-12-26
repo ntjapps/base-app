@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Interfaces\InterfaceClass;
+use App\Interfaces\PermissionConstants;
+use App\Interfaces\RoleConstants;
 use App\Models\Permission;
-use App\Models\PermissionPrivilege;
 use App\Models\Role;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -86,29 +86,37 @@ class RolePermissionSyncJob implements ShouldQueue
             /** Reset cached roles and permissions */
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-            /** Create permissions */
-            $permission = collect(InterfaceClass::ALLPERM)->each(function ($perm) {
-                PermissionPrivilege::firstOrCreate(['title' => $perm]);
+            /** Create all defined permissions */
+            collect(PermissionConstants::all())->each(function ($permName) {
+                Permission::firstOrCreate([
+                    'name' => $permName,
+                    'guard_name' => Permission::GUARD_NAME,
+                ]);
             });
 
-            /** Create roles and assign created permissions */
-            $role = Role::firstOrCreate(['name' => InterfaceClass::SUPERROLE, 'role_types' => PermissionPrivilege::class]);
-            $permission = Permission::whereHas('ability', function ($query) {
-                $query->where('title', InterfaceClass::SUPER);
-            })->get();
-            if ($this->reset) {
-                $role->syncPermissions($permission);
-            } else {
-                if (! $role->hasAnyPermission($permission)) {
-                    $role->givePermissionTo($permission);
+            /** Create all defined roles and assign their permissions */
+            foreach (RoleConstants::hierarchy() as $roleName => $permissions) {
+                $role = Role::firstOrCreate([
+                    'name' => $roleName,
+                    'guard_name' => Permission::GUARD_NAME,
+                ]);
+
+                if ($this->reset) {
+                    $role->syncPermissions($permissions);
+                } else {
+                    // Only add missing permissions, don't remove existing ones
+                    foreach ($permissions as $permName) {
+                        if (! $role->hasPermissionTo($permName)) {
+                            $role->givePermissionTo($permName);
+                        }
+                    }
                 }
             }
 
-            InterfaceClass::flushRolePermissionCache();
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {
-
             Log::error('Job Failed', ['jobName' => 'RolePermissionSyncJob', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;
         }

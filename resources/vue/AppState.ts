@@ -53,7 +53,7 @@ export const useMainStore = defineStore('main', {
         menuVisible: false,
         workerBackend: {
             enabled: false,
-            type: 'celery',
+            type: 'go',
         },
     }),
 
@@ -82,7 +82,7 @@ export const useMainStore = defineStore('main', {
                     userName: payload.userName ?? '',
                     userId: payload.userId ?? '',
                     menuItems: menu,
-                    workerBackend: payload.workerBackend ?? { enabled: false, type: 'celery' },
+                    workerBackend: payload.workerBackend ?? { enabled: false, type: 'go' },
                 });
 
                 // Fetch notifications only when userId is available

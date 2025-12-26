@@ -81,7 +81,7 @@ class DeferDatabaseLogJob implements ShouldQueue
     {
         /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
         if (config('services.rabbitmq.enabled')) {
-            $workerBackend = config('services.rabbitmq.worker_backend', 'celery');
+            $workerBackend = config('services.rabbitmq.worker_backend', 'go');
             $logData = [
                 'message' => $this->record['message'],
                 'channel' => $this->record['channel'],
@@ -93,19 +93,19 @@ class DeferDatabaseLogJob implements ShouldQueue
             ];
 
             switch ($workerBackend) {
-                case 'go':
-                    // Send to Go worker using new format
-                    $this->sendGoTask('logger', $logData, 'logger');
+                case 'celery':
+                    // Send to Celery worker using legacy format (fallback option)
+                    $this->sendTask('log_db_task', [json_encode($logData)], 'logger');
                     break;
                 case 'both':
-                    // Send to both backends
-                    $this->sendTask('log_db_task', [json_encode($logData)], 'logger');
+                    // Send to both backends for migration scenarios
                     $this->sendGoTask('logger', $logData, 'logger');
-                    break;
-                case 'celery':
-                default:
-                    // Send to Celery worker using old format
                     $this->sendTask('log_db_task', [json_encode($logData)], 'logger');
+                    break;
+                case 'go':
+                default:
+                    // Send to Go worker using modern format (default)
+                    $this->sendGoTask('logger', $logData, 'logger');
                     break;
             }
         } else {

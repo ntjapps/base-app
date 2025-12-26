@@ -10,9 +10,9 @@ This application supports multiple worker backend options for processing asynchr
 
 ### Available Worker Backends
 
-1. **Celery (Python)** - Traditional Celery worker backend
-2. **Go Worker** - Modern Go-based worker implementation (see [base-go-app](https://github.com/ntjapps/base-go-app))
-3. **Both** - Send tasks to both Celery and Go workers simultaneously
+1. **Go Worker (Default)** - Modern Go-based worker implementation (see [base-go-app](https://github.com/ntjapps/base-go-app))
+2. **Celery (Fallback)** - Traditional Python Celery worker backend for legacy support or specific use cases
+3. **Both** - Send tasks to both Go and Celery workers simultaneously (for migration scenarios)
 
 ### Configuration
 
@@ -25,53 +25,56 @@ RABBITMQ_PORT=5672
 RABBITMQ_USER=queueuser
 RABBITMQ_PASSWORD=queuepass
 RABBITMQ_VHOST=queuevhost
-WORKER_BACKEND=celery  # Options: celery, go, both
+WORKER_BACKEND=go  # Options: go (default), celery (fallback), both
 ```
+
+**Default:** `go` - The application defaults to the Go worker backend for optimal performance.
 
 ### Implementation Details
 
-#### Using Celery Worker Backend
+#### Using Go Worker Backend (Recommended)
 
-The Celery backend uses the traditional Celery v2 message protocol. Tasks are sent using the `CeleryFunction` trait.
-
-**Setup:**
-1. Install and configure RabbitMQ
-2. Set up Celery worker (Python-based)
-3. Set `WORKER_BACKEND=celery` in `.env`
-
-#### Using Go Worker Backend
-
-The Go worker backend uses a modern JSON-based task envelope format and is optimized for performance.
+The Go worker backend uses a modern JSON-based task envelope format and is optimized for performance. This is the **default and recommended** option.
 
 **Setup:**
 1. Clone and deploy the [base-go-app](https://github.com/ntjapps/base-go-app) worker
 2. Configure the same RabbitMQ connection settings
-3. Set `WORKER_BACKEND=go` in `.env`
+3. Set `WORKER_BACKEND=go` in `.env` (or omit it to use the default)
 
 The Go worker provides:
 - Optimized RabbitMQ consumer
 - PostgreSQL persistence using GORM
 - Health check endpoints for monitoring
 - Docker support with multi-stage builds
+- Superior performance and lower resource usage
+
+#### Using Celery Worker Backend (Fallback)
+
+The Celery backend uses the traditional Celery v2 message protocol. Use this option as a fallback or for specific scenarios requiring Celery features (e.g., massive data processing with Python-specific libraries).
+
+**Setup:**
+1. Install and configure RabbitMQ
+2. Set up Celery worker (Python-based)
+3. Set `WORKER_BACKEND=celery` in `.env`
+
+**Use Cases:**
+- Legacy compatibility during transition period
+- Specific Python library requirements
+- Massive data processing scenarios where Python ecosystem is beneficial
 
 #### Using Both Workers
 
-You can send tasks to both backends simultaneously for migration or redundancy purposes.
+You can send tasks to both backends simultaneously for migration or testing purposes.
 
 **Setup:**
-1. Set up both Celery and Go workers
+1. Set up both Go and Celery workers
 2. Set `WORKER_BACKEND=both` in `.env`
 
 **Note:** When using both backends, tasks will be sent to both workers. Ensure your database can handle duplicate operations or that your tasks are idempotent.
 
 ### Task Format
 
-#### Celery Format (Legacy)
-```php
-$this->sendTask('task_name', [json_encode($data)], 'queue_name');
-```
-
-#### Go Worker Format (New)
+#### Go Worker Format (Default)
 ```php
 $this->sendGoTask('task_name', $data, 'queue_name');
 ```
@@ -88,6 +91,11 @@ The Go worker expects tasks in the following format:
     "max_attempts": 5,
     "timeout_seconds": 60
 }
+```
+
+#### Celery Format (Legacy)
+```php
+$this->sendTask('task_name', [json_encode($data)], 'queue_name');
 ```
 
 ### Monitoring

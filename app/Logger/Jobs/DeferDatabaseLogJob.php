@@ -4,6 +4,7 @@ namespace App\Logger\Jobs;
 
 use App\Logger\Models\ServerLog;
 use App\Traits\CeleryFunction;
+use App\Traits\GoWorkerFunction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +14,7 @@ use Monolog\LogRecord;
 
 class DeferDatabaseLogJob implements ShouldQueue
 {
-    use CeleryFunction, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use CeleryFunction, GoWorkerFunction, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
@@ -80,15 +81,33 @@ class DeferDatabaseLogJob implements ShouldQueue
     {
         /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
         if (config('services.rabbitmq.enabled')) {
-            $this->sendTask('log_db_task', [json_encode([
+            $workerBackend = config('services.rabbitmq.worker_backend', 'go');
+            $logData = [
                 'message' => $this->record['message'],
                 'channel' => $this->record['channel'],
                 'level' => $this->record['level'],
                 'level_name' => $this->record['level_name'],
-                'datetime' => $this->record['datetime'],
+                'datetime' => $this->record['datetime']->format('Y-m-d H:i:s.u'),
                 'context' => $this->record['context'],
                 'extra' => $this->record['extra'],
-            ])], 'logger');
+            ];
+
+            switch ($workerBackend) {
+                case 'celery':
+                    // Send to Celery worker using legacy format (fallback option)
+                    $this->sendTask('log_db_task', [json_encode($logData)], 'logger');
+                    break;
+                case 'both':
+                    // Send to both backends for migration scenarios
+                    $this->sendGoTask('logger', $logData, 'logger');
+                    $this->sendTask('log_db_task', [json_encode($logData)], 'logger');
+                    break;
+                case 'go':
+                default:
+                    // Send to Go worker using modern format (default)
+                    $this->sendGoTask('logger', $logData, 'logger');
+                    break;
+            }
         } else {
             ServerLog::create([
                 'message' => $this->record['message'],

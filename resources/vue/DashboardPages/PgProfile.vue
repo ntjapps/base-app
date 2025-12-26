@@ -16,7 +16,7 @@ const props = defineProps<{
     expandedKeysProps: string;
 }>();
 const main = useMainStore();
-const { userName } = storeToRefs(main);
+const { userName, workerBackend } = storeToRefs(main);
 
 const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 const newPassword = ref<string | null>('');
@@ -96,6 +96,42 @@ onMounted(() => {
             </div>
             <div class="flex justify-center">
                 <UButton size="xl" label="Update Profile" @click="postProfileData" />
+            </div>
+        </div>
+
+        <!-- Worker Backend Info -->
+        <div
+            v-if="workerBackend.enabled"
+            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg w-full max-w-xl"
+        >
+            <h3 class="title-font">Worker Backend Configuration</h3>
+            <div class="mt-4">
+                <div class="flex items-center justify-between py-2">
+                    <span class="text-sm font-medium">Backend Type:</span>
+                    <span
+                        class="px-3 py-1 rounded-full text-xs font-semibold"
+                        :class="{
+                            'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200':
+                                workerBackend.type === 'celery',
+                            'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200':
+                                workerBackend.type === 'go',
+                            'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200':
+                                workerBackend.type === 'both',
+                        }"
+                    >
+                        {{ workerBackend.type.toUpperCase() }}
+                    </span>
+                </div>
+                <Message v-if="workerBackend.type === 'celery'" severity="info">
+                    Using Celery (Python) worker backend for processing asynchronous tasks.
+                </Message>
+                <Message v-else-if="workerBackend.type === 'go'" severity="success">
+                    Using Go worker backend for processing asynchronous tasks.
+                </Message>
+                <Message v-else-if="workerBackend.type === 'both'" severity="warn">
+                    Using both Celery and Go worker backends. Tasks are sent to both backends
+                    simultaneously.
+                </Message>
             </div>
         </div>
     </CmpLayout>

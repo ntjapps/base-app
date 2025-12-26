@@ -50,6 +50,7 @@ return [
         'password' => env('RABBITMQ_PASSWORD', 'queuepass'),
         'vhost' => env('RABBITMQ_VHOST', 'queuevhost'),
         'timeout' => env('RABBITMQ_TIMEOUT_SECONDS', 60),
+        'worker_backend' => env('WORKER_BACKEND', 'go'), // Options: 'go' (default), 'celery' (fallback), 'both'
     ],
 
     'waha' => [

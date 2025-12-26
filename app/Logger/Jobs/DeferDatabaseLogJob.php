@@ -14,7 +14,7 @@ use Monolog\LogRecord;
 
 class DeferDatabaseLogJob implements ShouldQueue
 {
-    use CeleryFunction, GoWorkerFunction, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use CeleryFunction, Dispatchable, GoWorkerFunction, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.

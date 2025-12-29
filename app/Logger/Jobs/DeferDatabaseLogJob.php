@@ -3,7 +3,6 @@
 namespace App\Logger\Jobs;
 
 use App\Logger\Models\ServerLog;
-use App\Traits\CeleryFunction;
 use App\Traits\GoWorkerFunction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +13,7 @@ use Monolog\LogRecord;
 
 class DeferDatabaseLogJob implements ShouldQueue
 {
-    use CeleryFunction, Dispatchable, GoWorkerFunction, InteractsWithQueue, Queueable, SerializesModels;
+    use GoWorkerFunction, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.

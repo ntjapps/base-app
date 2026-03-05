@@ -1,12 +1,17 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\DokuFunction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use ReflectionClass;
+use RuntimeException;
 
 class DokuFunctionHarness
 {
-    use App\Traits\DokuFunction;
+    use DokuFunction;
 }
 
 describe('DokuFunction', function () {

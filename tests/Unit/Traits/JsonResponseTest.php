@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
 use App\Traits\JsonResponse;
 
 class JsonResponseHarness

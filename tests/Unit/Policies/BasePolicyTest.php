@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Unit\Policies;
+
 use App\Models\User;
 use App\Policies\BasePolicy;
 

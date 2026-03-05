@@ -1,12 +1,16 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\IpaymuFunction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 
 class IpaymuFunctionHarness
 {
-    use App\Traits\IpaymuFunction;
+    use IpaymuFunction;
 }
 
 describe('IpaymuFunction', function () {

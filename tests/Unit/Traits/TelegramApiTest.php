@@ -1,12 +1,16 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\TelegramApi;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use ReflectionClass;
 
 class TelegramApiHarness
 {
-    use App\Traits\TelegramApi;
+    use TelegramApi;
 
     public function call(string $method, ...$args)
     {

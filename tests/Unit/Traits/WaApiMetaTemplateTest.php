@@ -1,11 +1,15 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\WaApiMetaTemplate;
+use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 
 class WaApiMetaTemplateHarness
 {
-    use App\Traits\WaApiMetaTemplate;
+    use WaApiMetaTemplate;
 
     public function publicGetTemplates(array $fields = [], ?int $limit = null): ?array
     {

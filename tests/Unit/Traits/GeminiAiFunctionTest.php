@@ -1,11 +1,15 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\GeminiAiFunction;
+use ErrorException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 
 class GeminiAiFunctionHarness
 {
-    use App\Traits\GeminiAiFunction;
+    use GeminiAiFunction;
 
     public function gen(string $message, array $conversation = [], ?string $system = null): string
     {

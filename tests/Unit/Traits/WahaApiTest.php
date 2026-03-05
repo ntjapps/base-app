@@ -1,11 +1,16 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\WahaApi;
+use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use ReflectionClass;
 
 class WahaApiHarness
 {
-    use App\Traits\WahaApi;
+    use WahaApi;
 
     public function call(string $method, ...$args)
     {

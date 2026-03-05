@@ -1,12 +1,16 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
 use App\Exceptions\CommonCustomException;
 use App\Interfaces\CentralCacheInterfaceClass;
+use App\Traits\CeleryFunction;
 use Illuminate\Support\Facades\Cache;
+use ReflectionClass;
 
 class CeleryFunctionHarness
 {
-    use App\Traits\CeleryFunction;
+    use CeleryFunction;
 
     public function callSendTask(mixed $task, mixed $args = [], mixed $queue = 'celery', mixed $exclusive = false, mixed $timeout = null): string
     {

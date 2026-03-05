@@ -1,8 +1,12 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\CryptFunction;
+
 class CryptFunctionHarness
 {
-    use App\Traits\CryptFunction;
+    use CryptFunction;
 
     public function enc(string $value): string
     {

@@ -1,12 +1,16 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\MidtransFunction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 
 class MidtransFunctionHarness
 {
-    use App\Traits\MidtransFunction;
+    use MidtransFunction;
 }
 
 describe('MidtransFunction', function () {

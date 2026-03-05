@@ -1,11 +1,15 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\WaApiMetaAppManagement;
+use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 
 class WaApiMetaAppManagementHarness
 {
-    use App\Traits\WaApiMetaAppManagement;
+    use WaApiMetaAppManagement;
 
     public function publicRegister(?string $wabaId = null, ?string $accessToken = null, ?string $overrideCallbackUri = null, ?string $verifyToken = null): array
     {

@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Feature;
+
 use App\Http\Controllers\WaApiController;
 
 class WaApiControllerTestDouble extends WaApiController

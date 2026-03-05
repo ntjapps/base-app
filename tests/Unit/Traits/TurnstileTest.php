@@ -1,11 +1,14 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
+use App\Traits\Turnstile;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 
 class TurnstileHarness
 {
-    use App\Traits\Turnstile;
+    use Turnstile;
 
     public function verify(string $value): bool
     {

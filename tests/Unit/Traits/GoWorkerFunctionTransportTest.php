@@ -1,7 +1,12 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
 use App\Models\TaskStatus;
+use App\Traits\GoWorkerFunction;
+use Exception;
 use Illuminate\Support\Facades\Cache;
+use RuntimeException;
 
 class FakeGoAmqpChannel
 {
@@ -36,7 +41,7 @@ class FakeGoAmqpConnection
 
 class GoWorkerFunctionTransportHarness
 {
-    use App\Traits\GoWorkerFunction;
+    use GoWorkerFunction;
 
     public ?FakeGoAmqpConnection $lastConnection = null;
 
@@ -85,7 +90,7 @@ class FakeNatsServiceFail
 
 class GoWorkerFunctionDryRunHarness
 {
-    use App\Traits\GoWorkerFunction;
+    use GoWorkerFunction;
 
     public function callSendGoTaskWithOptions(string $task, mixed $payload = [], string $queue = 'celery', mixed $exclusive = false, mixed $timeout = null, mixed $notify = null): string
     {
@@ -95,7 +100,7 @@ class GoWorkerFunctionDryRunHarness
 
 class GoWorkerFunctionRabbitThrowHarness
 {
-    use App\Traits\GoWorkerFunction;
+    use GoWorkerFunction;
 
     protected function isGoTaskDryRun(): bool
     {

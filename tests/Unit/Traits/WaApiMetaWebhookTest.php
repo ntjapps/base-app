@@ -1,10 +1,15 @@
 <?php
 
+namespace Tests\Unit\Traits;
+
 use App\Interfaces\GoQueues;
+use App\Traits\WaApiMetaWebhook;
+use ReflectionClass;
+use RuntimeException;
 
 class WaApiMetaWebhookHarness
 {
-    use App\Traits\WaApiMetaWebhook;
+    use WaApiMetaWebhook;
 
     public bool $shouldThrow = false;
 

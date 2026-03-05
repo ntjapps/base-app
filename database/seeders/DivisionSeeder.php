@@ -1,0 +1,34 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Division;
+use Illuminate\Database\Seeder;
+
+class DivisionSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $divisions = [
+            [
+                'name' => 'Billing',
+                'description' => 'Billing & Invoices',
+                'enabled' => true,
+            ],
+            [
+                'name' => 'Support',
+                'description' => 'Technical Support',
+                'enabled' => true,
+            ],
+        ];
+
+        foreach ($divisions as $attrs) {
+            Division::firstOrCreate([
+                'name' => $attrs['name'],
+            ], $attrs);
+        }
+    }
+}

@@ -44,18 +44,38 @@ const showUnavailable = () => {
 onMounted(() => {
     /** Ticking status for pusher */
     setInterval(() => {
-        const connectorUnknown: unknown = (echo as unknown as { connector?: unknown }).connector;
-        if (
-            isRecord(connectorUnknown) &&
-            isRecord(connectorUnknown.pusher) &&
-            isRecord(connectorUnknown.pusher.connection) &&
-            typeof connectorUnknown.pusher.connection.state === 'string'
-        ) {
-            pusherState.value = connectorUnknown.pusher.connection.state;
-        } else {
-            console.warn('Pusher is not available on the current connector.');
+        const echoNow = laravelEcho.value;
+        if (!isRecord(echoNow)) {
+            console.warn('Pusher echo is not initialized.');
             pusherState.value = 'unavailable';
+            showUnavailable();
+            return;
         }
+
+        const connectorUnknown: unknown = (echoNow as unknown as { connector?: unknown }).connector;
+        if (!isRecord(connectorUnknown)) {
+            console.warn('Pusher connector is not an object.');
+            pusherState.value = 'unavailable';
+            showUnavailable();
+        } else {
+            const connector = connectorUnknown as Record<string, unknown>;
+            const pusher = connector['pusher'];
+            if (!isRecord(pusher)) {
+                console.warn('Pusher is not available on the current connector.');
+                pusherState.value = 'unavailable';
+                showUnavailable();
+            } else {
+                const connection = (pusher as Record<string, unknown>)['connection'];
+                if (!isRecord(connection) || typeof connection['state'] !== 'string') {
+                    console.warn('Pusher connection is not available.');
+                    pusherState.value = 'unavailable';
+                    showUnavailable();
+                } else {
+                    pusherState.value = String(connection['state']);
+                }
+            }
+        }
+
         switch (pusherState.value) {
             case 'connecting':
                 showConnecting();
@@ -79,10 +99,10 @@ onMounted(() => {
             </UButton>
         </UTooltip>
         <UTooltip v-if="connecting" text="Connecting">
-            <UButton size="xl" variant="ghost"><i class="pi pi-spinner animate-spin" /></UButton>
+            <UButton size="xl" variant="ghost" icon="i-heroicons-arrow-path" class="animate-spin" />
         </UTooltip>
         <UTooltip v-if="unavailable" text="Unavailable">
-            <UButton size="xl" variant="ghost"><i class="pi pi-times" /></UButton>
+            <UButton size="xl" variant="ghost" icon="i-heroicons-x-mark" />
         </UTooltip>
     </div>
 </template>

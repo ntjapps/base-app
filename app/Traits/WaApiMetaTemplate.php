@@ -8,16 +8,11 @@ use Illuminate\Support\Facades\Log;
 trait WaApiMetaTemplate
 {
     /**
-     * Create a message template for a WhatsApp Business Account (WABA)
-     * Uses Business Management API: POST /<WABA_ID>/message_templates
+     * Validate WhatsApp API configuration and return credentials
      *
-     * @param  string  $language  e.g. en_US
-     * @param  string  $category  AUTHENTICATION|MARKETING|UTILITY
-     * @param  int|null  $messageSendTtlSeconds  optional TTL in seconds
-     * @param  bool|null  $ctaUrlLinkTrackingOptedOut  optional CTA URL link tracking opt-out
-     * @return array|null API response or null on error
+     * @return array{endpoint: string, waba_id: string, access_token: string}|null
      */
-    protected function createTemplate(string $name, string $language, string $category, array $components = [], ?int $messageSendTtlSeconds = null, ?bool $ctaUrlLinkTrackingOptedOut = null): ?array
+    private function getWhatsAppConfig(): ?array
     {
         if (! config('services.whatsapp.enabled')) {
             Log::warning('WhatsApp templates - API disabled.');
@@ -35,42 +30,11 @@ trait WaApiMetaTemplate
             return null;
         }
 
-        $url = rtrim($endpoint, '/')."/{$wabaId}/message_templates";
-
-        $body = [
-            'name' => $name,
-            'language' => $language,
-            'category' => $category,
-            'components' => $components,
+        return [
+            'endpoint' => $endpoint,
+            'waba_id' => $wabaId,
+            'access_token' => $accessToken,
         ];
-
-        if (! is_null($messageSendTtlSeconds)) {
-            $body['message_send_ttl_seconds'] = $messageSendTtlSeconds;
-        }
-
-        if (! is_null($ctaUrlLinkTrackingOptedOut)) {
-            $body['cta_url_link_tracking_opted_out'] = $ctaUrlLinkTrackingOptedOut;
-        }
-
-        try {
-            $response = Http::withToken($accessToken)
-                ->post($url, $body);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                Log::info('WhatsApp template created', ['name' => $name, 'response' => $data]);
-
-                return $data;
-            }
-
-            Log::error('WhatsApp template create error', ['status' => $response->status(), 'body' => $response->body()]);
-
-            return null;
-        } catch (\Exception $e) {
-            Log::error('WhatsApp template create exception: '.$e->getMessage(), ['exception' => $e]);
-
-            return null;
-        }
     }
 
     /**
@@ -120,7 +84,7 @@ trait WaApiMetaTemplate
             $query['limit'] = $limit;
         }
 
-        $url = rtrim($endpoint, '/')."/{$wabaId}/message_templates";
+        $url = rtrim($endpoint, '/').'/'.$wabaId.'/message_templates';
 
         try {
             $response = Http::withToken($accessToken)
@@ -196,26 +160,15 @@ trait WaApiMetaTemplate
      */
     protected function getTemplateNamespace(): ?string
     {
-        if (! config('services.whatsapp.enabled')) {
-            Log::warning('WhatsApp templates - API disabled.');
-
+        $config = $this->getWhatsAppConfig();
+        if (! $config) {
             return null;
         }
 
-        $endpoint = config('services.whatsapp.endpoint');
-        $wabaId = config('services.whatsapp.business_id');
-        $accessToken = config('services.whatsapp.access_token');
-
-        if (! $endpoint || ! $wabaId || ! $accessToken) {
-            Log::error('WhatsApp templates - configuration missing.');
-
-            return null;
-        }
-
-        $url = rtrim($endpoint, '/')."/{$wabaId}";
+        $url = rtrim($config['endpoint'], '/').'/'.$config['waba_id'];
 
         try {
-            $response = Http::withToken($accessToken)
+            $response = Http::withToken($config['access_token'])
                 ->get($url, ['fields' => 'message_template_namespace']);
 
             if ($response->successful()) {
@@ -229,143 +182,6 @@ trait WaApiMetaTemplate
             return null;
         } catch (\Exception $e) {
             Log::error('WhatsApp template namespace exception: '.$e->getMessage(), ['exception' => $e]);
-
-            return null;
-        }
-    }
-
-    /**
-     * Edit a template by its template ID (POST /<TEMPLATE_ID>)
-     *
-     * @param  array  $data  (category/components/message_send_ttl_seconds/cta_url_link_tracking_opted_out)
-     * @return bool|null true on success, null on error
-     */
-    protected function editTemplate(string $templateId, array $data): ?bool
-    {
-        if (! config('services.whatsapp.enabled')) {
-            Log::warning('WhatsApp templates - API disabled.');
-
-            return null;
-        }
-
-        $endpoint = config('services.whatsapp.endpoint');
-        $accessToken = config('services.whatsapp.access_token');
-
-        if (! $endpoint || ! $accessToken) {
-            Log::error('WhatsApp templates - configuration missing.');
-
-            return null;
-        }
-
-        $url = rtrim($endpoint, '/')."/{$templateId}";
-
-        try {
-            $response = Http::withToken($accessToken)
-                ->post($url, $data);
-
-            if ($response->successful()) {
-                Log::info('WhatsApp template edited', ['template_id' => $templateId]);
-
-                return true;
-            }
-
-            Log::error('WhatsApp template edit error', ['status' => $response->status(), 'body' => $response->body()]);
-
-            return null;
-        } catch (\Exception $e) {
-            Log::error('WhatsApp template edit exception: '.$e->getMessage(), ['exception' => $e]);
-
-            return null;
-        }
-    }
-
-    /**
-     * Delete template(s) by name for a WABA
-     * DELETE /<WABA_ID>/message_templates?name=<NAME>
-     *
-     * @return bool|null true on success, null on error
-     */
-    protected function deleteTemplateByName(string $name): ?bool
-    {
-        if (! config('services.whatsapp.enabled')) {
-            Log::warning('WhatsApp templates - API disabled.');
-
-            return null;
-        }
-
-        $endpoint = config('services.whatsapp.endpoint');
-        $wabaId = config('services.whatsapp.business_id');
-        $accessToken = config('services.whatsapp.access_token');
-
-        if (! $endpoint || ! $wabaId || ! $accessToken) {
-            Log::error('WhatsApp templates - configuration missing.');
-
-            return null;
-        }
-
-        $url = rtrim($endpoint, '/')."/{$wabaId}/message_templates";
-
-        try {
-            $response = Http::withToken($accessToken)
-                ->delete($url, ['name' => $name]);
-
-            if ($response->successful()) {
-                Log::info('WhatsApp template(s) deleted by name', ['name' => $name]);
-
-                return true;
-            }
-
-            Log::error('WhatsApp template delete by name error', ['status' => $response->status(), 'body' => $response->body()]);
-
-            return null;
-        } catch (\Exception $e) {
-            Log::error('WhatsApp template delete by name exception: '.$e->getMessage(), ['exception' => $e]);
-
-            return null;
-        }
-    }
-
-    /**
-     * Delete a template by id for a WABA
-     * DELETE /<WABA_ID>/message_templates?hsm_id=<HSM_ID>&name=<NAME>
-     *
-     * @param  string  $wabaId
-     */
-    protected function deleteTemplateById(string $hsmId, string $name): ?bool
-    {
-        if (! config('services.whatsapp.enabled')) {
-            Log::warning('WhatsApp templates - API disabled.');
-
-            return null;
-        }
-
-        $endpoint = config('services.whatsapp.endpoint');
-        $wabaId = config('services.whatsapp.business_id');
-        $accessToken = config('services.whatsapp.access_token');
-
-        if (! $endpoint || ! $wabaId || ! $accessToken) {
-            Log::error('WhatsApp templates - configuration missing.');
-
-            return null;
-        }
-
-        $url = rtrim($endpoint, '/')."/{$wabaId}/message_templates";
-
-        try {
-            $response = Http::withToken($accessToken)
-                ->delete($url, ['hsm_id' => $hsmId, 'name' => $name]);
-
-            if ($response->successful()) {
-                Log::info('WhatsApp template deleted by id', ['hsm_id' => $hsmId, 'name' => $name]);
-
-                return true;
-            }
-
-            Log::error('WhatsApp template delete by id error', ['status' => $response->status(), 'body' => $response->body()]);
-
-            return null;
-        } catch (\Exception $e) {
-            Log::error('WhatsApp template delete by id exception: '.$e->getMessage(), ['exception' => $e]);
 
             return null;
         }

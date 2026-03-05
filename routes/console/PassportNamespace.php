@@ -3,6 +3,7 @@
 use App\Models\Passport\Client;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Passport\ClientRepository;
@@ -82,7 +83,7 @@ Artisan::command('passport:client:env', function () {
     });
 
     $this->info('Client id: '.$client?->id);
-    $this->info('Client Secret: '.$client?->secret);
+    $this->info('Client secret stored');
     $this->info('Client id and secret generated from .env');
 
     Log::debug('Console passport:client:env executed', ['appName' => config('app.name')]);
@@ -110,7 +111,7 @@ Artisan::command('passport:client:grant:env', function () {
     });
 
     $this->info('Client id: '.$client?->id);
-    $this->info('Client secret: '.$client?->secret);
+    $this->info('Client secret stored');
     $this->info('Client id and secret generated from .env');
 
     Log::debug('Console passport:client:grant:env executed', ['appName' => config('app.name')]);
@@ -138,8 +139,56 @@ Artisan::command('passport:client:rabbitmq:env', function () {
     });
 
     $this->info('Client id: '.$client?->id);
-    $this->info('Client secret: '.$client?->secret);
+    $this->info('Client secret stored');
     $this->info('Client id and secret generated from .env');
 
     Log::debug('Console passport:client:rabbitmq:env executed', ['appName' => config('app.name')]);
 })->purpose('Generate client credentials access client from .env');
+
+Artisan::command('passport:client:rabbitmq:info', function () {
+    $id = config('passport.client_credentials_rabbitmq_client.id') ?? env('RABBITMQ_CLIENT_CREDENTIALS_CLIENT_ID');
+    if ($id === null) {
+        $this->error('RABBITMQ_CLIENT_CREDENTIALS_CLIENT_ID is not set in .env or config');
+
+        return;
+    }
+
+    $this->info('RabbitMQ Client ID: '.$id);
+
+    // Get secret from config/env (do not print secrets)
+    $secret = config('passport.client_credentials_rabbitmq_client.secret') ?? env('RABBITMQ_CLIENT_CREDENTIALS_CLIENT_SECRET') ?? env('PASSPORT_CLIENT_CREDENTIALS_CLIENT_SECRET');
+    if ($secret === null || $secret === '') {
+        $this->info('Env secret: not set');
+    } else {
+        $this->info('Env secret: set');
+    }
+
+    // Get DB-stored client secret (if present)
+    $dbClient = Client::find($id);
+    if (! is_null($dbClient)) {
+        $dbSecret = $dbClient->secret;
+        if ($dbSecret === null || $dbSecret === '') {
+            $this->info('DB client secret: not set');
+        } else {
+            $this->info('DB client secret: stored');
+            if ($secret !== null && $secret !== '') {
+                $matches = Hash::check($secret, $dbSecret);
+                $this->info('Env secret matches DB secret: '.($matches ? 'YES' : 'NO'));
+            }
+        }
+        // Show grant types and check client_credentials present
+        $grantTypes = $dbClient->grant_types;
+        $this->info('DB client grant_types: '.json_encode($grantTypes));
+        $isClientCreds = false;
+        if (is_string($grantTypes)) {
+            $isClientCreds = str_contains($grantTypes, 'client_credentials');
+        } elseif (is_array($grantTypes)) {
+            $isClientCreds = in_array('client_credentials', $grantTypes);
+        }
+        $this->info('DB client supports client_credentials grant: '.($isClientCreds ? 'YES' : 'NO'));
+    } else {
+        $this->info('DB client: not found');
+    }
+
+    Log::debug('Console passport:client:rabbitmq:info executed', ['appName' => config('app.name')]);
+})->purpose('Show RabbitMQ client id and secret status (no secrets printed)');

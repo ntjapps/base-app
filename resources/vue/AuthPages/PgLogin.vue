@@ -4,13 +4,11 @@ import { storeToRefs } from 'pinia';
 import { useMainStore } from '../AppState';
 import { useWebStore } from '../AppRouter';
 import { api } from '../AppAxios';
+import StdButton from '../Components/StdButton.vue';
+import companyLogo from '../../images/Main Logo.webp';
 
 import CmpTurnstile from '../Components/CmpTurnstile.vue';
 import CmpToast from '../Components/CmpToast.vue';
-
-import InputText from '../volt/InputText.vue';
-import Password from '../volt/Password.vue';
-import LoginSpinner from '../volt/LoginSpinner.vue';
 
 const web = useWebStore();
 const main = useMainStore();
@@ -60,64 +58,77 @@ onBeforeUpdate(() => {
 <template>
     <div>
         <CmpToast ref="toastchild" />
-        <div class="flex justify-center w-full min-h-screen bg-surface-100 dark:bg-surface-900">
-            <div
-                class="flex justify-center w-full max-w-sm sm:max-w-md md:max-w-lg h-fit m-auto px-2 sm:px-0"
-            >
+        <div class="flex min-h-screen w-full items-center justify-center bg-gray-300 p-4">
+            <div class="w-full max-w-sm">
                 <div
                     v-show="!loading"
-                    class="bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg w-full"
+                    class="rounded-2xl bg-white px-7 py-6 shadow-[0_16px_36px_rgba(0,0,0,0.16)]"
                 >
-                    <div class="m-auto p-4 sm:p-5">
-                        <div class="text-center font-bold my-2.5">
-                            {{ appName }}
+                    <div class="mb-3 flex justify-center">
+                        <img
+                            :src="companyLogo"
+                            alt="Company logo"
+                            class="h-10 w-auto object-contain"
+                        />
+                    </div>
+
+                    <div class="mb-5 text-center text-xs font-semibold text-gray-700">
+                        {{ appName }}
+                    </div>
+
+                    <div v-if="!browserSuppport" class="mb-4 text-center">
+                        <UButton size="xl" color="red" icon="i-heroicons-x-mark"
+                            >Browser Unsupported</UButton
+                        >
+                    </div>
+
+                    <div class="mb-4 text-center text-2xl font-bold text-gray-900">
+                        Login to your account
+                    </div>
+
+                    <div class="space-y-2.5">
+                        <div class="relative w-full">
+                            <UInput
+                                id="username"
+                                v-model="username"
+                                class="w-full text-left"
+                                placeholder="Username"
+                                @keypress.enter="postLoginData"
+                            />
                         </div>
-                        <div v-if="!browserSuppport" class="text-center font-bold my-2.5">
-                            <UButton size="xl" severity="danger" color="error"
-                                ><i class="pi pi-times" />Browser Unsupported</UButton
-                            >
+
+                        <div class="relative w-full">
+                            <UInput
+                                id="password"
+                                v-model="password"
+                                type="password"
+                                placeholder="Password"
+                                class="w-full"
+                                @keyup.enter="postLoginData"
+                            />
                         </div>
-                        <div class="text-center font-bold my-2.5">Login to your account</div>
-                        <div class="flex justify-center flex-col mt-6 sm:mt-8 my-2.5">
-                            <div class="relative w-full">
-                                <InputText
-                                    id="username"
-                                    v-model="username"
-                                    class="text-left w-full"
-                                    placeholder="Username"
-                                    @keypress.enter="postLoginData"
-                                />
-                            </div>
-                        </div>
-                        <div class="flex justify-center flex-col my-2.5">
-                            <div class="relative w-full">
-                                <Password
-                                    v-model="password"
-                                    inputId="password"
-                                    type="text"
-                                    placeholder="Password"
-                                    :feedback="false"
-                                    @keyup.enter="postLoginData"
-                                />
-                            </div>
-                        </div>
-                        <div class="flex justify-center py-2.5">
+
+                        <div class="flex justify-center py-1">
                             <CmpTurnstile ref="turnchild" />
                         </div>
-                        <div class="flex justify-center py-2.5">
-                            <UButton size="xl" label="Login" @click="postLoginData" />
+
+                        <div class="pt-1">
+                            <StdButton
+                                variant="primary"
+                                label="Login"
+                                class="w-full rounded-md bg-green-600 text-white hover:bg-green-700"
+                                @click="postLoginData"
+                            />
                         </div>
                     </div>
                 </div>
                 <div
                     v-show="loading"
-                    class="bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg w-full"
+                    class="w-full rounded-2xl bg-white px-7 py-10 shadow-[0_16px_36px_rgba(0,0,0,0.16)]"
                 >
-                    <div class="m-auto p-4 sm:p-5">
-                        <div class="text-center font-bold my-2.5">
-                            <LoginSpinner />
-                        </div>
-                        <div class="text-center font-bold my-2.5">Loading</div>
+                    <div class="flex flex-col items-center justify-center gap-4 text-gray-700">
+                        <UIcon name="i-heroicons-arrow-path" class="animate-spin text-5xl" />
+                        <div class="text-xl font-semibold">Loading...</div>
                     </div>
                 </div>
             </div>

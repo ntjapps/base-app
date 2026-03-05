@@ -112,6 +112,26 @@ export class ApiClient {
         }
     }
 
+    // Helper method to handle 202 Accepted responses (async task queued)
+    // Returns true if response was 202 and toast was shown
+    public handle202Accepted<T>(response: AxiosResponse<T>, defaultMessage?: string): boolean {
+        if (response.status === 202) {
+            const data = response?.data as unknown as
+                | { data?: { task_id?: string; message?: string } }
+                | undefined;
+            const message =
+                data?.data?.message ?? defaultMessage ?? 'Task has been queued for processing';
+
+            this.showToast({
+                severity: 'info',
+                summary: 'Processing',
+                detail: message,
+            });
+            return true;
+        }
+        return false;
+    }
+
     // Helper method to handle API errors
     // Helper method to handle API errors
     private handleError(error: AxiosError<ApiError>) {
@@ -344,6 +364,13 @@ export class ApiClient {
         return this.get('/api/v1/server-man/logs', this.mergeOptions(options, params));
     }
 
+    async getRouteAnalytics(
+        params: Record<string, unknown> = {},
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<unknown>> {
+        return this.get('/api/v1/server-man/route-analytics', this.mergeOptions(options, params));
+    }
+
     async postClearAppCache(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
         return this.delete('/api/v1/server-man/cache', options);
     }
@@ -388,6 +415,17 @@ export class ApiClient {
         options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
         return this.get('/api/v1/whatsapp/messages', options);
+    }
+
+    async getWhatsappStats(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/whatsapp/stats', options);
+    }
+
+    async resolveConversation(
+        data: { conversation_id: string },
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/whatsapp/conversations/resolve', data, options);
     }
 
     async getWhatsappMessagesDetail(
@@ -436,6 +474,82 @@ export class ApiClient {
         options: RequestOptions = {},
     ): Promise<AxiosResponse<ApiResponse>> {
         return this.delete(`/api/v1/whatsapp/templates/${templateId}`, options);
+    }
+
+    // Division Management APIs
+    async getDivisionList(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/division-man/divisions', options);
+    }
+
+    async postDivisionManSubmit(
+        data: Record<string, unknown>,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/division-man/divisions', data, options);
+    }
+
+    async postDeleteDivisionManSubmit(
+        divisionId: string | number,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.delete(`/api/v1/division-man/divisions/${divisionId}`, options);
+    }
+
+    // Tag Management APIs
+    async getTagList(options: RequestOptions = {}): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/tag-man/tags', options);
+    }
+
+    async postTagManSubmit(
+        data: Record<string, unknown>,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/tag-man/tags', data, options);
+    }
+
+    async postDeleteTagManSubmit(
+        tagId: string | number,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.delete(`/api/v1/tag-man/tags/${tagId}`, options);
+    }
+
+    // AI Model Instruction Management APIs
+    async getAiModelInstructionList(
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.get('/api/v1/ai-model-instruction-man/instructions', options);
+    }
+
+    async postAiModelInstructionManSubmit(
+        data: Record<string, unknown>,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/ai-model-instruction-man/instructions', data, options);
+    }
+
+    async postImportAiModelInstructionFromFile(
+        data: Record<string, unknown> = {},
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/ai-model-instruction-man/import-from-file', data, options);
+    }
+
+    async postExportAiModelInstructionToFile(
+        data: Record<string, unknown> = {},
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.post('/api/v1/ai-model-instruction-man/export-to-file', data, options);
+    }
+
+    async postDeleteAiModelInstructionManSubmit(
+        instructionId: string | number,
+        options: RequestOptions = {},
+    ): Promise<AxiosResponse<ApiResponse>> {
+        return this.delete(
+            `/api/v1/ai-model-instruction-man/instructions/${instructionId}`,
+            options,
+        );
     }
 }
 

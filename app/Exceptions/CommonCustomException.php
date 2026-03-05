@@ -8,12 +8,15 @@ use Throwable;
 
 class CommonCustomException extends Exception
 {
+    protected array $meta = [];
+
     /**
      * Modify parent construct
      */
-    public function __construct($message = '', $code = 422, ?Throwable $previous = null)
+    public function __construct($message = '', $code = 422, ?Throwable $previous = null, array $meta = [])
     {
         parent::__construct($message, $code, $previous);
+        $this->meta = $meta;
     }
 
     /**
@@ -36,6 +39,7 @@ class CommonCustomException extends Exception
             'trace' => $this->getTraceAsString(),
             'previous' => $this->getPrevious()?->getMessage(),
             'previous_trace' => $this->getPrevious()?->getTraceAsString(),
+            'meta' => $this->meta,
         ];
     }
 
@@ -46,12 +50,28 @@ class CommonCustomException extends Exception
      */
     public function render($request): JsonResponse
     {
-        return response()->json([
+        $payload = [
             'message' => $this->getMessage(),
             'code' => $this->getCode(),
             'errors' => [
                 'message' => $this->getMessage(),
             ],
-        ], $this->getCode());
+        ];
+
+        if (! empty($this->meta)) {
+            $payload['meta'] = $this->meta;
+        }
+
+        // Ensure we return a valid HTTP status code (Symfony will throw if it's invalid).
+        $httpStatus = (int) $this->getCode();
+        if ($httpStatus < 100 || $httpStatus > 599) {
+            // Use 422 Unprocessable Entity as a safe default for application errors
+            $httpStatus = 422;
+        }
+
+        // Keep payload code consistent with returned HTTP status
+        $payload['code'] = $httpStatus;
+
+        return response()->json($payload, $httpStatus);
     }
 }

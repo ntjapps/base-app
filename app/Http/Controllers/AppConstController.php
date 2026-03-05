@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\CentralCacheInterfaceClass;
+use App\Interfaces\GoQueues;
 use App\Interfaces\InterfaceClass;
 use App\Rules\TokenPlatformValidation;
+use App\Traits\GoWorkerFunction;
 use App\Traits\LogContext;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -17,7 +19,7 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 
 class AppConstController extends Controller
 {
-    use LogContext;
+    use GoWorkerFunction, LogContext;
 
     /**
      * POST app constants
@@ -56,12 +58,9 @@ class AppConstController extends Controller
 
             /** Menu Items */
             'menuItems' => $menuItems ?? [],
-
-            /** Worker Backend Configuration */
-            'workerBackend' => [
-                'enabled' => config('services.rabbitmq.enabled', false),
-                'type' => config('services.rabbitmq.worker_backend', 'celery'),
-            ],
+            'permissions' => $authCheck ? Cache::remember(CentralCacheInterfaceClass::keyPermissionGetPermissions($user->id), now()->addYear(), function () use ($user) {
+                return $user->getAllPermissions()->pluck('name')->sort()->values();
+            }) : [],
         ], 200);
     }
 
@@ -71,10 +70,26 @@ class AppConstController extends Controller
     public function logAgent(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        /** Log unsupported browser trigger from client */
-        Log::debug('Unsupported browser trigger', $this->getLogContext($request, $user, ['userAgent' => $request->userAgent()]));
+        Log::info('User requested log agent event', $this->getLogContext($request, $user));
 
-        return response()->json('OK', 200);
+        $payload = [
+            'user_agent' => $request->userAgent(),
+            'requested_by' => $user?->id ?? null,
+        ];
+
+        $taskId = $this->sendGoTask(
+            task: 'log_agent',
+            payload: $payload,
+            queue: 'logger'
+        );
+
+        Log::notice('Enqueued log agent task', $this->getLogContext($request, $user, ['task_id' => $taskId]));
+
+        return response()->json([
+            'task_id' => $taskId,
+            'status' => 'queued',
+            'message' => 'Log agent task has been queued',
+        ], 202);
     }
 
     /**
@@ -164,42 +179,41 @@ class AppConstController extends Controller
     public function postNotificationAsRead(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('API hit trigger post notification as read', $this->getLogContext($request, $user));
+        Log::info('User requested mark notification as read', $this->getLogContext($request, $user));
 
         /** Validate Input */
         $validate = Validator::make($request->all(), [
             'notification_id' => ['nullable', 'exists:notifications,id'],
         ]);
         if ($validate->fails()) {
-            Log::warning('API hit trigger post notification as read failed', $this->getLogContext($request, $user, ['errors' => $validate->errors()]));
+            Log::warning('Mark notification as read validation failed', $this->getLogContext($request, $user, ['errors' => $validate->errors()]));
 
             throw new ValidationException($validate);
         }
         (array) $validated = $validate->validated();
 
         $validatedLog = $validated;
-        Log::info('API hit trigger post notification as read validation', $this->getLogContext($request, $user, ['validated' => json_encode($validatedLog)]));
+        Log::info('Mark notification as read validation passed', $this->getLogContext($request, $user, ['validated' => json_encode($validatedLog)]));
 
-        /** Updated Notification as Read */
-        DB::beginTransaction();
-        try {
-            if (! is_null($validated['notification_id'])) {
-                /** @disregard */
-                $user?->notifications->where('id', $validated['notification_id'])->markAsRead();
-            } else {
-                $user?->unreadNotifications->markAsRead();
-            }
+        $payload = [
+            'notification_id' => $validated['notification_id'] ?? null,
+            'user_id' => $user?->id,
+            'requested_by' => $user?->id ?? null,
+        ];
 
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('API hit trigger post notification as read failed', $this->getLogContext($request, $user, ['errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]));
+        $taskId = $this->sendGoTask(
+            task: 'notification_mark_read',
+            payload: $payload,
+            queue: GoQueues::ADMIN
+        );
 
-            throw $e;
-        }
+        Log::notice('Enqueued notification mark read task', $this->getLogContext($request, $user, ['task_id' => $taskId]));
 
-        /** Return Response */
-        return response()->json('OK', 200);
+        return response()->json([
+            'task_id' => $taskId,
+            'status' => 'queued',
+            'message' => 'Notification mark read task has been queued',
+        ], 202);
     }
 
     /**
@@ -208,23 +222,25 @@ class AppConstController extends Controller
     public function postNotificationClearAll(Request $request): HttpJsonResponse
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
-        Log::debug('API hit trigger post notification clear all', $this->getLogContext($request, $user));
+        Log::info('User requested clear all notifications', $this->getLogContext($request, $user));
 
-        /** Clear All Notification */
-        DB::beginTransaction();
-        try {
-            /** @disregard */
-            $user?->notifications()->delete();
+        $payload = [
+            'user_id' => $user?->id,
+            'requested_by' => $user?->id ?? null,
+        ];
 
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('API hit trigger post notification clear all failed', $this->getLogContext($request, $user, ['errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]));
+        $taskId = $this->sendGoTask(
+            task: 'notification_clear_all',
+            payload: $payload,
+            queue: GoQueues::ADMIN
+        );
 
-            throw $e;
-        }
+        Log::notice('Enqueued notification clear all task', $this->getLogContext($request, $user, ['task_id' => $taskId]));
 
-        /** Return Response */
-        return response()->json('OK', 200);
+        return response()->json([
+            'task_id' => $taskId,
+            'status' => 'queued',
+            'message' => 'Notification clear all task has been queued',
+        ], 202);
     }
 }

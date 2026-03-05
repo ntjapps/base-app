@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
 import PgPassport from './PgPassport.vue';
+import CmpToastStub from '../../../tests/mocks/CmpToastStub';
 
 vi.mock('vue-clipboard3', () => ({
     default: () => ({ toClipboard: vi.fn() }),
@@ -10,15 +11,10 @@ vi.mock('vue-clipboard3', () => ({
 describe('PgPassport.vue', () => {
     it('mounts and renders without errors', () => {
         const wrapper = mount(PgPassport, {
-            props: {
-                appName: 'TestApp',
-                greetings: 'Hello',
-                expandedKeysProps: 'key1',
-            },
             global: {
                 plugins: [createPinia()],
                 stubs: {
-                    CmpToast: true,
+                    CmpToast: CmpToastStub,
                     CmpLayout: true,
                     Dialog: true,
                     DataTable: true,

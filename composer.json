@@ -1,5 +1,5 @@
 {
-    "name": "ntjapps/base-app",
+    "name": "your-org/base-app",
     "type": "project",
     "description": "Template for Web Apps with PHP, Laravel and Vue",
     "version": "1.0.0",
@@ -9,9 +9,10 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.5",
+        "basis-company/nats": "^1.1",
         "laravel/framework": "^12.0",
-        "laravel/mcp": "^0.3.2",
+        "laravel/mcp": "^0.3.4",
         "laravel/octane": "^2.12",
         "laravel/passport": "^13.1",
         "laravel/pennant": "^1.7",
@@ -29,6 +30,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "laravel/boost": "^1.8",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
@@ -71,12 +73,15 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "test:coverage": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test --coverage"
+        ],
+        "test:coverage:check": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test --coverage --min=80"
         ]
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
     },
     "config": {
         "optimize-autoloader": true,

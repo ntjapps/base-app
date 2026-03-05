@@ -1,7 +1,6 @@
 import Echo from 'laravel-echo';
 import { defineStore } from 'pinia';
 import { supportedBrowsers } from '../ts/browser';
-import { MenuItem } from 'primevue/menuitem';
 import { api } from './AppAxios';
 
 interface Notification {
@@ -21,19 +20,27 @@ interface AppConstResponse {
     userName: string;
     userId: string;
     menuItems: Record<string, MenuItemExtended>;
-    workerBackend?: {
-        enabled: boolean;
-        type: string;
-    };
+    permissions?: string[];
 }
 
-interface MenuItemExtended extends MenuItem {
-    key: string;
+interface MenuItemExtended {
+    /** Unique id for Nuxt UI menu items (preferred) */
+    id?: string;
+    /** Legacy key that some APIs may return */
+    key?: string;
+    /** The `value` prop used by Nuxt UI's NavigationMenu for v-model/default-value */
+    value?: string;
+    /** Display label (required for rendering) */
     label: string;
     icon?: string;
-    url?: string;
-    command?: () => void;
-    items?: Array<MenuItemExtended>;
+    /** Nuxt UI uses `href` rather than `url` */
+    href?: string;
+    /** When present, auto-open this item by default on vertical menus */
+    defaultOpen?: boolean;
+    /** Children using Nuxt UI convention */
+    children?: MenuItemExtended[];
+    /** Keep items for backward compatibility with older payloads */
+    items?: MenuItemExtended[];
 }
 
 // removed unused DeepPartial type
@@ -48,13 +55,10 @@ export const useMainStore = defineStore('main', {
         userId: '',
         browserSuppport: true as boolean,
         menuItems: [] as MenuItemExtended[],
+        permissions: [] as string[],
         expandedKeysMenu: {} as Record<string, boolean>,
         turnstileToken: '',
         menuVisible: false,
-        workerBackend: {
-            enabled: false,
-            type: 'go',
-        },
     }),
 
     actions: {
@@ -70,20 +74,74 @@ export const useMainStore = defineStore('main', {
                 const payload: Partial<AppConstResponse> = hasDataKey(outer)
                     ? outer.data
                     : (outer as Partial<AppConstResponse>);
-                const menu = payload.menuItems
-                    ? Array.isArray(payload.menuItems)
-                        ? (payload.menuItems as unknown as MenuItemExtended[])
-                        : Object.values(payload.menuItems as Record<string, MenuItemExtended>)
-                    : [];
-                // Update each field individually to avoid typing issues
-                this.$patch({
-                    appName: payload.appName ?? '',
-                    appVersion: payload.appVersion ?? '',
-                    userName: payload.userName ?? '',
-                    userId: payload.userId ?? '',
-                    menuItems: menu,
-                    workerBackend: payload.workerBackend ?? { enabled: false, type: 'go' },
-                });
+                // Keep RawMenuItem available for fallback normalizer
+                type RawMenuItem = Record<string, unknown>;
+
+                // Local fallback normalizer (used only if shared util import fails)
+                const normalizeItem = (
+                    raw: RawMenuItem | undefined,
+                    key?: string,
+                ): MenuItemExtended => {
+                    const r = raw ?? {};
+                    const id =
+                        r['id'] ?? r['key'] ?? key ?? (r['label'] ? String(r['label']) : undefined);
+                    const childrenRaw = (r['children'] ?? r['items'] ?? []) as unknown;
+                    const children = Array.isArray(childrenRaw)
+                        ? (childrenRaw as RawMenuItem[]).map((c) => normalizeItem(c, undefined))
+                        : [];
+
+                    return {
+                        id: id ? String(id) : undefined,
+                        key: r['key'] ? String(r['key']) : undefined,
+                        label: (r['label'] ?? r['title'] ?? r['name'] ?? '') as string,
+                        icon: r['icon'] ? String(r['icon']) : undefined,
+                        href: r['href']
+                            ? String(r['href'])
+                            : r['url']
+                              ? String(r['url'])
+                              : undefined,
+                        children: children.length ? children : undefined,
+                    };
+                };
+
+                const menuRaw = payload.menuItems ?? [];
+                // Use shared normalizer
+                try {
+                    // import synchronously since it's local and small
+                    const { normalizeMenu } = await import('./utils/menu');
+                    const menu = normalizeMenu(menuRaw);
+
+                    // Update each field individually to avoid typing issues
+                    this.$patch({
+                        appName: payload.appName ?? '',
+                        appVersion: payload.appVersion ?? '',
+                        userName: payload.userName ?? '',
+                        userId: payload.userId ?? '',
+                        menuItems: menu as unknown as MenuItemExtended[],
+                        permissions: Array.isArray(payload.permissions)
+                            ? (payload.permissions as string[])
+                            : [],
+                    });
+                } catch (error) {
+                    // Log and fallback: keep original behavior on error
+                    console.error(error);
+                    const menu: MenuItemExtended[] = Array.isArray(menuRaw)
+                        ? (menuRaw as RawMenuItem[]).map((m) => normalizeItem(m, undefined))
+                        : Object.entries(menuRaw as unknown as Record<string, RawMenuItem>).map(
+                              ([k, v]) => normalizeItem(v, k),
+                          );
+
+                    this.$patch({
+                        appName: payload.appName ?? '',
+                        appVersion: payload.appVersion ?? '',
+                        userName: payload.userName ?? '',
+                        userId: payload.userId ?? '',
+                        menuItems: menu,
+                        permissions: Array.isArray(payload.permissions)
+                            ? (payload.permissions as string[])
+                            : [],
+                    });
+                }
 
                 // Fetch notifications only when userId is available
                 await this.getNotificationList();
@@ -138,30 +196,62 @@ export const useMainStore = defineStore('main', {
             }
         },
 
-        updateExpandedKeysMenu(expandedKeys: string) {
+        updateExpandedKeysMenu(expandedKeys: string | string[] | Record<string, boolean>) {
+            // Accept multiple input styles: single key, comma-separated string, array, or object
+            let keysObj: Record<string, boolean> = {};
+            if (!expandedKeys) {
+                this.$patch((state) => {
+                    state.expandedKeysMenu = {};
+                });
+                return;
+            }
+
+            if (typeof expandedKeys === 'string') {
+                const parts = expandedKeys
+                    .split(',')
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                parts.forEach((k) => (keysObj[String(k)] = true));
+            } else if (Array.isArray(expandedKeys)) {
+                expandedKeys.forEach((k) => (keysObj[String(k)] = true));
+            } else {
+                keysObj = { ...expandedKeys };
+            }
+
             this.$patch({
                 expandedKeysMenu: {
                     ...(this.expandedKeysMenu ?? {}),
-                    [expandedKeys]: true,
+                    ...keysObj,
                 },
             });
         },
     },
 });
 
+import type { EchoWithMethods } from './types/echo';
+
 export const useEchoStore = defineStore('echo', {
     state: () => ({
-        laravelEcho: new Echo({
-            broadcaster: 'pusher',
-            key: import.meta.env.VITE_PUSHER_APP_KEY,
-            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
-            wsHost: import.meta.env.VITE_PUSHER_HOST
-                ? import.meta.env.VITE_PUSHER_HOST
-                : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
-            wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
-            wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
-            forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
-            enabledTransports: ['ws', 'wss'],
-        }),
+        laravelEcho: undefined as unknown as EchoWithMethods | undefined,
     }),
+    actions: {
+        initEcho() {
+            // Only initialize on the client
+            if (typeof window === 'undefined') return;
+            if (this.laravelEcho) return;
+
+            this.laravelEcho = new Echo({
+                broadcaster: 'pusher',
+                key: import.meta.env.VITE_PUSHER_APP_KEY,
+                cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
+                wsHost: import.meta.env.VITE_PUSHER_HOST
+                    ? import.meta.env.VITE_PUSHER_HOST
+                    : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+                wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
+                wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
+                forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+                enabledTransports: ['ws', 'wss'],
+            }) as unknown as EchoWithMethods;
+        },
+    },
 });

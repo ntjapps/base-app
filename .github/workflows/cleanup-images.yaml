@@ -1,8 +1,9 @@
 name: Clean up containers and images
 
 on:
-  tags:
-    - '**'
+  push:
+    tags:
+      - '**'
   workflow_dispatch:
 
 jobs:

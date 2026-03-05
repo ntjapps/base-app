@@ -20,7 +20,7 @@ class WaApiController extends Controller
      *
      * This method is used by WhatsApp to verify your webhook.
      */
-    public function whatsappWebhookGet(Request $request): Response
+    public function whatsappWebhookGet(Request $request): Response|HttpJsonResponse
     {
         if (! config('services.whatsapp.enabled')) {
             return $this->jsonFailed('WhatsApp API Disabled', 'WhatsApp API is currently disabled.');
@@ -58,7 +58,12 @@ class WaApiController extends Controller
 
         $timestamp = Carbon::now()->format('Y-m-d H:i:s');
         $requestData = $request->all();
-        Log::debug("Webhook received {$timestamp}", $this->getLogContext($request, null, ['data' => json_encode($requestData, JSON_PRETTY_PRINT)]));
+        // Optimization: Truncate log data to prevent excessive I/O on large payloads (e.g. media messages)
+        $logData = $requestData;
+        if (isset($logData['entry']) && is_array($logData['entry'])) {
+            $logData['entry'] = '... (truncated for performance) ...';
+        }
+        Log::debug("Webhook received {$timestamp}", $this->getLogContext($request, null, ['data' => json_encode($logData)]));
 
         $response = $this->processWebhookMessages($requestData);
         if ($response === true) {

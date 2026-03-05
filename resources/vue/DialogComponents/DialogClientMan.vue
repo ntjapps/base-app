@@ -3,18 +3,19 @@ import { ref, computed, watch } from 'vue';
 import { api } from '../AppAxios';
 import useClipboard from 'vue-clipboard3';
 import { ClientListDataInterface } from '../AppCommon';
-
-import InputText from '../volt/InputText.vue';
+import StdButton from '../Components/StdButton.vue';
 
 const props = defineProps<{
     dialogOpen: boolean;
     dialogData: ClientListDataInterface | null;
     dialogTypeCreate: boolean;
 }>();
+
 const emit = defineEmits<{
     (e: 'closeDialog'): void;
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
+
 const { toClipboard } = useClipboard();
 
 watch(
@@ -67,7 +68,10 @@ const copySecretToClipboard = () => {
 
 const deleteClient = async (id: string) => {
     try {
-        await api.postDeleteOauthClient(id);
+        const response = await api.postDeleteOauthClient(id);
+
+        // Handle 202 Accepted or success
+        api.handle202Accepted(response, 'OAuth client deletion task queued for processing');
         closeDialogFunction();
     } catch {
         // Toast handled globally by ApiClient
@@ -80,8 +84,17 @@ const resetClient = async (id: string) => {
             id: id,
             old_secret: oldClientSecret.value,
         });
-        const responseData = response.data.data as { secret: string };
+
+        // Extract secret from response
+        const responseData = response.data.data as {
+            secret: string;
+            task_id?: string;
+            message?: string;
+        };
         newClientSecret.value = responseData.secret;
+
+        // Handle 202 Accepted or success
+        api.handle202Accepted(response, 'OAuth client secret reset task queued for processing');
     } catch {
         // Toast handled globally by ApiClient
     }
@@ -89,11 +102,14 @@ const resetClient = async (id: string) => {
 
 const updateClient = async (id: string) => {
     try {
-        await api.postUpdateOauthClient({
+        const response = await api.postUpdateOauthClient({
             id: id,
             name: clientName.value,
             redirect: clientRedirect.value,
         });
+
+        // Handle 202 Accepted or success
+        api.handle202Accepted(response, 'OAuth client update task queued for processing');
         closeDialogFunction();
     } catch {
         // Toast handled globally by ApiClient
@@ -124,99 +140,86 @@ const allowEditName = computed(() => {
 </script>
 
 <template>
-    <div>
-        <div v-if="showClientId" class="flex w-full mt-1">
-            <div class="w-28 my-auto text-sm">
+    <div class="space-y-4">
+        <div v-if="showClientId" class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+            <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
                 <span>ID:</span>
             </div>
-            <div class="flex w-full text-sm">
-                <InputText
+            <div class="w-full text-sm">
+                <UInput
                     v-model="computedClientId"
                     class="w-full text-sm"
                     @click="copyIdToClipboard"
                 />
             </div>
         </div>
-        <div class="flex w-full mt-1">
-            <div class="w-28 my-auto text-sm">
+
+        <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+            <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
                 <span>Name:<span class="text-red-500 font-bold">*</span></span>
             </div>
-            <div class="flex w-full text-sm">
-                <InputText v-model="clientName" class="w-full text-sm" :disabled="!allowEditName" />
+            <div class="w-full text-sm">
+                <UInput v-model="clientName" class="w-full text-sm" :disabled="!allowEditName" />
             </div>
         </div>
-        <div class="flex w-full mt-1">
-            <div class="w-28 my-auto text-sm">
+
+        <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+            <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
                 <span>Redirect:</span>
             </div>
-            <div class="flex w-full text-sm">
-                <InputText
+            <div class="w-full text-sm">
+                <UInput
                     v-model="clientRedirect"
                     class="w-full text-sm"
                     :disabled="!allowEditName"
                 />
             </div>
         </div>
-        <div class="flex w-full mt-1">
-            <div class="w-28 my-auto text-sm">
+
+        <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+            <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
                 <span>Old Client Secret:</span>
             </div>
-            <div class="flex w-full text-sm">
-                <InputText
+            <div class="w-full text-sm">
+                <UInput
                     v-model="oldClientSecret"
                     class="w-full text-sm"
                     :disabled="!allowEditName"
                 />
             </div>
         </div>
-        <div v-if="showClientSecret" class="flex w-full mt-1">
-            <div class="w-28 my-auto text-sm">
+
+        <div v-if="showClientSecret" class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+            <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
                 <span>New Secret:</span>
             </div>
-            <div class="flex w-full text-sm">
-                <InputText
+            <div class="w-full text-sm">
+                <UInput
                     v-model="computedClientSecret"
                     class="w-full text-sm"
                     @click="copySecretToClipboard"
                 />
             </div>
         </div>
-        <div class="flex w-full mt-2 justify-center flex-wrap gap-2">
-            <UButton
-                size="xl"
-                class="m-1 md:m-2"
-                color="error"
-                label="Delete"
-                @click="deleteClient(clientId)"
-            />
-            <UButton
-                size="xl"
-                class="m-1 md:m-2"
-                color="warning"
-                label="Reset Secret"
-                @click="resetClient(clientId)"
-            />
-            <UButton
+
+        <div class="flex w-full flex-wrap justify-end gap-2 border-t border-gray-200 pt-3">
+            <StdButton variant="danger" label="Delete" @click="deleteClient(clientId)" />
+            <StdButton variant="warn" label="Reset Secret" @click="resetClient(clientId)" />
+            <StdButton
                 v-if="!typeCreate"
-                size="xl"
-                class="m-1 md:m-2"
-                color="success"
+                variant="success"
                 label="Update Client"
                 @click="updateClient(clientId)"
             />
-            <UButton
+            <StdButton
                 v-if="showCreateClient"
-                size="xl"
-                class="m-1 md:m-2"
-                color="success"
+                variant="success"
                 label="Create Client"
                 @click="createClient"
             />
-            <UButton
+            <StdButton
                 v-if="!showCreateClient && typeCreate"
-                size="xl"
-                class="m-1 md:m-2"
-                color="success"
+                variant="success"
                 label="Close & Refresh"
                 @click="closeDialogFunction"
             />

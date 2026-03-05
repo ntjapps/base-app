@@ -6,6 +6,16 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * Menu item builder class for NuxtUI NavigationMenu component.
+ *
+ * Returns menu items in the format expected by NuxtUI NavigationMenu:
+ * - 'label': Display text (required)
+ * - 'icon': Icon class string
+ * - 'href': Link/route path
+ * - 'children': Array of nested menu items (not 'items')
+ * - 'key': Optional identifier for expanded state tracking
+ */
 class MenuItemClass
 {
     /**
@@ -27,10 +37,22 @@ class MenuItemClass
             case 'passport-man':
                 $expandedKeys = '9999';
                 break;
-            case 'whatsapp-man':
+            case 'division-man':
                 $expandedKeys = '9999';
                 break;
+            case 'tag-man':
+                $expandedKeys = '9999';
+                break;
+            case 'ai-model-instruction-man':
+                $expandedKeys = '9999';
+                break;
+            case 'whatsapp-man':
+                $expandedKeys = '1000';
+                break;
             case 'whatsapp-templates-man':
+                $expandedKeys = '1000';
+                break;
+            case 'route-analytics':
                 $expandedKeys = '9999';
                 break;
             case 'server-logs':
@@ -48,8 +70,8 @@ class MenuItemClass
     {
         return [
             'label' => 'Dashboard',
-            'icon' => 'pi pi-home',
-            'url' => parse_url(route('dashboard'), PHP_URL_PATH),
+            'icon' => 'i-heroicons-home',
+            'href' => parse_url(route('dashboard'), PHP_URL_PATH),
         ];
     }
 
@@ -57,8 +79,36 @@ class MenuItemClass
     {
         return [
             'label' => 'Logout',
-            'icon' => 'pi pi-power-off',
-            'url' => parse_url(route('get-logout'), PHP_URL_PATH),
+            'icon' => 'i-heroicons-power',
+            'href' => route('get-logout'), // Full URL with domain forces native navigation
+            'target' => '_self',
+        ];
+    }
+
+    public static function whatsappMenu(): array
+    {
+        $user = Auth::guard('api')->user() ?? Auth::guard('api')->user();
+        // WhatsApp menu should only be visible to users with whatsapp.view permission
+        if (! Gate::forUser($user)->allows('hasPermission', PermissionConstants::WHATSAPP_VIEW)) {
+            return [];
+        }
+
+        return [
+            'key' => '1000',
+            'label' => 'WhatsApp',
+            'icon' => 'i-heroicons-chat-bubble-oval-left-ellipsis',
+            'children' => [
+                [
+                    'label' => 'Inbox',
+                    'icon' => 'i-heroicons-inbox',
+                    'href' => parse_url(route('whatsapp-man'), PHP_URL_PATH),
+                ],
+                [
+                    'label' => 'Templates',
+                    'icon' => 'i-heroicons-document-text',
+                    'href' => parse_url(route('whatsapp-templates-man'), PHP_URL_PATH),
+                ],
+            ],
         ];
     }
 
@@ -69,46 +119,58 @@ class MenuItemClass
 
         array_push($childMenu, [
             'label' => 'Edit Profile',
-            'icon' => 'pi pi-user-edit',
-            'url' => parse_url(route('profile'), PHP_URL_PATH),
+            'icon' => 'i-heroicons-user-circle',
+            'href' => parse_url(route('profile'), PHP_URL_PATH),
         ]);
 
         if (Gate::forUser($user)->allows('hasSuperPermission', User::class)) {
 
             array_push($childMenu, [
                 'label' => 'User Management',
-                'icon' => 'pi pi-users',
-                'url' => parse_url(route('user-man'), PHP_URL_PATH),
+                'icon' => 'i-heroicons-users',
+                'href' => parse_url(route('user-man'), PHP_URL_PATH),
             ]);
 
             array_push($childMenu, [
                 'label' => 'Role Management',
-                'icon' => 'pi pi-briefcase',
-                'url' => parse_url(route('role-man'), PHP_URL_PATH),
+                'icon' => 'i-heroicons-briefcase',
+                'href' => parse_url(route('role-man'), PHP_URL_PATH),
             ]);
 
             array_push($childMenu, [
                 'label' => 'Passport Management',
-                'icon' => 'pi pi-key',
-                'url' => parse_url(route('passport-man'), PHP_URL_PATH),
+                'icon' => 'i-heroicons-key',
+                'href' => parse_url(route('passport-man'), PHP_URL_PATH),
             ]);
 
             array_push($childMenu, [
-                'label' => 'WhatsApp Management',
-                'icon' => 'pi pi-whatsapp',
-                'url' => parse_url(route('whatsapp-man'), PHP_URL_PATH),
+                'label' => 'Division Management',
+                'icon' => 'i-heroicons-rectangle-group',
+                'href' => parse_url(route('division-man'), PHP_URL_PATH),
             ]);
 
             array_push($childMenu, [
-                'label' => 'WhatsApp Template Management',
-                'icon' => 'pi pi-file',
-                'url' => parse_url(route('whatsapp-templates-man'), PHP_URL_PATH),
+                'label' => 'Tag Management',
+                'icon' => 'i-heroicons-tag',
+                'href' => parse_url(route('tag-man'), PHP_URL_PATH),
+            ]);
+
+            array_push($childMenu, [
+                'label' => 'AI Model Instructions',
+                'icon' => 'i-heroicons-cpu-chip',
+                'href' => parse_url(route('ai-model-instruction-man'), PHP_URL_PATH),
+            ]);
+
+            array_push($childMenu, [
+                'label' => 'Route Analytics',
+                'icon' => 'i-heroicons-chart-bar',
+                'href' => parse_url(route('route-analytics'), PHP_URL_PATH),
             ]);
 
             array_push($childMenu, [
                 'label' => 'Server Logs',
-                'icon' => 'pi pi-server',
-                'url' => parse_url(route('server-logs'), PHP_URL_PATH),
+                'icon' => 'i-heroicons-server-stack',
+                'href' => parse_url(route('server-logs'), PHP_URL_PATH),
             ]);
         }
 
@@ -119,8 +181,8 @@ class MenuItemClass
         return [
             'key' => '9999',
             'label' => 'Administration',
-            'icon' => 'pi pi-cog',
-            'items' => $childMenu,
+            'icon' => 'i-heroicons-cog-6-tooth',
+            'children' => $childMenu,
         ];
     }
 }

@@ -3,8 +3,7 @@
 namespace App\Policies;
 
 use App\Interfaces\CentralCacheInterfaceClass;
-use App\Interfaces\InterfaceClass;
-use App\Models\Permission;
+use App\Interfaces\PermissionConstants;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -12,37 +11,23 @@ use Illuminate\Support\Facades\Cache;
 trait BasePolicy
 {
     /**
-     * Check if user has a specific permission by ability title
+     * Check if user has a specific permission by name
      */
-    protected function hasPermissionByAbility(User $user, string $abilityTitle): bool
+    protected function hasPermission(User $user, string $permissionName): bool
     {
-        $permission = Cache::remember(
-            CentralCacheInterfaceClass::keyPermissionAbility($abilityTitle),
-            Carbon::now()->addYear(),
-            function () use ($abilityTitle) {
-                return Permission::whereHas('ability', function ($query) use ($abilityTitle) {
-                    return $query->where('title', $abilityTitle);
-                })->first();
-            }
-        );
-
-        if (! $permission) {
-            return false;
-        }
-
         return Cache::remember(
-            CentralCacheInterfaceClass::keyPermissionHasPermissionTo($permission->id, $user->id),
+            CentralCacheInterfaceClass::keyPermissionHasPermissionTo($permissionName, $user->id),
             Carbon::now()->addYear(),
-            fn () => $user->hasPermissionTo($permission)
+            fn () => $user->hasPermissionTo($permissionName)
         );
     }
 
     /**
-     * Check if user has Super User permission
+     * Check if user has Super Admin permission
      */
     public function hasSuperPermission(User $user): bool
     {
-        return $this->hasPermissionByAbility($user, InterfaceClass::SUPER);
+        return $this->hasPermission($user, PermissionConstants::SUPER_ADMIN);
     }
 
     /**

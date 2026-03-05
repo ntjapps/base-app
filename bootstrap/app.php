@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RouteAnalytics;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -34,6 +35,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             CreateFreshApiToken::class,
+            RouteAnalytics::class,
+        ]);
+        $middleware->api(append: [
+            RouteAnalytics::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

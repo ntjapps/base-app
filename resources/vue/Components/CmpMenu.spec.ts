@@ -9,7 +9,7 @@ describe('CmpMenu.vue', () => {
             global: {
                 plugins: [createPinia()],
                 stubs: {
-                    MenuPanel: true,
+                    UNavigationMenu: true,
                 },
             },
         });

@@ -14,6 +14,10 @@
 pest()->extend(Tests\TestCase::class)
     ->in('Feature');
 
+// Unit tests that need application bootstrapping
+pest()->extend(Tests\TestCase::class)
+    ->in('Unit');
+
 /*
 |--------------------------------------------------------------------------
 | Expectations

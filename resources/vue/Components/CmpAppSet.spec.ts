@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia } from 'pinia';
 import CmpAppSet from './CmpAppSet.vue';
 import { api } from '../AppAxios';
 import { nextTick } from 'vue';
-import PrimeVue from 'primevue/config';
+import ui from '@nuxt/ui/vue-plugin';
 import Echo from 'laravel-echo';
 
 vi.mock('../AppAxios', () => {
@@ -28,15 +29,22 @@ beforeAll(() => {
         return undefined;
     });
 
+    vi.stubGlobal('useToast', () => ({ add: vi.fn() }));
     (globalThis as any).Pusher = vi.fn();
     vi.spyOn(Echo.prototype as any, 'connect').mockImplementation(() => undefined);
 });
+
+const createTestRouter = () =>
+    createRouter({
+        history: createWebHistory(),
+        routes: [{ path: '/', component: { template: '<div />' } }],
+    });
 
 describe('CmpAppSet.vue', () => {
     it('mounts and renders without errors', () => {
         const wrapper = mount(CmpAppSet, {
             global: {
-                plugins: [createPinia(), PrimeVue],
+                plugins: [createPinia(), ui, createTestRouter()],
                 stubs: ['RouterLink', 'RouterView'],
             },
         });
@@ -56,11 +64,8 @@ describe('API calls', () => {
 
         const wrapper = mount(CmpAppSet, {
             global: {
-                plugins: [createPinia(), PrimeVue],
+                plugins: [createPinia(), ui, createTestRouter()],
                 stubs: ['RouterLink', 'RouterView'],
-                mocks: {
-                    useToast: () => ({ add: vi.fn() }),
-                },
             },
         });
         await nextTick();

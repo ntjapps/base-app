@@ -20,13 +20,14 @@ Artisan::command('ai:test {message}', function () {
 })->purpose('Test Gemini AI with a prompt message');
 
 Artisan::command('ai:check-instruction', function () {
-    $path = storage_path('model_instruction.txt');
-    if (file_exists($path)) {
-        $content = file_get_contents($path);
-        $this->info('model_instruction.txt exists at: '.$path);
-        $this->line('--- File Content ---');
-        $this->line($content);
+    $key = config('ai.instructions.default_key', 'whatsapp_default');
+    $instruction = App\Models\AiModelInstruction::getInstructionsText($key);
+
+    if ($instruction) {
+        $this->info("AI instruction found for key: {$key}");
+        $this->line('--- Instruction Content ---');
+        $this->line($instruction);
     } else {
-        $this->warn('model_instruction.txt does NOT exist at: '.$path);
+        $this->warn("No DB-backed instruction found for key: {$key}");
     }
-})->purpose('Check if Gemini AI instruction file exists and show its content');
+})->purpose('Check DB-backed AI instruction for the default key and show its content');

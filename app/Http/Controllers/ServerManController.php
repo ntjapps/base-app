@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\InterfaceClass;
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Interfaces\MenuItemClass;
 use App\Logger\Models\ServerLog;
+use App\Models\RouteAnalytics;
 use App\Traits\JsonResponse;
 use App\Traits\LogContext;
 use Carbon\Carbon;
@@ -36,11 +37,25 @@ class ServerManController extends Controller
         ]);
     }
 
+    public function routeAnalyticsPage(Request $request): View
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User open route analytics', $this->getLogContext($request, $user));
+
+        return view('base-components.base', [
+            'pageTitle' => 'Route Analytics',
+            'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
+        ]);
+    }
+
     /**
      * POST request to get server Logs from tables
      */
     public function getServerLogs(Request $request): HttpJsonResponse
     {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User requesting server logs', $this->getLogContext($request, $user));
+
         /** Validate Request */
         $validate = Validator::make($request->all(), [
             'date_start' => ['nullable', 'date', 'before_or_equal:date_end'],
@@ -55,6 +70,9 @@ class ServerManController extends Controller
             throw new ValidationException($validate);
         }
         (array) $validated = $validate->validated();
+
+        $validatedLog = $validated;
+        Log::info('Server logs validation passed', $this->getLogContext($request, $user, ['validated' => json_encode($validatedLog)]));
 
         $data = ServerLog::when($validated['date_start'] ?? null, function ($query, $date_start) {
             return $query->where('created_at', '>=', Carbon::parse($date_start, 'Asia/Jakarta')->startOfDay());
@@ -73,6 +91,80 @@ class ServerManController extends Controller
         return response()->json($data);
     }
 
+    public function getRouteAnalytics(Request $request): HttpJsonResponse
+    {
+        $user = Auth::user() ?? Auth::guard('api')->user();
+        Log::debug('User requesting route analytics', $this->getLogContext($request, $user));
+
+        $validate = Validator::make($request->all(), [
+            'date_start' => ['nullable', 'date', 'before_or_equal:date_end'],
+            'date_end' => ['nullable', 'date', 'after_or_equal:date_start'],
+            'route' => ['nullable', 'string'],
+            'method' => ['nullable', 'string'],
+            'user_name' => ['nullable', 'string'],
+            'status_code' => ['nullable', 'integer'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'in:10,20,50,100'],
+        ]);
+        if ($validate->fails()) {
+            throw new ValidationException($validate);
+        }
+        (array) $validated = $validate->validated();
+
+        $query = RouteAnalytics::query()
+            ->when($validated['date_start'] ?? null, function ($builder, $dateStart) {
+                return $builder->where('created_at', '>=', Carbon::parse($dateStart, 'Asia/Jakarta')->startOfDay());
+            })
+            ->when($validated['date_end'] ?? null, function ($builder, $dateEnd) {
+                return $builder->where('created_at', '<=', Carbon::parse($dateEnd, 'Asia/Jakarta')->endOfDay());
+            })
+            ->when($validated['route'] ?? null, function ($builder, $route) {
+                return $builder->where('path', 'like', '%'.$route.'%');
+            })
+            ->when($validated['method'] ?? null, function ($builder, $method) {
+                return $builder->where('method', strtoupper($method));
+            })
+            ->when($validated['user_name'] ?? null, function ($builder, $userName) {
+                return $builder->where('user_name', 'like', '%'.$userName.'%');
+            })
+            ->when($validated['status_code'] ?? null, function ($builder, $statusCode) {
+                return $builder->where('status_code', $statusCode);
+            });
+
+        $summaryQuery = clone $query;
+        $totalHits = (clone $summaryQuery)->count();
+        $uniqueUsers = (clone $summaryQuery)->whereNotNull('user_id')->distinct('user_id')->count('user_id');
+        $topEndpoints = (clone $summaryQuery)
+            ->select('method', 'path')
+            ->selectRaw('count(*) as hits')
+            ->groupBy('method', 'path')
+            ->orderByDesc('hits')
+            ->limit(10)
+            ->get();
+        $topUsers = (clone $summaryQuery)
+            ->whereNotNull('user_id')
+            ->select('user_id', 'user_name')
+            ->selectRaw('count(*) as hits')
+            ->groupBy('user_id', 'user_name')
+            ->orderByDesc('hits')
+            ->limit(10)
+            ->get();
+
+        $data = $query
+            ->orderBy('created_at', 'desc')
+            ->paginate($validated['per_page'] ?? 20, ['*'], 'page', $validated['page'] ?? 1);
+
+        return response()->json([
+            'summary' => [
+                'total_hits' => $totalHits,
+                'unique_users' => $uniqueUsers,
+                'top_endpoints' => $topEndpoints,
+                'top_users' => $topUsers,
+            ],
+            'records' => $data,
+        ]);
+    }
+
     /**
      * POST request to clear application cache
      */
@@ -82,8 +174,7 @@ class ServerManController extends Controller
         Log::debug('User clear app cache', $this->getLogContext($request, $user));
 
         /** Clear Cache */
-        Cache::flush();
-        InterfaceClass::flushRolePermissionCache();
+        CentralCacheInterfaceClass::flushAllCache();
 
         return $this->jsonSuccess('Cache cleared', 'Cache cleared successfully');
     }

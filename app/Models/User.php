@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Interfaces\InterfaceClass;
+use App\Interfaces\PermissionConstants;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,15 +28,12 @@ class User extends Authenticatable
      */
     public function exceptConstPermission(): array
     {
-        return InterfaceClass::ALLPERM;
+        return [PermissionConstants::SUPER_ADMIN];
     }
 
-    /**
-     * Get the prunable model query.
-     */
     public function prunable(): Builder
     {
-        return static::where('deleted_at', '<=', now()->subMonth());
+        return static::where('deleted_at', '<=', now()->subMonths(6));
     }
 
     /**
@@ -50,6 +47,7 @@ class User extends Authenticatable
         'email',
         'password',
         'totp_key',
+        'division',
     ];
 
     /**

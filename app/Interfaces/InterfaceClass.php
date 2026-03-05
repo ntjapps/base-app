@@ -2,11 +2,8 @@
 
 namespace App\Interfaces;
 
-use App\Models\Permission;
 use App\Traits\CommonFunction;
 use ErrorException;
-use Illuminate\Support\Facades\Cache;
-use Laravel\Pennant\Feature;
 
 class InterfaceClass
 {
@@ -18,48 +15,9 @@ class InterfaceClass
     }
 
     /**
-     * List of user Permission (backward compatibility)
-     *
-     * @deprecated Use PermissionConstants instead
-     */
-    public const ALLPERM = [
-        self::SUPER,
-    ];
-
-    /**
-     * @deprecated Use PermissionConstants::privileged() instead
-     */
-    public const PRIVILEGEPERM = [
-        self::SUPER,
-    ];
-
-    /**
-     * Super admin permission (backward compatibility)
-     *
-     * @deprecated Use PermissionConstants::SUPER_ADMIN instead
-     */
-    public const SUPER = PermissionConstants::SUPER_ADMIN;
-
-    /**
      * Reset password to this password
      */
     public const RESETPASSWORD = 'reset';
-
-    /**
-     * List of user Roles (backward compatibility)
-     *
-     * @deprecated Use RoleConstants instead
-     */
-    public const ALLROLE = [
-        self::SUPERROLE,
-    ];
-
-    /**
-     * Super admin role (backward compatibility)
-     *
-     * @deprecated Use RoleConstants::SUPER_ADMIN instead
-     */
-    public const SUPERROLE = RoleConstants::SUPER_ADMIN;
 
     public static function readApplicationVersion(): string
     {
@@ -79,9 +37,6 @@ class InterfaceClass
 
     public static function flushRolePermissionCache(): void
     {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        Cache::flush();
-        Cache::flush();
-        Feature::flushCache();
+        CentralCacheInterfaceClass::flushPermissions();
     }
 }

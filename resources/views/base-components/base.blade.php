@@ -14,23 +14,27 @@
 
     <body>
     @section('base')
+    @php
+        $isIdStatic = str_starts_with(app()->getLocale(), 'id');
+    @endphp
+
     <noscript>
-        <div class="grid content-center w-full h-full bg-slate-200">
-        <div class="flex justify-center">
-            <div class="bg-white rounded-lg p-1">
-            <div class="m-auto antialiased p-5 text-9xl text-center">&#128245</div>
-            <div class="m-auto antialiased pt-5 text-center">Error! JavaScript tidak aktif</div>
-            <div class="m-auto antialiased pb-5 text-center">App ini memerlukan JavaScript agar dapat berfungsi</div>
-            </div>
-        </div>
-        </div>
+        <main class="mx-auto max-w-[980px] p-5 font-sans leading-relaxed text-slate-900">
+            @include('base-components.partials.static-site-content', ['isIdStatic' => $isIdStatic])
+        </main>
     </noscript>
+
+    <section
+        id="seo-static-content"
+        aria-label="SEO Static Content"
+        class="sr-only"
+    >
+        <main>
+            @include('base-components.partials.static-site-content', ['isIdStatic' => $isIdStatic])
+        </main>
+    </section>
     <div id="app">
-        <main-app
-            app-name="{{ config('app.name') }}"
-            greetings="{{ Auth::user()?->name }}"
-            expanded-keys-props="{{ $expandedKeys ?? '' }}"
-        ></main-app>
+        <main-app></main-app>
     </div>
     @show
 
@@ -43,6 +47,17 @@
 
     @section('script')
         @vite(['resources/ts/app.ts'])
+
+        {{-- Google Analytics --}}
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-PH2J98QCD3"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-PH2J98QCD3');
+        </script>
     @show
     </body>
 </html>

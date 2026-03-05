@@ -1,35 +1,53 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { timeGreetings, ClientListDataInterface, dateView } from '../AppCommon';
-import { useMainStore } from '../AppState';
+import { useEchoStore } from '../AppState';
+import { storeToRefs } from 'pinia';
 import { api } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
-
-import Dialog from '../volt/Dialog.vue';
-import DataTable from '../volt/DataTable.vue';
-import Column from 'primevue/column';
-import InputText from '../volt/InputText.vue';
-import { FilterMatchMode } from '@primevue/core/api';
+import CmpCustomTable from '../Components/CmpCustomTable.vue';
+import StdButton from '../Components/StdButton.vue';
+import { useTableSort } from '../composables/useTableSort';
 
 import DialogClientMan from '../DialogComponents/DialogClientMan.vue';
+import type { EchoWithMethods } from '../types/echo';
 
-const props = defineProps<{
-    appName: string;
-    greetings: string;
-    expandedKeysProps: string;
-}>();
-const main = useMainStore();
+const echo = useEchoStore();
+const { laravelEcho } = storeToRefs(echo);
 const timeGreet = timeGreetings();
 const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
 const clientListData = ref(Array<ClientListDataInterface>());
 const loading = ref<boolean>(false);
 
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+const q = ref('');
+const page = ref(1);
+const pageCount = 10;
+const columns = [
+    { id: 'actions', key: 'actions', label: 'Actions' },
+    { id: 'name', key: 'name', label: 'Client Name', sortable: true },
+    { id: 'redirect', key: 'redirect', label: 'Redirect URL', sortable: true },
+    { id: 'grant_types', key: 'grant_types', label: 'Grant Types' },
+    { id: 'revoked', key: 'revoked', label: 'Revoked', sortable: true },
+    { id: 'created_at', key: 'created_at', label: 'Created At', sortable: true },
+    { id: 'updated_at', key: 'updated_at', label: 'Updated At', sortable: true },
+];
+
+const filteredRows = computed(() => {
+    if (!q.value) {
+        return clientListData.value;
+    }
+
+    return clientListData.value.filter((client) => {
+        return Object.values(client).some((value) => {
+            return String(value).toLowerCase().includes(q.value.toLowerCase());
+        });
+    });
 });
+
+// Use the sorting composable
+const { sortBy, sortedData } = useTableSort(filteredRows);
 
 const getClientListData = async () => {
     try {
@@ -59,101 +77,134 @@ const openEditClientDialog = (data: ClientListDataInterface | null) => {
 
 onMounted(() => {
     getClientListData();
-    main.updateExpandedKeysMenu(props.expandedKeysProps);
+
+    // Subscribe to oauth client create/update/delete events on settings.event
+    try {
+        const echoInstance = laravelEcho.value as unknown as EchoWithMethods | undefined;
+        if (echoInstance && typeof echoInstance.private === 'function') {
+            const ch = echoInstance.private('settings.event');
+            ch.listen('OauthClientCreated', () => getClientListData());
+            ch.listen('OauthClientUpdated', () => getClientListData());
+            ch.listen('OauthClientDeleted', () => getClientListData());
+        }
+    } catch (err) {
+        console.debug('Echo private channel not available during mount.', err);
+    }
+});
+
+onUnmounted(() => {
+    try {
+        const echoInstance = laravelEcho.value as unknown as EchoWithMethods | undefined;
+        if (echoInstance && typeof echoInstance.leave === 'function') {
+            echoInstance.leave('settings.event');
+        }
+    } catch (err) {
+        console.debug('Echo leave failed during unmount.', err);
+    }
 });
 </script>
 
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <Dialog v-model:visible="dialogOpen" modal :header="dialogHeader">
-            <DialogClientMan
-                v-model:dialogOpen="dialogOpen"
-                :dialogData="dialogData"
-                :dialogTypeCreate="dialogData === null ? true : false"
-                @closeDialog="getClientListData()"
-            />
-        </Dialog>
-        <div class="my-3 mx-5 p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg">
-            <div class="flex flex-row">
-                <div class="flex flex-col w-full my-auto">
-                    <h2 class="title-font font-bold">
-                        {{ timeGreet + greetings }}
-                    </h2>
-                    <h3 class="title-font">Passport Management</h3>
-                </div>
-                <div class="flex justify-end w-full my-auto">
-                    <UButton size="xl" class="m-2" @click="getClientListData">
-                        <i class="pi pi-refresh" />
-                    </UButton>
-                    <UButton
-                        size="xl"
-                        class="m-2"
-                        label="Create Client"
-                        @click="openEditClientDialog(null)"
-                    />
-                </div>
-            </div>
-        </div>
-        <div class="my-3 mx-5 p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg">
-            <DataTable
-                v-model:filters="filters"
-                class="p-datatable-sm editable-cells-table"
-                :value="clientListData"
-                showGridlines
-                :loading="loading"
-                paginator
-                :rows="10"
-                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                :rowsPerPageOptions="[10, 20, 50, 100]"
-                :globalFilterFields="['name']"
-                filterDisplay="menu"
-            >
-                <template #header>
-                    <div class="flex justify-between">
-                        <div class="flex w-full">
-                            <InputText
-                                v-model="filters['global'].value"
-                                placeholder="Search by client name"
-                                class="p-inputtext-sm w-full"
+        <UModal
+            v-model:open="dialogOpen"
+            :ui="{ content: 'w-[calc(100vw-2rem)] sm:max-w-[1200px]' }"
+        >
+            <template #content>
+                <UCard
+                    v-if="dialogOpen"
+                    :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }"
+                >
+                    <template #header>
+                        <div class="flex items-center justify-between">
+                            <h3
+                                class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
+                            >
+                                {{ dialogHeader }}
+                            </h3>
+                            <UButton
+                                color="gray"
+                                variant="ghost"
+                                icon="i-heroicons-x-mark-20-solid"
+                                class="-my-1"
+                                @click="dialogOpen = false"
                             />
                         </div>
+                    </template>
+                    <DialogClientMan
+                        v-model:dialogOpen="dialogOpen"
+                        :dialogData="dialogData"
+                        :dialogTypeCreate="dialogData === null ? true : false"
+                    />
+                </UCard>
+            </template>
+        </UModal>
+        <div class="mx-auto w-full max-w-6xl space-y-5">
+            <div
+                class="rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-6 shadow-sm"
+            >
+                <div class="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+                    <div class="flex-1">
+                        <h2 class="text-4xl font-semibold tracking-tight text-gray-800">
+                            {{ timeGreet }}
+                        </h2>
+                        <h3 class="mt-1 text-sm text-gray-600">Passport Management</h3>
                     </div>
-                </template>
-                <template #footer>
-                    <div class="flex text-sm">Total records: {{ clientListData.length }}</div>
-                </template>
-                <template #empty>
-                    <div class="flex justify-center">No data found</div>
-                </template>
-                <template #loading>
-                    <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data. Please wait.
-                </template>
-                <Column field="action" header="Actions" class="text-sm">
-                    <template #body="slotProps">
-                        <div v-if="slotProps.data.allowed_action" class="flex justify-center">
-                            <UButton size="xl" @click="openEditClientDialog(slotProps.data)">
-                                <i class="pi pi-angle-double-right" />
-                            </UButton>
+                    <div class="flex w-full justify-end gap-2 md:w-auto">
+                        <StdButton
+                            variant="neutral"
+                            icon="i-heroicons-arrow-path"
+                            @click="getClientListData"
+                        />
+                        <StdButton
+                            variant="primary"
+                            label="Create Client"
+                            class="rounded-md bg-green-600 px-5 py-2.5 text-white hover:bg-green-700"
+                            @click="openEditClientDialog(null)"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center">
+                    <div class="flex-1">
+                        <h3 class="text-4xl font-bold text-gray-900">Client Management</h3>
+                    </div>
+                    <div class="w-full md:w-80">
+                        <UInput v-model="q" placeholder="Search by client name..." />
+                    </div>
+                </div>
+
+                <CmpCustomTable
+                    v-model:sortBy="sortBy"
+                    v-model:page="page"
+                    :rows="sortedData"
+                    :columns="columns"
+                    :loading="loading"
+                    :itemsPerPage="pageCount"
+                >
+                    <template #actions-data="{ row }">
+                        <div v-if="row.allowed_action" class="flex justify-center">
+                            <UButton
+                                size="xl"
+                                icon="i-heroicons-chevron-double-right"
+                                class="bg-green-600 text-white hover:bg-green-700"
+                                @click="openEditClientDialog(row)"
+                            />
                         </div>
                     </template>
-                </Column>
-                <Column field="name" header="Client Name" class="text-sm">
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by client name"
-                            @input="filterCallback()"
-                        />
+                    <template #name-data="{ row }">
+                        <div class="text-left">{{ row.name }}</div>
                     </template>
-                </Column>
-                <Column field="redirect" header="Redirect URL" class="text-sm text-left" />
-                <Column field="grant_types" header="Grant Types" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="flex flex-wrap gap-1 justify-center">
+                    <template #redirect-data="{ row }">
+                        <div class="text-left">{{ row.redirect }}</div>
+                    </template>
+                    <template #grant_types-data="{ row }">
+                        <div class="flex flex-wrap gap-1 justify-start">
                             <span
-                                v-for="type in slotProps.data.grant_types"
+                                v-for="type in row.grant_types"
                                 :key="type"
                                 class="px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs"
                             >
@@ -161,35 +212,24 @@ onMounted(() => {
                             </span>
                         </div>
                     </template>
-                </Column>
-                <Column field="revoked" header="Revoked" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">
-                            <UButton
-                                v-if="slotProps.data.revoked"
-                                size="xl"
-                                color="error"
-                                label="Yes"
-                            />
-                            <UButton v-else size="xl" color="success" label="No" />
+                    <template #revoked-data="{ row }">
+                        <div class="text-left">
+                            <UBadge v-if="row.revoked" color="red" label="Yes" size="md" />
+                            <UBadge v-else color="green" label="No" size="md" />
                         </div>
                     </template>
-                </Column>
-                <Column field="created_at" header="Created At" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">
-                            {{ dateView(slotProps.data.created_at) }}
+                    <template #created_at-data="{ row }">
+                        <div class="text-left">
+                            {{ dateView(row.created_at) }}
                         </div>
                     </template>
-                </Column>
-                <Column field="updated_at" header="Updated At" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">
-                            {{ dateView(slotProps.data.updated_at) }}
+                    <template #updated_at-data="{ row }">
+                        <div class="text-left">
+                            {{ dateView(row.updated_at) }}
                         </div>
                     </template>
-                </Column>
-            </DataTable>
+                </CmpCustomTable>
+            </div>
         </div>
     </CmpLayout>
 </template>

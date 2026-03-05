@@ -11,7 +11,6 @@ use App\Traits\AuthFunction;
 use App\Traits\JsonResponse;
 use App\Traits\LogContext;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -59,7 +58,7 @@ class AuthController extends Controller
     /**
      * GET request for logout
      */
-    public function getLogout(Request $request): RedirectResponse
+    public function getLogout(Request $request): View
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('Computer Access Logout Request', $this->getLogContext($request, $user));
@@ -67,8 +66,10 @@ class AuthController extends Controller
         /** Call common logout function */
         $this->checkAuthLogout($request);
 
-        /** Send user to route */
-        return redirect()->route('landing-page');
+        return view('base-components.base', [
+            'pageTitle' => 'Logging out...',
+            'expandedKeys' => MenuItemClass::currentRouteExpandedKeys($request->route()->getName()),
+        ]);
     }
 
     /**

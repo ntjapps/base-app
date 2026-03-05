@@ -2,21 +2,21 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { api } from '../AppAxios';
 import { RoleDataInterface, PermissionDataInterface, UserDataInterface } from '../AppCommon';
-
-import DataTable from '../volt/DataTable.vue';
-import Column from 'primevue/column';
-import InputText from '../volt/InputText.vue';
-import { FilterMatchMode } from '@primevue/core/api';
+import CmpCustomTable from '../Components/CmpCustomTable.vue';
+import StdButton from '../Components/StdButton.vue';
+import { useTableSort } from '../composables/useTableSort';
 
 const props = defineProps<{
     dialogOpen: boolean;
     dialogData: UserDataInterface | null;
     dialogTypeCreate: boolean;
 }>();
+
 const emit = defineEmits<{
     (e: 'closeDialog'): void;
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
+
 watch(
     () => props.dialogOpen,
     (newValue) => {
@@ -35,18 +35,48 @@ const usermanData = props.dialogData;
 const typeCreate = ref<boolean>(props.dialogTypeCreate);
 const nameData = ref<string>(usermanData?.name ?? '');
 const usernameData = ref<string>(usermanData?.username ?? '');
-const roleListData = ref<Array<RoleDataInterface>>();
-const selectedRoleListData = ref<Array<RoleDataInterface>>();
-const permListData = ref<Array<PermissionDataInterface>>();
-const selectedPermListData = ref<Array<PermissionDataInterface>>();
+const roleListData = ref<Array<RoleDataInterface>>([]);
+const selectedRoleListData = ref<Array<RoleDataInterface>>([]);
+const permListData = ref<Array<PermissionDataInterface>>([]);
+const selectedPermListData = ref<Array<PermissionDataInterface>>([]);
 
-const filters_role = ref({
-    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+// Table logic
+const searchRole = ref('');
+const pageRole = ref(1);
+const pageCountRole = 10;
+const searchPerm = ref('');
+const pagePerm = ref(1);
+const pageCountPerm = 10;
+
+const columnsRole = [
+    { id: 'name', key: 'name', label: 'Direct Roles', sortable: true },
+    { id: 'role_types', key: 'role_types', label: 'Type', sortable: true },
+];
+
+const columnsPerm = [{ id: 'perm_name', key: 'name', label: 'Direct Permissions', sortable: true }];
+
+const filteredRoleList = computed(() => {
+    if (!roleListData.value) return [];
+    if (!searchRole.value) return roleListData.value;
+    return roleListData.value.filter(
+        (item) =>
+            String(item.name).toLowerCase().includes(searchRole.value.toLowerCase()) ||
+            String(item.role_types).toLowerCase().includes(searchRole.value.toLowerCase()),
+    );
 });
 
-const filters_perm = ref({
-    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+// Use the sorting composables for both tables
+const { sortBy: sortByRole, sortedData: sortedRoleData } = useTableSort(filteredRoleList);
+
+const filteredPermList = computed(() => {
+    if (!permListData.value) return [];
+    if (!searchPerm.value) return permListData.value;
+    return permListData.value.filter((item) =>
+        String(item.name).toLowerCase().includes(searchPerm.value.toLowerCase()),
+    );
 });
+
+const { sortBy: sortByPerm, sortedData: sortedPermData } = useTableSort(filteredPermList);
 
 const showDeleted = computed(() => {
     return !typeCreate.value;
@@ -88,7 +118,7 @@ const getUserRoleListData = async () => {
 
 const postUserManData = async () => {
     try {
-        await api.postUserManSubmit({
+        const response = await api.postUserManSubmit({
             type_create: typeCreate.value ? 1 : 0,
             id: usermanData?.id,
             name: nameData.value,
@@ -100,6 +130,9 @@ const postUserManData = async () => {
                 return perm.id;
             }),
         });
+
+        // Handle 202 Accepted or success
+        api.handle202Accepted(response, 'User task queued for processing');
         closeDialogFunction();
     } catch {
         // Toast handled globally by ApiClient
@@ -109,7 +142,10 @@ const postUserManData = async () => {
 const postDeleteUserManData = async () => {
     try {
         const id = usermanData?.id as string | number;
-        await api.postDeleteUserManSubmit(id);
+        const response = await api.postDeleteUserManSubmit(id);
+
+        // Handle 202 Accepted or success
+        api.handle202Accepted(response, 'User task queued for processing');
         closeDialogFunction();
     } catch {
         // Toast handled globally by ApiClient
@@ -118,9 +154,12 @@ const postDeleteUserManData = async () => {
 
 const postResetPasswordUserMandata = async () => {
     try {
-        await api.postResetPasswordUserManSubmit({
+        const response = await api.postResetPasswordUserManSubmit({
             id: usermanData?.id,
         });
+
+        // Handle 202 Accepted or success
+        api.handle202Accepted(response, 'Password reset task queued for processing');
         closeDialogFunction();
     } catch {
         // Toast handled globally by ApiClient
@@ -133,129 +172,71 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
-        <div class="flex w-full mt-1 flex-col sm:flex-row gap-1">
-            <div class="w-28 my-auto text-sm min-w-[7rem]">
+    <div class="space-y-4">
+        <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+            <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
                 <!-- min-w for label alignment on mobile -->
                 <span>Name:<span class="text-red-500 font-bold">*</span></span>
             </div>
-            <div class="flex w-full text-sm">
-                <InputText v-model="nameData" class="w-full text-sm" />
+            <div class="w-full text-sm">
+                <UInput v-model="nameData" class="w-full text-sm" />
             </div>
         </div>
-        <div class="flex w-full mt-1 flex-col sm:flex-row gap-1">
-            <div class="w-28 my-auto text-sm min-w-[7rem]">
+        <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+            <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
                 <span>Username:<span class="text-red-500 font-bold">*</span></span>
             </div>
-            <div class="flex w-full text-sm">
-                <InputText v-model="usernameData" class="w-full text-sm" />
+            <div class="w-full text-sm">
+                <UInput v-model="usernameData" class="w-full text-sm" />
             </div>
         </div>
-        <div class="flex w-full justify-evenly mt-2.5 flex-col md:flex-row gap-2 overflow-x-auto">
-            <div class="mx-0 md:mx-2.5 min-w-[250px]">
-                <DataTable
-                    v-model:filters="filters_role"
-                    v-model:selection="selectedRoleListData"
-                    class="p-datatable-sm"
-                    :value="roleListData"
-                    showGridlines
-                    paginator
-                    :rows="10"
-                    paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                    :rowsPerPageOptions="[10, 20, 50, 100]"
-                    filterDisplay="menu"
-                >
-                    <template #empty>
-                        <div class="flex justify-center">No data found</div>
-                    </template>
-                    <template #loading>
-                        <i class="pi pi-spin pi-spinner mr-2.5"></i>
-                        Processing data. Please wait.
-                    </template>
-                    <Column selectionMode="multiple"></Column>
-                    <Column field="name" header="Direct Roles">
-                        <template #filter="{ filterModel, filterCallback }">
-                            <InputText
-                                v-model="filterModel.value"
-                                class="w-full"
-                                placeholder="Search by role"
-                                @input="filterCallback()"
-                            />
-                        </template>
-                    </Column>
-                    <Column field="role_types" header="Type">
-                        <template #filter="{ filterModel, filterCallback }">
-                            <InputText
-                                v-model="filterModel.value"
-                                class="w-full"
-                                placeholder="Search by type"
-                                @input="filterCallback()"
-                            />
-                        </template>
-                    </Column>
-                </DataTable>
+
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div class="w-full min-w-[250px] rounded-xl border border-gray-200 bg-white p-3">
+                <div class="mb-2 text-sm font-semibold text-gray-700">Direct Roles</div>
+                <div class="mb-3">
+                    <UInput v-model="searchRole" placeholder="Search roles..." class="w-full" />
+                </div>
+                <CmpCustomTable
+                    v-model="selectedRoleListData"
+                    v-model:sortBy="sortByRole"
+                    v-model:page="pageRole"
+                    :rows="sortedRoleData"
+                    :columns="columnsRole"
+                    :itemsPerPage="pageCountRole"
+                    class="w-full"
+                />
             </div>
-            <div class="mx-0 md:mx-2.5 min-w-[250px]">
-                <DataTable
-                    v-model:filters="filters_perm"
-                    v-model:selection="selectedPermListData"
-                    class="p-datatable-sm"
-                    :value="permListData"
-                    showGridlines
-                    paginator
-                    :rows="10"
-                    paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                    :rowsPerPageOptions="[10, 20, 50, 100]"
-                    filterDisplay="menu"
-                >
-                    <template #empty>
-                        <div class="flex justify-center">No data found</div>
-                    </template>
-                    <template #loading>
-                        <i class="pi pi-spin pi-spinner mr-2.5"></i>
-                        Processing data. Please wait.
-                    </template>
-                    <Column selectionMode="multiple"></Column>
-                    <Column field="ability.title" header="Direct Permissions">
-                        <template #filter="{ filterModel, filterCallback }">
-                            <InputText
-                                v-model="filterModel.value"
-                                class="w-full"
-                                placeholder="Search by permission"
-                                @input="filterCallback()"
-                            />
-                        </template>
-                    </Column>
-                    <Column field="ability_type" header="Type">
-                        <template #filter="{ filterModel, filterCallback }">
-                            <InputText
-                                v-model="filterModel.value"
-                                class="w-full"
-                                placeholder="Search by type"
-                                @input="filterCallback()"
-                            />
-                        </template>
-                    </Column>
-                </DataTable>
+
+            <div class="w-full min-w-[250px] rounded-xl border border-gray-200 bg-white p-3">
+                <div class="mb-2 text-sm font-semibold text-gray-700">Direct Permissions</div>
+                <div class="mb-3">
+                    <UInput
+                        v-model="searchPerm"
+                        placeholder="Search permissions..."
+                        class="w-full"
+                    />
+                </div>
+                <CmpCustomTable
+                    v-model="selectedPermListData"
+                    v-model:sortBy="sortByPerm"
+                    v-model:page="pagePerm"
+                    :rows="sortedPermData"
+                    :columns="columnsPerm"
+                    :itemsPerPage="pageCountPerm"
+                    class="w-full"
+                />
             </div>
         </div>
-        <div class="flex w-full mt-2.5 justify-center flex-wrap gap-2">
-            <UButton
-                v-if="showDeleted"
-                size="xl"
-                color="error"
-                label="Delete"
-                class="m-1 md:m-2"
-                @click="postDeleteUserManData()"
-            />
-            <UButton
-                size="xl"
-                severity="warning"
-                label="Reset Password"
-                class="m-1 md:m-2"
-                @click="postResetPasswordUserMandata()"
-            />
-            <UButton size="xl" label="Submit" class="m-1 md:m-2" @click="postUserManData()" />
+
+        <div class="flex w-full flex-wrap justify-end gap-2 border-t border-gray-200 pt-3">
+            <StdButton v-if="showDeleted" variant="danger" @click="postDeleteUserManData()">
+                <span>Delete</span>
+            </StdButton>
+            <StdButton variant="warn" @click="postResetPasswordUserMandata()">
+                <span>Reset Password</span>
+            </StdButton>
+            <StdButton variant="primary" label="Submit" @click="postUserManData()" />
         </div>
     </div>
 </template>

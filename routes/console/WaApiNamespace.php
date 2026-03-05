@@ -1,6 +1,7 @@
 <?php
 
 use App\Interfaces\WaApiMetaInterfaceClass;
+use App\Jobs\WhatsApp\SendMessageJob;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
@@ -32,25 +33,14 @@ Artisan::command('whatsapp:reply {phone_number} {message}', function () {
         return 1;
     }
 
-    // Send the message
-    $result = $waApi->sendMessage($phoneNumber, $message);
+    // Queue the message to be sent asynchronously via SendMessageJob
+    SendMessageJob::dispatch($phoneNumber, $message, false);
+    $this->info("Message queued for sending to {$phoneNumber}");
+    Log::info('WhatsApp reply queued via command', [
+        'phone_number' => $phoneNumber,
+    ]);
 
-    if ($result) {
-        $messageId = $result['messages'][0]['id'] ?? 'unknown';
-        $this->info("Message sent successfully to {$phoneNumber}");
-        $this->info("Message ID: {$messageId}");
-        Log::info('WhatsApp reply sent via command', [
-            'phone_number' => $phoneNumber,
-            'message_id' => $messageId,
-        ]);
-
-        return 0;
-    } else {
-        $this->error("Failed to send message to {$phoneNumber}");
-        $this->info('Check logs for more details.');
-
-        return 1;
-    }
+    return 0;
 })->purpose('Reply to a WhatsApp number (must have received a message from this number within the last 24 hours)');
 
 Artisan::command('whatsapp:send {phone_number} {message} {--template=} {--preview=}', function () {
@@ -89,27 +79,16 @@ Artisan::command('whatsapp:send {phone_number} {message} {--template=} {--previe
         }
     }
 
-    // Send the message
-    $result = $waApi->sendMessage($phoneNumber, $message, $previewUrl);
+    // Queue the message to be sent asynchronously via SendMessageJob
+    SendMessageJob::dispatch($phoneNumber, $message, $previewUrl);
+    $this->info("Message queued for sending to {$phoneNumber}");
+    Log::info('WhatsApp message queued via command', [
+        'phone_number' => $phoneNumber,
+        'template' => $template ?: 'none',
+        'preview_url' => $previewUrl,
+    ]);
 
-    if ($result) {
-        $messageId = $result['messages'][0]['id'] ?? 'unknown';
-        $this->info("Message sent successfully to {$phoneNumber}");
-        $this->info("Message ID: {$messageId}");
-        Log::info('WhatsApp message sent via command', [
-            'phone_number' => $phoneNumber,
-            'message_id' => $messageId,
-            'template' => $template ?: 'none',
-            'preview_url' => $previewUrl,
-        ]);
-
-        return 0;
-    } else {
-        $this->error("Failed to send message to {$phoneNumber}");
-        $this->info('Check logs for more details.');
-
-        return 1;
-    }
+    return 0;
 })->purpose('Send a WhatsApp message (warning: may require pre-approved templates for new conversations)');
 
 Artisan::command('whatsapp:test {phone_number}', function () {

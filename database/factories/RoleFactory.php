@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\PermissionPrivilege;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +19,6 @@ class RoleFactory extends Factory
         return [
             'name' => $this->faker->unique()->word(),
             'guard_name' => 'web',
-            'role_types' => PermissionPrivilege::class,
         ];
     }
 }

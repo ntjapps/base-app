@@ -2,10 +2,12 @@
 
 namespace App\Models\WaApiMeta;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\MassPrunable as Prunable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class WaMessageSentLog extends Model
@@ -25,6 +27,8 @@ class WaMessageSentLog extends Model
         'success',
         'response_data',
         'error_data',
+        'meta',
+        'sent_by_user_id',
     ];
 
     /**
@@ -37,6 +41,7 @@ class WaMessageSentLog extends Model
         'success' => 'boolean',
         'response_data' => 'array',
         'error_data' => 'array',
+        'meta' => 'array',
     ];
 
     /**
@@ -53,5 +58,13 @@ class WaMessageSentLog extends Model
     public function thread(): MorphOne
     {
         return $this->morphOne(WaApiMessageThreads::class, 'messageable');
+    }
+
+    /**
+     * Get the user who sent the message.
+     */
+    public function sentByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'sent_by_user_id');
     }
 }

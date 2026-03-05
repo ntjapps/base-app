@@ -15,24 +15,25 @@ RUN echo "APP_VERSION_HASH=${APP_VERSION_HASH}" >> .constants && \
     ln -sf .env.${ENV_TYPE} .env || true && \
     ls -lah .env*
 
-# Second, run PNPM install
-FROM ghcr.io/ntjapps/npm-custom:latest AS pnpm
+# Second, run Bun install
+FROM oven/bun:latest AS bun
 
 COPY --from=composer /app /app
 
 WORKDIR /app
 
-RUN pnpm install --prod && \
-    pnpm dlx vite build
+ENV CI=true
+RUN bun install --prod && \
+    bunx vite build
 
 # Third, run Laravel install
 FROM ghcr.io/ntjapps/frankenphp:latest AS laravel
 
-COPY --from=pnpm /app /app
+COPY --from=bun /app /app
 
 WORKDIR /app
 
-RUN rm -rf rm -rf node_modules .pnpm-store public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs *.config.mjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs Jenkinsfile*
+RUN rm -rf rm -rf node_modules public/debug.php resources/css resources/fonts resources/images resources/js resources/vue stubs tests cypress .git .github .gitlab .gitattributes .gitignore .vscode .editorconfig .env* .styleci.yml .eslintignore .eslintrc.js .phpunit.result.cache .stylelintrc.json package.json package-lock.json pint.json tsconfig.json tsconfig.node.json *.yaml *.md *.lock *.xml *.yml *.ts *.jsyml *.ts *.js *.sh .browserslistrc .devcontainer.json .eslintrc.cjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs *.config.mjs phpunit.xml.dist postcss.config.cjs tailwind.config.cjs Jenkinsfile*
 
 # Final build images
 FROM ghcr.io/ntjapps/frankenphp:latest

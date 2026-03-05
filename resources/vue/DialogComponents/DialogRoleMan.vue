@@ -2,21 +2,21 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { api } from '../AppAxios';
 import { PermissionDataInterface, RoleListDataInterface } from '../AppCommon';
-
-import DataTable from '../volt/DataTable.vue';
-import Column from 'primevue/column';
-import InputText from '../volt/InputText.vue';
-import { FilterMatchMode } from '@primevue/core/api';
+import CmpCustomTable from '../Components/CmpCustomTable.vue';
+import StdButton from '../Components/StdButton.vue';
+import { useTableSort } from '../composables/useTableSort';
 
 const props = defineProps<{
     dialogOpen: boolean;
     dialogData: RoleListDataInterface | null;
     dialogTypeCreate: boolean;
 }>();
+
 const emit = defineEmits<{
     (e: 'closeDialog'): void;
     (e: 'update:dialogOpen', value: boolean): void;
 }>();
+
 watch(
     () => props.dialogOpen,
     (newValue) => {
@@ -34,12 +34,29 @@ const closeDialogFunction = () => {
 const rolemanData = props.dialogData;
 const typeCreate = ref<boolean>(props.dialogTypeCreate);
 const nameData = ref<string>(rolemanData?.name ?? '');
-const permListData = ref<Array<PermissionDataInterface>>();
-const selectedPermListData = ref<Array<PermissionDataInterface>>();
+const permListData = ref<Array<PermissionDataInterface>>([]);
+const selectedPermListData = ref<Array<PermissionDataInterface>>([]);
 
-const filters_perm = ref({
-    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+// Table logic
+const search = ref('');
+const page = ref(1);
+const pageCount = 10;
+const columns = [{ id: 'name', key: 'name', label: 'Direct Permissions' }];
+
+const filteredRows = computed(() => {
+    let confirm = permListData.value || [];
+    if (search.value) {
+        confirm = confirm.filter((perm) => {
+            return Object.values(perm).some((value) => {
+                return String(value).toLowerCase().includes(search.value.toLowerCase());
+            });
+        });
+    }
+    return confirm;
 });
+
+// Use the sorting composable
+const { sortBy, sortedData } = useTableSort(filteredRows);
 
 const showDeleted = computed(() => {
     return !typeCreate.value;
@@ -67,7 +84,7 @@ const getRoleListData = async () => {
 
 const postRolemanData = async () => {
     try {
-        await api.postRoleSubmit({
+        const response = await api.postRoleSubmit({
             type_create: typeCreate.value ? 1 : 0,
             role_name: typeCreate.value ? nameData.value : null,
             role_id: typeCreate.value ? null : rolemanData?.id,
@@ -76,6 +93,9 @@ const postRolemanData = async () => {
                 return perm.id;
             }),
         });
+
+        // Handle 202 Accepted or success
+        api.handle202Accepted(response, 'Role task queued for processing');
         closeDialogFunction();
     } catch {
         // Toast handled globally by ApiClient
@@ -84,7 +104,10 @@ const postRolemanData = async () => {
 
 const postDeleteRolemanData = async () => {
     try {
-        await api.postDeleteRoleSubmit(rolemanData?.id as string | number);
+        const response = await api.postDeleteRoleSubmit(rolemanData?.id as string | number);
+
+        // Handle 202 Accepted or success
+        api.handle202Accepted(response, 'Role deletion task queued for processing');
         closeDialogFunction();
     } catch {
         // Toast handled globally by ApiClient
@@ -97,68 +120,40 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex w-full mt-1">
-        <div class="w-28 my-auto text-sm">
-            <span>Name:<span class="text-red-500 font-bold">*</span></span>
+    <div class="space-y-4">
+        <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+            <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
+                <span>Name:<span class="text-red-500 font-bold">*</span></span>
+            </div>
+            <div class="w-full text-sm">
+                <UInput v-model="nameData" class="w-full text-sm" />
+            </div>
         </div>
-        <div class="flex w-full text-sm">
-            <InputText v-model="nameData" class="w-full text-sm" />
+
+        <div class="w-full rounded-xl border border-gray-200 bg-white p-3">
+            <div class="mb-2 text-sm font-semibold text-gray-700">Direct Permissions</div>
+            <div class="mb-3">
+                <UInput v-model="search" placeholder="Search permissions..." class="w-full" />
+            </div>
+            <CmpCustomTable
+                v-model="selectedPermListData"
+                v-model:sortBy="sortBy"
+                v-model:page="page"
+                :rows="sortedData"
+                :columns="columns"
+                :itemsPerPage="pageCount"
+                class="w-full"
+            />
         </div>
-    </div>
-    <div class="flex w-full justify-evenly mt-2.5">
-        <div class="mx-2.5">
-            <DataTable
-                v-model:filters="filters_perm"
-                v-model:selection="selectedPermListData"
-                class="p-datatable-sm"
-                :value="permListData"
-                showGridlines
-                paginator
-                :rows="10"
-                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                :rowsPerPageOptions="[10, 20, 50, 100]"
-                filterDisplay="menu"
-            >
-                <template #empty>
-                    <div class="flex justify-center">No data found</div>
-                </template>
-                <template #loading>
-                    <i class="pi pi-spin pi-spinner mr-2.5"></i>
-                    Processing data. Please wait.
-                </template>
-                <Column selectionMode="multiple"></Column>
-                <Column field="ability.title" header="Direct Permissions">
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by permission"
-                            @input="filterCallback()"
-                        />
-                    </template>
-                </Column>
-                <Column field="ability_type" header="Type">
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by type"
-                            @input="filterCallback()"
-                        />
-                    </template>
-                </Column>
-            </DataTable>
+
+        <div class="flex w-full flex-wrap justify-end gap-2 border-t border-gray-200 pt-3">
+            <StdButton
+                v-if="showDeleted"
+                variant="danger"
+                label="Delete"
+                @click="postDeleteRolemanData()"
+            />
+            <StdButton variant="primary" label="Submit" @click="postRolemanData" />
         </div>
-    </div>
-    <div class="flex w-full mt-2 justify-center flex-wrap gap-2">
-        <UButton
-            v-if="showDeleted"
-            size="xl"
-            color="error"
-            label="Delete"
-            class="m-1 md:m-2"
-            @click="postDeleteRolemanData()"
-        />
-        <UButton size="xl" class="m-1 md:m-2" label="Submit" @click="postRolemanData" />
     </div>
 </template>

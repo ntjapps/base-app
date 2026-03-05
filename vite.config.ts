@@ -17,7 +17,11 @@ export default defineConfig({
         cors: {
             origin: process.env.VITE_APP_URL ?? 'http://docker.localhost',
         },
+        watch: {
+            ignored: ['**/public/**', '**/public/build/**', '**/storage/**', '**/vendor/**'],
+        },
     },
+    cacheDir: 'node_modules/.vite',
     plugins: [
         laravel({
             input: ['resources/ts/app.ts', 'resources/css/app.css'],
@@ -44,14 +48,20 @@ export default defineConfig({
             output: {
                 compact: true,
                 manualChunks: {
-                    vendor: ['vue', 'vue-router', 'axios', 'pinia', 'pusher-js'],
+                    'vue-core': ['vue', 'vue-router', 'pinia'],
+                    network: ['axios', 'pusher-js'],
                 },
             },
-            external: ['fsevents'],
+            external: [
+                'fsevents',
+                /\.node$/,
+                /^node:/,
+                '@nuxt/ui',
+                '@nuxt/kit',
+                '@tailwindcss/oxide',
+                'lightningcss',
+            ],
         },
         manifest: 'manifest.json',
-    },
-    test: {
-        environment: 'jsdom',
     },
 });

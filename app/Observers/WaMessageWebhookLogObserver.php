@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Events\WhatsappMessageReceived;
 use App\Models\WaApiMeta\WaApiMessageThreads;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
 use Carbon\Carbon;
@@ -21,6 +22,8 @@ class WaMessageWebhookLogObserver implements ShouldHandleEventsAfterCommit
                 'messageable_type' => get_class($waMessageWebhookLog),
                 'last_message_at' => Carbon::now(),
             ]);
+
+            WhatsappMessageReceived::dispatch();
         }
     }
 

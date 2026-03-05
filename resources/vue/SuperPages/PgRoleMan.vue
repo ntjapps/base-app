@@ -1,42 +1,60 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { timeGreetings, RoleListDataInterface } from '../AppCommon';
-import { useMainStore } from '../AppState';
+import { useEchoStore } from '../AppState';
+import { storeToRefs } from 'pinia';
 import { api } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
-
-import Dialog from '../volt/Dialog.vue';
-import DataTable from '../volt/DataTable.vue';
-import Column from 'primevue/column';
-import InputText from '../volt/InputText.vue';
-import { FilterMatchMode } from '@primevue/core/api';
+import CmpCustomTable from '../Components/CmpCustomTable.vue';
+import StdButton from '../Components/StdButton.vue';
+import { useTableSort } from '../composables/useTableSort';
 
 import DialogRoleMan from '../DialogComponents/DialogRoleMan.vue';
+import type { EchoWithMethods } from '../types/echo';
 
-const props = defineProps<{
-    appName: string;
-    greetings: string;
-    expandedKeysProps: string;
-}>();
-const main = useMainStore();
+const props = defineProps<{ greetings?: string }>();
+const greetings = props.greetings ?? '';
+
+const echo = useEchoStore();
+const { laravelEcho } = storeToRefs(echo);
 const timeGreet = timeGreetings();
 const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
 const roleListData = ref(Array<RoleListDataInterface>());
 const loading = ref<boolean>(false);
 
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    permissions_array: { value: null, matchMode: FilterMatchMode.CONTAINS },
+// Table logic
+const q = ref('');
+const page = ref(1);
+const pageCount = 10;
+
+const columns = [
+    { id: 'action', key: 'action', label: 'Actions' },
+    { id: 'name', key: 'name', label: 'Role Name', sortable: true },
+    { id: 'permissions_array', key: 'permissions_array', label: 'Permission' },
+];
+
+const filteredRows = computed(() => {
+    if (!q.value) {
+        return roleListData.value;
+    }
+    return roleListData.value.filter((role) => {
+        return Object.values(role).some((value) => {
+            return String(value).toLowerCase().includes(q.value.toLowerCase());
+        });
+    });
 });
+
+// Use the sorting composable
+const { sortBy, sortedData } = useTableSort(filteredRows);
 
 const getRoleListData = async () => {
     try {
         loading.value = true;
         const response = await api.getRoleList();
-        roleListData.value = response.data as unknown as RoleListDataInterface[];
+        // Backend now returns { data: [...] } format
+        roleListData.value = (response.data?.data || []) as unknown as RoleListDataInterface[];
     } catch (error) {
         toastchild.value?.toastDisplay(error);
     } finally {
@@ -68,106 +86,127 @@ const openEditRoleDialog = (data: RoleListDataInterface | null) => {
 
 onMounted(() => {
     getRoleListData();
-    main.updateExpandedKeysMenu(props.expandedKeysProps);
+
+    // Subscribe to role create/update/delete events and refresh list
+    try {
+        const echoInstance = laravelEcho.value as unknown as EchoWithMethods | undefined;
+        if (echoInstance && typeof echoInstance.private === 'function') {
+            const ch = echoInstance.private('roleman.event');
+            ch.listen('RoleCreated', () => getRoleListData());
+            ch.listen('RoleUpdated', () => getRoleListData());
+            ch.listen('RoleDeleted', () => getRoleListData());
+        }
+    } catch (err) {
+        console.debug('Echo private channel not available during mount.', err);
+    }
+});
+
+onUnmounted(() => {
+    try {
+        const echoInstance = laravelEcho.value as unknown as EchoWithMethods | undefined;
+        if (echoInstance && typeof echoInstance.leave === 'function') {
+            echoInstance.leave('roleman.event');
+        }
+    } catch (err) {
+        console.debug('Echo leave failed during unmount.', err);
+    }
 });
 </script>
 
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <Dialog v-model:visible="dialogOpen" modal :header="dialogHeader">
-            <DialogRoleMan
-                v-model:dialogOpen="dialogOpen"
-                :dialogData="dialogData"
-                :dialogTypeCreate="dialogData === null ? true : false"
-                @closeDialog="getRoleListData()"
-            />
-        </Dialog>
-        <div class="my-3 mx-5 p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg">
-            <div class="flex flex-row">
-                <div class="flex flex-col w-full my-auto">
-                    <h2 class="title-font font-bold">
-                        {{ timeGreet + greetings }}
-                    </h2>
-                    <h3 class="title-font">Role Management</h3>
-                </div>
-                <div class="flex justify-end w-full my-auto">
-                    <UButton size="xl" label="Create Role" @click="openEditRoleDialog(null)" />
-                </div>
-            </div>
-        </div>
-        <div class="my-3 mx-5 p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg">
-            <DataTable
-                v-model:filters="filters"
-                class="p-datatable-sm editable-cells-table"
-                :value="roleListData"
-                showGridlines
-                :loading="loading"
-                paginator
-                :rows="10"
-                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                :rowsPerPageOptions="[10, 20, 50, 100]"
-                :globalFilterFields="['name']"
-                filterDisplay="menu"
-            >
-                <template #header>
-                    <div class="flex justify-between">
-                        <div class="flex w-full">
-                            <InputText
-                                v-model="filters['global'].value"
-                                placeholder="Search by role name"
-                                class="p-inputtext-sm w-full"
+        <UModal
+            v-model:open="dialogOpen"
+            :ui="{ content: 'w-[calc(100vw-2rem)] sm:max-w-[1200px]' }"
+        >
+            <template #content>
+                <UCard
+                    v-if="dialogOpen"
+                    :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }"
+                >
+                    <template #header>
+                        <div class="flex items-center justify-between">
+                            <h3
+                                class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
+                            >
+                                {{ dialogHeader }}
+                            </h3>
+                            <UButton
+                                color="gray"
+                                variant="ghost"
+                                icon="i-heroicons-x-mark-20-solid"
+                                class="-my-1"
+                                @click="dialogOpen = false"
                             />
                         </div>
+                    </template>
+                    <DialogRoleMan
+                        v-model:dialogOpen="dialogOpen"
+                        :dialogData="dialogData"
+                        :dialogTypeCreate="dialogData === null ? true : false"
+                    />
+                </UCard>
+            </template>
+        </UModal>
+        <div class="mx-auto w-full max-w-6xl space-y-5">
+            <div
+                class="rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-6 shadow-sm"
+            >
+                <div class="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+                    <div class="flex-1">
+                        <h2 class="text-4xl font-semibold tracking-tight text-gray-800">
+                            {{ timeGreet + greetings }}
+                        </h2>
+                        <h3 class="mt-1 text-sm text-gray-600">Role Management</h3>
                     </div>
-                </template>
-                <template #footer>
-                    <div class="flex text-sm">Total records: {{ roleListData.length }}</div>
-                </template>
-                <template #empty>
-                    <div class="flex justify-center">No data found</div>
-                </template>
-                <template #loading>
-                    <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data. Please wait.
-                </template>
-                <Column field="action" header="Actions" class="text-sm">
-                    <template #body="slotProps">
-                        <div v-if="showViewButton(slotProps.data.id)" class="flex justify-center">
-                            <UButton size="xl" @click="openEditRoleDialog(slotProps.data)">
-                                <i class="pi pi-angle-double-right" />
-                            </UButton>
+
+                    <div class="flex w-full justify-end md:w-auto">
+                        <StdButton
+                            variant="primary"
+                            label="Create Role"
+                            class="rounded-md bg-green-600 px-5 py-2.5 text-white hover:bg-green-700"
+                            @click="openEditRoleDialog(null)"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center">
+                    <div class="flex-1">
+                        <h3 class="text-4xl font-bold text-gray-900">Role Management</h3>
+                    </div>
+                    <div class="w-full md:w-80">
+                        <UInput v-model="q" placeholder="Filter roles..." />
+                    </div>
+                </div>
+
+                <CmpCustomTable
+                    v-model:sortBy="sortBy"
+                    v-model:page="page"
+                    :rows="sortedData"
+                    :columns="columns"
+                    :loading="loading"
+                    :itemsPerPage="pageCount"
+                >
+                    <template #action-data="{ row }">
+                        <div v-if="showViewButton(row.id)" class="flex justify-center">
+                            <UButton
+                                size="xl"
+                                icon="i-heroicons-chevron-double-right"
+                                class="bg-green-600 text-white hover:bg-green-700"
+                                @click="openEditRoleDialog(row)"
+                            />
                         </div>
                     </template>
-                </Column>
-                <Column field="name" header="Role Name" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">{{ slotProps.data.name }}</div>
-                    </template>
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by role name"
-                            @input="filterCallback()"
-                        />
-                    </template>
-                </Column>
-                <Column field="permissions_array" header="Permission" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">
-                            {{ slotProps.data.permissions_array.join(', ') }}
+                    <template #permissions_array-data="{ row }">
+                        <div class="text-left">
+                            {{ row.permissions_array.join(', ') }}
                         </div>
                     </template>
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by permission"
-                            @input="filterCallback()"
-                        />
-                    </template>
-                </Column>
-            </DataTable>
+                </CmpCustomTable>
+            </div>
         </div>
     </CmpLayout>
 </template>

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import Select from '../volt/Select.vue';
-import InputText from '../volt/InputText.vue';
 import CmpComponentBuilder from './CmpComponentBuilder.vue';
 import { api } from '../AppAxios';
+import StdButton from '../Components/StdButton.vue';
 
 interface DialogData {
     id?: string;
@@ -235,53 +234,77 @@ onMounted(() => {
 
 <template>
     <div class="max-h-[70vh] overflow-y-auto">
-        <div class="p-2 space-y-4">
-            <div class="mb-2">
-                <label class="block text-sm">Name</label>
-                <InputText v-model="name" class="w-full" />
-            </div>
-            <div class="mb-2">
-                <label class="block text-sm">Language</label>
-                <Select
-                    v-model="language"
-                    :options="languages"
-                    optionLabel="label"
-                    optionValue="code"
-                    filter
-                    placeholder="Search and select language"
-                />
-            </div>
-            <div class="mb-2">
-                <label class="block text-sm">Category</label>
-                <Select
-                    v-model="category"
-                    :options="[
-                        { code: 'AUTHENTICATION', label: 'AUTHENTICATION' },
-                        { code: 'MARKETING', label: 'MARKETING' },
-                        { code: 'UTILITY', label: 'UTILITY' },
-                    ]"
-                    optionLabel="label"
-                    optionValue="code"
-                />
-            </div>
-            <div class="mb-2">
-                <label class="block text-sm">Components</label>
-                <CmpComponentBuilder v-model="components" />
-            </div>
-            <div class="mb-2">
-                <label class="block text-sm">Message Send TTL Seconds</label>
-                <InputText v-model.number="messageSendTtlSeconds" class="w-full" type="number" />
-            </div>
-            <div class="mb-2">
-                <div class="flex items-center space-x-2">
-                    <UCheckbox v-model="ctaUrlLinkTrackingOptedOut" size="md" />
-                    <label class="text-sm">CTA URL Link Tracking Opted Out</label>
+        <div class="space-y-4 p-2">
+            <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+                <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">Name</div>
+                <div class="w-full">
+                    <UInput v-model="name" class="w-full" />
                 </div>
             </div>
 
-            <div class="flex justify-end gap-2 mt-3">
-                <UButton size="md" label="Cancel" severity="secondary" @click="close" />
-                <UButton size="md" label="Save" :loading="loading" @click="save" />
+            <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+                <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">Language</div>
+                <div class="w-full">
+                    <USelectMenu
+                        v-model="language"
+                        :options="languages"
+                        optionAttribute="label"
+                        valueAttribute="code"
+                        filter
+                        placeholder="Search and select language"
+                    />
+                </div>
+            </div>
+
+            <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+                <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">Category</div>
+                <div class="w-full">
+                    <USelectMenu
+                        v-model="category"
+                        :options="[
+                            { code: 'AUTHENTICATION', label: 'AUTHENTICATION' },
+                            { code: 'MARKETING', label: 'MARKETING' },
+                            { code: 'UTILITY', label: 'UTILITY' },
+                        ]"
+                        optionAttribute="label"
+                        valueAttribute="code"
+                    />
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 bg-white p-3">
+                <div class="mb-2 text-sm font-semibold text-gray-700">Components</div>
+                <CmpComponentBuilder v-model="components" />
+            </div>
+
+            <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+                <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">
+                    Message TTL (s)
+                </div>
+                <div class="w-full">
+                    <UInput v-model.number="messageSendTtlSeconds" class="w-full" type="number" />
+                </div>
+            </div>
+
+            <div class="flex w-full flex-col gap-1 sm:flex-row sm:items-start">
+                <div class="min-w-[8rem] w-32 pt-2 text-sm font-medium text-gray-700">Options</div>
+                <div class="w-full pt-1">
+                    <div class="flex items-center space-x-2">
+                        <UCheckbox v-model="ctaUrlLinkTrackingOptedOut" />
+                        <label class="text-sm">CTA URL Link Tracking Opted Out</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3 flex w-full flex-wrap justify-end gap-2 border-t border-gray-200 pt-3">
+                <StdButton variant="neutral" label="Cancel" @click="close" />
+                <StdButton
+                    variant="primary"
+                    label="Save"
+                    class="rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                    :loading="loading"
+                    @click="save"
+                />
             </div>
         </div>
     </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useMainStore, useEchoStore } from '../AppState';
 import { api } from '../AppAxios';
@@ -11,6 +12,7 @@ const { laravelEcho } = storeToRefs(echo);
 
 // eslint-disable-next-line no-undef
 const toast = useToast();
+const currentRoute = useRoute();
 const prevId = ref<string | null>(null);
 const toastRef = ref<InstanceType<typeof CmpToast> | null>(null);
 
@@ -34,11 +36,22 @@ const registerNotification = () => {
                             summary: string | undefined;
                             message: string | undefined;
                         }) => {
-                            toast.add({
-                                color: notification.severity,
-                                title: notification.summary,
-                                description: notification.message,
-                            });
+                            // Prefer using the CmpToast normalization so icons/defaults are applied
+                            if (toastRef.value?.toastDisplay) {
+                                toastRef.value.toastDisplay({
+                                    severity: notification.severity,
+                                    title: notification.summary,
+                                    detail: notification.message,
+                                });
+                            } else {
+                                // Fallback to adding with an explicit icon
+                                toast.add({
+                                    color: notification.severity,
+                                    title: notification.summary,
+                                    description: notification.message,
+                                    icon: 'i-lucide-bell-ring',
+                                });
+                            }
                         },
                     );
 
@@ -65,7 +78,23 @@ onMounted(() => {
 
     registerNotification();
     main.spaCsrfToken();
-    main.init();
+
+    // Initialize app constants and ensure document.title is updated when app name becomes available
+    main.init().then(() => {
+        try {
+            const current = currentRoute;
+            const routeTitle = current?.meta?.title
+                ? String(current.meta.title as string)
+                : current?.name
+                  ? String(current.name)
+                  : '';
+            const appName = main.appName || document.title.split(' - ').slice(-1)[0] || '';
+            document.title = routeTitle ? `${routeTitle} - ${appName}` : appName;
+        } catch {
+            // ignore
+        }
+    });
+
     main.browserSuppportCheck();
 });
 </script>

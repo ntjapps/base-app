@@ -2,313 +2,33 @@
 
 namespace App\Traits;
 
-use App\Jobs\InboundMessage\WaMessageInboundJob;
-use App\Models\WaApiMeta\WaMessageWebhookLog;
+use App\Interfaces\GoQueues;
 use Illuminate\Support\Facades\Log;
 
 trait WaApiMetaWebhook
 {
+    use GoWorkerFunction;
+
     public function processWebhookMessages(array $requestData): bool
     {
+        // Dispatch the raw webhook payload to the Go worker immediately.
+        // The Go worker handles parsing, logging to DB, and processing.
         try {
-            $entry = $requestData['entry'][0] ?? null;
-            if ($entry && isset($entry['changes'][0]['field'])) {
-                $field = $entry['changes'][0]['field'];
-                $value = $entry['changes'][0]['value'];
-
-                switch ($field) {
-                    case 'messages':
-                        if (! isset($entry['changes'][0]['value']['statuses'])) {
-                            return $this->processMessagesField($value, $requestData);
-                        } else {
-                            $this->processMessageStatusField($value);
-                        }
-                        break;
-                    case 'account_alerts':
-                        $this->processAccountAlertsField($value);
-                        break;
-                    case 'account_review_update':
-                        $this->processAccountReviewUpdateField($value);
-                        break;
-                    case 'account_settings_update':
-                        $this->processAccountSettingsUpdateField($value);
-                        break;
-                    case 'account_update':
-                        $this->processAccountUpdateField($value);
-                        break;
-                    case 'automatic_events':
-                        $this->processAutomaticEventsField($value);
-                        break;
-                    case 'business_capability_update':
-                        $this->processBusinessCapabilityUpdateField($value);
-                        break;
-                    case 'business_status_update':
-                        $this->processBusinessStatusUpdateField($value);
-                        break;
-                    case 'calls':
-                        $this->processCallsField($value);
-                        break;
-                    case 'flows':
-                        $this->processFlowsField($value);
-                        break;
-                    case 'history':
-                        $this->processHistoryField($value);
-                        break;
-                    case 'message_echoes':
-                        $this->processMessageEchoesField($value);
-                        break;
-                    case 'message_template_components_update':
-                        $this->processMessageTemplateComponentsUpdateField($value);
-                        break;
-                    case 'message_template_quality_update':
-                        $this->processMessageTemplateQualityUpdateField($value);
-                        break;
-                    case 'message_template_status_update':
-                        $this->processMessageTemplateStatusUpdateField($value);
-                        break;
-                    case 'messaging_handovers':
-                        $this->processMessagingHandoversField($value);
-                        break;
-                    case 'partner_solutions':
-                        $this->processPartnerSolutionsField($value);
-                        break;
-                    case 'payment_configuration_update':
-                        $this->processPaymentConfigurationUpdateField($value);
-                        break;
-                    case 'phone_number_name_update':
-                        $this->processPhoneNumberNameUpdateField($value);
-                        break;
-                    case 'phone_number_quality_update':
-                        $this->processPhoneNumberQualityUpdateField($value);
-                        break;
-                    case 'security':
-                        $this->processSecurityField($value);
-                        break;
-                    case 'smb_app_state_sync':
-                        $this->processSmbAppStateSyncField($value);
-                        break;
-                    case 'smb_message_echoes':
-                        $this->processSmbMessageEchoesField($value);
-                        break;
-                    case 'template_category_update':
-                        $this->processTemplateCategoryUpdateField($value);
-                        break;
-                    case 'tracking_events':
-                        $this->processTrackingEventsField($value);
-                        break;
-                    case 'user_preferences':
-                        $this->processUserPreferencesField($value);
-                        break;
-                }
-            }
+            $this->sendGoTask('wa-inbound', $requestData, GoQueues::WHATSAPP);
         } catch (\Exception $e) {
-            Log::error('Error processing WhatsApp webhook: '.$e->getMessage(), [
+            Log::error('Failed to dispatch WhatsApp webhook to Go worker: '.$e->getMessage(), [
                 'exception' => $e,
             ]);
-        }
 
-        return false;
-    }
-
-    private function processMessagesField(array $value, array $requestData): bool
-    {
-        // Extract metadata
-        $metadata = $value['metadata'] ?? [];
-        $phoneNumberId = $metadata['phone_number_id'] ?? null;
-        $displayPhoneNumber = $metadata['display_phone_number'] ?? null;
-
-        // Extract contact info
-        $contact = $value['contacts'][0] ?? [];
-        $contactWaId = $contact['wa_id'] ?? null;
-        $contactName = $contact['profile']['name'] ?? null;
-
-        // Extract message data
-        $message = $value['messages'][0] ?? null;
-        if ($message) {
-            $waMessageWebhookLog = WaMessageWebhookLog::create([
-                'phone_number_id' => $phoneNumberId,
-                'display_phone_number' => $displayPhoneNumber,
-                'contact_wa_id' => $contactWaId,
-                'contact_name' => $contactName,
-                'message_id' => $message['id'] ?? null,
-                'message_from' => $message['from'] ?? null,
-                'message_type' => $message['type'] ?? null,
-                'message_body' => $message['type'] === 'text' ? ($message['text']['body'] ?? null) : null,
-                'timestamp' => $message['timestamp'] ?? null,
-                'raw_data' => $requestData,
-            ]);
-
-            Log::info('WhatsApp message saved to database', [
-                'message_id' => $message['id'] ?? null,
-                'from' => $message['from'] ?? null,
-            ]);
-
-            dispatch(new WaMessageInboundJob($waMessageWebhookLog));
-        } else {
-            Log::warning('No message data found in webhook entry', ['entry' => $value]);
+            return false;
         }
 
         return true;
     }
 
-    private function processAccountAlertsField(array $value): void
-    {
-        // Process account alerts
-        $entityType = $value['entity_type'] ?? null;
-        $entityId = $value['entity_id'] ?? null;
-        $alertSeverity = $value['alert_severity'] ?? null;
-        $alertStatus = $value['alert_status'] ?? null;
-        $alertType = $value['alert_type'] ?? null;
-        $alertDescription = $value['alert_description'] ?? null;
-
-        Log::info('Account alert received', [
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
-            'alert_severity' => $alertSeverity,
-            'alert_status' => $alertStatus,
-            'alert_type' => $alertType,
-            'alert_description' => $alertDescription,
-        ]);
-    }
-
-    private function processAccountReviewUpdateField(array $value): void
-    {
-        // Process account review update
-        $decision = $value['decision'] ?? null;
-
-        Log::info('Account review update received', [
-            'decision' => $decision,
-        ]);
-    }
-
-    private function processAccountSettingsUpdateField(array $value): void
-    {
-        // Process account settings update
-        $messagingProduct = $value['messaging_product'] ?? null;
-        $timestamp = $value['timestamp'] ?? null;
-        $type = $value['type'] ?? null;
-
-        $phoneNumberSettings = $value['phone_number_settings'] ?? [];
-        $phoneNumberId = $phoneNumberSettings['phone_number_id'] ?? null;
-
-        $calling = $phoneNumberSettings['calling'] ?? [];
-        $callingStatus = $calling['status'] ?? null;
-        $callIconVisibility = $calling['call_icon_visibility'] ?? null;
-        $callbackPermissionStatus = $calling['callback_permission_status'] ?? null;
-
-        $callHours = $calling['call_hours'] ?? [];
-        $callHoursStatus = $callHours['status'] ?? null;
-
-        $sip = $calling['sip'] ?? [];
-        $sipStatus = $sip['status'] ?? null;
-
-        Log::info('Account settings update received', [
-            'messaging_product' => $messagingProduct,
-            'timestamp' => $timestamp,
-            'type' => $type,
-            'phone_number_id' => $phoneNumberId,
-            'calling_status' => $callingStatus,
-            'call_icon_visibility' => $callIconVisibility,
-            'callback_permission_status' => $callbackPermissionStatus,
-            'call_hours_status' => $callHoursStatus,
-            'sip_status' => $sipStatus,
-        ]);
-    }
-
-    private function processAccountUpdateField(array $value): void
-    {
-        // Process account update
-        $phoneNumber = $value['phone_number'] ?? null;
-        $event = $value['event'] ?? null;
-
-        Log::info('Account update received', [
-            'phone_number' => $phoneNumber,
-            'event' => $event,
-        ]);
-    }
-
-    private function processAutomaticEventsField(array $value): void
-    {
-        // Process automatic events
-        $messagingProduct = $value['messaging_product'] ?? null;
-
-        $metadata = $value['metadata'] ?? [];
-        $displayPhoneNumber = $metadata['display_phone_number'] ?? null;
-        $phoneNumberId = $metadata['phone_number_id'] ?? null;
-
-        $automaticEvents = $value['automatic_events'] ?? [];
-
-        // Log each automatic event
-        foreach ($automaticEvents as $event) {
-            $eventId = $event['id'] ?? null;
-            $eventName = $event['event_name'] ?? null;
-            $timestamp = $event['timestamp'] ?? null;
-
-            Log::info('Automatic event received', [
-                'messaging_product' => $messagingProduct,
-                'display_phone_number' => $displayPhoneNumber,
-                'phone_number_id' => $phoneNumberId,
-                'event_id' => $eventId,
-                'event_name' => $eventName,
-                'timestamp' => $timestamp,
-            ]);
-        }
-    }
-
-    private function processMessageStatusField(array $value): void
-    {
-        // Process message status updates
-        $statuses = $value['statuses'] ?? [];
-
-        // Log each status update
-        foreach ($statuses as $status) {
-            $messageId = $status['id'] ?? null;
-            $statusValue = $status['status'] ?? null;
-            $timestamp = $status['timestamp'] ?? null;
-            $recipientId = $status['recipient_id'] ?? null;
-
-            // Extract conversation details
-            $conversation = $status['conversation'] ?? [];
-            $conversationId = $conversation['id'] ?? null;
-            $expirationTimestamp = $conversation['expiration_timestamp'] ?? null;
-            $originType = $conversation['origin']['type'] ?? null;
-
-            // Extract pricing details
-            $pricing = $status['pricing'] ?? [];
-            $billable = $pricing['billable'] ?? null;
-            $pricingModel = $pricing['pricing_model'] ?? null;
-            $category = $pricing['category'] ?? null;
-            $pricingType = $pricing['type'] ?? null;
-
-            // Extract error details if present
-            $errors = $status['errors'] ?? [];
-            $errorDetails = [];
-            foreach ($errors as $error) {
-                $errorDetails[] = [
-                    'code' => $error['code'] ?? null,
-                    'title' => $error['title'] ?? null,
-                    'message' => $error['message'] ?? null,
-                    'details' => $error['error_data']['details'] ?? null,
-                    'href' => $error['href'] ?? null,
-                ];
-            }
-
-            Log::info('Message status update received', [
-                'message_id' => $messageId,
-                'status' => $statusValue,
-                'timestamp' => $timestamp,
-                'recipient_id' => $recipientId,
-                'conversation_id' => $conversationId,
-                'expiration_timestamp' => $expirationTimestamp,
-                'origin_type' => $originType,
-                'billable' => $billable,
-                'pricing_model' => $pricingModel,
-                'category' => $category,
-                'pricing_type' => $pricingType,
-                'errors' => $errorDetails,
-            ]);
-        }
-    }
+    // Legacy PHP processing methods removed: inbound parsing is now handled by the Go worker (task `wa-inbound`).
+    // The original helper methods (message parsing, account alerts, settings, and message status handlers)
+    // were deprecated and have been deleted to avoid duplication with the Go worker implementation.
 
     private function processBusinessCapabilityUpdateField(array $value): void
     {
@@ -491,75 +211,6 @@ trait WaApiMetaWebhook
                 'message_body' => $messageBody,
             ]);
         }
-    }
-
-    private function processMessageTemplateComponentsUpdateField(array $value): void
-    {
-        // Process message template components update
-        $messageTemplateId = $value['message_template_id'] ?? null;
-        $messageTemplateName = $value['message_template_name'] ?? null;
-        $messageTemplateLanguage = $value['message_template_language'] ?? null;
-        $messageTemplateTitle = $value['message_template_title'] ?? null;
-        $messageTemplateElement = $value['message_template_element'] ?? null;
-        $messageTemplateFooter = $value['message_template_footer'] ?? null;
-        $messageTemplateButtons = $value['message_template_buttons'] ?? [];
-
-        // Process buttons
-        $buttons = [];
-        foreach ($messageTemplateButtons as $button) {
-            $buttons[] = [
-                'type' => $button['message_template_button_type'] ?? null,
-                'text' => $button['message_template_button_text'] ?? null,
-                'url' => $button['message_template_button_url'] ?? null,
-                'phone_number' => $button['message_template_button_phone_number'] ?? null,
-            ];
-        }
-
-        Log::info('Message template components update received', [
-            'message_template_id' => $messageTemplateId,
-            'message_template_name' => $messageTemplateName,
-            'message_template_language' => $messageTemplateLanguage,
-            'message_template_title' => $messageTemplateTitle,
-            'message_template_element' => $messageTemplateElement,
-            'message_template_footer' => $messageTemplateFooter,
-            'message_template_buttons' => $buttons,
-        ]);
-    }
-
-    private function processMessageTemplateQualityUpdateField(array $value): void
-    {
-        // Process message template quality update
-        $previousQualityScore = $value['previous_quality_score'] ?? null;
-        $newQualityScore = $value['new_quality_score'] ?? null;
-        $messageTemplateId = $value['message_template_id'] ?? null;
-        $messageTemplateName = $value['message_template_name'] ?? null;
-        $messageTemplateLanguage = $value['message_template_language'] ?? null;
-
-        Log::info('Message template quality update received', [
-            'previous_quality_score' => $previousQualityScore,
-            'new_quality_score' => $newQualityScore,
-            'message_template_id' => $messageTemplateId,
-            'message_template_name' => $messageTemplateName,
-            'message_template_language' => $messageTemplateLanguage,
-        ]);
-    }
-
-    private function processMessageTemplateStatusUpdateField(array $value): void
-    {
-        // Process message template status update
-        $event = $value['event'] ?? null;
-        $messageTemplateId = $value['message_template_id'] ?? null;
-        $messageTemplateName = $value['message_template_name'] ?? null;
-        $messageTemplateLanguage = $value['message_template_language'] ?? null;
-        $reason = $value['reason'] ?? null;
-
-        Log::info('Message template status update received', [
-            'event' => $event,
-            'message_template_id' => $messageTemplateId,
-            'message_template_name' => $messageTemplateName,
-            'message_template_language' => $messageTemplateLanguage,
-            'reason' => $reason,
-        ]);
     }
 
     private function processMessagingHandoversField(array $value): void

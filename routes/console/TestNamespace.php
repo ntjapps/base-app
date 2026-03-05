@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\CommonCustomException;
+use App\Interfaces\GoQueues;
 use App\Mail\TestMail;
 use App\Models\User;
 use App\Notifications\MessageNotification;
@@ -8,6 +9,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 Artisan::command('test:unit', function () {
     $this->info('Executing test:unit...');
@@ -66,10 +69,65 @@ Artisan::command('test:notification {username}', function () {
     Log::alert('Console test:notification executed', ['username' => $this->argument('username')]);
 })->purpose('Test Notification');
 
-Artisan::command('test:log', function () {
+Artisan::command('test:log {--enqueue}', function () {
     Log::channel('database')->alert('Console test:log executed', ['appName' => config('app.name')]);
     Log::alert('Console test:log executed', ['appName' => config('app.name')]);
 
     $this->info('Log test executed');
     $this->info('Log test executed in database channel');
+
+    if ($this->option('enqueue')) {
+        $queue = GoQueues::LOGGER;
+
+        $logData = [
+            'message' => 'Console test:log executed (enqueued)',
+            'channel' => 'console',
+            'level' => 550,
+            'level_name' => 'ALERT',
+            'datetime' => now()->format('Y-m-d H:i:s.u'),
+            'context' => ['appName' => config('app.name')],
+            'extra' => [],
+        ];
+
+        $envelope = [
+            'version' => '1.0',
+            'id' => (string) \Illuminate\Support\Str::orderedUuid(),
+            'task' => 'logger',
+            'payload' => $logData,
+            'created_at' => now()->toIso8601String(),
+            'attempt' => 0,
+            'max_attempts' => 5,
+        ];
+
+        try {
+            $connection = new AMQPStreamConnection(
+                config('services.rabbitmq.host'),
+                config('services.rabbitmq.port'),
+                config('services.rabbitmq.user'),
+                config('services.rabbitmq.password'),
+                config('services.rabbitmq.vhost')
+            );
+            $channel = $connection->channel();
+
+            // Declare queue and publish directly
+            $channel->queue_declare($queue, false, true, false, false);
+            $message = new AMQPMessage(json_encode($envelope), [
+                'content_type' => 'application/json',
+                'content_encoding' => 'utf-8',
+                'delivery_mode' => 2,
+            ]);
+            $channel->basic_publish($message, '', $queue);
+
+            $channel->close();
+            $connection->close();
+
+            $this->info('Enqueued logger task to RabbitMQ');
+            $this->line('  queue: '.$queue);
+            $this->line('  task_id: '.$envelope['id']);
+        } catch (\Throwable $e) {
+            $this->error('Enqueue failed: '.$e->getMessage());
+
+            return 3;
+        }
+    }
 })->purpose('Test Log');

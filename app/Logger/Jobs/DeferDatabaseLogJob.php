@@ -2,6 +2,7 @@
 
 namespace App\Logger\Jobs;
 
+use App\Interfaces\GoQueues;
 use App\Logger\Models\ServerLog;
 use App\Traits\GoWorkerFunction;
 use Illuminate\Bus\Queueable;
@@ -13,7 +14,7 @@ use Monolog\LogRecord;
 
 class DeferDatabaseLogJob implements ShouldQueue
 {
-    use GoWorkerFunction, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, GoWorkerFunction, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
@@ -79,8 +80,29 @@ class DeferDatabaseLogJob implements ShouldQueue
     public function handle(): void
     {
         /** Memory Leak mitigation: Telescope removed — no-op placeholder. */
-        if (config('services.rabbitmq.enabled')) {
-            $workerBackend = config('services.rabbitmq.worker_backend', 'go');
+
+        // Determine if any queue backend is enabled (prefer NATS)
+        $natsEnabled = config('services.nats.enabled', true);
+        $rabbitEnabled = config('services.rabbitmq.enabled', true);
+        $useQueue = $natsEnabled || $rabbitEnabled;
+
+        // Debug: Log the decision - send to stdout channel to avoid feedback loop
+        try {
+            \Illuminate\Support\Facades\Log::channel('stdout')->info('useQueue: '.($useQueue ? 'YES' : 'NO').', NATS: '.($natsEnabled ? 'YES' : 'NO').', RabbitMQ: '.($rabbitEnabled ? 'YES' : 'NO'));
+        } catch (\Exception $ignored) {
+        }
+
+        if ($useQueue) {
+            // Prefer NATS worker backend when NATS is enabled, otherwise fall back to RabbitMQ
+            $preferred = $natsEnabled ? 'nats' : 'rabbitmq';
+            $workerBackend = config("services.{$preferred}.worker_backend", config('services.rabbitmq.worker_backend', 'go'));
+
+            // Debug: Log worker backend and preferred transport to stdout channel
+            try {
+                \Illuminate\Support\Facades\Log::channel('stdout')->info('workerBackend: '.$workerBackend.' (preferred: '.$preferred.')');
+            } catch (\Exception $ignored) {
+            }
+
             $logData = [
                 'message' => $this->record['message'],
                 'channel' => $this->record['channel'],
@@ -98,16 +120,27 @@ class DeferDatabaseLogJob implements ShouldQueue
                     break;
                 case 'both':
                     // Send to both backends for migration scenarios
-                    $this->sendGoTask('logger', $logData, 'logger');
+                    $this->sendGoTask('logger', $logData, GoQueues::LOGGER);
                     $this->sendTask('log_db_task', [json_encode($logData)], 'logger');
                     break;
                 case 'go':
                 default:
                     // Send to Go worker using modern format (default)
-                    $this->sendGoTask('logger', $logData, 'logger');
+                    try {
+                        \Illuminate\Support\Facades\Log::channel('stdout')->info('About to call sendGoTask');
+                    } catch (\Exception $ignored) {
+                    }
+
+                    $this->sendGoTask('logger', $logData, GoQueues::LOGGER);
+
+                    try {
+                        \Illuminate\Support\Facades\Log::channel('stdout')->info('sendGoTask completed');
+                    } catch (\Exception $ignored) {
+                    }
                     break;
             }
         } else {
+            // Synchronous database write when no queue backend is available
             ServerLog::create([
                 'message' => $this->record['message'],
                 'channel' => $this->record['channel'],

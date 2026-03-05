@@ -46,6 +46,7 @@ export default [
         rules: {
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-unused-vars': 'off',
+            'vue/one-component-per-file': 'off',
         },
     },
 
@@ -57,6 +58,12 @@ export default [
             parserOptions: {
                 parser: ts.parser,
             },
+        },
+    },
+    {
+        files: ['resources/vue/*.vue', 'resources/vue/**/*.vue'],
+        rules: {
+            'no-useless-assignment': 'off',
         },
     },
     {
@@ -93,19 +100,9 @@ export default [
             'vue/no-undef-components': [
                 'warn',
                 {
-                    ignorePatterns: [
-                        'UButton',
-                        'UInput',
-                        'USelect',
-                        'USelectOption',
-                        'USelectGroup',
-                        'UTable',
-                        'UTableColumn',
-                        'UTableRow',
-                        'UTableCell',
-                        'UTooltip',
-                        'UCheckbox',
-                    ],
+                    // Ignore Nuxt UI global components (registered by the Nuxt UI plugin).
+                    // Only match PascalCase U-components (e.g. UButton, USwitch).
+                    ignorePatterns: ['^U[A-Z].*'],
                 },
             ],
             'vue/no-undef-properties': 'warn',
@@ -114,6 +111,7 @@ export default [
             'vue/no-useless-mustaches': 'warn',
             'vue/no-useless-v-bind': 'warn',
             'vue/no-v-text': 'error',
+            'vue/one-component-per-file': 'off',
             'vue/padding-line-between-blocks': 'warn',
             'vue/prefer-define-options': 'error',
             'vue/prefer-separate-static-class': 'warn',
@@ -128,7 +126,6 @@ export default [
         ignores: [
             '.git/*',
             '.github/*',
-            '.pnpm-store/*',
             '.vscode/*',
             'app/*',
             'bootstrap/*',
@@ -138,7 +135,6 @@ export default [
             'lang/*',
             'node_modules/*',
             'public/*',
-            'resources/vue/volt/*',
             'routes/*',
             'storage/*',
             'stubs/*',

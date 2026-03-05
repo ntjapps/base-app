@@ -18,9 +18,12 @@ const postClearCache = async () => {
     <div class="flex mx-2">
         <CmpToast ref="toastchild" />
         <UTooltip text="Clear Cache">
-            <UButton size="xl" variant="ghost" @click="postClearCache">
-                <i class="pi pi-fw pi-sync" />
-            </UButton>
+            <UButton
+                size="xl"
+                variant="ghost"
+                icon="i-heroicons-arrow-path"
+                @click="postClearCache"
+            />
         </UTooltip>
     </div>
 </template>

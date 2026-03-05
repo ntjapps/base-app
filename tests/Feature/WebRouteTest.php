@@ -1,15 +1,22 @@
 <?php
 
-use App\Interfaces\InterfaceClass;
+use App\Interfaces\RoleConstants;
 use App\Models\User;
 
 $protectedRoutes = [
-    'get-logout', 'post-logout', 'profile', 'dashboard', 'user-man', 'role-man', 'server-logs', 'passport-man',
+    'get-logout',
+    'post-logout',
+    'profile',
+    'dashboard',
+    'user-man',
+    'role-man',
+    'route-analytics',
+    'server-logs',
+    'passport-man',
 ];
-$superRoutes = ['user-man', 'role-man', 'server-logs', 'passport-man'];
+$superRoutes = ['user-man', 'role-man', 'route-analytics', 'server-logs', 'passport-man'];
 
 describe('Public and Guest Routes', function () {
-    it('loads landing page for guest', fn () => $this->get('/')->assertRedirect(route('login-page')));
     it('sanctum csrf cookie returns token', fn () => $this->get('/sanctum/csrf-cookie')->assertStatus(200)->assertJsonStructure(['status', 'csrf_token']));
     it('php ip detect returns success in local env', function () {
         $this->app->detectEnvironment(fn () => 'local');
@@ -20,15 +27,7 @@ describe('Public and Guest Routes', function () {
         $this->get('/php-ip-detect')->assertStatus(403)->assertJson(['status' => 'error']);
     });
     it('login redirect route redirects to login page', fn () => $this->get(route('login'))->assertRedirect(route('login-page')));
-    it('landing page redirects to login page for guest', fn () => $this->get(route('landing-page'))->assertRedirect(route('login-page')));
     it('post login route returns redirect or validation error', fn () => expect(in_array($this->post(route('post-login'), [])->status(), [302, 422]))->toBeTrue());
-
-    it('redirects authenticated user from guest routes', function () {
-        $user = User::factory()->createOne();
-        $this->actingAs($user);
-        $this->get(route('landing-page'))->assertRedirect(route('dashboard'));
-        expect(in_array($this->post(route('post-login'), [])->status(), [302, 200, 422]))->toBeTrue();
-    });
 });
 
 describe('Auth Middleware', function () use ($protectedRoutes) {
@@ -41,7 +40,7 @@ describe('Auth Middleware', function () use ($protectedRoutes) {
     it('allows authenticated user to get-logout', function () {
         $user = User::factory()->createOne();
         $this->actingAs($user);
-        $this->get(route('get-logout'))->assertRedirect(route('landing-page'));
+        $this->get(route('get-logout'))->assertStatus(200);
     });
     it('allows authenticated user to post-logout', function () {
         $user = User::factory()->createOne();
@@ -83,7 +82,7 @@ describe('can:hasSuperPermission Middleware', function () use ($superRoutes) {
     });
     it('allows super user to super routes', function () use ($superRoutes) {
         $user = User::factory()->createOne();
-        $user->syncRoles([InterfaceClass::SUPERROLE]);
+        $user->syncRoles([RoleConstants::SUPER_ADMIN]);
         $this->actingAs($user);
         foreach ($superRoutes as $routeName) {
             $this->get(route($routeName))->assertStatus(200);
@@ -110,9 +109,9 @@ describe('Logout and JSON Structure', function () {
         $this->actingAs($user);
         $this->post(route('post-logout'))->assertJson(['status' => 'success'])->assertJsonStructure(['status', 'title', 'message']);
     });
-    it('get logout as authenticated user redirects to landing page', function () {
+    it('get logout as authenticated user returns successful', function () {
         $user = User::factory()->createOne();
         $this->actingAs($user);
-        $this->get(route('get-logout'))->assertRedirect(route('landing-page'));
+        $this->get(route('get-logout'))->assertStatus(200);
     });
 });

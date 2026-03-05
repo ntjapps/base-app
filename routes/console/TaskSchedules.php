@@ -14,8 +14,6 @@ if (class_exists(\Laravel\Passport\PassportServiceProvider::class)) {
     Schedule::command('passport:purge')->everyMinute();
 }
 
-// Telescope removed
-
 if (config('cache.default') === 'redis') {
     Schedule::command('cache:prune-stale-tags')->everyMinute();
 }

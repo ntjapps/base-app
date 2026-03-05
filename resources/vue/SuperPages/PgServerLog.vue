@@ -1,25 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { timeGreetings } from '../AppCommon';
 import { useMainStore } from '../AppState';
 import { api } from '../AppAxios';
 import CmpLayout from '../Components/CmpLayout.vue';
+import CmpCustomTable from '../Components/CmpCustomTable.vue';
+import StdButton from '../Components/StdButton.vue';
 
-import DataTable from '../volt/DataTable.vue';
-import Column from 'primevue/column';
-import DatePicker from '../volt/DatePicker.vue';
-import Select from '../volt/Select.vue';
-import InputText from '../volt/InputText.vue';
-
-const props = defineProps<{
-    appName: string;
-    greetings: string;
-    expandedKeysProps: string;
-}>();
 const timeGreet = timeGreetings();
 const main = useMainStore();
-const { userName } = storeToRefs(main);
+const { userName, appName } = storeToRefs(main);
 
 type ServerLogResponseType = {
     current_page: number;
@@ -66,13 +57,15 @@ const serverLogResponse = ref<ServerLogResponseType | null>(null);
 const serverLogData = computed(() => serverLogResponse.value?.data ?? []);
 const totalRecords = computed(() => serverLogResponse.value?.total ?? 0);
 const rowsPerPage = computed(() => serverLogResponse.value?.per_page ?? 20);
-const first = computed(() => {
-    const resp = serverLogResponse.value;
-    if (!resp) return 0;
-    return ((resp.current_page ?? 1) - 1) * (resp.per_page ?? 20);
-});
-const dateStartData = ref<Date>(new Date());
-const dateEndData = ref<Date>(new Date());
+const currentPage = ref(1);
+
+const formatDateForInput = (date: Date) => {
+    return date.toISOString().split('T')[0];
+};
+
+const dateStartData = ref<string>(formatDateForInput(new Date()));
+const dateEndData = ref<string>(formatDateForInput(new Date()));
+
 const logLevelSelect = ref<LogLevelSelectType>([
     { label: 'All', value: 'all' },
     { label: 'Debug', value: 'debug' },
@@ -84,14 +77,21 @@ const logLevelSelect = ref<LogLevelSelectType>([
     { label: 'Alert', value: 'alert' },
     { label: 'Emergency', value: 'emergency' },
 ]);
-const logLevelData = ref<string>('all');
+const logLevelData = ref('all');
 const logMessageData = ref<string>('');
 const logExtraData = ref<string>('');
 
+const columns = [
+    { id: 'created_at', key: 'created_at', label: 'Log Date' },
+    { id: 'message', key: 'message', label: 'Log Message' },
+    { id: 'context', key: 'context', label: 'Log Extra' },
+    { id: 'level_name', key: 'level_name', label: 'Level Name' },
+];
+
 // helper to build payload for API
 const buildPayload = (page?: number, per_page?: number) => ({
-    date_start: dateStartData.value,
-    date_end: dateEndData.value,
+    date_start: new Date(dateStartData.value), // Convert string back to Date if needed, or API might accept string
+    date_end: new Date(dateEndData.value),
     log_level: logLevelData.value,
     log_message: logMessageData.value,
     log_extra: logExtraData.value,
@@ -105,6 +105,9 @@ const getServerLogData = async (page?: number, per_page?: number) => {
         const payload = buildPayload(page, per_page);
         const response = await api.getServerLogs(payload);
         serverLogResponse.value = response.data as ServerLogResponseType;
+        if (serverLogResponse.value?.current_page) {
+            currentPage.value = serverLogResponse.value.current_page;
+        }
     } catch (error) {
         console.error('Failed to fetch server logs:', error);
     } finally {
@@ -112,128 +115,122 @@ const getServerLogData = async (page?: number, per_page?: number) => {
     }
 };
 
-const onPage = async (event: { first: number; rows: number; page: number }) => {
-    // PrimeVue page is 0-based; Laravel expects 1-based
-    const page = (event.page ?? 0) + 1;
-    const perPage = event.rows;
-    await getServerLogData(page, perPage);
-};
+watch(currentPage, (newPage) => {
+    getServerLogData(newPage, rowsPerPage.value);
+});
 
 onMounted(() => {
     getServerLogData(1, 20);
-    main.updateExpandedKeysMenu(props.expandedKeysProps);
 });
 
 const onSearch = () => {
-    const rows = typeof rowsPerPage.value === 'number' ? rowsPerPage.value : 20;
-    getServerLogData(1, rows);
+    // Reset to page 1 on search
+    if (currentPage.value === 1) {
+        getServerLogData(1, rowsPerPage.value);
+    } else {
+        currentPage.value = 1;
+    }
 };
 </script>
 
 <template>
     <CmpLayout>
-        <div
-            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg"
-        >
-            <div class="flex flex-col gap-2 md:gap-0 md:flex-row justify-between">
-                <div>
-                    <h2 class="title-font font-bold">
-                        {{ timeGreet + userName }}
-                    </h2>
-                    <h3 class="title-font">Server Log in {{ appName }}</h3>
-                </div>
-            </div>
-        </div>
-        <div
-            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg"
-        >
-            <div class="flex flex-col md:flex-row my-2 gap-2">
-                <div class="flex w-full px-1">
-                    <div class="w-28 my-auto text-sm m-auto">Date Start</div>
-                    <div class="flex w-full text-sm m-auto">
-                        <DatePicker v-model="dateStartData" dateFormat="dd/mm/yy" class="w-full" />
-                    </div>
-                </div>
-                <div class="flex w-full px-1 mt-2 md:mt-0">
-                    <div class="w-28 my-auto text-sm m-auto">Date End</div>
-                    <div class="flex w-full text-sm m-auto">
-                        <DatePicker v-model="dateEndData" dateFormat="dd/mm/yy" class="w-full" />
-                    </div>
-                </div>
-            </div>
-            <div class="flex flex-col md:flex-row my-2 gap-2">
-                <div class="flex w-full px-1">
-                    <div class="w-28 my-auto text-sm m-auto">Log Level Minimal</div>
-                    <div class="flex w-full text-sm m-auto">
-                        <Select
-                            v-model="logLevelData"
-                            :options="logLevelSelect"
-                            optionLabel="label"
-                            optionValue="value"
-                            placeholder="Select a Log Level"
-                            class="w-full"
-                        />
-                    </div>
-                </div>
-                <div class="flex w-full px-1 mt-2 md:mt-0">
-                    <div class="w-28 my-auto text-sm m-auto">Log Message</div>
-                    <div class="flex w-full text-sm m-auto">
-                        <InputText
-                            v-model="logMessageData"
-                            class="w-full"
-                            placeholder="Log Message"
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="flex flex-col md:flex-row my-2 gap-2">
-                <div class="flex w-full px-1">
-                    <div class="w-28 my-auto text-sm m-auto">Log Extra</div>
-                    <div class="flex w-full text-sm m-auto">
-                        <InputText v-model="logExtraData" class="w-full" placeholder="Log Extra" />
-                    </div>
-                </div>
-                <div class="flex w-full mt-2 md:mt-0">
-                    <div class="w-28 my-auto text-sm m-auto"></div>
-                    <div class="flex w-full text-sm m-auto">
-                        <UButton size="xl" :disabled="loadingstat" @click="onSearch"
-                            ><i class="pi pi-search" />Search</UButton
-                        >
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div
-            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg overflow-x-auto"
-        >
-            <DataTable
-                class="p-datatable-sm text-sm"
-                :value="serverLogData"
-                showGridlines
-                paginator
-                lazy
-                :totalRecords="totalRecords"
-                :rows="rowsPerPage"
-                :first="first"
-                :loading="loadingstat"
-                @page="onPage"
+        <div class="mx-auto w-full max-w-6xl space-y-5">
+            <div
+                class="rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-6 shadow-sm"
             >
-                <template #empty>
-                    <div class="flex justify-center">No data found</div>
-                </template>
-                <template #loading>
-                    <i class="pi pi-spin pi-spinner mr-2.5"></i> Loading data. Please wait.
-                </template>
+                <div class="flex flex-col gap-2 md:flex-row md:justify-between">
+                    <div>
+                        <h2 class="text-4xl font-semibold tracking-tight text-gray-800">
+                            {{ timeGreet + userName }}
+                        </h2>
+                        <h3 class="mt-1 text-sm text-gray-600">Server Log in {{ appName }}</h3>
+                    </div>
+                </div>
+            </div>
 
-                <Column field="created_at" header="Log Date">
-                    <template #body="slotProps">
-                        {{ new Date(slotProps.data.created_at).toLocaleString('en-UK') }}
+            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div class="flex flex-col md:flex-row my-2 gap-2">
+                    <div class="flex w-full px-1">
+                        <div class="w-28 my-auto text-sm m-auto">Date Start</div>
+                        <div class="flex w-full text-sm m-auto">
+                            <UInput v-model="dateStartData" type="date" class="w-full" />
+                        </div>
+                    </div>
+                    <div class="flex w-full px-1 mt-2 md:mt-0">
+                        <div class="w-28 my-auto text-sm m-auto">Date End</div>
+                        <div class="flex w-full text-sm m-auto">
+                            <UInput v-model="dateEndData" type="date" class="w-full" />
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row my-2 gap-2">
+                    <div class="flex w-full px-1">
+                        <div class="w-28 my-auto text-sm m-auto">Log Level Minimal</div>
+                        <div class="flex w-full text-sm m-auto">
+                            <USelectMenu
+                                v-model="logLevelData"
+                                :options="logLevelSelect"
+                                optionAttribute="label"
+                                valueAttribute="value"
+                                placeholder="Select a Log Level"
+                                class="w-full"
+                            />
+                        </div>
+                    </div>
+                    <div class="flex w-full px-1 mt-2 md:mt-0">
+                        <div class="w-28 my-auto text-sm m-auto">Log Message</div>
+                        <div class="flex w-full text-sm m-auto">
+                            <UInput
+                                v-model="logMessageData"
+                                class="w-full"
+                                placeholder="Log Message"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row my-2 gap-2">
+                    <div class="flex w-full px-1">
+                        <div class="w-28 my-auto text-sm m-auto">Log Extra</div>
+                        <div class="flex w-full text-sm m-auto">
+                            <UInput v-model="logExtraData" class="w-full" placeholder="Log Extra" />
+                        </div>
+                    </div>
+                    <div class="flex w-full mt-2 md:mt-0">
+                        <div class="w-28 my-auto text-sm m-auto"></div>
+                        <div class="flex w-full text-sm m-auto">
+                            <StdButton
+                                variant="primary"
+                                class="rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                                :disabled="loadingstat"
+                                @click="onSearch"
+                                >Search</StdButton
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <CmpCustomTable
+                    v-model:page="currentPage"
+                    :rows="serverLogData"
+                    :columns="columns"
+                    :loading="loadingstat"
+                    :itemsPerPage="rowsPerPage"
+                    :total="totalRecords"
+                    serverSide
+                >
+                    <template #created_at-data="{ row }">
+                        {{ new Date(row.created_at).toLocaleString('en-UK') }}
                     </template>
-                </Column>
-                <Column field="message" header="Log Message" />
-                <Column field="context" header="Log Extra" />
-                <Column field="level_name" header="Level Name" />
-            </DataTable>
+                    <template #context-data="{ row }">
+                        <div
+                            class="whitespace-pre-wrap font-mono text-xs max-w-xs overflow-hidden text-ellipsis"
+                        >
+                            {{ JSON.stringify(row.context) }}
+                        </div>
+                    </template>
+                </CmpCustomTable>
+            </div>
         </div>
     </CmpLayout>
 </template>

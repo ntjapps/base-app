@@ -53,6 +53,23 @@ return [
         'worker_backend' => env('WORKER_BACKEND', 'go'), // Options: 'go' (default), 'celery' (fallback), 'both'
     ],
 
+    'nats' => [
+        'enabled' => (bool) env('NATS_ENABLED', true),
+        'host' => env('NATS_HOST', 'nats'),
+        'port' => env('NATS_PORT', 4222),
+        'user' => env('NATS_USER', null),
+        'pass' => env('NATS_PASS', null),
+        'timeout' => env('NATS_TIMEOUT_SECONDS', 5),
+        // Delay controls for retry/backoff; value is in seconds (float), mode is one of: constant, linear, exponential
+        'delay' => [
+            'value' => (float) env('NATS_DELAY_VALUE', 0.001),
+            'mode' => env('NATS_DELAY_MODE', 'constant'),
+        ],
+        'stream_name' => env('NATS_STREAM_NAME', 'TASKS'),
+        'connect_on_start' => (bool) env('NATS_CONNECT_ON_START', false),
+        'worker_backend' => env('WORKER_BACKEND', 'go'), // Options: 'go' (default), 'celery' (fallback), 'both'
+    ],
+
     'waha' => [
         'base_url' => env('WAHA_API_BASE_URL', 'http://localhost:3000'),
         'session' => env('WAHA_API_SESSION', 'default'),

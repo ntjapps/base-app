@@ -135,7 +135,6 @@ class WaApiCleanOrphanedThreadLog implements ShouldBeUnique, ShouldQueue
 
             Log::debug('Job Finished', ['jobName' => 'WaApiCleanOrphanedThreadLog']);
         } catch (\Throwable $e) {
-
             Log::error('Job Failed', ['jobName' => 'WaApiCleanOrphanedThreadLog', 'errors' => $e->getMessage(), 'previous' => $e->getPrevious()?->getMessage()]);
             throw $e;
         }

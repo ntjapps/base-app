@@ -21,7 +21,7 @@ trait GeminiAiFunction
      *                               [
      *                               ['role' => 'user', 'text' => 'Hello'],
      *                               ['role' => 'model', 'text' => 'Hi, how can I help you?'],
-     *                               ['role' => 'user', 'text' => 'Tell me about NTJ Application Studio.']
+     *                               ['role' => 'user', 'text' => 'Tell me about this application.']
      *                               ]
      *                               Gemini API response. Example structure:
      *                               [
@@ -50,7 +50,7 @@ trait GeminiAiFunction
      *                               ]
      * @return string Gemini API response text.
      */
-    private function generateContent(string $message, array $conversation = [], ?string $model = null, ?string $localFilePath = null, ?string $displayName = null, ?string $mimeType = null): string
+    private function generateContent(string $message, array $conversation = [], ?string $systemInstruction = null, ?string $model = null, ?string $localFilePath = null, ?string $displayName = null, ?string $mimeType = null): string
     {
         $apiKey = config('services.geminiai.api_key');
         $baseUrl = config('services.geminiai.base_url');
@@ -77,7 +77,7 @@ trait GeminiAiFunction
             $response = Http::withHeaders([
                 'X-goog-api-key' => $apiKey,
                 'Accept' => 'application/json',
-            ])->timeout(90)->post($url, $this->buildGeminiRequestBody($message, $conversation, $fileData));
+            ])->timeout(90)->post($url, $this->buildGeminiRequestBody($message, $conversation, $fileData, $systemInstruction));
         } catch (\Throwable $e) {
             throw $e;
         } finally {
@@ -113,14 +113,10 @@ trait GeminiAiFunction
      *   'file_uri' => 'https://generativelanguage.googleapis.com/v1beta/files/14kp91m75z5u'
      * ]
      */
-    private function buildGeminiRequestBody(string $message, array $conversation = [], ?array $fileData = null): array
+    private function buildGeminiRequestBody(string $message, array $conversation = [], ?array $fileData = null, ?string $systemInstruction = null): array
     {
-        $instructionPath = storage_path('model_instruction.txt');
-        if (file_exists($instructionPath)) {
-            $instruction = file_get_contents($instructionPath);
-        } else {
-            $instruction = '';
-        }
+        // Prefer system instruction passed in context (no fallback to storage file)
+        $instruction = $systemInstruction ?? '';
 
         $contents = [];
         // Add conversation history if provided

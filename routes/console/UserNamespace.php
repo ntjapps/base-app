@@ -1,5 +1,6 @@
 <?php
 
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
@@ -83,7 +84,7 @@ Artisan::command('user:perm:grant {username} {permission}', function () {
     $user->givePermissionTo($this->argument('permission'));
 
     /** Reset cached roles and permissions */
-    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    CentralCacheInterfaceClass::flushPermissions();
 
     $this->info('Granted permission '.$this->argument('permission').' to user '.$this->argument('username'));
     Log::alert('Console user:grant executed', ['username' => $this->argument('username'), 'permission' => $this->argument('permission')]);
@@ -99,7 +100,7 @@ Artisan::command('user:perm:revoke {username} {permission}', function () {
     $user->revokePermissionTo($this->argument('permission'));
 
     /** Reset cached roles and permissions */
-    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    CentralCacheInterfaceClass::flushPermissions();
     $this->info('Revoked permission '.$this->argument('permission').' from user '.$this->argument('username'));
 
     Log::alert('Console user:revoke executed', ['username' => $this->argument('username'), 'permission' => $this->argument('permission')]);
@@ -115,7 +116,7 @@ Artisan::command('user:role:grant {username} {role}', function () {
     $user->assignRole($this->argument('role'));
 
     /** Reset cached roles and permissions */
-    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    CentralCacheInterfaceClass::flushPermissions();
     $this->info('Granted role '.$this->argument('role').' to user '.$this->argument('username'));
 
     Log::alert('Console user:grant executed', ['username' => $this->argument('username'), 'role' => $this->argument('role')]);
@@ -131,7 +132,7 @@ Artisan::command('user:role:revoke {username} {role}', function () {
     $user->removeRole($this->argument('role'));
 
     /** Reset cached roles and permissions */
-    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    CentralCacheInterfaceClass::flushPermissions();
     $this->info('Revoked role '.$this->argument('role').' from user '.$this->argument('username'));
 
     Log::alert('Console user:revoke executed', ['username' => $this->argument('username'), 'role' => $this->argument('role')]);

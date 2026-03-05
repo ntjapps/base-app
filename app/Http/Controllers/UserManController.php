@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\CentralCacheInterfaceClass;
-use App\Interfaces\InterfaceClass;
+use App\Interfaces\GoQueues;
 use App\Interfaces\MenuItemClass;
+use App\Interfaces\PermissionConstants;
+use App\Interfaces\RoleConstants;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Traits\GoWorkerFunction;
 use App\Traits\JsonResponse;
 use App\Traits\LogContext;
 use Carbon\Carbon;
@@ -15,9 +18,7 @@ use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -25,7 +26,7 @@ use Illuminate\View\View;
 
 class UserManController extends Controller
 {
-    use JsonResponse, LogContext;
+    use GoWorkerFunction, JsonResponse, LogContext;
 
     /**
      * GET user management page
@@ -49,7 +50,7 @@ class UserManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting get user list for User Role Management', $this->getLogContext($request, $user));
 
-        $data = User::with(['roles' => function ($query) {
+        $users = User::with(['roles' => function ($query) {
             return $query->orderBy('name');
         }, 'permissions' => function ($query) {
             return $query->orderBy('name');
@@ -59,12 +60,14 @@ class UserManController extends Controller
                     return $user->getRoleNames()->sortBy('name');
                 }),
                 'permissions_array' => Cache::remember(CentralCacheInterfaceClass::keyPermissionGetPermissions($user->id), Carbon::now()->addYear(), function () use ($user) {
-                    return Permission::with('ability')->whereIn('id', $user->getAllPermissions()->pluck('id'))->orderBy('ability_type')->get()->pluck('ability')->pluck('title');
+                    return $user->getAllPermissions()->pluck('name')->sort()->values();
                 }),
             ]);
-        });
+        })->toArray();
 
-        return response()->json($data);
+        return response()->json([
+            'data' => $users,
+        ]);
     }
 
     /**
@@ -109,73 +112,43 @@ class UserManController extends Controller
         $validatedLog = $validated;
         Log::info('User submit user role and permission for User Role Management validation', $this->getLogContext($request, $user, ['validated' => json_encode($validatedLog)]));
 
-        (bool) $isRestored = false;
-
         /** Cannot assign Super Permission if not already have super role */
         $superRoleId = Cache::remember(CentralCacheInterfaceClass::keyRoleSuperRoleId(), Carbon::now()->addYear(), function () {
-            return Role::where('name', InterfaceClass::SUPERROLE)->first()->id;
+            return Role::where('name', RoleConstants::SUPER_ADMIN)->first()->id;
         });
         if (in_array($superRoleId, $validated['roles'] ?? [])) {
             Gate::forUser($user)->authorize('hasSuperPermission', User::class);
         }
         $superPermissionId = Cache::remember(CentralCacheInterfaceClass::keyPermissionSuperPermissionId(), Carbon::now()->addYear(), function () {
-            return Permission::whereHas('ability', function ($query) {
-                return $query->where('title', InterfaceClass::SUPER);
-            })->first()->id;
+            // When polymorphic ability columns were removed, query by name directly
+            return Permission::where('name', PermissionConstants::SUPER_ADMIN)->first()->id;
         });
         if (in_array($superPermissionId, $validated['permissions'] ?? [])) {
             Gate::forUser($user)->authorize('hasSuperPermission', User::class);
         }
 
-        DB::beginTransaction();
-        try {
-            if ($validated['type_create']) {
-                $user = User::withTrashed()->where('username', $validated['username'])->first() ?? new User;
-                $user->username = $validated['username'];
-                $user->name = $validated['name'];
-                $user->password = Hash::make(config('auth.defaults.reset_password_data'));
-                $user->save();
+        // Delegate to Go worker
+        $taskId = $this->sendGoTask(
+            task: 'user_create_or_update',
+            payload: [
+                'type_create' => $validated['type_create'],
+                'id' => $validated['id'] ?? null,
+                'name' => $validated['name'],
+                'username' => $validated['username'],
+                'roles' => $validated['roles'] ?? [],
+                'permissions' => $validated['permissions'] ?? [],
+                'default_password' => config('auth.defaults.reset_password_data'),
+            ],
+            queue: GoQueues::ADMIN
+        );
 
-                if ($user->trashed()) {
-                    $user->restore();
-                    (bool) $isRestored = true;
-                }
-            } else {
-                $user = User::where('id', $validated['id'])->first();
+        Log::notice('User create/update task enqueued', $this->getLogContext($request, $user, ['task_id' => $taskId]));
 
-                /** Check if username is exists */
-                $checkUsername = User::withTrashed()->where('username', $validated['username'])->exists();
-                if ($checkUsername && $user->username != $validated['username']) {
-                    throw ValidationException::withMessages(['username' => 'Username already exists']);
-                }
-
-                $user->username = $validated['username'];
-                $user->name = $validated['name'];
-                $user->save();
-            }
-
-            if (isset($validated['roles'])) {
-                $user->syncRoles($validated['roles']);
-            }
-
-            if (isset($validated['permissions'])) {
-                $user->syncPermissions($validated['permissions']);
-            }
-
-            DB::commit();
-
-            Log::notice('User successfully submit user role and permission for User Role Management', $this->getLogContext($request, $user));
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('User failed submit user role and permission for User Role Management', $this->getLogContext($request, $user, ['error' => $e->getMessage()]));
-            throw $e;
-        }
-
-        if ($isRestored) {
-            return $this->jsonSuccess('User restored successfully', 'User restored successfully');
-        } else {
-            return $this->jsonSuccess('User saved successfully', 'User saved successfully');
-        }
+        return response()->json([
+            'task_id' => $taskId,
+            'status' => 'queued',
+            'message' => 'User create/update task has been queued',
+        ], 202);
     }
 
     /**
@@ -186,11 +159,22 @@ class UserManController extends Controller
         $userAuth = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting delete user for User Role Management', $this->getLogContext($request, $userAuth));
 
-        $user->delete();
+        // Delegate to Go worker
+        $taskId = $this->sendGoTask(
+            task: 'user_delete',
+            payload: [
+                'user_id' => $user->id,
+            ],
+            queue: GoQueues::ADMIN
+        );
 
-        Log::warning('User successfully delete user for User Role Management', $this->getLogContext($request, $userAuth));
+        Log::warning('User delete task enqueued', $this->getLogContext($request, $userAuth, ['task_id' => $taskId, 'deleted_user_id' => $user->id]));
 
-        return $this->jsonSuccess('User deleted successfully', 'User deleted successfully');
+        return response()->json([
+            'task_id' => $taskId,
+            'status' => 'queued',
+            'message' => 'User deletion task has been queued',
+        ], 202);
     }
 
     /**
@@ -201,11 +185,23 @@ class UserManController extends Controller
         $userAuth = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting reset password user for User Role Management', $this->getLogContext($request, $userAuth));
 
-        $user->password = Hash::make(config('auth.defaults.reset_password_data'));
-        $user->save();
+        // Delegate to Go worker
+        $taskId = $this->sendGoTask(
+            task: 'user_reset_password',
+            payload: [
+                'user_id' => $user->id,
+                'default_password' => config('auth.defaults.reset_password_data'),
+                'invoker_id' => $userAuth->id,
+            ],
+            queue: GoQueues::ADMIN
+        );
 
-        Log::warning('User successfully reset password user for User Role Management', $this->getLogContext($request, $userAuth));
+        Log::warning('User password reset task enqueued', $this->getLogContext($request, $userAuth, ['task_id' => $taskId, 'user_id' => $user->id]));
 
-        return $this->jsonSuccess('User password reset successfully', 'User password reset successfully');
+        return response()->json([
+            'task_id' => $taskId,
+            'status' => 'queued',
+            'message' => 'Password reset task has been queued',
+        ], 202);
     }
 }

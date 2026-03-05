@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
+import ui from '@nuxt/ui/vue-plugin';
 import DialogRoleMan from './DialogRoleMan.vue';
 import { api } from '../AppAxios';
 
@@ -21,12 +22,9 @@ describe('DialogRoleMan.vue', () => {
                 dialogTypeCreate: true,
             },
             global: {
-                plugins: [createPinia()],
+                plugins: [createPinia(), ui],
                 stubs: {
                     CmpToast: { render: () => null, methods: { toastDisplay: () => {} } },
-                    DataTable: true,
-                    Column: true,
-                    InputText: true,
                     RouterLink: true,
                     RouterView: true,
                 },

@@ -23,8 +23,12 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             PassportInitSeeder::class,
-            RolesPermissionSeeder::class,
+            PermissionSeeder::class,
+            SystemTagSeeder::class,
+            DivisionSeeder::class,
             LocalUserSeeder::class,
+            AgentAvailabilitySeeder::class,
+            AgentRoutingRuleSeeder::class,
         ]);
     }
 }

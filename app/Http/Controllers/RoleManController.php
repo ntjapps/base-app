@@ -3,20 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\CentralCacheInterfaceClass;
-use App\Interfaces\InterfaceClass;
+use App\Interfaces\GoQueues;
 use App\Interfaces\MenuItemClass;
+use App\Interfaces\PermissionConstants;
+use App\Interfaces\RoleConstants;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Traits\GoWorkerFunction;
 use App\Traits\JsonResponse;
 use App\Traits\LogContext;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -26,7 +27,7 @@ use Illuminate\View\View;
 
 class RoleManController extends Controller
 {
-    use JsonResponse, LogContext;
+    use GoWorkerFunction, JsonResponse, LogContext;
 
     /**
      * GET role management page
@@ -50,17 +51,19 @@ class RoleManController extends Controller
         $user = Auth::user() ?? Auth::guard('api')->user();
         Log::debug('User is requesting get role list for Role Management', $this->getLogContext($request, $user));
 
-        $data = Role::with(['permissions' => function ($query) {
+        $roles = Role::with(['permissions' => function ($query) {
             return $query->orderBy('name');
         }])->orderBy('name')->get()->map(function (Role $role) {
             return collect($role)->merge([
                 'permissions_array' => Cache::remember(CentralCacheInterfaceClass::keyPermissionGetPermissionsByRole($role->id), Carbon::now()->addYear(), function () use ($role) {
-                    return Permission::with('ability')->whereIn('id', $role->getAllPermissions()->pluck('id'))->orderBy('ability_type')->get()->pluck('ability')->pluck('title');
+                    return $role->getAllPermissions()->pluck('name')->sort()->values();
                 }),
             ]);
-        });
+        })->toArray();
 
-        return response()->json($data);
+        return response()->json([
+            'data' => $roles,
+        ]);
     }
 
     /**
@@ -76,13 +79,23 @@ class RoleManController extends Controller
             'type_create' => ['required', 'boolean'],
             'role_name' => ['required_if:type_create,true', 'nullable', 'string', 'max:255', 'unique:App\Models\Role,name'],
             'role_id' => ['required_if:type_create,false', 'nullable', 'string', 'exists:App\Models\Role,id'],
-            'role_rename' => ['required_if:type_create,false', 'nullable', 'string', 'max:255', Rule::unique(Role::class, 'name')->ignore($request->input('role_id'))],
+            'role_rename' => ['required_if:type_create,false', 'nullable', 'string', 'max:255'],
             'permissions' => ['required', 'array'],
         ]);
         if ($validate->fails()) {
             throw new ValidationException($validate);
         }
         (array) $validated = $validate->validated();
+
+        // Secondary validation for role_rename unique check
+        if (! $validated['type_create'] && ! empty($validated['role_rename'])) {
+            $uniqueCheck = Validator::make($validated, [
+                'role_rename' => [Rule::unique(Role::class, 'name')->ignore($validated['role_id'])],
+            ]);
+            if ($uniqueCheck->fails()) {
+                throw new ValidationException($uniqueCheck);
+            }
+        }
 
         $validateLog = $validated;
         Log::info('User is submitting role data for Role Management', $this->getLogContext($request, $user, ['validated' => json_encode($validateLog)]));
@@ -91,63 +104,44 @@ class RoleManController extends Controller
         $roleId = $validated['role_id'] ?? null;
 
         /** Cannot Create or Modify Super Role and Admin Role */
-        $rolesSuper = Cache::remember(CentralCacheInterfaceClass::keyRoleName(InterfaceClass::SUPERROLE), Carbon::now()->addYear(), function () {
-            return Role::where('name', InterfaceClass::SUPERROLE)->first();
+        $rolesSuper = Cache::remember(CentralCacheInterfaceClass::keyRoleName(RoleConstants::SUPER_ADMIN), Carbon::now()->addYear(), function () {
+            return Role::where('name', RoleConstants::SUPER_ADMIN)->first();
         });
         if ($roleId === $rolesSuper->id) {
             Gate::forUser($user)->authorize('denyAllAction', User::class);
         }
-        if ($roleName === InterfaceClass::SUPERROLE) {
+        if ($roleName === RoleConstants::SUPER_ADMIN) {
             Gate::forUser($user)->authorize('denyAllAction', User::class);
         }
 
         /** Cannot Add Admin or Super Permission */
-        $superPermissionId = Cache::remember(CentralCacheInterfaceClass::keyPermissionName(InterfaceClass::SUPER), Carbon::now()->addYear(), function () {
-            return Permission::whereHas('ability', function ($query) {
-                return $query->where('title', InterfaceClass::SUPER);
-            })->first()->id;
+        $superPermissionId = Cache::remember(CentralCacheInterfaceClass::keyPermissionName(PermissionConstants::SUPER_ADMIN), Carbon::now()->addYear(), function () {
+            // When polymorphic ability columns were removed, query by name directly
+            return Permission::where('name', PermissionConstants::SUPER_ADMIN)->first()->id;
         });
         if (in_array($superPermissionId, $validated['permissions'])) {
             Gate::forUser($user)->authorize('hasSuperPermission', User::class);
         }
 
-        DB::beginTransaction();
-        try {
-            if ($validated['type_create']) {
-                $role = Role::create(['name' => $roleName]);
-            } else {
-                $role = Role::where('id', $roleId)->first();
-                if (is_null($role)) {
-                    throw new ModelNotFoundException;
-                }
+        // Delegate to Go worker
+        $taskId = $this->sendGoTask(
+            task: 'role_create_or_update',
+            payload: [
+                'type_create' => $validated['type_create'],
+                'role_id' => $roleId,
+                'role_name' => $roleName,
+                'permissions' => $validated['permissions'],
+            ],
+            queue: GoQueues::ADMIN
+        );
 
-                if ($role->name !== $roleName) {
-                    /** Check if Role Renamed is in Const list */
-                    if (in_array($role->name, InterfaceClass::ALLROLE)) {
-                        Gate::forUser($user)->authorize('denyAllAction', User::class);
-                    }
+        Log::notice('Role create/update task enqueued', $this->getLogContext($request, $user, ['task_id' => $taskId]));
 
-                    $role->name = $roleName;
-                    $role->save();
-                }
-            }
-
-            /** Updated Permission Array */
-            (array) $permissionNames = Permission::whereIn('name', $validated['permissions'])->get()->pluck('name')->toArray();
-            $role->syncPermissions($permissionNames);
-
-            DB::commit();
-
-            InterfaceClass::flushRolePermissionCache();
-
-            Log::notice('User successfully submitted role data for Role Management', $this->getLogContext($request, $user));
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('User is submitting role data for Role Management failed', $this->getLogContext($request, $user, ['error' => $e->getMessage()]));
-            throw $e;
-        }
-
-        return $this->jsonSuccess('Role data has been submitted successfully', 'Role data has been submitted successfully');
+        return response()->json([
+            'task_id' => $taskId,
+            'status' => 'queued',
+            'message' => 'Role create/update task has been queued',
+        ], 202);
     }
 
     /**
@@ -159,16 +153,25 @@ class RoleManController extends Controller
         Log::debug('User is requesting delete role for Role Management', $this->getLogContext($request, $user));
 
         /** Check if Role Renamed is in Const list */
-        if (in_array($role->name, InterfaceClass::ALLROLE)) {
+        if ($role->name === RoleConstants::SUPER_ADMIN) {
             Gate::forUser($user)->authorize('denyAllAction', User::class);
         }
 
-        $role->delete();
+        // Delegate to Go worker
+        $taskId = $this->sendGoTask(
+            task: 'role_delete',
+            payload: [
+                'role_id' => $role->id,
+            ],
+            queue: GoQueues::ADMIN
+        );
 
-        InterfaceClass::flushRolePermissionCache();
+        Log::warning('Role delete task enqueued', $this->getLogContext($request, $user, ['task_id' => $taskId, 'deleted_role_id' => $role->id]));
 
-        Log::warning('User successfully delete role for Role Management', $this->getLogContext($request, $user));
-
-        return $this->jsonSuccess('Role deleted successfully', 'Role deleted successfully');
+        return response()->json([
+            'task_id' => $taskId,
+            'status' => 'queued',
+            'message' => 'Role deletion task has been queued',
+        ], 202);
     }
 }

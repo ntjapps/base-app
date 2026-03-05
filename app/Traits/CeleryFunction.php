@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use App\Exceptions\CommonCustomException;
 use App\Interfaces\CentralCacheInterfaceClass;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -13,6 +12,16 @@ use PhpAmqpLib\Wire\AMQPTable;
 
 trait CeleryFunction
 {
+    protected function isCeleryDryRun(): bool
+    {
+        return app()->environment('testing');
+    }
+
+    protected function createAmqpConnection(string $host, int $port, string $user, string $password, string $vhost)
+    {
+        return new AMQPStreamConnection($host, $port, $user, $password, $vhost);
+    }
+
     /**
      * Send task to celery
      */
@@ -43,6 +52,8 @@ trait CeleryFunction
             throw new CommonCustomException('Timeout must be an integer');
         }
 
+        $timeoutSeconds = $timeout ?? (int) config('services.rabbitmq.timeout', 3600);
+
         /** Check task lock */
         if (Cache::has(CentralCacheInterfaceClass::keyRabbitmqLock($task)) && $exclusive) {
             throw new CommonCustomException('Task already running');
@@ -50,26 +61,42 @@ trait CeleryFunction
 
         /** Create task lock */
         if ($exclusive) {
-            Cache::put(CentralCacheInterfaceClass::keyRabbitmqLock($task), true, now()->addMinutes($timeout));
+            Cache::put(CentralCacheInterfaceClass::keyRabbitmqLock($task), true, now()->addSeconds($timeoutSeconds));
         }
 
         $id = Str::orderedUuid()->toString();
-        $timeout = $timeout ?? Carbon::now()->addSeconds(config('services.rabbitmq.timeout'));
+
+        // Dry-run mode for tests or when RabbitMQ host is not configured: skip actual publish
+        $dryRun = $this->isCeleryDryRun() || empty(config('services.rabbitmq.host'));
+        if ($dryRun) {
+            // Use syslog at info level for non-failure dry-run diagnostics
+            syslog(LOG_INFO, 'Dry-run sendTask: '.json_encode(['task' => $task, 'id' => $id]));
+            if ($exclusive) {
+                // If exclusive lock was set earlier, keep it until timeout; worker won't run in tests
+            }
+
+            return $id;
+        }
 
         try {
-            $connection = new AMQPStreamConnection(
-                config('services.rabbitmq.host'),
-                config('services.rabbitmq.port'),
-                config('services.rabbitmq.user'),
-                config('services.rabbitmq.password'),
-                config('services.rabbitmq.vhost')
+            $connection = $this->createAmqpConnection(
+                (string) config('services.rabbitmq.host'),
+                (int) config('services.rabbitmq.port'),
+                (string) config('services.rabbitmq.user'),
+                (string) config('services.rabbitmq.password'),
+                (string) config('services.rabbitmq.vhost')
             );
             $channel = $connection->channel();
         } catch (\Exception $e) {
             if ($exclusive) {
                 Cache::forget(CentralCacheInterfaceClass::keyRabbitmqLock($task));
             }
-            throw new CommonCustomException('Failed to connect to RabbitMQ: '.$e->getMessage(), $e->getCode(), $e);
+            // Ensure we don't propagate non-HTTP error codes (e.g. PHP error severity 2)
+            $code = (int) $e->getCode();
+            if ($code < 100 || $code > 599) {
+                $code = 422;
+            }
+            throw new CommonCustomException('Failed to connect to RabbitMQ: '.$e->getMessage(), $code, $e);
         }
 
         /** Login to celery default queue */

@@ -30,7 +30,7 @@ return [
         ],
         'revoked' => [
             'title' => 'Token revoked',
-            'message' => 'Token revoked, please create a new token.',
+            'message' => 'Logout successful',
         ],
     ],
 

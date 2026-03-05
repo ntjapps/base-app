@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Log;
 */
 
 Artisan::command('patch:deploy', function () {
-
     /** PATCH DO HERE */
     $patchId = 'NULL';
 

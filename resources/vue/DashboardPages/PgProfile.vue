@@ -1,22 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMainStore } from '../AppState';
 import { api } from '../AppAxios';
 import CmpLayout from '../Components/CmpLayout.vue';
 import CmpToast from '../Components/CmpToast.vue';
+import StdButton from '../Components/StdButton.vue';
 
-import InputText from '../volt/InputText.vue';
-import Password from '../volt/Password.vue';
-import Message from '../volt/Message.vue';
-
-const props = defineProps<{
-    appName: string;
-    greetings: string;
-    expandedKeysProps: string;
-}>();
 const main = useMainStore();
-const { userName, workerBackend } = storeToRefs(main);
+const { userName, appName } = storeToRefs(main);
 
 const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 const newPassword = ref<string | null>('');
@@ -37,101 +29,75 @@ const postProfileData = async () => {
         toastchild.value?.toastDisplay(error);
     }
 };
-
-onMounted(() => {
-    main.updateExpandedKeysMenu(props.expandedKeysProps);
-});
 </script>
 
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <div
-            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg w-full max-w-xl"
-        >
-            <h3 class="title-font">Update profile in {{ appName }}</h3>
-            <div class="mt-6 md:mt-10 mb-3 md:mb-5">
-                <label for="name">Name</label>
-                <InputText
-                    id="name"
-                    v-model="userName"
-                    type="text"
-                    class="w-full"
-                    @keyup.enter="postProfileData"
-                />
+        <div class="mx-auto w-full max-w-6xl space-y-5">
+            <div
+                class="rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-6 shadow-sm"
+            >
+                <h2 class="text-4xl font-semibold tracking-tight text-gray-800">Profile</h2>
+                <h3 class="mt-1 text-sm text-gray-600">Update profile in {{ appName }}</h3>
             </div>
-            <div class="mt-6 md:mt-10 mb-3 md:mb-5">
-                <label class="w-full" for="newpas">New Password</label>
-                <Password
-                    id="newpassword"
-                    v-model="newPassword"
-                    class="w-full"
-                    inputClass="w-full"
-                    toggleMask
-                    @keyup.enter="postProfileData"
-                />
-                <Message
-                    >Must be filled if changing password, leave empty if don't want to change
-                    password</Message
-                >
-            </div>
-            <div class="mt-6 md:mt-10 mb-3 md:mb-5">
-                <label class="w-full" for="confi"
-                    >Confirm Password (Must be filled if changing password, leave empty if don't
-                    want to change password)</label
-                >
-                <Password
-                    id="confirmpassword"
-                    v-model="confirmPassword"
-                    class="w-full"
-                    inputClass="w-full"
-                    toggleMask
-                    :feedback="false"
-                    @keyup.enter="postProfileData"
-                />
-                <Message
-                    >Must be filled if changing password, leave empty if don't want to change
-                    password</Message
-                >
-            </div>
-            <div class="flex justify-center">
-                <UButton size="xl" label="Update Profile" @click="postProfileData" />
-            </div>
-        </div>
 
-        <!-- Worker Backend Info -->
-        <div
-            v-if="workerBackend.enabled"
-            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg w-full max-w-xl"
-        >
-            <h3 class="title-font">Worker Backend Configuration</h3>
-            <div class="mt-4">
-                <div class="flex items-center justify-between py-2">
-                    <span class="text-sm font-medium">Backend Type:</span>
-                    <span
-                        class="px-3 py-1 rounded-full text-xs font-semibold"
-                        :class="{
-                            'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200':
-                                workerBackend.type === 'celery',
-                            'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200':
-                                workerBackend.type === 'go',
-                            'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200':
-                                workerBackend.type === 'both',
-                        }"
+            <div class="w-full max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="mb-5">
+                    <label for="name" class="mb-1 block text-sm font-medium text-gray-700"
+                        >Name</label
                     >
-                        {{ workerBackend.type.toUpperCase() }}
-                    </span>
+                    <UInput
+                        id="name"
+                        v-model="userName"
+                        type="text"
+                        class="w-full"
+                        @keyup.enter="postProfileData"
+                    />
                 </div>
-                <Message v-if="workerBackend.type === 'celery'" severity="info">
-                    Using Celery (Python) worker backend for processing asynchronous tasks.
-                </Message>
-                <Message v-else-if="workerBackend.type === 'go'" severity="success">
-                    Using Go worker backend for processing asynchronous tasks.
-                </Message>
-                <Message v-else-if="workerBackend.type === 'both'" severity="warn">
-                    Using both Celery and Go worker backends. Tasks are sent to both backends
-                    simultaneously.
-                </Message>
+
+                <div class="mb-5">
+                    <label for="newpas" class="mb-1 block w-full text-sm font-medium text-gray-700"
+                        >New Password</label
+                    >
+                    <UInput
+                        id="newpassword"
+                        v-model="newPassword"
+                        type="password"
+                        class="w-full"
+                        @keyup.enter="postProfileData"
+                    />
+                    <div class="mt-1 text-sm text-gray-500">
+                        Must be filled if changing password, leave empty if don't want to change
+                        password.
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label for="confi" class="mb-1 block w-full text-sm font-medium text-gray-700"
+                        >Confirm Password</label
+                    >
+                    <UInput
+                        id="confirmpassword"
+                        v-model="confirmPassword"
+                        type="password"
+                        class="w-full"
+                        @keyup.enter="postProfileData"
+                    />
+                    <div class="mt-1 text-sm text-gray-500">
+                        Must be filled if changing password, leave empty if don't want to change
+                        password.
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <StdButton
+                        variant="primary"
+                        label="Update Profile"
+                        class="rounded-md bg-green-600 px-5 py-2.5 text-white hover:bg-green-700"
+                        @click="postProfileData"
+                    />
+                </div>
             </div>
         </div>
     </CmpLayout>

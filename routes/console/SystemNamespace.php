@@ -24,8 +24,6 @@ Artisan::command('system:refresh', function () {
     Redis::connection('default')->flushdb(); /** Session Database */
     $this->info('All horizon cleared');
 
-    // Telescope removed
-
     $this->call('cache:clear');
     if (config('pennant.default') === 'database') {
         Feature::flushCache();
@@ -45,8 +43,6 @@ Artisan::command('system:start', function () {
         $this->call('migrate', ['--force' => true]);
         $this->info('Migrated');
     }
-
-    // Telescope removed
 
     $this->call('passport:client:env');
     $this->call('passport:client:rabbitmq:env');

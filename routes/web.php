@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\AiModelInstructionManController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashController;
+use App\Http\Controllers\DivisionManController;
+use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\PassportManController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleManController;
 use App\Http\Controllers\ServerManController;
+use App\Http\Controllers\TagManController;
 use App\Http\Controllers\UserManController;
 use App\Http\Controllers\WhatsappManController;
 use App\Http\Controllers\WhatsappTemplateManController;
@@ -41,11 +45,13 @@ Route::get('/login-redirect', function () {
     return redirect(route('login-page'));
 })->name('login');
 
-Route::middleware(['guest'])->group(function () {
-    Route::get('/', function () {
-        return redirect(route('login-page'));
-    })->name('landing-page');
+Route::get('/', [LandingPageController::class, 'landingPage'])->name('landing-page');
+Route::get('/privacy-policy', [LandingPageController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/privacy-policy-waagent', [LandingPageController::class, 'privacyPolicyWaagent'])->name('privacy-policy-waagent');
+Route::get('/terms-of-service', [LandingPageController::class, 'termsOfService'])->name('terms-of-service');
+Route::get('/terms-of-service-waagent', [LandingPageController::class, 'termsOfServiceWaagent'])->name('terms-of-service-waagent');
 
+Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'loginPage'])->name('login-page');
     Route::post('/post-login', [AuthController::class, 'postLogin'])->name('post-login')->middleware(['throttle:10,1']);
 });
@@ -70,12 +76,28 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/role-man', [RoleManController::class, 'roleManPage'])->name('role-man');
 
             /** Server Management Menu */
+            Route::get('/route-analytics', [ServerManController::class, 'routeAnalyticsPage'])->name('route-analytics');
+
+            /** Server Management Menu */
             Route::get('/server-logs', [ServerManController::class, 'serverLogs'])->name('server-logs');
 
             /** Passport Management Menu */
             Route::get('/passport-man', [PassportManController::class, 'passportManPage'])->name('passport-man');
 
+            /** Division Management Menu */
+            Route::get('/division-man', [DivisionManController::class, 'divisionManPage'])->name('division-man');
+
+            /** Tag Management Menu */
+            Route::get('/tag-man', [TagManController::class, 'tagManPage'])->name('tag-man');
+
+            /** AI Model Instruction Management Menu */
+            Route::get('/ai-model-instruction-man', [AiModelInstructionManController::class, 'aiModelInstructionManPage'])->name('ai-model-instruction-man');
+
             /** Whatsapp Message Management Menu */
+            // WhatsApp management pages moved to a permission-based middleware group to allow non-super-admin roles with whatsapp.view permission
+        });
+
+        Route::middleware(['can:hasPermission,whatsapp.view'])->group(function () {
             Route::get('/whatsapp-man', [WhatsappManController::class, 'whatsappManPage'])->name('whatsapp-man');
             Route::get('/whatsapp-templates-man', [WhatsappTemplateManController::class, 'templateManPage'])->name('whatsapp-templates-man');
         });

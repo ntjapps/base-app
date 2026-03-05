@@ -3,8 +3,6 @@
 namespace App\Interfaces;
 
 use App\Models\Permission;
-use App\Models\PermissionMenu;
-use App\Models\PermissionScope;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
@@ -13,6 +11,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Laravel\Pennant\Feature;
+use Spatie\Permission\PermissionRegistrar;
 
 class CentralCacheInterfaceClass
 {
@@ -29,6 +29,9 @@ class CentralCacheInterfaceClass
 
             /** Top Order Menu */
             array_push($menuArray, MenuItemClass::dashboardMenu());
+
+            /** WhatsApp Menu */
+            array_push($menuArray, MenuItemClass::whatsappMenu());
 
             /** Administration Menu */
             array_push($menuArray, MenuItemClass::administrationMenu());
@@ -82,9 +85,152 @@ class CentralCacheInterfaceClass
     {
         if (config('cache.default') === 'redis') {
             $keys = Redis::keys(config('cache.prefix').Role::class.'-name-*');
-            Redis::del($keys);
+            if (! empty($keys)) {
+                Redis::del($keys);
+            }
         } else {
             Log::warning('Cache driver is not redis');
+        }
+    }
+
+    /**
+     * Flush all permission and role related caches.
+     */
+    public static function flushPermissions(): void
+    {
+        // Clear Spatie permission cache
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Also explicitly forget Spatie permission cache key to ensure removal across drivers
+        Cache::forget(config('permission.cache.key'));
+
+        if (config('cache.default') === 'redis') {
+            try {
+                // Use the 'cache' connection since Laravel Cache uses it
+                $redis = Redis::connection('cache');
+                $prefix = config('cache.prefix');
+
+                // Retrieve the Redis prefix from configuration (preferred) or client option
+                $redisPrefix = config('database.redis.options.prefix');
+                if ($redisPrefix === null) {
+                    try {
+                        $redisPrefix = $redis->getOption(\Redis::OPT_PREFIX) ?? '';
+                    } catch (\Throwable $e) {
+                        $redisPrefix = '';
+                    }
+                }
+
+                $patterns = [
+                    $prefix.'permission*',
+                    $prefix.'role*',
+                ];
+
+                foreach ($patterns as $pattern) {
+                    // keys() returns full keys including the Redis prefix
+                    $keys = $redis->keys($pattern);
+                    if (! empty($keys)) {
+                        // Strip the Redis prefix from keys because $redis->del() will automatically prepend it
+                        if ($redisPrefix) {
+                            $len = strlen($redisPrefix);
+                            $keys = array_map(function ($key) use ($redisPrefix, $len) {
+                                if (substr($key, 0, $len) === $redisPrefix) {
+                                    return substr($key, $len);
+                                }
+
+                                return $key;
+                            }, $keys);
+                        }
+
+                        foreach (array_chunk($keys, 100) as $chunk) {
+                            $redis->del($chunk);
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Unable to flush permission-related redis keys: '.$e->getMessage());
+            }
+        } else {
+            // Fallback: clear specific known keys
+            Cache::forget(self::keyPermissionOrderByName());
+            Cache::forget(self::keyPermissionConstOrderByName());
+            Cache::forget(self::keyPermissionMenuOrderByName());
+            Cache::forget(self::keyRoleOrderByName());
+            Cache::forget(self::keyRoleSuperRoleId());
+            Cache::forget(self::keyPermissionSuperPermissionId());
+
+            // Ensure per-user role/permission caches are also cleared for non-redis cache drivers.
+            // Iterate users in chunks to avoid loading the entire table into memory.
+            try {
+                self::forgetAllUserRolePermissionCaches();
+            } catch (\Exception $e) {
+                Log::warning('Unable to forget per-user role/permission caches: '.$e->getMessage());
+            }
+        }
+
+        if (class_exists(Feature::class)) {
+            Feature::flushCache();
+        }
+    }
+
+    /**
+     * Remove user roles and permissions from cache.
+     *
+     * @param  int|string  $userId  The user ID.
+     */
+    public static function forgetUserRolePermissionCache(int|string $userId): void
+    {
+        Cache::forget(self::keyRoleGetRoles($userId));
+        Cache::forget(self::keyPermissionGetPermissions($userId));
+        Cache::forget(self::keyPermissionMenuItems($userId));
+    }
+
+    /**
+     * Remove per-user role and permission caches for all users.
+     * Uses chunking to avoid loading all users into memory at once.
+     */
+    public static function forgetAllUserRolePermissionCaches(): void
+    {
+        User::chunkById(100, function ($users) {
+            foreach ($users as $u) {
+                self::forgetUserRolePermissionCache($u->id);
+            }
+        });
+    }
+
+    /**
+     * Flush all caches (Application, Spatie Permission, Redis keys, Features).
+     */
+    public static function flushAllCache(): void
+    {
+        // Clear Spatie permission cache
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Ensure Spatie permission key is removed from application cache
+        Cache::forget(config('permission.cache.key'));
+
+        // Flush application cache
+        Cache::flush();
+
+        // If using Redis, attempt to delete all keys under cache prefix
+        if (config('cache.default') === 'redis') {
+            try {
+                // Use the 'cache' connection since Laravel Cache usually uses it
+                $redis = Redis::connection('cache');
+                $prefix = config('cache.prefix');
+                $keys = $redis->keys($prefix.'*');
+
+                if (! empty($keys)) {
+                    foreach (array_chunk($keys, 100) as $chunk) {
+                        $redis->del($chunk);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Unable to flush redis keys: '.$e->getMessage());
+            }
+        }
+
+        if (class_exists(Feature::class)) {
+            Feature::flushCache();
         }
     }
 
@@ -107,55 +253,48 @@ class CentralCacheInterfaceClass
     /**
      * Retrieve permissions ordered by name from cache.
      *
-     * This method retrieves all permissions ordered by their ability type and name from the cache.
+     * This method retrieves all permissions ordered by their name from the cache.
      * If the cache is empty, it fetches the permissions from the database, stores them in the cache,
      * and returns them. The cached permissions are stored for 1 year.
      *
-     * @return EloquentCollection The collection of permissions ordered by ability type and name.
+     * @return EloquentCollection The collection of permissions ordered by name.
      */
     public static function rememberPermissionOrderByName(): EloquentCollection
     {
         return Cache::remember(self::keyPermissionOrderByName(), Carbon::now()->addYear(), function () {
-            return Permission::with(['ability' => function ($query) {
-                return $query->orderBy('title');
-            }])->orderBy('ability_type')->get();
+            return Permission::orderBy('name')->get();
         });
     }
 
     /**
      * Retrieve permissions ordered by name from cache.
      *
-     * This method retrieves all permissions ordered by their ability type and name from the cache,
-     * except for permissions with ability type PermissionScope.
+     * This method retrieves all permissions ordered by their name from the cache.
      * If the cache is empty, it fetches the permissions from the database, stores them in the cache,
      * and returns them. The cached permissions are stored for 1 year.
      *
-     * @return EloquentCollection The collection of permissions ordered by ability type and name.
+     * @return EloquentCollection The collection of permissions ordered by name.
      */
     public static function rememberPermissionConstOrderByName(): EloquentCollection
     {
         return Cache::remember(self::keyPermissionConstOrderByName(), Carbon::now()->addYear(), function () {
-            return Permission::with(['ability' => function ($query) {
-                return $query->orderBy('title');
-            }])->orderBy('ability_type')->get();
+            return Permission::orderBy('name')->get();
         });
     }
 
     /**
-     * Retrieve permissions of type PermissionMenu ordered by name from cache.
+     * Retrieve menu permissions ordered by name from cache.
      *
-     * This method retrieves all permissions of type PermissionMenu ordered by their ability type and name from the cache.
+     * This method retrieves all permissions with 'menu.' prefix ordered by name from the cache.
      * If the cache is empty, it fetches the permissions from the database, stores them in the cache,
      * and returns them. The cached permissions are stored for 1 year.
      *
-     * @return EloquentCollection The collection of permissions of type PermissionMenu ordered by ability type and name.
+     * @return EloquentCollection The collection of menu permissions ordered by name.
      */
     public static function rememberPermissionMenuOrderByName(): EloquentCollection
     {
         return Cache::remember(self::keyPermissionMenuOrderByName(), Carbon::now()->addYear(), function () {
-            return Permission::where('ability_type', (string) PermissionMenu::class)->with(['ability' => function ($query) {
-                return $query->orderBy('title');
-            }])->orderBy('ability_type')->get();
+            return Permission::where('name', 'LIKE', 'menu.%')->orderBy('name')->get();
         });
     }
 
@@ -217,14 +356,15 @@ class CentralCacheInterfaceClass
         return 'permission:superPermissionId';
     }
 
-    public static function keyPermissionAbility(string $ability): string
+    /**
+     * Cache key for permission check
+     *
+     * @param  int|string  $permissionNameOrId  Permission name (string) or ID (for backward compat)
+     * @param  int|string  $userId  User UUID
+     */
+    public static function keyPermissionHasPermissionTo(int|string $permissionNameOrId, int|string $userId): string
     {
-        return 'permission:ability:'.$ability;
-    }
-
-    public static function keyPermissionHasPermissionTo(int|string $permissionId, int|string $userId): string
-    {
-        return 'permission:hasPermissionTo:'.$permissionId.':user:'.$userId;
+        return 'permission:hasPermissionTo:'.$permissionNameOrId.':user:'.$userId;
     }
 
     public static function keyPermissionName(string $name): string

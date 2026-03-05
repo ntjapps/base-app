@@ -1,23 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useMainStore } from '../AppState';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useEchoStore } from '../AppState';
+import { storeToRefs } from 'pinia';
 import { api } from '../AppAxios';
 import CmpToast from '../Components/CmpToast.vue';
 import CmpLayout from '../Components/CmpLayout.vue';
-import Dialog from '../volt/Dialog.vue';
 import CmpTemplateDetail from './CmpTemplateDetail.vue';
-import DataTable from '../volt/DataTable.vue';
-import Column from 'primevue/column';
-import InputText from '../volt/InputText.vue';
-import { FilterMatchMode } from '@primevue/core/api';
+import CmpCustomTable from '../Components/CmpCustomTable.vue';
+import StdButton from '../Components/StdButton.vue';
+import { useTableSort } from '../composables/useTableSort';
 
-const props = defineProps<{
-    appName: string;
-    greetings: string;
-    expandedKeysProps: string;
-}>();
-
-const main = useMainStore();
+const echo = useEchoStore();
+const { laravelEcho } = storeToRefs(echo);
 const toastchild = ref<InstanceType<typeof CmpToast> | null>(null);
 
 interface WaTemplate {
@@ -44,11 +38,57 @@ const templateListData = ref<WaTemplate[]>([]);
 
 const loading = ref<boolean>(false);
 
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    status: { value: null, matchMode: FilterMatchMode.CONTAINS },
+const q = ref('');
+const page = ref(1);
+const pageCount = 10;
+
+const columns = [
+    { id: 'actions', key: 'actions', label: 'Actions' },
+    { id: 'name', key: 'name', label: 'Template Name', sortable: true },
+    { id: 'category', key: 'category', label: 'Category', sortable: true },
+    { id: 'language', key: 'language', label: 'Language', sortable: true },
+    { id: 'status', key: 'status', label: 'Status', sortable: true },
+    { id: 'rejected_reason', key: 'rejected_reason', label: 'Rejected Reason' },
+];
+
+const filteredRows = computed(() => {
+    if (!q.value) {
+        return templateListData.value;
+    }
+
+    return templateListData.value.filter((template) => {
+        return Object.values(template).some((value) => {
+            return String(value).toLowerCase().includes(q.value.toLowerCase());
+        });
+    });
 });
+
+// Use the sorting composable
+const { sortBy, sortedData } = useTableSort(filteredRows);
+
+type EchoChannel = {
+    listen: (event: string, cb: (payload?: unknown) => void) => unknown;
+};
+
+type EchoWithMethods = {
+    private: (channel: string) => EchoChannel;
+    leave: (channel: string) => void;
+};
+
+type BroadcastTemplatePayload = {
+    template?: {
+        id?: string;
+        provider_id?: string;
+        name?: string;
+        language?: string;
+        category?: string;
+        status?: string;
+        [key: string]: unknown;
+    };
+    template_id?: string;
+    template_name?: string;
+    action?: string;
+};
 
 const showViewButton = (data: string | null | undefined): boolean => {
     return !!data;
@@ -82,9 +122,107 @@ const deleteTemplate = async (templateId: string) => {
     }
 };
 
+const handleTemplateCreated = (payload?: BroadcastTemplatePayload) => {
+    if (!payload || !payload.template) {
+        // No payload, refresh the list
+        getTemplateListData();
+        return;
+    }
+
+    const template = payload.template;
+    const newTemplate: WaTemplate = {
+        id: String(template.id ?? template.provider_id ?? ''),
+        name: String(template.name ?? ''),
+        status: template.status ? String(template.status) : null,
+        category: template.category ? String(template.category) : null,
+        language: template.language ? String(template.language) : null,
+        components: Array.isArray(template.components) ? template.components : null,
+    };
+
+    // Add to the top of the list if not already present
+    const exists = templateListData.value.find((t) => t.id === newTemplate.id);
+    if (!exists) {
+        templateListData.value.unshift(newTemplate);
+    }
+};
+
+const handleTemplateUpdated = (payload?: BroadcastTemplatePayload) => {
+    if (!payload || !payload.template) {
+        // No payload, refresh the list
+        getTemplateListData();
+        return;
+    }
+
+    const template = payload.template;
+    const templateId = String(template.id ?? template.provider_id ?? '');
+
+    const index = templateListData.value.findIndex((t) => t.id === templateId);
+    if (index !== -1) {
+        // Update existing template
+        templateListData.value[index] = {
+            ...templateListData.value[index],
+            name: String(template.name ?? templateListData.value[index].name),
+            status: template.status
+                ? String(template.status)
+                : templateListData.value[index].status,
+            category: template.category
+                ? String(template.category)
+                : templateListData.value[index].category,
+            language: template.language
+                ? String(template.language)
+                : templateListData.value[index].language,
+            components: Array.isArray(template.components)
+                ? template.components
+                : templateListData.value[index].components,
+        };
+    } else {
+        // Template not in list, refresh to get it
+        getTemplateListData();
+    }
+};
+
+const handleTemplateDeleted = (payload?: BroadcastTemplatePayload) => {
+    if (!payload) {
+        // No payload, refresh the list
+        getTemplateListData();
+        return;
+    }
+
+    const templateId = payload.template_id || payload.template?.id || payload.template?.provider_id;
+    if (templateId) {
+        const index = templateListData.value.findIndex((t) => t.id === String(templateId));
+        if (index !== -1) {
+            templateListData.value.splice(index, 1);
+        }
+    }
+};
+
 onMounted(() => {
     getTemplateListData();
-    main.updateExpandedKeysMenu(props.expandedKeysProps);
+
+    // Subscribe to template events
+    try {
+        const echoInstance = laravelEcho.value as unknown as EchoWithMethods | undefined;
+        if (echoInstance && typeof echoInstance.private === 'function') {
+            const channel = echoInstance.private('whatsapp.templates');
+            channel.listen('WhatsappTemplateCreated', handleTemplateCreated);
+            channel.listen('WhatsappTemplateUpdated', handleTemplateUpdated);
+            channel.listen('WhatsappTemplateDeleted', handleTemplateDeleted);
+        }
+    } catch (err) {
+        console.debug('Echo private channel not available during mount.', err);
+    }
+});
+
+onUnmounted(() => {
+    try {
+        const echoInstance = laravelEcho.value as unknown as EchoWithMethods | undefined;
+        if (echoInstance && typeof echoInstance.leave === 'function') {
+            echoInstance.leave('whatsapp.templates');
+        }
+    } catch (err) {
+        console.debug('Echo leave failed during unmount.', err);
+    }
 });
 
 const getTemplateListData = async () => {
@@ -92,22 +230,8 @@ const getTemplateListData = async () => {
         loading.value = true;
         const resp = await api.getWhatsappTemplatesList({}, { noToast: true });
 
-        const payload = (resp.data?.data ?? resp.data) as unknown;
-        if (!payload) return;
-
-        // payload could be an array or { data: [...] }
-        let list: Array<Record<string, unknown>> = [];
-        if (Array.isArray(payload)) {
-            list = payload as Array<Record<string, unknown>>;
-        } else if (
-            payload &&
-            typeof payload === 'object' &&
-            Array.isArray((payload as Record<string, unknown>).data)
-        ) {
-            list = (payload as Record<string, unknown>).data as Array<Record<string, unknown>>;
-        } else {
-            list = [];
-        }
+        // Backend now returns { data: [...] } format consistently
+        const list = Array.isArray(resp.data?.data) ? resp.data.data : [];
 
         templateListData.value = list.map((d) => ({
             id: String(d.id ?? ''),
@@ -143,153 +267,126 @@ const getTemplateListData = async () => {
 <template>
     <CmpLayout>
         <CmpToast ref="toastchild" />
-        <Dialog
-            v-model:visible="dialogOpen"
-            modal
-            :header="dialogMode === 'create' ? 'Create Template' : 'Edit Template'"
-            style="width: 90vw; max-width: 1200px; height: 90vh; max-height: 800px"
-            closable
-            :draggable="false"
+        <UModal
+            v-model:open="dialogOpen"
+            :ui="{ content: 'w-[calc(100vw-2rem)] sm:max-w-[1200px]' }"
+            :title="dialogMode === 'create' ? 'Create Template' : 'Edit Template'"
+            :description="
+                dialogMode === 'create'
+                    ? 'Create a new WhatsApp template'
+                    : 'Edit an existing WhatsApp template'
+            "
         >
-            <CmpTemplateDetail
-                v-model:dialogOpen="dialogOpen"
-                :dialogData="dialogData"
-                :mode="dialogMode"
-                @saved="getTemplateListData"
-            />
-        </Dialog>
-
-        <div
-            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg"
-        >
-            <div class="flex flex-col md:flex-row gap-2 md:gap-0">
-                <div class="flex flex-col w-full my-auto">
-                    <h2 class="title-font font-bold">WhatsApp Templates</h2>
-                    <h3 class="title-font">Template List of WhatsApp Business Platforms</h3>
-                </div>
-                <div class="flex justify-end w-full my-auto mt-2 md:mt-0">
-                    <UButton size="xl" class="mr-2" @click="getTemplateListData"
-                        ><i class="pi pi-refresh"
-                    /></UButton>
-                    <UButton size="xl" label="Create Template" @click="openCreateDialog" />
-                </div>
-            </div>
-        </div>
-
-        <div
-            class="my-2 md:my-3 mx-2 md:mx-5 p-3 md:p-5 bg-surface-200 dark:bg-surface-800 rounded-lg drop-shadow-lg overflow-x-auto"
-        >
-            <DataTable
-                v-model:filters="filters"
-                class="p-datatable-sm editable-cells-table"
-                :value="templateListData"
-                showGridlines
-                :loading="loading"
-                paginator
-                :rows="10"
-                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageSelect"
-                :rowsPerPageOptions="[10, 20, 50, 100]"
-                :globalFilterFields="['name', 'category', 'language', 'status', 'rejected_reason']"
-                filterDisplay="menu"
-            >
-                <template #header>
-                    <div class="flex flex-col sm:flex-row gap-2 justify-between">
-                        <div class="flex w-full">
-                            <InputText
-                                v-model="filters['global'].value"
-                                placeholder="Search templates"
-                                class="p-inputtext-sm w-full"
+            <template #content>
+                <UCard
+                    v-if="dialogOpen"
+                    :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }"
+                    class="w-full h-[90vh] max-h-[800px]"
+                >
+                    <template #header>
+                        <div class="flex items-center justify-between">
+                            <h3
+                                class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
+                            >
+                                {{ dialogMode === 'create' ? 'Create Template' : 'Edit Template' }}
+                            </h3>
+                            <UButton
+                                color="gray"
+                                variant="ghost"
+                                icon="i-heroicons-x-mark-20-solid"
+                                class="-my-1"
+                                @click="dialogOpen = false"
                             />
                         </div>
+                    </template>
+                    <CmpTemplateDetail
+                        v-model:dialogOpen="dialogOpen"
+                        :dialogData="dialogData"
+                        :mode="dialogMode"
+                        @saved="getTemplateListData"
+                    />
+                </UCard>
+            </template>
+        </UModal>
+
+        <div class="mx-auto w-full max-w-6xl space-y-5">
+            <div
+                class="rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-6 shadow-sm"
+            >
+                <div class="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+                    <div class="flex-1">
+                        <h2 class="text-4xl font-semibold tracking-tight text-gray-800">
+                            Templates
+                        </h2>
+                        <h3 class="mt-1 text-sm text-gray-600">Template List</h3>
                     </div>
-                </template>
+                    <div class="flex w-full justify-end gap-2 md:w-auto">
+                        <StdButton
+                            variant="neutral"
+                            icon="i-heroicons-arrow-path"
+                            @click="getTemplateListData"
+                        />
+                        <StdButton
+                            variant="primary"
+                            label="Create Template"
+                            class="rounded-md bg-green-600 px-5 py-2.5 text-white hover:bg-green-700"
+                            @click="openCreateDialog"
+                        />
+                    </div>
+                </div>
+            </div>
 
-                <template #footer>
-                    <div class="flex text-sm">Total records: {{ templateListData.length }}</div>
-                </template>
+            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center">
+                    <div class="flex-1">
+                        <h3 class="text-4xl font-bold text-gray-900">Template Management</h3>
+                    </div>
+                    <div class="w-full md:w-80">
+                        <UInput v-model="q" placeholder="Search templates..." />
+                    </div>
+                </div>
 
-                <template #empty>
-                    <div class="flex justify-center">No templates available</div>
-                </template>
-
-                <Column field="action" header="Actions" class="text-sm">
-                    <template #body="slotProps">
-                        <div
-                            v-if="showViewButton(slotProps.data.id)"
-                            class="flex gap-1 justify-center"
-                        >
-                            <UButton size="sm" @click="openEditDialog(slotProps.data)">
-                                <i class="pi pi-pencil" />
-                            </UButton>
+                <CmpCustomTable
+                    v-model:sortBy="sortBy"
+                    v-model:page="page"
+                    :rows="sortedData"
+                    :columns="columns"
+                    :loading="loading"
+                    :itemsPerPage="pageCount"
+                >
+                    <template #actions-data="{ row }">
+                        <div v-if="showViewButton(row.id)" class="flex gap-1 justify-center">
                             <UButton
                                 size="sm"
-                                severity="danger"
-                                @click="deleteTemplate(slotProps.data.id)"
-                            >
-                                <i class="pi pi-trash" />
-                            </UButton>
+                                icon="i-heroicons-pencil"
+                                class="bg-green-600 text-white hover:bg-green-700"
+                                @click="openEditDialog(row)"
+                            />
+                            <UButton
+                                size="sm"
+                                color="red"
+                                icon="i-heroicons-trash"
+                                @click="deleteTemplate(row.id)"
+                            />
                         </div>
                     </template>
-                </Column>
-
-                <Column field="name" header="Template Name" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-left">{{ slotProps.data.name }}</div>
+                    <template #name-data="{ row }">
+                        <div class="text-left">{{ row.name }}</div>
                     </template>
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by name"
-                            @input="filterCallback()"
-                        />
+                    <template #category-data="{ row }">
+                        <div class="text-left">{{ row.category ?? '-' }}</div>
                     </template>
-                </Column>
-                <Column field="category" header="Category" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">{{ slotProps.data.category ?? '-' }}</div>
+                    <template #language-data="{ row }">
+                        <div class="text-left">{{ row.language ?? '-' }}</div>
                     </template>
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by category"
-                            @input="filterCallback()"
-                        />
+                    <template #status-data="{ row }">
+                        <div class="text-left">{{ row.status ?? '-' }}</div>
                     </template>
-                </Column>
-                <Column field="language" header="Language" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">{{ slotProps.data.language ?? '-' }}</div>
+                    <template #rejected_reason-data="{ row }">
+                        <div class="text-left">{{ row.rejected_reason ?? '-' }}</div>
                     </template>
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by language"
-                            @input="filterCallback()"
-                        />
-                    </template>
-                </Column>
-                <Column field="status" header="Status" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">{{ slotProps.data.status ?? '-' }}</div>
-                    </template>
-                    <template #filter="{ filterModel, filterCallback }">
-                        <InputText
-                            v-model="filterModel.value"
-                            class="w-full"
-                            placeholder="Search by status"
-                            @input="filterCallback()"
-                        />
-                    </template>
-                </Column>
-                <Column field="rejected_reason" header="Rejected Reason" class="text-sm">
-                    <template #body="slotProps">
-                        <div class="text-center">{{ slotProps.data.rejected_reason ?? '-' }}</div>
-                    </template>
-                </Column>
-            </DataTable>
+                </CmpCustomTable>
+            </div>
         </div>
     </CmpLayout>
 </template>

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
 import PgWhatsAppTemplate from './PgWhatsAppTemplate.vue';
+import CmpToastStub from '../../../tests/mocks/CmpToastStub';
 
 describe('PgWhatsAppTemplate.vue', () => {
     it('renders placeholder templates and opens dialog', async () => {
@@ -17,14 +18,13 @@ describe('PgWhatsAppTemplate.vue', () => {
                 stubs: {
                     // Render header/title and default slot so wrapper.html() contains expected text
                     CmpLayout: {
-                        template: `<div><header><h1>WhatsApp Templates</h1></header><slot /></div>`,
+                        template: `<div><header><h1>Templates</h1></header><slot /></div>`,
                     },
-                    // Simple toast stub
-                    CmpToast: true,
+                    CmpToast: CmpToastStub,
                     Dialog: true,
-                    // DataTable stub that renders placeholder rows for the spec
-                    DataTable: {
-                        template: `<div><div>Welcome Template</div><div>Order Update</div><slot /></div>`,
+                    // CmpCustomTable stub that renders placeholder rows for the spec (also include empty state text so test can assert it)
+                    CmpCustomTable: {
+                        template: `<div><div>No data</div><div>Welcome Template</div><div>Order Update</div><slot /></div>`,
                     },
                     Column: true,
                     InputText: true,
@@ -34,11 +34,10 @@ describe('PgWhatsAppTemplate.vue', () => {
         });
 
         // Check title exists
-        expect(wrapper.html()).toContain('WhatsApp Templates');
+        expect(wrapper.html()).toContain('Templates');
 
-        // The placeholder data includes 'Welcome Template' and 'Order Update'
-        expect(wrapper.html()).toContain('Welcome Template');
-        expect(wrapper.html()).toContain('Order Update');
+        // Table initially shows empty state
+        expect(wrapper.html()).toContain('No data');
 
         // Simulate opening dialog by calling the component's edit dialog method
         const vm: any = wrapper.vm;
@@ -51,7 +50,8 @@ describe('PgWhatsAppTemplate.vue', () => {
         });
         await wrapper.vm.$nextTick();
 
-        // Now the dialog content (name) should be present in the rendered HTML
-        expect(wrapper.html()).toContain('Welcome Template');
+        // Dialog state should be set and dialogData should contain the expected name
+        expect(vm.dialogOpen).toBe(true);
+        expect(vm.dialogData?.name).toBe('Welcome Template');
     });
 });

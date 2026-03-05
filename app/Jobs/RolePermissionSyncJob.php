@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Interfaces\PermissionConstants;
 use App\Interfaces\RoleConstants;
 use App\Models\Permission;
@@ -84,7 +85,7 @@ class RolePermissionSyncJob implements ShouldQueue
             Log::debug('Job Executed', ['jobName' => 'RolePermissionSyncJob']);
 
             /** Reset cached roles and permissions */
-            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            CentralCacheInterfaceClass::flushPermissions();
 
             /** Create all defined permissions */
             collect(PermissionConstants::all())->each(function ($permName) {
@@ -113,7 +114,7 @@ class RolePermissionSyncJob implements ShouldQueue
                 }
             }
 
-            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            CentralCacheInterfaceClass::flushPermissions();
 
             Log::debug('Job Finished', ['jobName' => 'RolePermissionSyncJob']);
         } catch (\Throwable $e) {

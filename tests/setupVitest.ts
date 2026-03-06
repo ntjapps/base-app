@@ -166,6 +166,12 @@ vi.mock('@unhead/vue', () => ({
   }),
 }));
 
+vi.mock('vue-clipboard3', () => ({
+  default: () => ({
+    toClipboard: vi.fn(() => Promise.resolve()),
+  }),
+}));
+
 
 // Register lightweight global stubs for UI providers to avoid mounting full implementations
 import { config } from '@vue/test-utils';

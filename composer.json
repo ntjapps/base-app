@@ -19,7 +19,7 @@
         "laravel/reverb": "^1.2.0",
         "laravel/socialite": "^5.20",
         "laravel/tinker": "^2.10.1",
-        "php-amqplib/php-amqplib": "v3.7.3",
+        "php-amqplib/php-amqplib": "v3.7.4",
         "pusher/pusher-php-server": "^7.2",
         "sentry/sentry-laravel": "^4.3",
         "socialiteproviders/laravelpassport": "^4.3",

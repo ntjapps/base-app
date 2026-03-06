@@ -24,7 +24,7 @@
         "sentry/sentry-laravel": "^4.3",
         "socialiteproviders/laravelpassport": "^4.3",
         "spatie/laravel-health": "^1.29",
-        "spatie/laravel-permission": "^6.4",
+        "spatie/laravel-permission": "^7.2",
         "symfony/http-client": "^7.0",
         "symfony/postmark-mailer": "^8.0"
     },

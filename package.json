@@ -32,7 +32,7 @@
         "axios": "^1.13.6",
         "concurrently": "^9.2.1",
         "laravel-echo": "^2.3.0",
-        "laravel-vite-plugin": "^2.1.0",
+        "laravel-vite-plugin": "^3.0.0",
         "lodash": "^4.17.23",
         "pinia": "^3.0.4",
         "postcss": "^8.5.8",

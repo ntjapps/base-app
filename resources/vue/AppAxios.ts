@@ -117,8 +117,7 @@ export class ApiClient {
     public handle202Accepted<T>(response: AxiosResponse<T>, defaultMessage?: string): boolean {
         if (response.status === 202) {
             const data = response?.data as unknown as
-                | { data?: { task_id?: string; message?: string } }
-                | undefined;
+                { data?: { task_id?: string; message?: string } } | undefined;
             const message =
                 data?.data?.message ?? defaultMessage ?? 'Task has been queued for processing';
 

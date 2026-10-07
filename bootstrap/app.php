@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         channels: __DIR__.'/../routes/channels.php',
         health: '/app/healthcheck',
     )
-    ->withMiddleware(function (Middleware $middleware) {
+    ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: [
             '127.0.0.0/8',
             '10.0.0.0/8',
@@ -41,7 +41,11 @@ return Application::configure(basePath: dirname(__DIR__))
             RouteAnalytics::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
+    ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+        );
+
         if (app()->bound('sentry')) {
             Integration::handles($exceptions);
         }

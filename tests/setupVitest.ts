@@ -175,7 +175,6 @@ vi.mock('vue-clipboard3', () => ({
 
 // Register lightweight global stubs for UI providers to avoid mounting full implementations
 import { config } from '@vue/test-utils';
-import { defineComponent } from 'vue';
 
 config.global.components = {
   TooltipRoot: defineComponent({ template: '<div><slot /></div>' }),

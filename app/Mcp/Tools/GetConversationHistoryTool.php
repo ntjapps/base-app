@@ -7,7 +7,7 @@ namespace App\Mcp\Tools;
 use App\Models\WaApiMeta\WaApiMessageThreads;
 use App\Models\WaApiMeta\WaMessageSentLog;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
-use Illuminate\JsonSchema\JsonSchema;
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Support\Facades\Log;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;

@@ -25,6 +25,9 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/ts/app.ts', 'resources/css/app.css'],
+            // Files used only from Blade via Vite::asset(). Vite 8 drops an unused
+            // import.meta.glob(), so they must be declared here to reach the manifest.
+            assets: ['resources/images/**', 'resources/fonts/**'],
             refresh: true,
         }),
         tailwindcss(),
@@ -46,10 +49,17 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                compact: true,
-                manualChunks: {
-                    'vue-core': ['vue', 'vue-router', 'pinia'],
-                    network: ['axios', 'pusher-js'],
+                manualChunks(id) {
+                    if (
+                        ['vue', 'vue-router', 'pinia'].some((m) =>
+                            id.includes(`/node_modules/${m}/`),
+                        )
+                    ) {
+                        return 'vue-core';
+                    }
+                    if (['axios', 'pusher-js'].some((m) => id.includes(`/node_modules/${m}/`))) {
+                        return 'network';
+                    }
                 },
             },
             external: [

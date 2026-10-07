@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\PermissionMenu;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PermissionMenu>
+ * @extends Factory<PermissionMenu>
  */
 class PermissionMenuFactory extends Factory
 {

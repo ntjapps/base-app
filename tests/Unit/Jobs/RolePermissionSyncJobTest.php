@@ -65,5 +65,5 @@ describe('RolePermissionSyncJob', function () {
         DB::statement('DROP TABLE IF EXISTS permissions');
 
         (new RolePermissionSyncJob)->handle();
-    })->throws(\Exception::class);
+    })->throws(Exception::class);
 });

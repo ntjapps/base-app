@@ -6,6 +6,8 @@ use App\Exceptions\CommonCustomException;
 use App\Interfaces\CentralCacheInterfaceClass;
 use App\Interfaces\GoQueues;
 use App\Models\TaskStatus;
+use App\Services\Nats\NatsService;
+use App\Services\Tasks\GoWorkerTask;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -122,7 +124,7 @@ trait GoWorkerFunction
         }
 
         /** Generate Payload Based on Go Worker Task Format */
-        $taskObj = \App\Services\Tasks\GoWorkerTask::create(
+        $taskObj = GoWorkerTask::create(
             task: $task,
             payload: $payload,
             idempotencyKey: $idempotencyKey,
@@ -210,7 +212,7 @@ trait GoWorkerFunction
 
                 // Publish and measure duration; log ack/details for operator visibility
                 $start = microtime(true);
-                $ack = app(\App\Services\Nats\NatsService::class)->publishToQueue($queue, $taskObj, $streamName);
+                $ack = app(NatsService::class)->publishToQueue($queue, $taskObj, $streamName);
                 $durationMs = (int) (1000 * (microtime(true) - $start));
 
                 try {

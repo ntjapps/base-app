@@ -1,5 +1,6 @@
 <?php
 
+use App\Traits\DokuFunction;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +21,7 @@ Artisan::command('doku:test', function () {
     try {
         $client = new class
         {
-            use \App\Traits\DokuFunction;
+            use DokuFunction;
         };
 
         $this->info("Creating Doku payment for invoice: {$invoiceNumber} amount: 10000");
@@ -38,7 +39,7 @@ Artisan::command('doku:test', function () {
         $this->line(is_array($response) ? json_encode($response, JSON_PRETTY_PRINT) : (string) $response);
 
         Log::info('doku:test executed', ['invoice_number' => $invoiceNumber, 'response' => $response]);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $this->error('Error during Doku test: '.$e->getMessage());
         Log::error('doku:test error', ['invoice_number' => $invoiceNumber, 'error' => $e->getMessage()]);
     }

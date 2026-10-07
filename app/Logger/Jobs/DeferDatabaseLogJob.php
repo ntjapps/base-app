@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Monolog\LogRecord;
 
 class DeferDatabaseLogJob implements ShouldQueue
@@ -88,7 +89,7 @@ class DeferDatabaseLogJob implements ShouldQueue
 
         // Debug: Log the decision - send to stdout channel to avoid feedback loop
         try {
-            \Illuminate\Support\Facades\Log::channel('stdout')->info('useQueue: '.($useQueue ? 'YES' : 'NO').', NATS: '.($natsEnabled ? 'YES' : 'NO').', RabbitMQ: '.($rabbitEnabled ? 'YES' : 'NO'));
+            Log::channel('stdout')->info('useQueue: '.($useQueue ? 'YES' : 'NO').', NATS: '.($natsEnabled ? 'YES' : 'NO').', RabbitMQ: '.($rabbitEnabled ? 'YES' : 'NO'));
         } catch (\Exception $ignored) {
         }
 
@@ -99,7 +100,7 @@ class DeferDatabaseLogJob implements ShouldQueue
 
             // Debug: Log worker backend and preferred transport to stdout channel
             try {
-                \Illuminate\Support\Facades\Log::channel('stdout')->info('workerBackend: '.$workerBackend.' (preferred: '.$preferred.')');
+                Log::channel('stdout')->info('workerBackend: '.$workerBackend.' (preferred: '.$preferred.')');
             } catch (\Exception $ignored) {
             }
 
@@ -127,14 +128,14 @@ class DeferDatabaseLogJob implements ShouldQueue
                 default:
                     // Send to Go worker using modern format (default)
                     try {
-                        \Illuminate\Support\Facades\Log::channel('stdout')->info('About to call sendGoTask');
+                        Log::channel('stdout')->info('About to call sendGoTask');
                     } catch (\Exception $ignored) {
                     }
 
                     $this->sendGoTask('logger', $logData, GoQueues::LOGGER);
 
                     try {
-                        \Illuminate\Support\Facades\Log::channel('stdout')->info('sendGoTask completed');
+                        Log::channel('stdout')->info('sendGoTask completed');
                     } catch (\Exception $ignored) {
                     }
                     break;

@@ -61,3 +61,14 @@ tests_output
 coverage/
 
 # Added blankspace for Git
+
+# Laravel 13 skeleton additions
+*.log
+.DS_Store
+Thumbs.db
+/.codex
+/.cursor/
+/.nova
+/.zed
+/public/fonts-manifest.dev.json
+/storage/pail

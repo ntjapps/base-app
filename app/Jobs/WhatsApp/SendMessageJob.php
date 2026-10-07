@@ -2,6 +2,7 @@
 
 namespace App\Jobs\WhatsApp;
 
+use App\Exceptions\CommonCustomException;
 use App\Interfaces\GoQueues;
 use App\Models\WaApiMeta\WaMessageSentLog;
 use App\Traits\GoWorkerFunction;
@@ -74,7 +75,7 @@ class SendMessageJob implements ShouldQueue
                             'error_data' => ['status' => 0, 'message' => 'WhatsApp API is disabled'],
                         ]);
 
-                        throw new \App\Exceptions\CommonCustomException('WhatsApp API is disabled', 422, null, ['status' => 0]);
+                        throw new CommonCustomException('WhatsApp API is disabled', 422, null, ['status' => 0]);
                     }
 
                     $endpoint = rtrim(config('services.whatsapp.endpoint'), '/').'/'.config('services.whatsapp.phone_number_id').'/messages';
@@ -107,7 +108,7 @@ class SendMessageJob implements ShouldQueue
                         ]);
 
                         // Throw a CommonCustomException so controller returns 422 but contains the original status in meta
-                        throw new \App\Exceptions\CommonCustomException('WhatsApp returned error', 422, null, ['status' => $status]);
+                        throw new CommonCustomException('WhatsApp returned error', 422, null, ['status' => $status]);
                     }
 
                     Log::debug('Job Finished (testing direct send)', ['jobName' => 'SendMessageJob']);

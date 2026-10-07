@@ -9,6 +9,7 @@ use App\Listeners\MigrationEventListener;
 use App\Listeners\MigrationStartListener;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Services\Nats\NatsService;
 use Basis\Nats\Client;
 use Basis\Nats\Configuration;
 use Carbon\Carbon;
@@ -27,6 +28,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
+use SocialiteProviders\LaravelPassport\Provider;
+use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -110,8 +113,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Register NatsService as a singleton to reuse connection state across calls
-        $this->app->singleton(\App\Services\Nats\NatsService::class, function ($app) {
-            return new \App\Services\Nats\NatsService(
+        $this->app->singleton(NatsService::class, function ($app) {
+            return new NatsService(
                 $app->make(Client::class)
             );
         });
@@ -165,8 +168,8 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MigrationsEnded::class, MigrationEventListener::class);
         Event::listen(MigrationEnded::class, MigrationEventListener::class);
 
-        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            $event->extendSocialite('laravelpassport', \SocialiteProviders\LaravelPassport\Provider::class);
+        Event::listen(function (SocialiteWasCalled $event) {
+            $event->extendSocialite('laravelpassport', Provider::class);
         });
 
         /** Registering Observers

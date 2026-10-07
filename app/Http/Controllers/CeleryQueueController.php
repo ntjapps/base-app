@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -69,7 +70,7 @@ class CeleryQueueController extends Controller
         }
 
         // Use sendNow to bypass afterCommit() behavior so tests can observe DB notifications immediately
-        \Illuminate\Support\Facades\Notification::sendNow($user, new MessageNotification('Notification', $validated['message'], $severity));
+        Notification::sendNow($user, new MessageNotification('Notification', $validated['message'], $severity));
 
         if ($validated['lock_id'] ?? null !== null) {
             Cache::forget(CentralCacheInterfaceClass::keyRabbitmqLock($validated['lock_id']));

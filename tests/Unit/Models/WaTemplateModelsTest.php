@@ -5,6 +5,9 @@ use App\Models\WaApiMeta\WaApiMessageThreads;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Models\WaTemplate;
 use App\Models\WaTemplateVersion;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 describe('WhatsApp Template Models', function () {
     it('handles WaTemplate helpers and prunable builder', function () {
@@ -18,7 +21,7 @@ describe('WhatsApp Template Models', function () {
 
         expect($t->isApproved())->toBeTrue();
         expect($t->isRejected())->toBeFalse();
-        expect($t->prunable())->toBeInstanceOf(Illuminate\Database\Eloquent\Builder::class);
+        expect($t->prunable())->toBeInstanceOf(Builder::class);
     });
 
     it('auto-increments WaTemplateVersion version number', function () {
@@ -45,7 +48,7 @@ describe('WhatsApp Template Models', function () {
 
         expect($v1->version)->toBe(1);
         expect($v2->version)->toBe(2);
-        expect($v2->template())->toBeInstanceOf(Illuminate\Database\Eloquent\Relations\BelongsTo::class);
+        expect($v2->template())->toBeInstanceOf(BelongsTo::class);
     });
 
     it('handles template status helpers, latest version, and casts', function () {
@@ -77,7 +80,7 @@ describe('WhatsApp Template Models', function () {
             'changed_by_user_id' => $user->id,
         ]);
 
-        expect($t->versions())->toBeInstanceOf(Illuminate\Database\Eloquent\Relations\HasMany::class);
+        expect($t->versions())->toBeInstanceOf(HasMany::class);
         expect($t->latestVersion()->id)->toBe($v2->id);
 
         $fresh = WaTemplate::findOrFail($t->id);

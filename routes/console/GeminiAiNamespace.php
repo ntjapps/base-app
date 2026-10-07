@@ -2,6 +2,7 @@
 <?php
 
 use App\Interfaces\GeminiAiInterfaceClass;
+use App\Models\AiModelInstruction;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
@@ -13,7 +14,7 @@ Artisan::command('ai:test {message}', function () {
         $response = $ai->sendPrompt($message);
         $this->info('Gemini AI Response:'.(is_array($response) ? json_encode($response, JSON_PRETTY_PRINT) : $response));
         Log::info('ai:test executed', ['message' => $message, 'response' => $response]);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $this->error('Error: '.$e->getMessage());
         Log::error('ai:test error', ['message' => $message, 'error' => $e->getMessage()]);
     }
@@ -21,7 +22,7 @@ Artisan::command('ai:test {message}', function () {
 
 Artisan::command('ai:check-instruction', function () {
     $key = config('ai.instructions.default_key', 'whatsapp_default');
-    $instruction = App\Models\AiModelInstruction::getInstructionsText($key);
+    $instruction = AiModelInstruction::getInstructionsText($key);
 
     if ($instruction) {
         $this->info("AI instruction found for key: {$key}");

@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Permission;
+use App\Models\Role;
+use Spatie\Permission\WildcardPermission;
+
 return [
 
     'models' => [
@@ -13,7 +17,7 @@ return [
          * `Spatie\Permission\Contracts\Permission` contract.
          */
 
-        'permission' => App\Models\Permission::class,
+        'permission' => Permission::class,
 
         /*
          * When using the "HasRoles" trait from this package, we need to know which
@@ -24,7 +28,7 @@ return [
          * `Spatie\Permission\Contracts\Role` contract.
          */
 
-        'role' => App\Models\Role::class,
+        'role' => Role::class,
 
     ],
 
@@ -156,7 +160,7 @@ return [
      * The class to use for interpreting wildcard permissions.
      * If you need to modify delimiters, override the class and specify its name here.
      */
-    'wildcard_permission' => Spatie\Permission\WildcardPermission::class,
+    'wildcard_permission' => WildcardPermission::class,
 
     /* Cache-specific settings */
 
@@ -167,7 +171,7 @@ return [
          * When permissions or roles are updated the cache is flushed automatically.
          */
 
-        'expiration_time' => \DateInterval::createFromDateString('24 hours'),
+        'expiration_time' => DateInterval::createFromDateString('24 hours'),
 
         /*
          * The cache key used to store all permissions.

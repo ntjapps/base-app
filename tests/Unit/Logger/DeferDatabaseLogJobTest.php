@@ -12,7 +12,7 @@ use Monolog\LogRecord;
 function makeLogRecord(string $message = 'test log entry'): LogRecord
 {
     return new LogRecord(
-        datetime: new \DateTimeImmutable,
+        datetime: new DateTimeImmutable,
         channel: 'test',
         level: Level::Debug,
         message: $message,

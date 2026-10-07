@@ -1,5 +1,7 @@
 <?php
 
+use App\Logger\DatabaseHandler;
+use App\Logger\TelegramHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -157,12 +159,12 @@ return [
 
         'database' => [
             'driver' => 'monolog',
-            'handler' => App\Logger\DatabaseHandler::class,
+            'handler' => DatabaseHandler::class,
         ],
 
         'telegram' => [
             'driver' => 'monolog',
-            'handler' => App\Logger\TelegramHandler::class,
+            'handler' => TelegramHandler::class,
             'level' => env('LOG_LEVEL', 'error'),
         ],
 

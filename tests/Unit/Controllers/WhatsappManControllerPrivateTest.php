@@ -4,6 +4,7 @@ use App\Http\Controllers\WhatsappManController;
 use App\Models\WaApiMeta\WaApiMessageThreads;
 use App\Models\WaApiMeta\WaMessageSentLog;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
+use Illuminate\Support\Collection;
 
 describe('WhatsappManController private helpers', function () {
     it('extracts message previews from nested data', function () {
@@ -79,7 +80,7 @@ describe('WhatsappManController private helpers', function () {
         ]);
 
         $ids = $m->invoke($c);
-        expect($ids)->toBeInstanceOf(Illuminate\Support\Collection::class);
+        expect($ids)->toBeInstanceOf(Collection::class);
         expect($ids->contains($t2->id))->toBeTrue();
         expect($ids->contains($t3->id))->toBeTrue();
         expect($ids->contains($t1->id))->toBeFalse();

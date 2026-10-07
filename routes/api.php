@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleManController;
 use App\Http\Controllers\ServerManController;
 use App\Http\Controllers\TagManController;
+use App\Http\Controllers\TaskStatusController;
 use App\Http\Controllers\UserManController;
 use App\Http\Controllers\WaApiController;
 use App\Http\Controllers\WhatsappManController;
@@ -61,8 +62,8 @@ Route::prefix('v1')->middleware([XssProtection::class])->group(function () {
 
         /** Task Status API */
         Route::prefix('tasks')->group(function () {
-            Route::get('/', [\App\Http\Controllers\TaskStatusController::class, 'getTaskList'])->name('get-task-list');
-            Route::get('/{taskId}', [\App\Http\Controllers\TaskStatusController::class, 'getTaskStatus'])->name('get-task-status');
+            Route::get('/', [TaskStatusController::class, 'getTaskList'])->name('get-task-list');
+            Route::get('/{taskId}', [TaskStatusController::class, 'getTaskStatus'])->name('get-task-status');
         });
 
         Route::middleware(['can:hasSuperPermission,App\Models\User'])->group(function () {

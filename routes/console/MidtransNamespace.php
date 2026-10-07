@@ -1,5 +1,6 @@
 <?php
 
+use App\Traits\MidtransFunction;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
@@ -27,7 +28,7 @@ Artisan::command('midtrans:test', function () {
         // anonymous class using the trait
         $client = new class
         {
-            use \App\Traits\MidtransFunction;
+            use MidtransFunction;
         };
 
         $this->info("Creating SNAP transaction for order: {$orderId} amount: {$amount}");
@@ -45,7 +46,7 @@ Artisan::command('midtrans:test', function () {
         $this->line(is_array($response) ? json_encode($response, JSON_PRETTY_PRINT) : (string) $response);
 
         Log::info('midtrans:test executed', ['order_id' => $orderId, 'response' => $response]);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $this->error('Error during Midtrans test: '.$e->getMessage());
         Log::error('midtrans:test error', ['order_id' => $orderId, 'error' => $e->getMessage()]);
     }

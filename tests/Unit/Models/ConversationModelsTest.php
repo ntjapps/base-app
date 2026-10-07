@@ -10,13 +10,19 @@ use App\Models\WaApiMeta\WaMessageSentLog;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
 use App\Observers\WaMessageSentLogObserver;
 use App\Observers\WaMessageWebhookLogObserver;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Event;
 
 describe('Conversation and User Models', function () {
     it('covers user helpers', function () {
         $u = User::factory()->create();
         expect($u->exceptConstPermission())->toBeArray();
-        expect($u->prunable())->toBeInstanceOf(Illuminate\Database\Eloquent\Builder::class);
+        expect($u->prunable())->toBeInstanceOf(Builder::class);
     });
 
     it('covers agent routing rules and conversation tags', function () {
@@ -49,20 +55,20 @@ describe('Conversation and User Models', function () {
         expect($thread->requiresHuman())->toBeTrue();
         expect($thread->isAssigned())->toBeTrue();
         expect($thread->messageable)->toBeInstanceOf(WaMessageWebhookLog::class);
-        expect($thread->assignedAgent())->toBeInstanceOf(Illuminate\Database\Eloquent\Relations\BelongsTo::class);
-        expect($thread->tags())->toBeInstanceOf(Illuminate\Database\Eloquent\Relations\HasMany::class);
+        expect($thread->assignedAgent())->toBeInstanceOf(BelongsTo::class);
+        expect($thread->tags())->toBeInstanceOf(HasMany::class);
 
         $tag = ConversationTag::create(['conversation_id' => $thread->id, 'tag_name' => 'vip']);
-        expect($tag->conversation())->toBeInstanceOf(Illuminate\Database\Eloquent\Relations\BelongsTo::class);
+        expect($tag->conversation())->toBeInstanceOf(BelongsTo::class);
     });
 
     it('covers passport client and permission ability relation', function () {
         $c = new Client;
         $c->password_client = true;
-        expect($c->skipsAuthorization(Mockery::mock(Illuminate\Contracts\Auth\Authenticatable::class), []))->toBeTrue();
+        expect($c->skipsAuthorization(Mockery::mock(Authenticatable::class), []))->toBeTrue();
 
         $p = new Permission;
-        expect($p->ability())->toBeInstanceOf(Illuminate\Database\Eloquent\Relations\MorphTo::class);
+        expect($p->ability())->toBeInstanceOf(MorphTo::class);
     });
 
     it('covers message log models and observers', function () {
@@ -74,8 +80,8 @@ describe('Conversation and User Models', function () {
             'success' => true,
             'response_data' => [],
         ]);
-        expect($sent->prunable())->toBeInstanceOf(Illuminate\Database\Eloquent\Builder::class);
-        expect($sent->thread())->toBeInstanceOf(Illuminate\Database\Eloquent\Relations\MorphOne::class);
+        expect($sent->prunable())->toBeInstanceOf(Builder::class);
+        expect($sent->thread())->toBeInstanceOf(MorphOne::class);
 
         (new WaMessageSentLogObserver)->created($sent);
         expect(WaApiMessageThreads::where('messageable_id', $sent->id)->exists())->toBeTrue();
@@ -90,7 +96,7 @@ describe('Conversation and User Models', function () {
             'timestamp' => '1',
             'raw_data' => [],
         ]);
-        expect($webhook->thread())->toBeInstanceOf(Illuminate\Database\Eloquent\Relations\MorphOne::class);
+        expect($webhook->thread())->toBeInstanceOf(MorphOne::class);
 
         (new WaMessageWebhookLogObserver)->created($webhook);
         expect(WaApiMessageThreads::where('messageable_id', $webhook->id)->exists())->toBeTrue();
@@ -111,7 +117,7 @@ describe('Conversation and User Models', function () {
         ]);
         $freshLog = WaMessageWebhookLog::findOrFail($log->id);
         expect($freshLog->raw_data)->toBeArray();
-        expect($freshLog->prunable())->toBeInstanceOf(Illuminate\Database\Eloquent\Builder::class);
+        expect($freshLog->prunable())->toBeInstanceOf(Builder::class);
 
         $t1 = WaApiMessageThreads::create([
             'phone_number' => '6283',

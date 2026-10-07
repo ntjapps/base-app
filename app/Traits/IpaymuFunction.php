@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -117,7 +118,7 @@ trait IpaymuFunction
      */
     public function handleIpaymuNotification($request): array
     {
-        if ($request instanceof \Illuminate\Http\Request) {
+        if ($request instanceof Request) {
             $body = $request->all();
         } elseif (is_array($request)) {
             $body = $request;
@@ -180,7 +181,7 @@ trait IpaymuFunction
      */
     public function captureIpaymuRedirectData($request): array
     {
-        if ($request instanceof \Illuminate\Http\Request) {
+        if ($request instanceof Request) {
             $params = $request->query();
         } elseif (is_array($request)) {
             $params = $request;

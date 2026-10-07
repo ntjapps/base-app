@@ -1,5 +1,6 @@
 <?php
 
+use App\Traits\IpaymuFunction;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
@@ -21,7 +22,7 @@ Artisan::command('ipaymu:test', function () {
     try {
         $client = new class
         {
-            use \App\Traits\IpaymuFunction;
+            use IpaymuFunction;
         };
 
         $this->info("Creating iPaymu payment reference: {$referenceId}");
@@ -39,7 +40,7 @@ Artisan::command('ipaymu:test', function () {
         $this->line(is_array($response) ? json_encode($response, JSON_PRETTY_PRINT) : (string) $response);
 
         Log::info('ipaymu:test executed', ['referenceId' => $referenceId, 'response' => $response]);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $this->error('Error during iPaymu test: '.$e->getMessage());
         Log::error('ipaymu:test error', ['referenceId' => $referenceId, 'error' => $e->getMessage()]);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -147,7 +148,7 @@ trait MidtransFunction
      */
     public function handleNotification($request): array
     {
-        if ($request instanceof \Illuminate\Http\Request) {
+        if ($request instanceof Request) {
             // Laravel automatically parses JSON into an array via ->all()
             $body = $request->all();
         } elseif (is_array($request)) {
@@ -239,7 +240,7 @@ trait MidtransFunction
      */
     public function captureRedirectData($request): array
     {
-        if ($request instanceof \Illuminate\Http\Request) {
+        if ($request instanceof Request) {
             $params = $request->query();
         } elseif (is_array($request)) {
             $params = $request;

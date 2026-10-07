@@ -4,6 +4,7 @@ namespace App\Services\Tasks;
 
 use App\Interfaces\GoWorkerTask as GoWorkerTaskInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class GoWorkerTask implements GoWorkerTaskInterface
 {
@@ -43,8 +44,8 @@ class GoWorkerTask implements GoWorkerTaskInterface
 
     public static function create(string $task, array $payload = [], ?string $idempotencyKey = null, ?string $id = null, ?int $maxAttempts = 5, ?int $timeout = null, $notify = null, ?string $invokerId = null): self
     {
-        $id = $id ?? \Illuminate\Support\Str::orderedUuid()->toString();
-        $idempotencyKey = $idempotencyKey ?? 'gen:'.\Illuminate\Support\Str::orderedUuid()->toString();
+        $id = $id ?? Str::orderedUuid()->toString();
+        $idempotencyKey = $idempotencyKey ?? 'gen:'.Str::orderedUuid()->toString();
         $createdAt = Carbon::now()->toIso8601String();
 
         return new self(

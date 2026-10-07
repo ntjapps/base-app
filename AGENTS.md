@@ -13,7 +13,7 @@
 
 ## Stack
 
-- Laravel gateway: PHP 8.5, Laravel 12, Vue 3 + TS + Vite 7, PrimeVue 4 (unstyled) + Tailwind 4, Pest + Vitest, RabbitMQ + NATS.
+- Laravel gateway: PHP 8.5, Laravel 13, Vue 3 + TS + Vite 8, PrimeVue 4 (unstyled) + Tailwind 4, Pest + Vitest, RabbitMQ + NATS.
 - Go workers: Go 1.25.5, GORM (Postgres), NATS JetStream primary + RabbitMQ fallback, `go test` + miniredis + sqlite.
 
 ## Config

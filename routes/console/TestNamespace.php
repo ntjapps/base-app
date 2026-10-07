@@ -9,13 +9,14 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 Artisan::command('test:unit', function () {
     $this->info('Executing test:unit...');
 
-    \Illuminate\Support\Facades\Log::channel('database')->alert('Console test:unit executed', ['appName' => config('app.name')]);
+    Log::channel('database')->alert('Console test:unit executed', ['appName' => config('app.name')]);
 
     Log::alert('Console test:unit executed', ['appName' => config('app.name')]);
 })->purpose('Test Query / Any Test / Sample test for unit testing');
@@ -91,7 +92,7 @@ Artisan::command('test:log {--enqueue}', function () {
 
         $envelope = [
             'version' => '1.0',
-            'id' => (string) \Illuminate\Support\Str::orderedUuid(),
+            'id' => (string) Str::orderedUuid(),
             'task' => 'logger',
             'payload' => $logData,
             'created_at' => now()->toIso8601String(),
@@ -124,7 +125,7 @@ Artisan::command('test:log {--enqueue}', function () {
             $this->info('Enqueued logger task to RabbitMQ');
             $this->line('  queue: '.$queue);
             $this->line('  task_id: '.$envelope['id']);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->error('Enqueue failed: '.$e->getMessage());
 
             return 3;

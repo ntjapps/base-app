@@ -11,7 +11,7 @@ use App\Models\User;
 use App\Models\WaApiMeta\WaApiMessageThreads;
 use App\Models\WaApiMeta\WaMessageSentLog;
 use App\Models\WaApiMeta\WaMessageWebhookLog;
-use Illuminate\JsonSchema\JsonSchema;
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Server\Contracts\Transport;
 

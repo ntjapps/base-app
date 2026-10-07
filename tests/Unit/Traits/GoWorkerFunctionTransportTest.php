@@ -2,7 +2,10 @@
 
 namespace Tests\Unit\Traits;
 
+use App\Exceptions\CommonCustomException;
+use App\Interfaces\CentralCacheInterfaceClass;
 use App\Models\TaskStatus;
+use App\Services\Nats\NatsService;
 use App\Traits\GoWorkerFunction;
 use Exception;
 use Illuminate\Support\Facades\Cache;
@@ -126,7 +129,7 @@ describe('GoWorkerFunction transports', function () {
         config()->set('services.rabbitmq.host', '');
 
         $fake = new FakeNatsServiceOk;
-        $this->app->instance(\App\Services\Nats\NatsService::class, $fake);
+        $this->app->instance(NatsService::class, $fake);
 
         $h = new GoWorkerFunctionTransportHarness;
         $id = $h->callSendGoTask('wa-inbound', ['user_id' => 'u1'], 'whatsapp');
@@ -146,7 +149,7 @@ describe('GoWorkerFunction transports', function () {
         config()->set('services.rabbitmq.password', 'p');
         config()->set('services.rabbitmq.vhost', '/');
 
-        $this->app->instance(\App\Services\Nats\NatsService::class, new FakeNatsServiceFail);
+        $this->app->instance(NatsService::class, new FakeNatsServiceFail);
 
         $h = new GoWorkerFunctionTransportHarness;
         $id = $h->callSendGoTask('wa-inbound', ['user_id' => 'u1'], 'whatsapp');
@@ -160,28 +163,28 @@ describe('GoWorkerFunction transports', function () {
         $h = new GoWorkerFunctionTransportHarness;
 
         $h->callSendGoTask('', [], 'whatsapp');
-    })->throws(\App\Exceptions\CommonCustomException::class);
+    })->throws(CommonCustomException::class);
 
     it('validates payload type', function () {
         $h = new GoWorkerFunctionTransportHarness;
 
         $h->callSendGoTaskWithOptions('wa-inbound', 'nope', 'whatsapp');
-    })->throws(\App\Exceptions\CommonCustomException::class);
+    })->throws(CommonCustomException::class);
 
     it('validates queue name', function () {
         $h = new GoWorkerFunctionTransportHarness;
         $h->callSendGoTaskWithOptions('wa-inbound', [], '');
-    })->throws(\App\Exceptions\CommonCustomException::class);
+    })->throws(CommonCustomException::class);
 
     it('validates exclusive flag', function () {
         $h = new GoWorkerFunctionTransportHarness;
         $h->callSendGoTaskWithOptions('wa-inbound', [], 'whatsapp', 'nope');
-    })->throws(\App\Exceptions\CommonCustomException::class);
+    })->throws(CommonCustomException::class);
 
     it('validates timeout type', function () {
         $h = new GoWorkerFunctionTransportHarness;
         $h->callSendGoTaskWithOptions('wa-inbound', [], 'whatsapp', false, 'nope');
-    })->throws(\App\Exceptions\CommonCustomException::class);
+    })->throws(CommonCustomException::class);
 
     it('uses provided idempotency key and removes it from payload', function () {
         config()->set('services.nats.enabled', false);
@@ -239,10 +242,10 @@ describe('GoWorkerFunction transports', function () {
     });
 
     it('rejects exclusive task when lock exists', function () {
-        Cache::put(\App\Interfaces\CentralCacheInterfaceClass::keyRabbitmqLock('wa-inbound'), true, now()->addMinute());
+        Cache::put(CentralCacheInterfaceClass::keyRabbitmqLock('wa-inbound'), true, now()->addMinute());
         $h = new GoWorkerFunctionDryRunHarness;
         $h->callSendGoTaskWithOptions('wa-inbound', ['user_id' => 'u1'], 'whatsapp', true, 1);
-    })->throws(\App\Exceptions\CommonCustomException::class, 'Task already running');
+    })->throws(CommonCustomException::class, 'Task already running');
 
     it('survives task status persistence errors', function () {
         config()->set('services.nats.enabled', false);
@@ -253,8 +256,8 @@ describe('GoWorkerFunction transports', function () {
         config()->set('services.rabbitmq.password', 'p');
         config()->set('services.rabbitmq.vhost', '/');
 
-        \App\Models\TaskStatus::flushEventListeners();
-        \App\Models\TaskStatus::creating(function () {
+        TaskStatus::flushEventListeners();
+        TaskStatus::creating(function () {
             throw new Exception('db down');
         });
 
@@ -262,7 +265,7 @@ describe('GoWorkerFunction transports', function () {
         $id = $h->callSendGoTask('wa-inbound', ['user_id' => 'u1'], 'whatsapp');
         expect($id)->toBeString();
 
-        \App\Models\TaskStatus::flushEventListeners();
+        TaskStatus::flushEventListeners();
     });
 
     it('auto-builds notify sockudo payload for user id', function () {
@@ -295,7 +298,7 @@ describe('GoWorkerFunction transports', function () {
         $h = new GoWorkerFunctionDryRunHarness;
         $id = $h->callSendGoTaskWithOptions('wa-inbound', ['user_id' => 'u1'], 'whatsapp', true, 1);
         expect($id)->toBeString();
-        expect(Cache::has(\App\Interfaces\CentralCacheInterfaceClass::keyRabbitmqLock('wa-inbound')))->toBeTrue();
+        expect(Cache::has(CentralCacheInterfaceClass::keyRabbitmqLock('wa-inbound')))->toBeTrue();
     });
 
     it('releases lock and normalizes exception code on rabbit failure', function () {
@@ -311,13 +314,13 @@ describe('GoWorkerFunction transports', function () {
         $thrown = null;
         try {
             $h->callSendGoTaskWithOptions('wa-inbound', ['user_id' => 'u1'], 'whatsapp', true, 1);
-        } catch (\App\Exceptions\CommonCustomException $e) {
+        } catch (CommonCustomException $e) {
             $thrown = $e;
             expect($e->getMessage())->toContain('Failed to connect to RabbitMQ');
             expect($e->getCode())->toBe(422);
         }
 
         expect($thrown)->not->toBeNull();
-        expect(Cache::has(\App\Interfaces\CentralCacheInterfaceClass::keyRabbitmqLock('wa-inbound')))->toBeFalse();
+        expect(Cache::has(CentralCacheInterfaceClass::keyRabbitmqLock('wa-inbound')))->toBeFalse();
     });
 });
